@@ -18,7 +18,7 @@
       <a href="#/sounds" class="navlink">⭐ My sounds</a>
       <a href="#/make" class="navlink teacher-only">Make a list</a>
       <button type="button" class="navlink teacher-only" id="settingsBtn">⚙️ Settings</button>
-      <button type="button" class="navlink" id="teacherBtn" hidden>🔒 Teacher</button>
+      <a href="#/teacher" class="navlink" id="teacherLink" hidden>👩‍🏫 Teacher</a>
     </nav>
   </header>
 
@@ -28,6 +28,7 @@
     <form method="dialog" class="settings-form">
       <h2 id="settingsTitle">Settings</h2>
       <p class="hint">Saved on this device only.</p>
+      <p class="hint" id="classLine" hidden></p>
 
       <label class="field">Voice
         <select id="setVoice"></select>
@@ -74,20 +75,6 @@
     </form>
   </dialog>
 
-  <dialog id="pinDialog" aria-labelledby="pinTitle">
-    <form method="dialog" class="settings-form" id="pinForm">
-      <h2 id="pinTitle">Teacher</h2>
-      <label class="field">PIN
-        <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="12">
-      </label>
-      <p class="hint" id="pinHint">Unlocks Settings and Make a list on this device until the browser is closed.</p>
-      <div class="row end">
-        <button class="btn" type="button" id="pinCancel">Cancel</button>
-        <button class="btn primary" type="submit">Unlock</button>
-      </div>
-    </form>
-  </dialog>
-
   <footer class="credits" id="credits" hidden>
     Voice: “Alba”, a Piper voice (en_GB-alba-medium) trained on the Alba speech corpus from the
     University of Edinburgh, used under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
@@ -96,6 +83,9 @@
   <script src="words.js"></script>
   <script src="sentences.js"></script>
   <script src="audio/index.js"></script>
+  <script>window.PopCloudReady = new Promise(resolve => { window.__popCloudResolve = resolve; });</script>
+  <script type="module" src="cloud.js"></script>
+  <script src="teacher.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

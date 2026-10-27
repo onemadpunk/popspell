@@ -308,54 +308,34 @@
   const PRAISE = [["well-done", "Well done!"], ["brilliant", "Brilliant!"], ["super", "Super spelling!"],
     ["fantastic", "Fantastic!"], ["great-job", "Great job!"], ["got-it", "You got it!"], ["amazing", "Amazing!"]];
 
-  /* ---------- Reports to the teacher's Google Sheet ---------- */
+  /* ---------- Classes: results go to the pupil's teacher (stored in Firebase, see cloud.js) ---------- */
 
-  // Each tutor has their own Google Sheet. A device joins a tutor's class once with #/join/<code>,
-  // and from then on reports to that tutor. With no tutors set up, reportUrl is used.
-  const TUTORS = SITE.tutors || {};
-  const TUTOR_KEY = "popspell-tutor-v1";
-  const TUTOR = (() => { try { return TUTORS[localStorage.getItem(TUTOR_KEY)] || null; } catch { return null; } })();
-  const REPORT_URL = TUTOR ? TUTOR.reportUrl : SITE.reportUrl;
-  const REPORT_KEY = (TUTOR ? TUTOR.reportKey : SITE.reportKey) || "";
-  const REPORTING = /^https?:\/\//.test(REPORT_URL || "");
+  // A device joins a class once, with a link (#/join/CODE) or by typing the class code,
+  // and from then on its pupils' results, live progress and help requests go to that class.
+  const CLOUD_CONFIGURED = !!(SITE.firebase && SITE.firebase.apiKey);
+  const CLASS_KEY = "popspell-class-v1";
   const PUPIL_KEY = "spelling-pupil-v1";
-  const OUTBOX_KEY = "spelling-outbox-v1";
   const getPupil = () => { try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; } };
   const setPupil = name => { try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ } };
   const cleanName = s => String(s).replace(/[^\p{L}\p{N}' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
 
-  // Reports that couldn't be sent (e.g. the Wi-Fi dropped) wait here and are retried later
-  const readOutbox = () => { try { return JSON.parse(localStorage.getItem(OUTBOX_KEY)) || []; } catch { return []; } };
-  const writeOutbox = box => { try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(box.slice(-50))); } catch { /* full or private */ } };
-
-  // Apps Script can't answer cross-site requests, so this is sent "no-cors": we learn the
-  // request went out, not what the sheet said. Plain text avoids a blocked pre-flight check.
-  const post = (payload, to = REPORT_URL) => fetch(to, {
-    method: "POST",
-    mode: "no-cors",
-    keepalive: true,
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
-
-  // Each waiting report remembers which tutor's sheet it's for, in case the device changes class
-  async function flushOutbox() {
-    if (!navigator.onLine) return;
-    const box = readOutbox();
-    const left = [];
-    for (const entry of box) {
-      const to = entry.to || REPORT_URL;
-      if (!to) { left.push(entry); continue; }
-      try { await post(entry.payload || entry, to); } catch { left.push(entry); }
-    }
-    if (left.length !== box.length) writeOutbox(left);
+  let cloud = null;    // window.PopCloud once connected
+  let TEACHER = null;  // the signed-in teacher on this device, if any
+  let CLASS = (() => { try { return JSON.parse(localStorage.getItem(CLASS_KEY)) || null; } catch { return null; } })();
+  let REPORTING = false;
+  const updateReporting = () => { REPORTING = !!(cloud && CLASS); };
+  function saveClass(c) {
+    CLASS = c;
+    try { if (c) localStorage.setItem(CLASS_KEY, JSON.stringify(c)); else localStorage.removeItem(CLASS_KEY); } catch { /* not remembered */ }
+    updateReporting();
   }
 
+  // Resolves true once the teacher has it, false if it's still waiting (it's kept on the
+  // device and sent when the connection is back), null if there's nothing to send
   function sendReport(s, finished) {
     if (!REPORTING || s.sent || !s.results.length) return Promise.resolve(null);
     s.sent = true;
     const payload = {
-      key: REPORT_KEY,
       pupil: s.pupil,
       list: s.list.title,
       listId: s.list.id || "custom",
@@ -370,7 +350,8 @@
         missed: r.missed.map(label)
       }))
     };
-    return post(payload).then(() => true, () => { writeOutbox(readOutbox().concat([{ to: REPORT_URL, payload }])); return false; });
+    const saved = cloud.session(CLASS.id, payload).then(() => true, err => { console.warn("PopSpell: report not sent", err); return false; });
+    return Promise.race([saved, new Promise(r => setTimeout(() => r(false), 8000))]);
   }
 
   // Live class: tells the teacher's dashboard where this pupil is up to (best effort, never queued)
@@ -386,13 +367,19 @@
   }
   function livePing(s, event, extra = {}) {
     if (!REPORTING || !s || !s.pupil) return;
-    const body = Object.assign({ key: REPORT_KEY, type: "live", event, pupil: s.pupil, list: s.list.title, total: s.items.length },
-      event === "start" ? {} : liveStats(s), extra);
-    post(body).catch(() => { /* the next update will catch up */ });
+    const stats = event === "start" ? { done: 0, right: 0, missedRow: 0, notFirstRow: 0 } : liveStats(s);
+    const fields = Object.assign({
+      list: s.list.title,
+      total: s.items.length,
+      status: { start: "working", word: "working", end: "finished", stop: "stopped" }[event] || "working"
+    }, stats);
+    if (extra.word) fields.lastWord = `${extra.word} ${extra.ok ? "✓" : "✗"}`;
+    if (event === "start") fields.lastWord = "";
+    cloud.live(CLASS.id, s.pupil, fields).catch(() => { /* the next update will catch up */ });
   }
   function askForHelp(on) {
     if (!REPORTING || !getPupil()) return;
-    post({ key: REPORT_KEY, type: "help", pupil: getPupil(), on }).catch(() => {});
+    cloud.live(CLASS.id, getPupil(), { help: on, helpAt: on ? Date.now() : null }).catch(() => {});
   }
   // Leaving a list part-way: the report and the dashboard both hear about it
   function leaveSession(s) {
@@ -402,23 +389,11 @@
     sendReport(s, false);
   }
 
-  // "Your lists today": the teacher's sheet is asked for this pupil's lists by a fingerprint
-  // (SHA-256) of their name, so no names travel in web addresses
+  // "Your lists today": looked up by a fingerprint (SHA-256) of the pupil's name, so a device
+  // can only ever fetch the lists for the name typed on it
   async function fetchAssigned(name) {
-    if (!REPORTING || !name || !window.crypto?.subtle) return [];
-    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(name.trim().toLowerCase()));
-    const hash = [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
-    return new Promise(resolve => {
-      const cb = `popspellLists${Date.now()}`;
-      const tag = document.createElement("script");
-      let done = false;
-      const finish = lists => { if (done) return; done = true; delete window[cb]; tag.remove(); resolve(lists); };
-      window[cb] = reply => finish(reply && reply.ok && Array.isArray(reply.lists) ? reply.lists : []);
-      tag.onerror = () => finish([]);
-      setTimeout(() => finish([]), 8000);
-      tag.src = `${REPORT_URL}?action=assignments&pupil=${hash}&key=${encodeURIComponent(REPORT_KEY)}&callback=${cb}`;
-      document.head.appendChild(tag);
-    });
+    if (!REPORTING || !name) return [];
+    try { return await cloud.assigned(CLASS.id, name); } catch { return []; }
   }
 
   // An assigned entry can be a list id, a list title, or a "Make a list" link
@@ -605,6 +580,7 @@
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
     else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""));
+    else if (parts[0] === "teacher" && window.PopTeacher) window.PopTeacher.show(app, decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
@@ -614,20 +590,26 @@
     window.scrollTo(0, 0);
   }
 
-  // A tutor's join link (#/join/smith) puts this device in their class, then starts afresh
-  function joinClass(code) {
-    if (!TUTORS[code]) {
-      app.innerHTML = `<section class="panel start"><h1>Hmm, that class link didn't work</h1>
-        <p>Please check the link with your teacher.</p><a class="btn primary" href="#/">Go to the lists</a></section>`;
+  // A class link (#/join/K7P2QX) or a typed code puts this device in that teacher's class
+  async function joinClass(code, onDone) {
+    const my = phase;
+    if (!onDone) app.innerHTML = `<section class="panel start"><h1>Joining the class…</h1></section>`;
+    const api = await window.PopCloudReady;
+    const info = api ? await api.classInfo(code).catch(() => null) : null;
+    if (my !== phase && !onDone) return;
+    if (!info) {
+      if (onDone) return onDone(false);
+      app.innerHTML = `<section class="panel start"><h1>Hmm, that class code didn't work</h1>
+        <p>Please check the code with your teacher.</p><a class="btn primary" href="#/">Go to the lists</a></section>`;
       return;
     }
-    try {
-      localStorage.setItem(TUTOR_KEY, code);
-      sessionStorage.setItem("popspell-joined", "1");
-    } catch { /* private mode: the class can't be remembered */ }
-    location.replace(location.href.split("#")[0] + "#/");
-    location.reload();
+    saveClass(info);
+    justJoined = true;
+    if (onDone) return onDone(true);
+    history.replaceState(null, "", "#/");
+    showHome();
   }
+  let justJoined = false;
 
   // Today's review: words from any list that are due to come back
   const reviewList = () => ({
@@ -709,7 +691,13 @@
       <section class="hero">
         <h1>${esc(SITE.title)}</h1>
         <p class="lead">${esc(SITE.subtitle)}</p>
-        ${TUTOR ? `<p class="class-name">${esc(TUTOR.name || "My class")}${justJoined() ? " — this device has joined the class ✓" : ""}</p>` : ""}
+        ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
+        ${CLOUD_CONFIGURED && !CLASS ? `
+          <form class="join-box" id="joinForm">
+            <label>Got a class code? <input id="joinCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. K7P2QX"></label>
+            <button class="btn" type="submit">Join</button>
+            <span class="hint" id="joinHint"></span>
+          </form>` : ""}
         <ol class="steps">
           <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Listen</b> to the word</span></li>
           <li><span class="step-icon" aria-hidden="true">🗣️</span><span><b>Say</b> each sound</span></li>
@@ -733,6 +721,20 @@
               </a>`).join("")}
           </div>
         </section>`).join("")}`;
+
+    const joinForm = $("#joinForm");
+    if (joinForm) {
+      joinForm.onsubmit = e => {
+        e.preventDefault();
+        const code = $("#joinCode").value.trim();
+        if (!code) return $("#joinCode").focus();
+        $("#joinHint").textContent = "Checking…";
+        joinClass(code, ok => {
+          if (ok) showHome();
+          else if ($("#joinHint")) $("#joinHint").textContent = "That code didn't work — check it with your teacher.";
+        });
+      };
+    }
 
     // The pupil's own corner: review words due today and their sound collection
     const box = $("#homePupil");
@@ -1188,8 +1190,7 @@
     sendReport(session, true).then(sent => {
       const note = $("#sent");
       if (!note || my !== phase || sent === null) return;
-      note.textContent = sent ? "✓ Sent to your teacher" : "Couldn't send just now — it will be sent next time.";
-      if (sent) flushOutbox();
+      note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
     });
     const list = session.list;
     if (tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
@@ -1260,44 +1261,18 @@
     };
   }
 
-  /* ---------- Teacher PIN: keeps Settings and Make a list away from pupils (not real security) ---------- */
+  /* ---------- Teacher mode: Settings and Make a list only show while a teacher is signed in ---------- */
 
-  const PIN = String((TUTOR && TUTOR.pin) || SITE.teacherPin || "");
-  const UNLOCK_KEY = "popspell-teacher";
-  const teacherUnlocked = () => { if (!PIN) return true; try { return sessionStorage.getItem(UNLOCK_KEY) === "1"; } catch { return false; } };
-  const justJoined = () => { try { const j = sessionStorage.getItem("popspell-joined"); sessionStorage.removeItem("popspell-joined"); return !!j; } catch { return false; } };
+  // Without Firebase set up there are no accounts, so everything is shown
+  const teacherUnlocked = () => !CLOUD_CONFIGURED || !!(TEACHER && TEACHER.role);
 
   function applyTeacherMode() {
     const open = teacherUnlocked();
     document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
-    const btn = $("#teacherBtn");
-    btn.hidden = !PIN;
-    btn.textContent = open ? "🔓 Lock" : "🔒 Teacher";
+    const link = $("#teacherLink");
+    link.hidden = !CLOUD_CONFIGURED;
+    link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${TEACHER.name.split(" ")[0]}` : "👩‍🏫 Teacher";
   }
-
-  const pinDlg = $("#pinDialog");
-  $("#teacherBtn").onclick = () => {
-    if (teacherUnlocked()) {
-      try { sessionStorage.removeItem(UNLOCK_KEY); } catch { /* nothing to undo */ }
-      applyTeacherMode();
-      if (/^#\/make/.test(location.hash)) location.hash = "#/";
-      return;
-    }
-    $("#pinInput").value = "";
-    $("#pinHint").textContent = "Unlocks Settings and Make a list on this device until the browser is closed.";
-    pinDlg.showModal();
-  };
-  $("#pinCancel").onclick = () => pinDlg.close();
-  $("#pinForm").onsubmit = e => {
-    if ($("#pinInput").value.trim() !== PIN) {
-      e.preventDefault();
-      $("#pinHint").textContent = "That PIN isn't right. Try again.";
-      $("#pinInput").select();
-      return;
-    }
-    try { sessionStorage.setItem(UNLOCK_KEY, "1"); } catch { /* stays locked in private mode */ }
-    applyTeacherMode();
-  };
 
   /* ---------- Settings dialog ---------- */
 
@@ -1325,6 +1300,12 @@
     $("#setChecks").checked = settings.checks;
     $("#setSpell").checked = settings.spellOut;
     $("#setSounds").checked = settings.sounds;
+    const line = $("#classLine");
+    line.hidden = !CLOUD_CONFIGURED;
+    line.innerHTML = CLASS
+      ? `This device is in <b>${esc(CLASS.name)}</b> (code ${esc(CLASS.id)}). <button type="button" class="linklike" id="leaveClass">Leave this class</button>`
+      : "This device isn't in a class yet. Open a class link, or type the code on the home page.";
+    if ($("#leaveClass")) $("#leaveClass").onclick = () => { saveClass(null); dlg.close(); };
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   }
 
@@ -1353,11 +1334,29 @@
   $("#siteTitle").textContent = SITE.title;
   $("#credits").hidden = !albaWords.size;
   applyTeacherMode();
-  flushOutbox();
-  window.addEventListener("online", flushOutbox);
   if (synth) {
     refreshVoices();
     synth.addEventListener?.("voiceschanged", refreshVoices);
   }
+
+  // What the teacher pages (teacher.js) need from here
+  window.PopSpell = {
+    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned,
+    get teacher() { return TEACHER; }
+  };
+
+  // Firebase connects in the background; the lists work straight away without it
+  (window.PopCloudReady || Promise.resolve(null)).then(api => {
+    cloud = api;
+    updateReporting();
+    if (!api) return;
+    api.onTeacher(profile => {
+      TEACHER = profile;
+      applyTeacherMode();
+      const h = location.hash;
+      if (!session && (h === "" || h === "#/" || h === "#/make" || h.startsWith("#/teacher"))) route(); // show the right tools
+    });
+    if (!session && (location.hash === "" || location.hash === "#/")) route();
+  });
   route();
 })();

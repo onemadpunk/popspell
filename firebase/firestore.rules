@@ -1,0 +1,89 @@
+rules_version = '2';
+
+// PopSpell — who can read and write what.
+//
+//  • Owners (listed below) invite teachers and can see every class.
+//  • Invited teachers sign in with Google and see only their own classes.
+//  • Pupils' devices sign in anonymously. Knowing a class code lets a device add results,
+//    live progress and help requests to that class, and look up its own assigned lists.
+//    Pupils can never read other pupils' results or the class list.
+//
+// Paste this whole file into Firebase console → Firestore Database → Rules, and publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ⬇ The owner's Google email address (lower case). Add more inside the brackets if needed.
+    function owners() { return ['owner@example.com']; }
+
+    function signedIn() { return request.auth != null; }
+    function google() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true;
+    }
+    function email() { return request.auth.token.email.lower(); }
+    function teacherDoc() { return /databases/$(database)/documents/teachers/$(email()); }
+    function isOwner() {
+      return google() && (email() in owners()
+        || (exists(teacherDoc()) && get(teacherDoc()).data.role == 'owner'));
+    }
+    function isTeacher() { return google() && (isOwner() || exists(teacherDoc())); }
+    function classDoc(c) { return get(/databases/$(database)/documents/classes/$(c)); }
+    function teaches(c) { return isTeacher() && classDoc(c).data.teacher == request.auth.uid; }
+    function canSee(c) { return isOwner() || teaches(c); }
+    function shortText(v, n) { return v is string && v.size() <= n; }
+
+    // Invited teachers, keyed by their Google email in lower case
+    match /teachers/{em} {
+      allow get: if isOwner() || (google() && email() == em);
+      allow list: if isOwner();
+      // An owner's own record may be created on their first sign-in
+      allow create: if isOwner()
+        && request.resource.data.keys().hasOnly(['name', 'role', 'invitedBy', 'invitedAt'])
+        && request.resource.data.role in ['teacher', 'owner']
+        && (request.resource.data.role == 'teacher' || email() in owners());
+      allow update: if isOwner() && request.resource.data.role in ['teacher', 'owner'];
+      allow delete: if isOwner() && em != email();
+    }
+
+    // A class; its id is the join code pupils type
+    match /classes/{c} {
+      allow get: if signedIn();
+      allow list: if isOwner() || (isTeacher() && resource.data.teacher == request.auth.uid);
+      allow create: if isTeacher()
+        && request.resource.data.teacher == request.auth.uid
+        && shortText(request.resource.data.name, 60)
+        && request.resource.data.keys().hasOnly(['name', 'teacher', 'teacherName', 'teacherEmail', 'createdAt']);
+      allow update: if canSee(c)
+        && request.resource.data.teacher == resource.data.teacher
+        && shortText(request.resource.data.name, 60);
+      allow delete: if canSee(c);
+
+      // Where each pupil is up to right now (one document per pupil)
+      match /live/{p} {
+        allow read, delete: if canSee(c);
+        allow create, update: if canSee(c) || (signedIn() && exists(/databases/$(database)/documents/classes/$(c))
+          && request.resource.data.keys().hasOnly(['pupil', 'list', 'status', 'done', 'total', 'right',
+               'missedRow', 'notFirstRow', 'lastWord', 'help', 'helpAt', 'seen'])
+          && shortText(request.resource.data.pupil, 40));
+      }
+
+      // One document per finished (or stopped) list
+      match /sessions/{s} {
+        allow read, delete: if canSee(c);
+        allow create: if signedIn() && exists(/databases/$(database)/documents/classes/$(c))
+          && request.resource.data.keys().hasOnly(['pupil', 'list', 'listId', 'finished', 'words', 'at'])
+          && shortText(request.resource.data.pupil, 40)
+          && request.resource.data.words is list && request.resource.data.words.size() <= 60;
+      }
+
+      // Lists set for each pupil, keyed by a fingerprint of their name (or "everyone").
+      // A pupil's device can only fetch the one it knows the key for.
+      match /assign/{a} {
+        allow get: if signedIn();
+        allow list, write: if canSee(c);
+      }
+    }
+  }
+}

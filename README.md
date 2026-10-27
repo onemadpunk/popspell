@@ -17,23 +17,22 @@ A free, sounds-first spelling website for pupils, built on **systematic syntheti
 - **Spaced review.** Every word a pupil practises is scheduled to come back: missed words the next day, then after 3, 7, 14 and 30 days as they get them right first time. The home page shows "🔁 6 words to practise again today".
 - **My sounds** is each pupil's collection of every sound in the lists. A sound earns its ⭐ when it's spelled right first time at least 4 times, on 2 different days, and the last 3 times in a row. New stars are celebrated at the end of a list, and tapping a sound lets the pupil practise just that sound.
 
-Pupils type their first name before starting, so each child on a shared device has their own review words and stars. This progress is stored **on that device**. (With reports switched on, the teacher's Google Sheet has everything from every device.)
+Pupils type their first name before starting, so each child on a shared device has their own review words and stars. Review words and stars are stored **on that device**. The pupil's results also go to their teacher (below).
 
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
-It's just `index.html`, `style.css`, `app.js` and the word lists in `words.js`. Nothing to install and no logins.
+## Teachers
 
-## Reports and the teacher dashboard (optional)
+Teachers sign in **on the site** with their Google account (👩‍🏫 **Teacher**, top right). The owner invites each teacher by email. Once signed in, a teacher has:
 
-Connect **your own Google Sheet** (about 15 minutes, see [google-sheet/SETUP.md](google-sheet/SETUP.md)) and you get:
+- **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
+- **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
+- **Assignments:** choose lists for each pupil, or for *Everyone*. They appear on that pupil's home page as "📌 Your lists today".
+- **Pupils:** each pupil's results over the last week, month, term or year, the sounds they miss most, and a **spreadsheet download** of every word (opens in Google Sheets or Excel).
+- **Settings** and **Make a list**, which only appear while a teacher is signed in.
+- **For the owner:** a **Teachers** tab to invite and remove teachers, and access to every class.
 
-- **Reports:** every pupil's results, the sounds each struggles with most, and every wrong spelling.
-- **A private class dashboard**, protected by your Google sign-in. It shows every pupil live: who has pressed 🙋 **Help**, who's finding it hard, who has finished.
-- **Assignments:** choose lists for each pupil (or *Everyone*). They appear on that pupil's home page as "📌 Your lists today".
-- **A teacher PIN** that hides Settings and Make a list from pupils.
-- **More than one tutor:** each tutor has their own sheet and dashboard, and pupil devices join a class once with a link like `#/join/smith`.
-
-With nothing connected (the default), nothing is sent anywhere.
+Accounts and results are stored in Firebase (Google's cloud database, in London). Setup is a one-off job for the site owner: see [firebase/SETUP.md](firebase/SETUP.md). Without it, the spelling lists still work, but nothing is saved for teachers.
 
 ---
 
