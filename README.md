@@ -105,7 +105,7 @@ python tools/make_audio.py --model voice/en_GB-alba-medium.onnx
 
 (download `en_GB-alba-medium.onnx` and `.onnx.json` from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/alba/medium) into a `voice` folder first). Words in **Make a list** links that aren't in any list use the device's own voice.
 
-To check how a word sounds, open `audio/words/<word>.mp3`. If one sounds wrong, delete it and run the tool again with a different spelling in `PHRASES` / `LETTERS`, or re-record everything with `--force`.
+**Checking the recordings:** open **popspell.com/listen.html** (also linked from Settings). Play each word and sentence, mark any that sound wrong with a note, then copy the list. Those words get fixed in `tools/make_audio.py`: either a new take (`--only crash`), or a different way of saying it in `WORD_FIXES` (a respelling, or exact sounds such as `"[[ kɹˈaʃ ]]"`). Takes approved by ear go in `APPROVED`, so they're never replaced.
 
 ### Device voices (fallback)
 

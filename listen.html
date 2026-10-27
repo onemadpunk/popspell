@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check the recordings</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .check-head { position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .check-head h1 { font-size: 1.6rem; margin: 0 0 4px; }
+    .tally { color: var(--muted); }
+    .tally b { color: var(--ink); }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: center; }
+    .filters label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+    .list-block { margin-top: 22px; }
+    .list-block h2 { font-size: 1.1rem; margin: 0 0 6px; }
+    .rec { display: grid; grid-template-columns: minmax(90px, 140px) auto auto 1fr auto; gap: 8px; align-items: center;
+           padding: 6px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 6px; }
+    .rec.heard { border-color: #cfe9d6; }
+    .rec.bad { border-color: var(--oops); background: var(--oops-soft); }
+    .rec-word { font-size: 1.3rem; font-weight: 700; }
+    .rec-word small { font-size: .7rem; font-weight: 700; color: var(--primary); border: 2px solid var(--primary); border-radius: 999px; padding: 0 5px; margin-left: 4px; vertical-align: middle; }
+    .play { font: inherit; font-weight: 700; border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 12px; cursor: pointer; white-space: nowrap; }
+    .play.played { border-color: var(--good); color: var(--good); }
+    .play:disabled { opacity: .4; cursor: default; }
+    .sentence-text { color: var(--muted); font-size: .95rem; }
+    .flag { font: inherit; border: 2px solid var(--line); background: #fff; border-radius: 999px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+    .bad .flag { border-color: var(--oops); color: var(--oops); background: #fff; font-weight: 700; }
+    .note { grid-column: 2 / -1; display: none; }
+    .bad .note { display: block; }
+    .note input { width: 100%; font: inherit; padding: 4px 8px; border: 2px solid var(--line); border-radius: 8px; }
+    .hidden { display: none !important; }
+    @media (max-width: 640px) {
+      .rec { grid-template-columns: 1fr auto auto; }
+      .sentence-text { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="check-head">
+      <a class="back" href="./">← Back to the lists</a>
+      <h1>🎧 Check the recordings</h1>
+      <p class="tally" id="tally"></p>
+      <div class="filters">
+        <label><input type="checkbox" id="onlyBad"> Only show ones marked wrong</label>
+        <label><input type="checkbox" id="hideHeard"> Hide ones I've heard</label>
+        <button class="btn primary" id="copy" type="button">📋 Copy the list of wrong ones</button>
+        <span class="hint" id="copied"></span>
+      </div>
+    </div>
+    <p class="hint">Press ▶ to hear each word and its sentence. If one sounds wrong, press <b>Sounds wrong</b> and say what you hear (e.g. “sounds like jelf”).
+      When you're done, copy the list and send it on — those words get new recordings. Your ticks are saved in this browser.</p>
+    <div id="lists"></div>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="sentences.js"></script>
+  <script src="audio/index.js"></script>
+  <script>
+    (() => {
+      "use strict";
+      const KEY = "popspell-listen-v1";
+      const $ = id => document.getElementById(id);
+      const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const ALBA = Object.assign({ words: [], sentences: [] }, window.ALBA_AUDIO);
+      const hasWord = new Set(ALBA.words);
+      const hasSentence = new Set(ALBA.sentences);
+      const SENTENCES = window.SENTENCES || {};
+      const state = (() => { try { return Object.assign({ heard: {}, bad: {} }, JSON.parse(localStorage.getItem(KEY))); } catch { return { heard: {}, bad: {} }; } })();
+      const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* not saved */ } };
+
+      // Same rule as the site: "c-a_e-k" -> "cake"
+      function spelling(entry) {
+        if (!entry.includes("-")) return entry.toLowerCase();
+        const out = [];
+        let pending = false;
+        entry.toLowerCase().split("-").filter(Boolean).forEach(tok => {
+          const m = /^([aeiou])_e$/.exec(tok);
+          out.push(m ? m[1] : tok);
+          if (pending) { out.push("e"); pending = false; }
+          if (m) pending = true;
+        });
+        if (pending) out.push("e");
+        return out.join("");
+      }
+
+      // Each word once, under the first list it appears in
+      const seen = new Set();
+      const blocks = [];
+      (window.SPELLING_LISTS || []).forEach(stage => stage.lists.forEach(list => {
+        const words = [];
+        list.words.concat(list.check || []).forEach((entry, i) => {
+          const w = spelling(entry);
+          if (seen.has(w)) return;
+          seen.add(w);
+          words.push({ w, isNew: i >= list.words.length });
+        });
+        if (words.length) blocks.push({ title: `${stage.stage} — ${list.title}`, words });
+      }));
+      const total = seen.size;
+
+      const player = new Audio();
+      function play(btn, url, key) {
+        document.querySelectorAll(".play.playing").forEach(b => b.classList.remove("playing"));
+        player.src = url;
+        player.play().catch(() => {});
+        btn.classList.add("played");
+        state.heard[key] = 1;
+        save();
+        btn.closest(".rec").classList.add("heard");
+        tally();
+      }
+
+      function row(item) {
+        const w = item.w;
+        const bad = state.bad[w];
+        const heard = state.heard[`w:${w}`] && (!SENTENCES[w] || state.heard[`s:${w}`]);
+        return `
+          <div class="rec${bad ? " bad" : ""}${heard ? " heard" : ""}" data-w="${esc(w)}">
+            <span class="rec-word">${esc(w)}${item.isNew ? "<small>new</small>" : ""}</span>
+            <button class="play${state.heard[`w:${w}`] ? " played" : ""}" data-kind="w" ${hasWord.has(w) ? "" : "disabled"}>▶ Word</button>
+            <button class="play${state.heard[`s:${w}`] ? " played" : ""}" data-kind="s" ${hasSentence.has(w) ? "" : "disabled"}>▶ Sentence</button>
+            <span class="sentence-text">${esc(SENTENCES[w] || "")}</span>
+            <button class="flag" type="button">${bad ? "✗ Sounds wrong" : "Sounds wrong?"}</button>
+            <label class="note">What's wrong? <input type="text" maxlength="120" value="${esc(bad ? bad.note || "" : "")}" placeholder="e.g. sounds like jelf, or the sentence is wrong"></label>
+          </div>`;
+      }
+
+      function draw() {
+        const onlyBad = $("onlyBad").checked;
+        const hideHeard = $("hideHeard").checked;
+        $("lists").innerHTML = blocks.map(b => {
+          const items = b.words.filter(i => (!onlyBad || state.bad[i.w]) &&
+            (!hideHeard || !(state.heard[`w:${i.w}`] && (!SENTENCES[i.w] || state.heard[`s:${i.w}`]))));
+          return items.length ? `<section class="list-block"><h2>${esc(b.title)}</h2>${items.map(row).join("")}</section>` : "";
+        }).join("") || `<p class="hint">Nothing to show.</p>`;
+        document.querySelectorAll(".rec").forEach(el => {
+          const w = el.dataset.w;
+          el.querySelectorAll(".play").forEach(btn => {
+            btn.onclick = () => btn.dataset.kind === "w"
+              ? play(btn, `audio/words/${w}.mp3`, `w:${w}`)
+              : play(btn, `audio/sentences/${w}.mp3`, `s:${w}`);
+          });
+          el.querySelector(".flag").onclick = () => {
+            if (state.bad[w]) delete state.bad[w]; else state.bad[w] = { note: "" };
+            save();
+            draw();
+            if (state.bad[w]) document.querySelector(`.rec[data-w="${w}"] .note input`).focus();
+          };
+          el.querySelector(".note input").oninput = e => { if (state.bad[w]) { state.bad[w].note = e.target.value; save(); } };
+        });
+        tally();
+      }
+
+      function tally() {
+        const heard = [...seen].filter(w => state.heard[`w:${w}`]).length;
+        const bad = Object.keys(state.bad).length;
+        $("tally").innerHTML = `Heard <b>${heard}</b> of <b>${total}</b> words · <b>${bad}</b> marked wrong`;
+      }
+
+      $("onlyBad").onchange = draw;
+      $("hideHeard").onchange = draw;
+      $("copy").onclick = async () => {
+        const lines = Object.keys(state.bad).sort().map(w => `${w}${state.bad[w].note ? " — " + state.bad[w].note : ""}`);
+        const text = lines.length ? `PopSpell recordings that sound wrong:\n${lines.join("\n")}` : "No recordings marked wrong.";
+        try { await navigator.clipboard.writeText(text); $("copied").textContent = `✓ Copied ${lines.length}`; }
+        catch { prompt("Copy this list:", text); }
+      };
+      draw();
+    })();
+  </script>
+</body>
+</html>
