@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spelling Practice</title>
+  <meta name="description" content="Look, say, cover, write, check spelling practice.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="#/" class="brand"><span aria-hidden="true">✏️</span> <span id="siteTitle">Spelling Practice</span></a>
+    <nav class="topnav">
+      <a href="#/make" class="navlink">Make a list</a>
+      <button type="button" class="navlink" id="settingsBtn">⚙️ Settings</button>
+    </nav>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <dialog id="settings" aria-labelledby="settingsTitle">
+    <form method="dialog" class="settings-form">
+      <h2 id="settingsTitle">Settings</h2>
+      <p class="hint">Saved on this device only.</p>
+
+      <label class="field">Voice
+        <select id="setVoice"></select>
+      </label>
+      <div class="field-row">
+        <label class="field grow">Speed
+          <input type="range" id="setRate" min="0.6" max="1.2" step="0.05">
+        </label>
+        <button type="button" class="btn" id="testVoice">🔊 Test</button>
+      </div>
+
+      <label class="field">How long the word stays on screen
+        <select id="setLook">
+          <option value="2">2 seconds</option>
+          <option value="3">3 seconds</option>
+          <option value="4">4 seconds</option>
+          <option value="5">5 seconds</option>
+          <option value="8">8 seconds</option>
+          <option value="0">Until the pupil presses "I'm ready"</option>
+        </select>
+      </label>
+
+      <label class="field">Tries for each word
+        <select id="setTries">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>
+
+      <label class="check"><input type="checkbox" id="setShuffle"> Mix up the order of the words</label>
+      <label class="check"><input type="checkbox" id="setSpell"> Spell out the letters when a word is missed</label>
+      <label class="check"><input type="checkbox" id="setSounds"> Play sounds for right and wrong answers</label>
+
+      <div class="row end">
+        <button class="btn primary" value="close">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
