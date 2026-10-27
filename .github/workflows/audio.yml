@@ -1,0 +1,48 @@
+# Records any new words in words.js with the alba voice and commits the MP3s,
+# so editing a list on github.com is all it takes to get recordings for it.
+name: Make alba recordings
+
+on:
+  push:
+    paths: ["words.js", "tools/make_audio.py"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Keep the voice between runs
+        uses: actions/cache@v4
+        with:
+          path: voice
+          key: piper-en_GB-alba-medium
+
+      - name: Install Piper and the MP3 encoder
+        run: pip install piper-tts lameenc
+
+      - name: Download the alba voice (Piper, CC BY 4.0)
+        run: |
+          mkdir -p voice
+          base=https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alba/medium
+          for f in en_GB-alba-medium.onnx en_GB-alba-medium.onnx.json; do
+            [ -f "voice/$f" ] || curl -fsSL -o "voice/$f" "$base/$f"
+          done
+
+      - name: Record new words
+        run: python tools/make_audio.py --model voice/en_GB-alba-medium.onnx
+
+      - name: Commit the recordings
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio
+          git diff --cached --quiet || { git commit -m "Add alba recordings for new words" && git push; }

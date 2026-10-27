@@ -72,7 +72,24 @@ fontFile: "fonts/SassoonPrimary.woff2"
 
 ## Voices
 
-The site uses the voices built into the device:
+### Alba — the Scottish voice (default)
+
+Every word in the lists, the letter names and the praise phrases are pre-recorded with **Alba**, a Scottish neural voice from the [Piper](https://github.com/rhasspy/piper) project, trained on the Alba speech corpus from the University of Edinburgh (CC BY 4.0 — the credit line at the bottom of the site covers this). The recordings are small MP3s in the `audio` folder, so they play instantly on any device.
+
+**New words get recorded automatically.** When `words.js` is changed on GitHub, the *Make alba recordings* action (in the repository's **Actions** tab) records any new words and adds them to the site within a few minutes. To record on your own computer instead:
+
+```
+pip install piper-tts lameenc
+python tools/make_audio.py --model voice/en_GB-alba-medium.onnx
+```
+
+(download `en_GB-alba-medium.onnx` and `.onnx.json` from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/alba/medium) into a `voice` folder first). Words in **Make a list** links that aren't in any list use the device's own voice.
+
+To check how a word sounds, open `audio/words/<word>.mp3`. If one sounds wrong, delete it and run the tool again with a different spelling in `PHRASES` / `LETTERS`, or re-record everything with `--force`.
+
+### Device voices (fallback)
+
+When a recording isn't available, or if you pick a different voice in Settings, the site uses the voices built into the device:
 
 - **Microsoft Edge** (Windows) has the most natural British voices (e.g. *Sonia*, *Libby*, *Ryan*).
 - **Chrome** uses *Google UK English*.

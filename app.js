@@ -179,6 +179,7 @@
 
   // Resolves when speaking finishes (or after a safety timeout, as some browsers never fire onend)
   function speak(text, rate = settings.rate) {
+    stopAlba();
     return new Promise(resolve => {
       if (!synth) return resolve();
       let timer;
@@ -202,6 +203,78 @@
 
   // Simultaneous Oral Spelling: the word, then the letters sound by sound, then the word
   const sos = item => `${item.spelling}. ${item.chunks.map(ch => letterNames(ch.text)).join(". ")}. ${item.spelling}.`;
+
+  /* ---------- Alba: the recorded Scottish voice (made by tools/make_audio.py) ---------- */
+
+  const ALBA = Object.assign({ words: [], letters: false, phrases: [] }, window.ALBA_AUDIO);
+  const albaWords = new Set(ALBA.words);
+  const albaPhrases = new Set(ALBA.phrases);
+  const ALBA_ID = "alba";
+  const useAlba = () => albaWords.size > 0 && (settings.voice === ALBA_ID || !settings.voice);
+
+  // One shared player: iPads only allow sound from an element that first played during a tap
+  const player = new Audio();
+  player.preload = "auto";
+  let playToken = 0;
+  function stopAlba() {
+    playToken++;
+    player.pause();
+  }
+
+  function playClip(url, token) {
+    return new Promise(resolve => {
+      let done = false;
+      const finish = ok => { if (!done) { done = true; clearTimeout(guard); resolve(ok); } };
+      const guard = setTimeout(() => finish(true), 8000);
+      player.onended = () => finish(true);
+      player.onerror = () => finish(false);
+      player.src = url;
+      player.defaultPlaybackRate = player.playbackRate = settings.rate / DEFAULTS.rate;
+      if (token !== playToken) return finish(null);
+      player.play().catch(() => finish(false));
+    });
+  }
+
+  // Steps are clip addresses or pauses in ms. Resolves true when done, false if a clip
+  // couldn't play (so the device voice can take over), null if something else interrupted it.
+  async function playSteps(steps) {
+    if (synth) synth.cancel();
+    const token = ++playToken;
+    for (const step of steps) {
+      if (token !== playToken) return null;
+      if (typeof step === "number") { await new Promise(r => setTimeout(r, step)); continue; }
+      const ok = await playClip(step, token);
+      if (ok !== true) return token === playToken ? ok : null;
+    }
+    return token === playToken ? true : null;
+  }
+  const orSpeak = (steps, text, rate) => playSteps(steps).then(ok => (ok === false ? speak(text, rate) : ok));
+
+  const wordClip = w => `audio/words/${encodeURIComponent(w.toLowerCase())}.mp3`;
+  const hasWordClip = w => useAlba() && albaWords.has(w.toLowerCase());
+  const hasLetterClips = text => useAlba() && ALBA.letters && /^[a-z]+$/i.test(text);
+  const letterSteps = text => text.toLowerCase().split("").flatMap((c, n) => (n ? [150, `audio/letters/${c}.mp3`] : [`audio/letters/${c}.mp3`]));
+
+  const sayWord = w => (hasWordClip(w) ? orSpeak([wordClip(w)], w) : speak(w));
+  const sayLetters = text => (hasLetterClips(text) ? orSpeak(letterSteps(text), letterNames(text)) : speak(letterNames(text)));
+  const sayPhrase = ([key, text]) => (useAlba() && albaPhrases.has(key) ? orSpeak([`audio/phrases/${key}.mp3`], text) : speak(text));
+  function saySOS(item) {
+    const w = item.spelling;
+    if (!hasWordClip(w) || !hasLetterClips(w)) return speak(sos(item), settings.rate * 0.9);
+    const steps = [wordClip(w), 500];
+    item.chunks.forEach(ch => steps.push(...letterSteps(ch.text), 500));
+    steps.push(wordClip(w));
+    return orSpeak(steps, sos(item), settings.rate * 0.9);
+  }
+
+  // Keep in step with PHRASES in tools/make_audio.py
+  const PHRASES = {
+    allRight: ["all-right", "Fantastic! You spelled every word."],
+    finished: ["finished", "Well done! Have a look at your stars."],
+    test: ["test", "Can you spell the word, cake?"]
+  };
+  const PRAISE = [["well-done", "Well done!"], ["brilliant", "Brilliant!"], ["super", "Super spelling!"],
+    ["fantastic", "Fantastic!"], ["great-job", "Great job!"], ["got-it", "You got it!"], ["amazing", "Amazing!"]];
 
   /* ---------- Reports to the teacher's Google Sheet ---------- */
 
@@ -292,6 +365,7 @@
     timers.forEach(clearTimeout);
     timers = [];
     if (synth) synth.cancel();
+    stopAlba();
     return ++phase;
   }
 
@@ -317,7 +391,6 @@
   const normalise = s => s.trim().toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, " ");
   const stars = n => "★".repeat(Math.max(0, n));
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-  const PRAISE = ["Well done!", "Brilliant!", "Super spelling!", "Fantastic!", "Great job!", "You got it!", "Amazing!"];
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
   // The word with sound buttons: a dot under one-letter sounds, a line under
@@ -493,7 +566,7 @@
           void x.offsetWidth;
           x.classList.add("lit");
         });
-        speak(letterNames(item.chunks.filter(ch => ch.g === g).map(ch => ch.text).join("")));
+        sayLetters(item.chunks.filter(ch => ch.g === g).map(ch => ch.text).join(""));
         if (onTap) onTap();
       };
     });
@@ -532,7 +605,7 @@
       fill.style.width = "0%";
       later(() => my === phase && showWrite(), settings.lookSeconds * 1000);
     };
-    const say = () => speak(item.spelling).then(runTimer);
+    const say = () => sayWord(item.spelling).then(runTimer);
     $("#hear").onclick = say;
     $("#ready").onclick = () => showWrite();
     wireSoundButtons($(".word"), item, runTimer); // touching the sounds gives them more time
@@ -592,7 +665,7 @@
     drawTries();
     input.focus();
 
-    $("#hear").onclick = () => { speak(item.spelling); input.focus(); };
+    $("#hear").onclick = () => { sayWord(item.spelling); input.focus(); };
 
     $("#spellForm").onsubmit = e => {
       e.preventDefault();
@@ -631,7 +704,7 @@
       void input.offsetWidth;
       input.classList.add("shake");
       input.focus();
-      later(() => speak(item.spelling), 500);
+      later(() => sayWord(item.spelling), 500);
     };
   }
 
@@ -648,7 +721,7 @@
     app.innerHTML = `
       <section class="panel practice" style="--accent:${esc(session.list.accent)}">
         ${progressHTML()}
-        <p class="phase"><span class="dot ${correct ? "good" : "check"}"></span>${correct ? praise : "Let's look at it together"}</p>
+        <p class="phase"><span class="dot ${correct ? "good" : "check"}"></span>${correct ? praise[1] : "Let's look at it together"}</p>
         <div class="word-box ${correct ? "right pop" : "reveal"}"><span class="word sounds" lang="en-GB">${wordHTML(item, missed)}</span></div>
         ${correct
           ? `<p class="stars-big" aria-label="${earned} stars">${stars(earned)}<span class="dim">${stars(settings.tries - earned)}</span></p>`
@@ -662,8 +735,8 @@
     wireStop();
     wireSoundButtons($(".word"), item);
 
-    const sayIt = () => speak(settings.spellOut ? sos(item) : `The word is ${item.spelling}.`, settings.rate * 0.9);
-    if (correct) { chimeRight(); later(() => speak(praise), 350); }
+    const sayIt = () => (settings.spellOut ? saySOS(item) : sayWord(item.spelling));
+    if (correct) { chimeRight(); later(() => sayPhrase(praise), 350); }
     else { chimeWrong(); later(sayIt, 400); $("#hear").onclick = sayIt; }
 
     const next = $("#next");
@@ -725,7 +798,7 @@
         </div>
       </section>`;
 
-    speak(right === r.length ? "Fantastic! You spelled every word." : `Well done. You spelled ${right} out of ${r.length} words.`);
+    sayPhrase(right === r.length ? PHRASES.allRight : PHRASES.finished);
     const my = phase;
     sendReport(session, true).then(sent => {
       const note = $("#sent");
@@ -809,11 +882,11 @@
   function fillVoiceSelect() {
     const sel = $("#setVoice");
     if (!sel) return;
-    sel.innerHTML = voices.length
-      ? voices.map(v => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("")
-      : `<option value="">No voices found</option>`;
-    const v = currentVoice();
-    if (v) sel.value = v.voiceURI;
+    const alba = albaWords.size ? `<option value="${ALBA_ID}">Alba — Scottish (recorded, recommended)</option>` : "";
+    const device = voices.map(v => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("");
+    sel.innerHTML = alba + device || `<option value="">No voices found</option>`;
+    if (useAlba()) sel.value = ALBA_ID;
+    else if (currentVoice()) sel.value = currentVoice().voiceURI;
   }
 
   function openSettings() {
@@ -829,7 +902,7 @@
   }
 
   $("#settingsBtn").onclick = openSettings;
-  $("#setVoice").onchange = e => { settings.voice = e.target.value; saveSettings(); speak("cake"); };
+  $("#setVoice").onchange = e => { settings.voice = e.target.value; saveSettings(); sayWord("cake"); };
   $("#setRate").onchange = e => { settings.rate = Number(e.target.value); saveSettings(); };
   $("#setLook").onchange = e => { settings.lookSeconds = Number(e.target.value); saveSettings(); };
   $("#setTries").onchange = e => { settings.tries = Number(e.target.value); saveSettings(); };
@@ -837,7 +910,7 @@
   $("#setBoxes").onchange = e => { settings.boxes = e.target.checked; saveSettings(); };
   $("#setSpell").onchange = e => { settings.spellOut = e.target.checked; saveSettings(); };
   $("#setSounds").onchange = e => { settings.sounds = e.target.checked; saveSettings(); };
-  $("#testVoice").onclick = () => speak("Can you spell the word, cake?");
+  $("#testVoice").onclick = () => sayPhrase(PHRASES.test);
   // Re-draw menus so they show the new settings; never interrupt a pupil mid-practice
   dlg.addEventListener("close", () => { if (!session) route(); });
 
@@ -849,6 +922,7 @@
     document.head.appendChild(face);
   }
   $("#siteTitle").textContent = SITE.title;
+  $("#credits").hidden = !albaWords.size;
   flushOutbox();
   window.addEventListener("online", flushOutbox);
   if (synth) {
