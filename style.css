@@ -138,6 +138,12 @@ h1, h2 { line-height: 1.2; margin: 0 0 .4em; }
 }
 .meta { color: var(--muted); }
 .warn { color: var(--oops); font-weight: 700; }
+.pupil { margin: 4px auto 16px; max-width: 360px; }
+.pupil p { margin: 0; }
+.pupil-field { text-align: left; font-size: 1.1rem; }
+.pupil-field input { font-size: 1.4rem; text-align: center; }
+.linklike { font: inherit; color: var(--primary); background: none; border: 0; padding: 4px; cursor: pointer; text-decoration: underline; }
+.sent { color: var(--good); font-weight: 700; margin: 4px 0 0; }
 .teacher { margin-top: 28px; text-align: left; color: var(--muted); }
 .teacher summary { cursor: pointer; font-weight: 700; }
 .wordlist { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }

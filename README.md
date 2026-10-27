@@ -12,7 +12,11 @@ A free, sounds-first spelling website for pupils, built on **systematic syntheti
 
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
-It's just `index.html`, `style.css`, `app.js` and the word lists in `words.js`. Nothing to install, no logins, and no data about pupils is collected.
+It's just `index.html`, `style.css`, `app.js` and the word lists in `words.js`. Nothing to install and no logins.
+
+## Pupil reports (optional)
+
+Switch on reports and each pupil's results go to **your own Google Sheet**: a tab per pupil summary, the sounds each pupil struggles with most, and every word with each wrong spelling. Setup takes about 10 minutes — see [google-sheet/SETUP.md](google-sheet/SETUP.md). With reports off (the default), pupils aren't asked for a name and nothing is sent anywhere.
 
 ---
 

@@ -203,6 +203,60 @@
   // Simultaneous Oral Spelling: the word, then the letters sound by sound, then the word
   const sos = item => `${item.spelling}. ${item.chunks.map(ch => letterNames(ch.text)).join(". ")}. ${item.spelling}.`;
 
+  /* ---------- Reports to the teacher's Google Sheet ---------- */
+
+  const REPORTING = /^https?:\/\//.test(SITE.reportUrl || "");
+  const PUPIL_KEY = "spelling-pupil-v1";
+  const OUTBOX_KEY = "spelling-outbox-v1";
+  const getPupil = () => { try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; } };
+  const setPupil = name => { try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ } };
+  const cleanName = s => String(s).replace(/[^\p{L}\p{N}' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
+
+  // Reports that couldn't be sent (e.g. the Wi-Fi dropped) wait here and are retried later
+  const readOutbox = () => { try { return JSON.parse(localStorage.getItem(OUTBOX_KEY)) || []; } catch { return []; } };
+  const writeOutbox = box => { try { localStorage.setItem(OUTBOX_KEY, JSON.stringify(box.slice(-50))); } catch { /* full or private */ } };
+
+  // Apps Script can't answer cross-site requests, so this is sent "no-cors": we learn the
+  // request went out, not what the sheet said. Plain text avoids a blocked pre-flight check.
+  const post = payload => fetch(SITE.reportUrl, {
+    method: "POST",
+    mode: "no-cors",
+    keepalive: true,
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
+
+  async function flushOutbox() {
+    if (!REPORTING || !navigator.onLine) return;
+    const box = readOutbox();
+    const left = [];
+    for (const payload of box) {
+      try { await post(payload); } catch { left.push(payload); }
+    }
+    if (left.length !== box.length) writeOutbox(left);
+  }
+
+  function sendReport(s, finished) {
+    if (!REPORTING || s.sent || !s.results.length) return Promise.resolve(null);
+    s.sent = true;
+    const payload = {
+      key: SITE.reportKey || "",
+      pupil: s.pupil,
+      list: s.list.title,
+      listId: s.list.id || "custom",
+      finished,
+      words: s.results.map(r => ({
+        word: r.item.spelling,
+        sounds: r.item.tokens.map(label).join("·"),
+        correct: r.correct,
+        triesUsed: r.correct ? r.wrong.length + 1 : null,
+        wrong: r.wrong,
+        missed: r.missed.map(label)
+      }))
+    };
+    return post(payload).then(() => true, () => { writeOutbox(readOutbox().concat([payload])); return false; });
+  }
+
   /* ---------- Little sounds ---------- */
 
   let audioCtx;
@@ -288,6 +342,7 @@
 
   function route() {
     newScreen();
+    if (session) sendReport(session, false); // left part-way through a list
     session = null;
     const hash = location.hash.replace(/^#/, "") || "/";
     const [path, query = ""] = hash.split("?");
@@ -306,6 +361,7 @@
     window.scrollTo(0, 0);
   }
   window.addEventListener("hashchange", route);
+  window.addEventListener("pagehide", () => { if (session) sendReport(session, false); });
 
   /* ---------- Home ---------- */
 
@@ -347,6 +403,7 @@
         <h1>${esc(list.title)}</h1>
         ${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
         <p class="meta">${plural(list.items.length, "word", "words")} · ${plural(settings.tries, "try", "tries")} for each word</p>
+        ${REPORTING ? `<div class="pupil" id="pupilBox"></div>` : ""}
         <button class="btn big primary" id="go">▶ Start</button>
         ${synth ? "" : `<p class="warn">This browser can't read words aloud. Please try Chrome, Edge or Safari.</p>`}
         <details class="teacher">
@@ -355,8 +412,42 @@
         </details>
       </section>`;
     const go = $("#go");
-    go.focus();
-    go.onclick = () => startPractice(list, list.items);
+
+    // With reports switched on, pupils say who they are first (remembered on this device)
+    const drawPupil = () => {
+      const box = $("#pupilBox");
+      if (!box) return;
+      const name = getPupil();
+      box.innerHTML = name
+        ? `<p>Spelling as <b>${esc(name)}</b> · <button type="button" class="linklike" id="notMe">Not ${esc(name)}?</button></p>`
+        : `<label class="field pupil-field">What's your name?
+             <input id="pupilName" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
+           </label>
+           <p class="hint" id="pupilHint"></p>`;
+      if (name) {
+        $("#notMe").onclick = () => { setPupil(""); drawPupil(); $("#pupilName").focus(); };
+        go.focus();
+      } else {
+        const input = $("#pupilName");
+        input.onkeydown = e => { if (e.key === "Enter") go.click(); };
+        input.focus();
+      }
+    };
+    drawPupil();
+    if (!REPORTING) go.focus();
+
+    go.onclick = () => {
+      if (REPORTING && !getPupil()) {
+        const name = cleanName($("#pupilName").value);
+        if (!name) {
+          $("#pupilHint").textContent = "Type your name first, so your teacher can see how you did.";
+          $("#pupilName").focus();
+          return;
+        }
+        setPupil(name);
+      }
+      startPractice(list, list.items);
+    };
   }
 
   /* ---------- Practice ---------- */
@@ -364,7 +455,7 @@
   let session = null;
 
   function startPractice(list, items) {
-    session = { list, items: settings.shuffle ? shuffle(items) : items.slice(), i: 0, results: [] };
+    session = { list, items: settings.shuffle ? shuffle(items) : items.slice(), i: 0, results: [], pupil: getPupil(), sent: false };
     showLook();
   }
 
@@ -385,6 +476,7 @@
     $("#stopLink").onclick = e => {
       e.preventDefault();
       const list = session.list;
+      sendReport(session, false); // the words done so far still count
       newScreen();
       session = null;
       showStart(list);
@@ -605,7 +697,8 @@
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
         <h1>${esc(headline)}</h1>
-        <p class="meta">${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        <p class="meta">${session.pupil && REPORTING ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${soundRows.length ? `
           <div class="sound-report">
             <h2>Sounds to practise</h2>
@@ -633,6 +726,13 @@
       </section>`;
 
     speak(right === r.length ? "Fantastic! You spelled every word." : `Well done. You spelled ${right} out of ${r.length} words.`);
+    const my = phase;
+    sendReport(session, true).then(sent => {
+      const note = $("#sent");
+      if (!note || my !== phase || sent === null) return;
+      note.textContent = sent ? "✓ Sent to your teacher" : "Couldn't send just now — it will be sent next time.";
+      if (sent) flushOutbox();
+    });
     const list = session.list;
     if (tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
     $("#again-all").onclick = () => startPractice(list, list.items);
@@ -749,6 +849,8 @@
     document.head.appendChild(face);
   }
   $("#siteTitle").textContent = SITE.title;
+  flushOutbox();
+  window.addEventListener("online", flushOutbox);
   if (synth) {
     refreshVoices();
     synth.addEventListener?.("voiceschanged", refreshVoices);

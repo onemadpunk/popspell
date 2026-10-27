@@ -26,13 +26,20 @@
    If you buy a Sassoon web-font licence, put the file in a "fonts" folder and
    set fontFile below, e.g.  fontFile: "fonts/SassoonPrimary.woff2"
 
+  Reports:
+   To get each pupil's results in a Google Sheet, follow google-sheet/SETUP.md and
+   paste the web app address into reportUrl below. Leave it empty for no reports
+   (pupils then aren't asked for their name).
+
   After editing on GitHub, press "Commit changes" — the site updates in a minute or two.
 */
 
 window.SITE = {
   title: "Spelling Practice",
   subtitle: "Listen · Say the sounds · Spell it",
-  fontFile: ""
+  fontFile: "",
+  reportUrl: "",
+  reportKey: ""
 };
 
 window.SPELLING_LISTS = [
