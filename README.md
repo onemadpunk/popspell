@@ -43,7 +43,10 @@ With nothing connected (the default), nothing is sent anywhere.
 2. Click **+** (top right) → **New repository**. Name it e.g. `spelling`. Choose **Public**, then **Create repository**.
 3. On the new repository page click **uploading an existing file**, drag in all the files from this folder, and press **Commit changes**.
 4. Go to **Settings → Pages**. Under *Build and deployment*, set **Source** to *Deploy from a branch*, branch **main**, folder **/ (root)**, and press **Save**.
-5. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/spelling/`.
+5. After a minute or two the site is live at `https://YOUR-USERNAME.github.io/REPOSITORY/`.
+6. Optional, your own domain: at your domain company add A records for `@` pointing to `185.199.108.153`, `185.199.109.153`, `185.199.110.153` and `185.199.111.153`, and a CNAME for `www` pointing to `YOUR-USERNAME.github.io`. Then type the domain in **Settings → Pages → Custom domain**, save, and tick **Enforce HTTPS**.
+
+This site lives at **https://popspell.com**.
 
 ## Changing the word lists
 

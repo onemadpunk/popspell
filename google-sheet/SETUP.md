@@ -74,7 +74,7 @@ tutors: {
 },
 ```
 
-On each pupil device, open the tutor's **join link** once, e.g. `https://onemadpunk.github.io/popspell/#/join/smith`. The home page then shows *"Mr Smith's class"*, and that device's results, help requests and assignments all go to Mr Smith's sheet. To move a device to another class, open the other tutor's join link.
+On each pupil device, open the tutor's **join link** once, e.g. `https://popspell.com/#/join/smith`. The home page then shows *"Mr Smith's class"*, and that device's results, help requests and assignments all go to Mr Smith's sheet. To move a device to another class, open the other tutor's join link.
 
 To let the business owner see another tutor's class, that tutor shares their sheet with her (**Share** → her Gmail). She can then open their dashboard from the **Spelling** menu in that sheet.
 

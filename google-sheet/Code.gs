@@ -23,7 +23,7 @@
 const KEY = "";
 
 // The website's address, so the dashboard can list its spelling lists
-const SITE_URL = "https://onemadpunk.github.io/popspell/";
+const SITE_URL = "https://popspell.com/";
 
 const TABS = {
   Assignments: ["Who", "Lists", "Updated"],
