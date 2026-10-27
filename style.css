@@ -15,7 +15,10 @@
   --accent: #2563eb;
   --radius: 20px;
   --shadow: 0 1px 0 rgba(31, 41, 51, .05), 0 10px 30px rgba(31, 41, 51, .07);
-  --font: "Andika", "Century Gothic", "Trebuchet MS", system-ui, sans-serif;
+  /* Sassoon is used when it's installed on the device, or when a licensed web-font file
+     is set in words.js (fontFile). Otherwise Andika, a free font also made for early readers. */
+  --font: "Sassoon Web", "Sassoon Primary", "Sassoon Primary Std", "SassoonPrimary", "Sassoon Infant",
+    "Sassoon Infant Std", "SassoonInfant", "Andika", "Century Gothic", "Trebuchet MS", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -137,7 +140,14 @@ h1, h2 { line-height: 1.2; margin: 0 0 .4em; }
 .warn { color: var(--oops); font-weight: 700; }
 .teacher { margin-top: 28px; text-align: left; color: var(--muted); }
 .teacher summary { cursor: pointer; font-weight: 700; }
-.wordlist { font-size: 1.1rem; }
+.wordlist { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.mini-word { font-size: 1.6rem; font-weight: 700; color: var(--ink); display: inline-flex; padding-bottom: .5em; }
+.mk-preview { display: flex; flex-wrap: wrap; gap: 4px 22px; margin-top: 8px; }
+
+.sound-report { text-align: left; background: var(--oops-soft); border-radius: 16px; padding: 14px 18px; margin-top: 16px; }
+.sound-report h2 { font-size: 1.15rem; margin: 0 0 6px; }
+.sound-report ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.chip { display: inline-block; min-width: 2.6em; text-align: center; font-weight: 700; background: var(--surface); border: 2px solid var(--oops); color: var(--oops); border-radius: 999px; padding: 0 10px; margin-right: 6px; }
 
 /* ---------- Practice ---------- */
 
@@ -167,6 +177,41 @@ h1, h2 { line-height: 1.2; margin: 0 0 .4em; }
 .word-box.reveal { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 .pop { animation: pop .35s ease; }
 @keyframes pop { 0% { transform: scale(.92); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+
+/* Sound buttons: dot = one-letter sound, line = two/three-letter sound, arc = split digraph */
+.sounds { display: inline-flex; align-items: flex-end; padding-bottom: .45em; }
+.g { position: relative; display: inline-block; cursor: pointer; border-radius: .12em; }
+.g::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); background: currentColor; }
+.g.single::after { width: .16em; height: .16em; border-radius: 50%; bottom: -.28em; }
+.g.multi::after { width: 80%; height: .09em; border-radius: 99px; bottom: -.24em; }
+.g.whole { cursor: default; }
+.g.whole::after, .g.sv::after { display: none; }
+.split { position: relative; display: inline-block; }
+.split::after {
+  content: ""; position: absolute; left: .18em; right: .18em; bottom: -.38em; height: .34em;
+  border: .08em solid currentColor; border-top: 0; border-radius: 0 0 999px 999px;
+}
+.split > .g.single::after { bottom: -.2em; }
+.g.missed, .split.missed > .sv { color: var(--oops); }
+.g.lit { animation: lit .6s ease; }
+@keyframes lit { 0% { background: transparent; } 30% { background: #fff1b8; } 100% { background: transparent; } }
+
+.sound-count { margin: 14px 0 0; font-weight: 700; color: var(--accent); }
+.prompt { color: var(--muted); margin: 8px auto 0; max-width: 520px; }
+
+/* Sound boxes (Elkonin boxes) */
+.boxes { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 4px 0 0; }
+.box {
+  font: inherit; font-size: clamp(1.6rem, 6vw, 2.4rem); font-weight: 700;
+  min-width: 2.2em; height: 2.2em; padding: 0 .3em; border-radius: 14px;
+  border: 3px solid var(--line); background: #fffdf7; color: var(--ink);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+button.box { cursor: pointer; }
+.box.lit { background: color-mix(in srgb, var(--accent) 22%, white); border-color: var(--accent); }
+.box.ok { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.box.bad { background: var(--oops-soft); border-color: var(--oops); color: var(--oops); }
+.tip-inline { display: block; margin-top: 6px; font-weight: 400; color: var(--ink); }
 
 .timer { height: 12px; background: #efebe1; border-radius: 999px; overflow: hidden; margin: 16px auto 0; max-width: 420px; }
 .timer span { display: block; height: 100%; width: 100%; background: var(--accent); border-radius: 999px; }

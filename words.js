@@ -8,15 +8,31 @@
    • To add a word, put it in quotes with a comma:  "cake",
    • Each list can have up to 15 words (more will still work).
    • "id" must be unique, lower case, no spaces (it appears in the web address).
-   • "tip" is the short hint shown before the pupil starts. It can be left out.
+   • "tip" is the hint shown before starting, and again when a pupil misses
+     the list's main sound. It can be left out.
    • "colour" is the colour used for that stage's cards.
+
+  Sounds (graphemes):
+   The site splits each word into its sounds by itself (cake → c · a–e · k)
+   and draws sound buttons under them. If it gets a word wrong, write the
+   sounds yourself with dashes, and a split digraph as a_e, i_e, o_e, u_e or e_e:
+       "h-a-ve"     "c-oul-d"     "sc-e_e-n"
+   A dash at the end keeps a whole word as one chunk, with no sound buttons:  "one-"
+   "focus" (optional) lists the sounds a list is practising. Without it, the
+   site uses the sounds that appear in most of the list's words.
+
+  Font:
+   Sassoon Primary is used automatically on devices where it's installed.
+   If you buy a Sassoon web-font licence, put the file in a "fonts" folder and
+   set fontFile below, e.g.  fontFile: "fonts/SassoonPrimary.woff2"
 
   After editing on GitHub, press "Commit changes" — the site updates in a minute or two.
 */
 
 window.SITE = {
   title: "Spelling Practice",
-  subtitle: "Look · Say · Cover · Write · Check"
+  subtitle: "Listen · Say the sounds · Spell it",
+  fontFile: ""
 };
 
 window.SPELLING_LISTS = [
@@ -52,11 +68,13 @@ window.SPELLING_LISTS = [
         words: ["chip", "chop", "chat", "chin", "chest", "chick", "rich", "much", "such", "lunch", "bench", "munch", "pinch", "champ", "chug"] },
       { id: "th", title: "th", tip: "Two letters, one sound: t + h makes 'th'. Pop your tongue out!",
         words: ["thin", "thick", "then", "that", "this", "them", "moth", "bath", "path", "with", "cloth", "think", "thud", "maths", "thump"] },
+      { id: "wh", title: "wh", tip: "Two letters, one sound: w + h makes 'w' at the start of these words.",
+        words: ["when", "which", "whip", "what", "whisk", "whiff", "whizz", "wheel", "wheat", "white", "whale", "while", "why", "where", "whisper"] },
       { id: "ck", title: "ck", tip: "After a short vowel, the 'k' sound is usually spelled ck.",
         words: ["back", "duck", "kick", "lock", "neck", "pack", "rock", "sock", "tick", "luck", "deck", "pick", "black", "truck", "stick"] },
-      { id: "ng-nk", title: "ng and nk", tip: "Listen to the end: ring has 'ng', pink has 'nk'.",
+      { id: "ng-nk", title: "ng and nk", tip: "Listen to the end: ring has 'ng', pink has 'n' then 'k'.", focus: ["ng", "n"],
         words: ["ring", "sing", "king", "long", "song", "bang", "hung", "wing", "bank", "pink", "sunk", "wink", "honk", "think", "drink"] },
-      { id: "floss", title: "The floss rule: ff ll ss zz", tip: "After a short vowel, f, l, s and z are often doubled at the end.",
+      { id: "floss", title: "The floss rule: ff ll ss zz", tip: "After a short vowel, f, l, s and z are often doubled at the end.", focus: ["ff", "ll", "ss", "zz"],
         words: ["bell", "doll", "fill", "hill", "well", "cuff", "puff", "off", "miss", "kiss", "boss", "less", "buzz", "fizz", "jazz"] },
       { id: "tch", title: "tch", tip: "After a short vowel, the 'ch' sound at the end is usually spelled tch.",
         words: ["catch", "match", "patch", "fetch", "ditch", "witch", "pitch", "hutch", "notch", "stitch", "sketch", "clutch", "crutch", "scratch", "switch"] }
@@ -75,7 +93,7 @@ window.SPELLING_LISTS = [
       { id: "u-e", title: "u–e (silent e and long u)", tip: "The silent e makes the u say its name: cub → cube.",
         words: ["cube", "tube", "mule", "cute", "huge", "rule", "flute", "tune", "dune", "prune", "use", "fume", "rude", "crude", "mute"] },
       { id: "e-e", title: "e–e (silent e and long e)", tip: "The silent e makes the e say its name. This one is rarer!",
-        words: ["these", "theme", "scene", "complete", "delete", "compete", "extreme", "concrete", "athlete", "stampede"] }
+        words: ["these", "theme", "sc-e_e-n", "complete", "delete", "compete", "extreme", "concrete", "athlete", "stampede"] }
     ]
   },
   {
@@ -89,11 +107,11 @@ window.SPELLING_LISTS = [
       { id: "ai", title: "ai", tip: "ai makes the long 'a' sound, usually in the middle of a word.",
         words: ["rain", "train", "paint", "tail", "snail", "wait", "chain", "brain", "nail", "paid", "main", "sail", "drain", "plain", "rail"] },
       { id: "ay", title: "ay", tip: "ay makes the long 'a' sound, usually at the end of a word.",
-        words: ["day", "play", "stay", "say", "may", "way", "tray", "spray", "clay", "pray", "away", "today", "crayon", "delay", "sway"] },
+        words: ["day", "play", "stay", "say", "may", "way", "tray", "spray", "clay", "pray", "a-w-ay", "today", "crayon", "delay", "sway"] },
       { id: "oa", title: "oa", tip: "oa makes the long 'o' sound, usually in the middle of a word.",
         words: ["boat", "coat", "goat", "road", "soap", "toad", "foam", "loaf", "float", "toast", "coach", "cloak", "groan", "throat", "moan"] },
       { id: "ow-long", title: "ow (as in snow)", tip: "ow can make the long 'o' sound, often at the end of a word.",
-        words: ["snow", "grow", "blow", "show", "slow", "low", "glow", "flow", "crow", "throw", "window", "yellow", "follow", "elbow", "arrow"] },
+        words: ["snow", "grow", "blow", "show", "slow", "low", "glow", "flow", "crow", "throw", "window", "yellow", "follow", "elbow", "a-rr-ow"] },
       { id: "igh", title: "igh", tip: "Three letters, one sound: igh says the long 'i'.",
         words: ["high", "night", "light", "right", "sight", "fight", "might", "bright", "flight", "fright", "tight", "sigh", "thigh", "slight", "delight"] },
       { id: "oo-long", title: "oo (as in moon)", tip: "oo can make a long sound, like in moon.",
@@ -104,11 +122,11 @@ window.SPELLING_LISTS = [
         words: ["out", "loud", "cloud", "shout", "house", "mouse", "round", "found", "sound", "mouth", "south", "ground", "count", "proud", "pound"] },
       { id: "ow-cow", title: "ow (as in cow)", tip: "ow can make the 'ow' sound too — often at the end, or before n or l.",
         words: ["cow", "how", "now", "town", "brown", "clown", "down", "owl", "crown", "flower", "frown", "gown", "howl", "growl", "tower"] },
-      { id: "oi-oy", title: "oi and oy", tip: "oi goes in the middle of a word, oy goes at the end.",
+      { id: "oi-oy", title: "oi and oy", tip: "oi goes in the middle of a word, oy goes at the end.", focus: ["oi", "oy"],
         words: ["coin", "join", "oil", "boil", "soil", "point", "noise", "voice", "spoil", "foil", "boy", "toy", "joy", "enjoy", "annoy"] },
-      { id: "aw-au", title: "aw and au", tip: "aw and au make the same sound. aw is often at the end.",
-        words: ["saw", "paw", "draw", "straw", "claw", "crawl", "yawn", "dawn", "lawn", "jaw", "haul", "sauce", "author", "autumn", "fault"] },
-      { id: "ew-ue", title: "ew and ue", tip: "ew and ue both make the long 'oo' or 'yoo' sound.",
+      { id: "aw-au", title: "aw and au", tip: "aw and au make the same sound. aw is often at the end.", focus: ["aw", "au"],
+        words: ["saw", "paw", "draw", "straw", "claw", "crawl", "yawn", "dawn", "lawn", "jaw", "haul", "sauce", "author", "au-t-u-mn", "fault"] },
+      { id: "ew-ue", title: "ew and ue", tip: "ew and ue both make the long 'oo' or 'yoo' sound.", focus: ["ew", "ue"],
         words: ["new", "few", "grew", "chew", "blew", "flew", "drew", "crew", "stew", "screw", "blue", "glue", "clue", "true", "rescue"] }
     ]
   },
@@ -120,11 +138,11 @@ window.SPELLING_LISTS = [
         words: ["car", "star", "park", "farm", "card", "hard", "dark", "shark", "start", "garden", "jar", "arm", "cart", "smart", "scarf"] },
       { id: "or", title: "or", tip: "o + r work together to make the 'or' sound.",
         words: ["for", "fork", "corn", "horse", "short", "sport", "storm", "born", "horn", "torch", "north", "morning", "cord", "snort", "thorn"] },
-      { id: "er-ir-ur", title: "er, ir and ur", tip: "er, ir and ur can sound alike. Look carefully at which one each word uses.",
+      { id: "er-ir-ur", title: "er, ir and ur", tip: "er, ir and ur can sound alike. Look carefully at which one each word uses.", focus: ["er", "ir", "ur"],
         words: ["her", "term", "fern", "herd", "bird", "girl", "first", "shirt", "third", "skirt", "burn", "fur", "hurt", "turn", "church"] },
-      { id: "air-are", title: "air and are", tip: "air and are make the same sound. Look carefully!",
+      { id: "air-are", title: "air and are", tip: "air and are make the same sound. Look carefully!", focus: ["air", "are"],
         words: ["hair", "chair", "fair", "pair", "stair", "care", "share", "stare", "scare", "square", "dare", "spare", "bare", "flare", "glare"] },
-      { id: "ear-eer", title: "ear and eer", tip: "ear and eer make the same sound. Look carefully!",
+      { id: "ear-eer", title: "ear and eer", tip: "ear and eer make the same sound. Look carefully!", focus: ["ear", "eer"],
         words: ["ear", "hear", "near", "fear", "year", "clear", "beard", "dear", "gear", "spear", "deer", "cheer", "steer", "peer", "sneer"] }
     ]
   },
@@ -133,21 +151,21 @@ window.SPELLING_LISTS = [
     colour: "#15803d",
     lists: [
       { id: "ing", title: "Adding -ing", tip: "Keep the whole word, then add ing.",
-        words: ["jumping", "singing", "playing", "reading", "eating", "sleeping", "helping", "looking", "going", "walking", "fishing", "drinking", "kicking", "standing", "melting"] },
+        words: ["jumping", "singing", "playing", "reading", "eating", "sleeping", "helping", "looking", "g-o-i-ng", "w-al-k-i-ng", "fishing", "drinking", "kicking", "standing", "melting"] },
       { id: "s-es", title: "Plurals: -s and -es", tip: "Add es after s, x, sh and ch. Add s to everything else.",
         words: ["cats", "dogs", "hats", "beds", "boxes", "foxes", "dishes", "wishes", "buses", "brushes", "churches", "benches", "glasses", "watches", "kisses"] },
       { id: "y-ee", title: "y at the end (as in happy)", tip: "At the end of a longer word, y often makes the 'ee' sound.",
         words: ["happy", "funny", "sunny", "puppy", "bunny", "jelly", "silly", "windy", "party", "lucky", "messy", "muddy", "penny", "hobby", "teddy"] },
-      { id: "le", title: "-le endings", tip: "Lots of words end with le — the e is silent.",
-        words: ["table", "apple", "bottle", "little", "middle", "puddle", "candle", "jungle", "purple", "simple", "giggle", "bubble", "pebble", "handle", "tickle"] },
-      { id: "soft-c-g", title: "Soft c and soft g", tip: "Before e, i or y, c usually says 's' and g often says 'j'.",
+      { id: "le", title: "-le endings", tip: "Lots of words end with le.",
+        words: ["table", "apple", "bottle", "little", "middle", "puddle", "candle", "j-u-n-g-le", "purple", "simple", "giggle", "bubble", "pebble", "handle", "tickle"] },
+      { id: "soft-c-g", title: "Soft c and soft g", tip: "Before e, i or y, c usually says 's' and g often says 'j'.", focus: ["c", "g", "ce", "ge"],
         words: ["city", "cent", "ice", "rice", "face", "race", "place", "mice", "gem", "giant", "page", "cage", "huge", "stage", "large"] },
-      { id: "kn-wr", title: "Silent letters: kn and wr", tip: "The k in kn and the w in wr are silent.",
+      { id: "kn-wr", title: "Silent letters: kn and wr", tip: "The k in kn and the w in wr are silent.", focus: ["kn", "wr"],
         words: ["knee", "knit", "knock", "knot", "know", "knife", "knight", "kneel", "write", "wrap", "wrist", "wrong", "wren", "wreck", "wriggle"] },
       { id: "ph", title: "ph", tip: "p + h makes the 'f' sound.",
         words: ["phone", "photo", "graph", "dolphin", "elephant", "alphabet", "phonics", "trophy", "sphere", "nephew", "orphan", "microphone"] },
-      { id: "tricky", title: "Tricky words", tip: "These words don't follow the rules — we just have to learn them!",
-        words: ["the", "said", "was", "they", "have", "come", "some", "one", "do", "you", "were", "there", "could", "would", "people"] }
+      { id: "tricky", title: "Tricky words", tip: "These words have a tricky part that doesn't follow the usual rules.", focus: [],
+        words: ["the", "said", "was", "th-ey", "h-a-ve", "c-o-me", "s-o-me", "one-", "do", "you", "were", "there", "c-oul-d", "w-oul-d", "p-eo-p-le"] }
     ]
   }
 ];
