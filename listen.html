@@ -34,6 +34,9 @@
     .bad .note { display: block; }
     .note input { width: 100%; font: inherit; padding: 4px 8px; border: 2px solid var(--line); border-radius: 8px; }
     .hidden { display: none !important; }
+    .letter-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .letter-row .play { min-width: 3.6em; }
+    #letterNote { font: inherit; padding: 3px 8px; border: 2px solid var(--line); border-radius: 8px; width: min(320px, 100%); }
     @media (max-width: 640px) {
       .rec { grid-template-columns: 1fr auto auto; }
       .sentence-text { grid-column: 1 / -1; }
@@ -134,11 +137,34 @@
       function draw() {
         const onlyBad = $("onlyBad").checked;
         const hideHeard = $("hideHeard").checked;
-        $("lists").innerHTML = blocks.map(b => {
+        const letters = ALBA.letters ? `
+          <section class="list-block"><h2>Letter names (used when a word is spelled out)</h2>
+            <div class="letter-row">${"abcdefghijklmnopqrstuvwxyz".split("").map(c =>
+              `<button class="play letter${state.heard[`l:${c}`] ? " played" : ""}${state.bad[`letter ${c}`] ? " bad-letter" : ""}" data-letter="${c}">▶ ${c.toUpperCase()}</button>`).join("")}</div>
+            <p class="hint">If a letter sounds wrong, note it in the box: <input type="text" id="letterNote" maxlength="80" placeholder="e.g. A sounds like eye"
+              value="${esc((state.bad["letter names"] || {}).note || "")}"></p>
+          </section>` : "";
+        $("lists").innerHTML = (onlyBad || hideHeard ? "" : letters) + blocks.map(b => {
           const items = b.words.filter(i => (!onlyBad || state.bad[i.w]) &&
             (!hideHeard || !(state.heard[`w:${i.w}`] && (!SENTENCES[i.w] || state.heard[`s:${i.w}`]))));
           return items.length ? `<section class="list-block"><h2>${esc(b.title)}</h2>${items.map(row).join("")}</section>` : "";
         }).join("") || `<p class="hint">Nothing to show.</p>`;
+        document.querySelectorAll("[data-letter]").forEach(btn => {
+          btn.onclick = () => {
+            player.src = `audio/letters/${btn.dataset.letter}.mp3`;
+            player.play().catch(() => {});
+            btn.classList.add("played");
+            state.heard[`l:${btn.dataset.letter}`] = 1;
+            save();
+          };
+        });
+        const letterNote = $("letterNote");
+        if (letterNote) letterNote.oninput = e => {
+          if (e.target.value.trim()) state.bad["letter names"] = { note: e.target.value.trim() };
+          else delete state.bad["letter names"];
+          save();
+          tally();
+        };
         document.querySelectorAll(".rec").forEach(el => {
           const w = el.dataset.w;
           el.querySelectorAll(".play").forEach(btn => {

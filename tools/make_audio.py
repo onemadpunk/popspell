@@ -35,12 +35,13 @@ WORD_FIXES = {
 APPROVED = {"words/shelf", "words/ship", "words/shop", "words/shed", "words/sheep", "words/shout", "words/fish",
             "words/crash"}
 
-# Letter names, written so the voice says the name rather than the sound
+# Letter names as exact sounds (phonemes), because spellings get misread:
+# "ay" was said as "eye", and "eff" as "ee-eff-eff"
 LETTERS = {
-    "a": "ay", "b": "bee", "c": "see", "d": "dee", "e": "ee", "f": "eff", "g": "jee",
-    "h": "aitch", "i": "eye", "j": "jay", "k": "kay", "l": "ell", "m": "em", "n": "en",
-    "o": "oh", "p": "pee", "q": "cue", "r": "ar", "s": "ess", "t": "tee", "u": "you",
-    "v": "vee", "w": "double you", "x": "ex", "y": "why", "z": "zed",
+    "a": "ˈeɪ", "b": "bˈiː", "c": "sˈiː", "d": "dˈiː", "e": "ˈiː", "f": "ˈɛf", "g": "dʒˈiː",
+    "h": "ˈeɪtʃ", "i": "ˈaɪ", "j": "dʒˈeɪ", "k": "kˈeɪ", "l": "ˈɛl", "m": "ˈɛm", "n": "ˈɛn",
+    "o": "ˈəʊ", "p": "pˈiː", "q": "kjˈuː", "r": "ˈɑː", "s": "ˈɛs", "t": "tˈiː", "u": "jˈuː",
+    "v": "vˈiː", "w": "dˈʌbəljuː", "x": "ˈɛks", "y": "wˈaɪ", "z": "zˈɛd",
 }
 
 # Keep in step with PHRASES in app.js
@@ -105,8 +106,8 @@ def plan():
         jobs[f"words/{w}"] = (text, {**STYLE, **fix})
     for w, sentence in list_sentences(ROOT / "sentences.js").items():
         jobs[f"sentences/{w}"] = (sentence, STYLE)
-    for c, name in LETTERS.items():
-        jobs[f"letters/{c}"] = (f"{name}.", STYLE)
+    for c, sounds in LETTERS.items():
+        jobs[f"letters/{c}"] = (f"[[ {sounds} ]]", STYLE)
     for key, text in PHRASES.items():
         jobs[f"phrases/{key}"] = (text, STYLE)
     return jobs
