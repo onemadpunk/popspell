@@ -15,6 +15,7 @@
   <header class="topbar">
     <a href="#/" class="brand"><span aria-hidden="true">✏️</span> <span id="siteTitle">Spelling Practice</span></a>
     <nav class="topnav">
+      <a href="#/sounds" class="navlink">⭐ My sounds</a>
       <a href="#/make" class="navlink">Make a list</a>
       <button type="button" class="navlink" id="settingsBtn">⚙️ Settings</button>
     </nav>
@@ -60,6 +61,8 @@
 
       <label class="check"><input type="checkbox" id="setShuffle"> Mix up the order of the words</label>
       <label class="check"><input type="checkbox" id="setBoxes"> Show sound boxes when spelling</label>
+      <label class="check"><input type="checkbox" id="setSentences"> Say each word in a sentence</label>
+      <label class="check"><input type="checkbox" id="setChecks"> Finish lists with new-word challenges</label>
       <label class="check"><input type="checkbox" id="setSpell"> Spell out the letters, sound by sound, when a word is missed</label>
       <label class="check"><input type="checkbox" id="setSounds"> Play sounds for right and wrong answers</label>
 
@@ -75,6 +78,7 @@
   </footer>
 
   <script src="words.js"></script>
+  <script src="sentences.js"></script>
   <script src="audio/index.js"></script>
   <script src="app.js"></script>
 </body>

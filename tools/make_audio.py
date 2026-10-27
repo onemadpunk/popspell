@@ -64,12 +64,20 @@ def spelling(entry):
 def list_words(words_js):
     text = re.sub(r"/\*.*?\*/", "", words_js.read_text(encoding="utf-8"), flags=re.S)  # skip the help comment
     found = set()
-    for block in re.findall(r"words:\s*\[(.*?)\]", text, flags=re.S):
+    for block in re.findall(r"(?:words|check):\s*\[(.*?)\]", text, flags=re.S):
         for entry in re.findall(r'"([^"]+)"', block):
             word = spelling(entry)
             if re.fullmatch(r"[a-z]+", word):
                 found.add(word)
     return sorted(found)
+
+
+def list_sentences(sentences_js):
+    """{word: sentence} from sentences.js. A sentence's recording is redone if its text changes."""
+    if not sentences_js.exists():
+        return {}
+    text = re.sub(r"/\*.*?\*/", "", sentences_js.read_text(encoding="utf-8"), flags=re.S)
+    return {w.lower(): s for w, s in re.findall(r'^\s*([A-Za-z]+):\s*"([^"]*)"', text, flags=re.M)}
 
 
 def load_voice(model):
@@ -115,12 +123,25 @@ def main():
     jobs += [(AUDIO / "phrases" / f"{key}.mp3", text) for key, text in PHRASES.items()]
     todo = [(path, text) for path, text in jobs if args.force or not path.exists()]
 
+    # Sentences can be edited, so remember what each recording says and redo changed ones
+    said_file = AUDIO / "sentences" / "said.json"
+    said = json.loads(said_file.read_text(encoding="utf-8")) if said_file.exists() else {}
+    sentences = list_sentences(ROOT / "sentences.js")
+    for word, sentence in sorted(sentences.items()):
+        path = AUDIO / "sentences" / f"{word}.mp3"
+        if args.force or not path.exists() or said.get(word) != sentence:
+            todo.append((path, sentence))
+            said[word] = sentence
+
     if todo:
         synth = load_voice(args.model)
         for n, (path, text) in enumerate(todo, 1):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(to_mp3(*synth(text)))
             print(f"[{n}/{len(todo)}] {path.relative_to(ROOT)}")
+    if sentences:
+        said_file.parent.mkdir(parents=True, exist_ok=True)
+        said_file.write_text(json.dumps(said, indent=0, sort_keys=True), encoding="utf-8")
 
     # Tell the website which recordings exist, so it never waits on a missing file
     stems = lambda folder: sorted(p.stem for p in (AUDIO / folder).glob("*.mp3"))
@@ -129,6 +150,7 @@ def main():
         "words": stems("words"),
         "letters": len(stems("letters")) == len(LETTERS),
         "phrases": stems("phrases"),
+        "sentences": stems("sentences"),
     }
     AUDIO.mkdir(exist_ok=True)
     (AUDIO / "index.js").write_text(

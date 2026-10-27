@@ -4,7 +4,7 @@ name: Make alba recordings
 
 on:
   push:
-    paths: ["words.js", "tools/make_audio.py"]
+    paths: ["words.js", "sentences.js", "tools/make_audio.py"]
   workflow_dispatch:
 
 permissions:

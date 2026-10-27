@@ -6,6 +6,7 @@
 
   const SITE = Object.assign({ title: "Spelling Practice", subtitle: "Listen · Say the sounds · Spell it" }, window.SITE);
   const STAGES = window.SPELLING_LISTS || [];
+  const SENTENCES = window.SENTENCES || {};
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -69,7 +70,11 @@
     const spelling = chunks.map(ch => ch.text).join("");
     const charG = [];
     chunks.forEach(ch => { for (let k = 0; k < ch.text.length; k++) charG.push(ch.g); });
-    return { spelling, tokens, chunks, charG, whole: hasDashes && tokens.length === 1 };
+    return {
+      entry: raw, spelling, tokens, chunks, charG,
+      whole: hasDashes && tokens.length === 1,
+      sentence: SENTENCES[spelling.toLowerCase()] || ""
+    };
   }
 
   const label = tok => tok.replace("_", "–");
@@ -142,7 +147,11 @@
   // Every list by id, so #/list/<id> can find it
   const LISTS = {};
   const prepare = (list, extras) => {
-    const ready = Object.assign({}, extras, list, { items: list.words.map(analyse) });
+    const ready = Object.assign({}, extras, list, {
+      items: list.words.map(analyse),
+      // New words with the same pattern, never shown first: can the pupil use the rule?
+      checks: (list.check || []).map(w => Object.assign(analyse(w), { challenge: true }))
+    });
     ready.focusSet = listFocus(ready);
     return ready;
   };
@@ -152,7 +161,8 @@
 
   /* ---------- Settings (kept in this browser only) ---------- */
 
-  const DEFAULTS = { lookSeconds: 8, rate: 0.85, voice: "", tries: 3, shuffle: true, spellOut: true, sounds: true, boxes: true };
+  const DEFAULTS = { lookSeconds: 8, rate: 0.85, voice: "", tries: 3, shuffle: true, spellOut: true, sounds: true, boxes: true,
+    sentences: true, checks: true };
   const STORE_KEY = "spelling-settings-v2";
   const settings = (() => {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(STORE_KEY))); }
@@ -206,9 +216,10 @@
 
   /* ---------- Alba: the recorded Scottish voice (made by tools/make_audio.py) ---------- */
 
-  const ALBA = Object.assign({ words: [], letters: false, phrases: [] }, window.ALBA_AUDIO);
+  const ALBA = Object.assign({ words: [], letters: false, phrases: [], sentences: [] }, window.ALBA_AUDIO);
   const albaWords = new Set(ALBA.words);
   const albaPhrases = new Set(ALBA.phrases);
+  const albaSentences = new Set(ALBA.sentences);
   const ALBA_ID = "alba";
   const useAlba = () => albaWords.size > 0 && (settings.voice === ALBA_ID || !settings.voice);
 
@@ -267,6 +278,27 @@
     return orSpeak(steps, sos(item), settings.rate * 0.9);
   }
 
+  const sentenceClip = w => `audio/sentences/${encodeURIComponent(w.toLowerCase())}.mp3`;
+  const hasSentenceClip = item => hasWordClip(item.spelling) && albaSentences.has(item.spelling.toLowerCase());
+  const wantSentence = item => settings.sentences && !!item.sentence;
+
+  // Like a spelling test: the word, the word in its sentence, then the word again
+  function sayWordInSentence(item) {
+    const w = item.spelling;
+    if (!wantSentence(item)) return sayWord(w);
+    const text = `${w}. ${item.sentence} ${w}.`;
+    return hasSentenceClip(item) ? orSpeak([wordClip(w), 600, sentenceClip(w), 600, wordClip(w)], text) : speak(text);
+  }
+  const saySentence = item => (hasSentenceClip(item) ? orSpeak([sentenceClip(item.spelling)], item.sentence) : speak(item.sentence));
+
+  // The sentence on screen, with the word picked out (look) or left blank (spell)
+  function sentenceHTML(item, blank) {
+    if (!wantSentence(item)) return "";
+    const re = new RegExp(`\\b${item.spelling}\\b`, "gi");
+    const html = esc(item.sentence).replace(re, m => (blank ? `<span class="blank" aria-label="blank">______</span>` : `<b>${m}</b>`));
+    return `<p class="sentence">${html}</p>`;
+  }
+
   // Keep in step with PHRASES in tools/make_audio.py
   const PHRASES = {
     allRight: ["all-right", "Fantastic! You spelled every word."],
@@ -322,12 +354,81 @@
         word: r.item.spelling,
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
+        challenge: !!r.item.challenge,
         triesUsed: r.correct ? r.wrong.length + 1 : null,
         wrong: r.wrong,
         missed: r.missed.map(label)
       }))
     };
     return post(payload).then(() => true, () => { writeOutbox(readOutbox().concat([payload])); return false; });
+  }
+
+  /* ---------- Each pupil's progress: spaced review and "My sounds" (kept on this device) ---------- */
+
+  const PROGRESS_KEY = "spelling-progress-v1";
+  // Days until a word comes back, by box: missed words return tomorrow, secure ones after a month
+  const INTERVALS = [0, 1, 3, 7, 14, 30];
+  const REVIEW_SIZE = 10;
+
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const addDays = (key, n) => { const [y, m, d] = key.split("-").map(Number); return dayKey(new Date(y, m - 1, d + n)); };
+  const pupilKey = () => (getPupil() || "this device").toLowerCase();
+
+  const readAllProgress = () => { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; } };
+  const loadProgress = () => Object.assign({ words: {}, sounds: {} }, readAllProgress()[pupilKey()]);
+  function saveProgress(prog) {
+    const all = readAllProgress();
+    all[pupilKey()] = prog;
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(all)); } catch { /* full or private mode */ }
+  }
+
+  // A sound is secure once it's been spelled right first time at least 4 times, on 2+ different
+  // days, and the last 3 times in a row — so one lucky day doesn't count
+  function soundLevel(s) {
+    if (!s) return "new";
+    const recent = s.recent || [];
+    if (s.right >= 4 && (s.days || []).length >= 2 && recent.length >= 3 && recent.slice(-3).every(Boolean)) return "secure";
+    return recent.slice(-2).includes(false) ? "tricky" : "learning";
+  }
+  const secureSounds = prog => new Set(Object.keys(prog.sounds).filter(t => soundLevel(prog.sounds[t]) === "secure"));
+
+  // Called once per word with how the pupil did on their first try
+  function recordProgress(item, correct, wrongCount, firstMissed) {
+    const prog = loadProgress();
+    const today = dayKey();
+    const key = item.spelling.toLowerCase();
+    const firstTry = correct && wrongCount === 0;
+    const w = prog.words[key] || { entry: item.entry, box: 0, right: 0, missed: 0 };
+    w.box = firstTry ? (w.box === 0 ? 2 : Math.min(w.box + 1, INTERVALS.length - 1)) : 1;
+    w.due = addDays(today, INTERVALS[w.box]);
+    w.entry = item.entry;
+    w.last = today;
+    if (firstTry) w.right++; else w.missed++;
+    prog.words[key] = w;
+
+    if (!item.whole) {
+      const missed = new Set(firstMissed);
+      new Set(item.tokens).forEach(tok => {
+        const s = prog.sounds[tok] || { right: 0, wrong: 0, days: [], recent: [], words: [] };
+        const ok = !missed.has(tok);
+        if (ok) s.right++; else s.wrong++;
+        s.recent = s.recent.concat(ok).slice(-5);
+        if (ok && !s.days.includes(today)) s.days = s.days.concat(today).slice(-10);
+        s.words = [key].concat(s.words.filter(x => x !== key)).slice(0, 8);
+        prog.sounds[tok] = s;
+      });
+    }
+    saveProgress(prog);
+  }
+
+  // Words due for review today, most overdue first
+  function dueItems(prog = loadProgress()) {
+    const today = dayKey();
+    return Object.values(prog.words)
+      .filter(w => w.due <= today)
+      .sort((a, b) => (a.due < b.due ? -1 : a.due > b.due ? 1 : a.box - b.box))
+      .slice(0, REVIEW_SIZE)
+      .map(w => analyse(w.entry));
   }
 
   /* ---------- Little sounds ---------- */
@@ -430,8 +531,81 @@
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
     else if (parts[0] === "make") showMake();
+    else if (parts[0] === "sounds") showSounds();
+    else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
+    else if (parts[0] === "sound" && soundList(decodeURIComponent(parts[1] || ""))) showStart(soundList(decodeURIComponent(parts[1])));
     else showHome();
     window.scrollTo(0, 0);
+  }
+
+  // Today's review: words from any list that are due to come back
+  const reviewList = () => ({
+    id: "review", title: "Review", stage: "Words to practise again", accent: "#0f766e",
+    tip: "These words are from earlier lessons. Let's see if you remember them!",
+    items: dueItems(), checks: [], focusSet: new Set()
+  });
+
+  // Practise one sound: the pupil's own words with it first, then others from the lists
+  function soundList(tok) {
+    if (!tok || !SOUND_ORDER.includes(tok)) return null;
+    const mine = new Set((loadProgress().sounds[tok] || {}).words || []);
+    const seen = new Set();
+    const all = [];
+    STAGES.forEach(st => st.lists.forEach(l => LISTS[l.id].items.forEach(it => {
+      const key = it.spelling.toLowerCase();
+      if (!it.whole && it.tokens.includes(tok) && !seen.has(key)) { seen.add(key); all.push(it); }
+    })));
+    const pick = all.filter(it => mine.has(it.spelling.toLowerCase())).concat(shuffle(all.filter(it => !mine.has(it.spelling.toLowerCase()))));
+    const home = Object.values(LISTS).find(l => l.focusSet.has(tok));
+    return {
+      id: `sound-${tok}`, title: `Practise ${label(tok)}`, stage: "My sounds", accent: home?.accent || "#0f766e",
+      tip: home?.tip || "", items: pick.slice(0, REVIEW_SIZE), checks: [], focusSet: new Set([tok])
+    };
+  }
+
+  // Every grapheme used in the lists, in teaching order
+  const SOUND_ORDER = (() => {
+    const seen = [];
+    STAGES.forEach(st => st.lists.forEach(l => LISTS[l.id].items.forEach(it => {
+      if (!it.whole) it.tokens.forEach(t => { if (!seen.includes(t)) seen.push(t); });
+    })));
+    return seen;
+  })();
+
+  // "What's your name?" or "Spelling as Ava · Not Ava?" — the name is remembered on this device
+  function mountPupil(box, { onChange, onEnter, lead = "Spelling as" } = {}) {
+    const name = getPupil();
+    box.innerHTML = name
+      ? `<p>${esc(lead)} <b>${esc(name)}</b> · <button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>`
+      : `<label class="field pupil-field">What's your name?
+           <input class="pupil-name" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
+         </label>
+         <p class="hint pupil-hint"></p>`;
+    if (name) {
+      box.querySelector(".not-me").onclick = () => {
+        setPupil("");
+        if (onChange) onChange();
+        else { mountPupil(box, { onChange, onEnter, lead }); box.querySelector(".pupil-name").focus(); }
+      };
+    } else {
+      box.querySelector(".pupil-name").onkeydown = e => { if (e.key === "Enter" && onEnter) onEnter(); };
+    }
+  }
+
+  // Saves the typed name; false (with a nudge) if there isn't one yet
+  function takePupilName(box) {
+    if (getPupil()) return true;
+    const input = box.querySelector(".pupil-name");
+    const name = cleanName(input.value);
+    if (!name) {
+      box.querySelector(".pupil-hint").textContent = REPORTING
+        ? "Type your name first, so your teacher can see how you did."
+        : "Type your name first, so your stars and sounds are saved.";
+      input.focus();
+      return false;
+    }
+    setPupil(name);
+    return true;
   }
   window.addEventListener("hashchange", route);
   window.addEventListener("pagehide", () => { if (session) sendReport(session, false); });
@@ -451,6 +625,10 @@
           <li><span class="step-icon" aria-hidden="true">✏️</span><span><b>Spell</b> it sound by sound</span></li>
         </ol>
       </section>
+      <section class="me">
+        <div class="pupil" id="homePupil"></div>
+        <div class="me-cards" id="meCards"></div>
+      </section>
       ${STAGES.map(stage => `
         <section class="stage" style="--accent:${esc(stage.colour)}">
           <h2>${esc(stage.stage)}</h2>
@@ -463,6 +641,76 @@
               </a>`).join("")}
           </div>
         </section>`).join("")}`;
+
+    // The pupil's own corner: review words due today and their sound collection
+    const box = $("#homePupil");
+    const save = () => { if (takePupilName(box)) showHome(); };
+    mountPupil(box, { lead: "Hello,", onChange: showHome, onEnter: save });
+    if (!getPupil()) {
+      $("#meCards").innerHTML = `<button class="btn primary" id="saveName">Save my name</button>`;
+      $("#saveName").onclick = save;
+      return;
+    }
+    const prog = loadProgress();
+    const due = dueItems(prog).length;
+    const secure = secureSounds(prog).size;
+    $("#meCards").innerHTML = `
+      ${due
+        ? `<a class="me-card review" href="#/review"><span class="me-icon" aria-hidden="true">🔁</span><span><b>${plural(due, "word", "words")}</b> to practise again today</span></a>`
+        : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
+      <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>`;
+  }
+
+  /* ---------- My sounds ---------- */
+
+  function soundCard(tok, s) {
+    const level = soundLevel(s);
+    const dots = Math.min(4, s ? s.right : 0);
+    const badge = level === "secure" ? "⭐"
+      : level === "new" ? ""
+      : `<span class="dots" aria-hidden="true">${"●".repeat(dots)}<span class="dim">${"●".repeat(4 - dots)}</span></span>`;
+    const words = { secure: "secure", learning: "learning", tricky: "needs practice", new: "not tried yet" }[level];
+    return `<button type="button" class="sound-card ${level}" data-tok="${esc(tok)}" aria-label="${esc(label(tok))}: ${words}">
+      <span class="sc-label">${esc(label(tok))}</span><span class="sc-badge">${badge}</span></button>`;
+  }
+
+  function showSounds() {
+    document.title = `My sounds · ${SITE.title}`;
+    const name = getPupil();
+    const prog = loadProgress();
+    const levels = SOUND_ORDER.map(t => soundLevel(prog.sounds[t]));
+    const count = lv => levels.filter(x => x === lv).length;
+    const groups = [
+      ["Single letters", t => /^[a-z]$/.test(t)],
+      ["Two or three letters, one sound", t => t.length > 1 && !t.includes("_")],
+      ["Split digraphs", t => t.includes("_")]
+    ];
+    app.innerHTML = `
+      <section class="panel sounds-page">
+        <a class="back" href="#/">← All lists</a>
+        <h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1>
+        <p class="meta">⭐ ${count("secure")} secure · 🌱 ${count("learning")} learning · 🔶 ${count("tricky")} to practise</p>
+        <p class="hint">Spell a sound right first time on two different days to win its star. Tap a sound to hear it and practise it.</p>
+        <div class="sound-detail" id="soundDetail" hidden></div>
+        ${groups.map(([title, test]) => `
+          <h2>${title}</h2>
+          <div class="sound-grid">${SOUND_ORDER.filter(test).map(t => soundCard(t, prog.sounds[t])).join("")}</div>`).join("")}
+      </section>`;
+
+    app.querySelectorAll(".sound-card").forEach(card => {
+      card.onclick = () => {
+        const tok = card.dataset.tok;
+        const s = prog.sounds[tok];
+        sayLetters(tok.replace("_", ""));
+        const detail = $("#soundDetail");
+        detail.hidden = false;
+        detail.innerHTML = `
+          <span class="chip big">${esc(label(tok))}</span>
+          <span>${s && s.words.length ? `Your words: <b>${esc(s.words.join(", "))}</b>` : "You haven't spelled this sound yet."}</span>
+          <a class="btn primary" href="#/sound/${encodeURIComponent(tok)}">Practise ${esc(label(tok))} →</a>`;
+        detail.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      };
+    });
   }
 
   /* ---------- Start screen ---------- */
@@ -475,8 +723,8 @@
         <p class="eyebrow">${esc(list.stage || "")}</p>
         <h1>${esc(list.title)}</h1>
         ${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
-        <p class="meta">${plural(list.items.length, "word", "words")} · ${plural(settings.tries, "try", "tries")} for each word</p>
-        ${REPORTING ? `<div class="pupil" id="pupilBox"></div>` : ""}
+        <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>
+        <div class="pupil" id="pupilBox"></div>
         <button class="btn big primary" id="go">▶ Start</button>
         ${synth ? "" : `<p class="warn">This browser can't read words aloud. Please try Chrome, Edge or Safari.</p>`}
         <details class="teacher">
@@ -486,49 +734,30 @@
       </section>`;
     const go = $("#go");
 
-    // With reports switched on, pupils say who they are first (remembered on this device)
-    const drawPupil = () => {
-      const box = $("#pupilBox");
-      if (!box) return;
-      const name = getPupil();
-      box.innerHTML = name
-        ? `<p>Spelling as <b>${esc(name)}</b> · <button type="button" class="linklike" id="notMe">Not ${esc(name)}?</button></p>`
-        : `<label class="field pupil-field">What's your name?
-             <input id="pupilName" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
-           </label>
-           <p class="hint" id="pupilHint"></p>`;
-      if (name) {
-        $("#notMe").onclick = () => { setPupil(""); drawPupil(); $("#pupilName").focus(); };
-        go.focus();
-      } else {
-        const input = $("#pupilName");
-        input.onkeydown = e => { if (e.key === "Enter") go.click(); };
-        input.focus();
-      }
-    };
-    drawPupil();
-    if (!REPORTING) go.focus();
+    // Pupils say who they are first, so their progress (and any report) is theirs
+    const box = $("#pupilBox");
+    mountPupil(box, { onEnter: () => go.click() });
+    (getPupil() ? go : box.querySelector(".pupil-name")).focus();
 
     go.onclick = () => {
-      if (REPORTING && !getPupil()) {
-        const name = cleanName($("#pupilName").value);
-        if (!name) {
-          $("#pupilHint").textContent = "Type your name first, so your teacher can see how you did.";
-          $("#pupilName").focus();
-          return;
-        }
-        setPupil(name);
-      }
-      startPractice(list, list.items);
+      if (!takePupilName(box)) return;
+      startPractice(list, list.items, checksFor(list));
     };
   }
+
+  const checksFor = list => (settings.checks ? list.checks || [] : []);
 
   /* ---------- Practice ---------- */
 
   let session = null;
 
-  function startPractice(list, items) {
-    session = { list, items: settings.shuffle ? shuffle(items) : items.slice(), i: 0, results: [], pupil: getPupil(), sent: false };
+  // New-word challenges always come last, after the practised words
+  function startPractice(list, items, checks = []) {
+    session = {
+      list, i: 0, results: [], pupil: getPupil(), sent: false,
+      items: (settings.shuffle ? shuffle(items) : items.slice()).concat(checks),
+      secureBefore: secureSounds(loadProgress())
+    };
     showLook();
   }
 
@@ -574,8 +803,9 @@
 
   // 1. LISTEN, SAY & SEE: the word with its sound buttons, read aloud, then it hides
   function showLook() {
-    const my = newScreen();
     const item = session.items[session.i];
+    if (item.challenge) return showWrite(); // new words are heard, never seen first
+    const my = newScreen();
     const timed = settings.lookSeconds > 0;
     const sounds = item.whole ? "" : `<p class="sound-count">${plural(item.tokens.length, "sound", "sounds")}</p>`;
     app.innerHTML = `
@@ -584,6 +814,7 @@
         <p class="phase"><span class="dot look"></span>Listen and look</p>
         <div class="word-box"><span class="word sounds" lang="en-GB">${wordHTML(item)}</span></div>
         ${sounds}
+        ${sentenceHTML(item, false)}
         <p class="prompt">${item.whole ? "This is a tricky word. Say it, then look closely at the letters." : "Say the word. Then touch each sound button and say the sound."}</p>
         ${timed ? `<div class="timer" aria-hidden="true"><span id="timerFill"></span></div>` : ""}
         <div class="row center">
@@ -605,7 +836,7 @@
       fill.style.width = "0%";
       later(() => my === phase && showWrite(), settings.lookSeconds * 1000);
     };
-    const say = () => sayWord(item.spelling).then(runTimer);
+    const say = () => sayWordInSentence(item).then(runTimer);
     $("#hear").onclick = say;
     $("#ready").onclick = () => showWrite();
     wireSoundButtons($(".word"), item, runTimer); // touching the sounds gives them more time
@@ -632,7 +863,11 @@
     app.innerHTML = `
       <section class="panel practice" style="--accent:${esc(session.list.accent)}">
         ${progressHTML()}
-        <p class="phase"><span class="dot write"></span>Now spell it</p>
+        ${item.challenge
+          ? `<p class="phase challenge"><span aria-hidden="true">🔍</span> New word! You haven't seen this one</p>
+             <p class="prompt">Listen carefully, say the sounds, and use what you've learned.</p>`
+          : `<p class="phase"><span class="dot write"></span>Now spell it</p>`}
+        ${sentenceHTML(item, true)}
         ${showBoxes
           ? `<div class="boxes" id="boxes">${boxesHTML(item)}</div>
              <p class="prompt" id="prompt">Say each sound and tap a box. Then write it, saying each sound as you type.</p>`
@@ -646,7 +881,10 @@
         <div class="tries" id="tries"></div>
         <p class="feedback" id="feedback" aria-live="polite"></p>
         <ul class="attempts" id="attempts"></ul>
-        <div class="row center"><button class="btn" id="hear" type="button">🔊 Hear it again</button></div>
+        <div class="row center">
+          <button class="btn" id="hear" type="button">🔊 Hear the word</button>
+          ${wantSentence(item) ? `<button class="btn" id="hearSentence" type="button">💬 Hear the sentence</button>` : ""}
+        </div>
       </section>`;
     wireStop();
 
@@ -666,6 +904,8 @@
     input.focus();
 
     $("#hear").onclick = () => { sayWord(item.spelling); input.focus(); };
+    if ($("#hearSentence")) $("#hearSentence").onclick = () => { saySentence(item); input.focus(); };
+    if (item.challenge) sayWordInSentence(item);
 
     $("#spellForm").onsubmit = e => {
       e.preventDefault();
@@ -714,6 +954,7 @@
     const item = session.items[session.i];
     const earned = correct ? settings.tries - wrong.length : 0;
     session.results.push({ item, correct, wrong: wrong.slice(), stars: earned, missed: [...new Set(firstMissed)] });
+    recordProgress(item, correct, wrong.length, firstMissed);
     const isLast = session.i === session.items.length - 1;
     const praise = pick(PRAISE);
     const missed = correct ? new Set() : new Set(last.boxes.map((b, g) => (b.ok ? -1 : g)).filter(g => g >= 0));
@@ -752,26 +993,40 @@
 
   function showSummary() {
     newScreen();
-    const r = session.results;
+    const all = session.results;
+    const r = all.filter(x => !x.item.challenge);
+    const challenges = all.filter(x => x.item.challenge);
     const right = r.filter(x => x.correct).length;
     const firstGo = r.filter(x => x.correct && !x.wrong.length).length;
-    const earned = r.reduce((t, x) => t + x.stars, 0);
-    const tricky = r.filter(x => !x.correct || x.wrong.length).map(x => x.item);
+    const earned = all.reduce((t, x) => t + x.stars, 0);
+    const tricky = all.filter(x => !x.correct || x.wrong.length).map(x => x.item);
     const headline = right === r.length
       ? (firstGo === r.length ? "Perfect! Every word right first time!" : "You spelled every word!")
       : `You spelled ${right} out of ${plural(r.length, "word", "words")}!`;
+    const challengeRight = challenges.filter(x => x.correct).length;
+    const newStars = [...secureSounds(loadProgress())].filter(t => !session.secureBefore.has(t));
+    const comingBack = all.filter(x => !(x.correct && !x.wrong.length)).length;
 
     // Which sounds went wrong on the first try, and in which words — the useful bit for the teacher
     const bySound = {};
-    r.forEach(x => x.missed.forEach(tok => { (bySound[tok] = bySound[tok] || []).push(x.item.spelling); }));
+    all.forEach(x => x.missed.forEach(tok => { (bySound[tok] = bySound[tok] || []).push(x.item.spelling); }));
     const soundRows = Object.entries(bySound).sort((a, b) => b[1].length - a[1].length);
 
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
         <h1>${esc(headline)}</h1>
-        <p class="meta">${session.pupil && REPORTING ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${newStars.length ? `
+          <div class="new-stars pop">
+            <p>🎉 New sound ${newStars.length === 1 ? "star" : "stars"} for your collection!</p>
+            ${newStars.map(t => `<span class="star-badge">⭐ ${esc(label(t))}</span>`).join("")}
+            <a class="linklike" href="#/sounds">See all my sounds</a>
+          </div>` : ""}
+        ${challenges.length ? `
+          <p class="challenge-result">🔍 New words: <b>${challengeRight} of ${challenges.length}</b> right${challengeRight === challenges.length ? " — you can use the rule!" : ""}</p>` : ""}
+        ${comingBack ? `<p class="hint">🔁 ${plural(comingBack, "word", "words")} will come back tomorrow for more practice.</p>` : ""}
         ${soundRows.length ? `
           <div class="sound-report">
             <h2>Sounds to practise</h2>
@@ -782,9 +1037,9 @@
         <table class="results">
           <thead><tr><th>Word</th><th>Result</th><th>Tries</th></tr></thead>
           <tbody>
-            ${r.map(x => `
+            ${all.map(x => `
               <tr class="${x.correct ? "" : "missed"}">
-                <td class="rw">${esc(x.item.spelling)}</td>
+                <td class="rw">${esc(x.item.spelling)}${x.item.challenge ? ` <span class="new-tag">new</span>` : ""}</td>
                 <td>${x.correct ? `<span class="star-cell">${stars(x.stars)}</span>` : `<span class="miss">Keep practising</span>`}</td>
                 <td class="tries-cell">${x.wrong.length ? x.wrong.map(w => `<s>${esc(w)}</s>`).join(" ") : "—"}</td>
               </tr>`).join("")}
@@ -808,7 +1063,7 @@
     });
     const list = session.list;
     if (tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
-    $("#again-all").onclick = () => startPractice(list, list.items);
+    $("#again-all").onclick = () => startPractice(list, list.items, checksFor(list));
     $("#print").onclick = () => window.print();
   }
 
@@ -896,6 +1151,8 @@
     $("#setTries").value = String(settings.tries);
     $("#setShuffle").checked = settings.shuffle;
     $("#setBoxes").checked = settings.boxes;
+    $("#setSentences").checked = settings.sentences;
+    $("#setChecks").checked = settings.checks;
     $("#setSpell").checked = settings.spellOut;
     $("#setSounds").checked = settings.sounds;
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
@@ -908,6 +1165,8 @@
   $("#setTries").onchange = e => { settings.tries = Number(e.target.value); saveSettings(); };
   $("#setShuffle").onchange = e => { settings.shuffle = e.target.checked; saveSettings(); };
   $("#setBoxes").onchange = e => { settings.boxes = e.target.checked; saveSettings(); };
+  $("#setSentences").onchange = e => { settings.sentences = e.target.checked; saveSettings(); };
+  $("#setChecks").onchange = e => { settings.checks = e.target.checked; saveSettings(); };
   $("#setSpell").onchange = e => { settings.spellOut = e.target.checked; saveSettings(); };
   $("#setSounds").onchange = e => { settings.sounds = e.target.checked; saveSettings(); };
   $("#testVoice").onclick = () => sayPhrase(PHRASES.test);

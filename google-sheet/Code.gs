@@ -70,7 +70,8 @@ function doPost(e) {
 
     addRows_(ss.getSheetByName("Words"), words.map(w => [
       when, pupil, list, clean_(w.word), clean_(w.sounds),
-      w.correct ? (w.triesUsed === 1 ? "Right first time" : "Right on try " + w.triesUsed) : "Missed",
+      (w.challenge ? "New word: " : "") +
+        (w.correct ? (w.triesUsed === 1 ? "Right first time" : "Right on try " + w.triesUsed) : "Missed"),
       (w.wrong || []).map(clean_).join(", "),
       (w.missed || []).map(clean_).join(", ")
     ]));

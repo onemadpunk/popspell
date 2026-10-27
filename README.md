@@ -10,13 +10,22 @@ A free, sounds-first spelling website for pupils, built on **systematic syntheti
 4. **If all tries are missed**, the word is shown with the missed sounds in orange and spelled out sound by sound (Simultaneous Oral Spelling): *"rain. R. A I. N. rain."*
 5. **Results** — stars for each word, every wrong try, and a **"Sounds to practise"** panel listing which graphemes went wrong on the first try and in which words (e.g. `a–e: cake, snake`). It can be printed, and there's a button to practise only the tricky words again.
 
+### Sentences, new words and review
+
+- **Every word comes with a sentence**, read aloud as in a spelling test: *"sail… The boat had a big white sail… sail."* On the spelling screen it's shown with a blank, so homophones (sail / sale) are never a guess. Sentences live in `sentences.js` and can be edited.
+- **New-word challenges** end each list: 2–3 words with the same pattern that the pupil hasn't practised and never sees first (e.g. *flake, crate, grape* after the a–e list). They show whether the pupil can *use* the rule, not just remember 15 words. They're set per list with `check: [...]` in `words.js`.
+- **Spaced review.** Every word a pupil practises is scheduled to come back: missed words the next day, then after 3, 7, 14 and 30 days as they get them right first time. The home page shows "🔁 6 words to practise again today".
+- **My sounds** is each pupil's collection of every sound in the lists. A sound earns its ⭐ when it's spelled right first time at least 4 times, on 2 different days, and the last 3 times in a row. New stars are celebrated at the end of a list, and tapping a sound lets the pupil practise just that sound.
+
+Pupils type their first name before starting, so each child on a shared device has their own review words and stars. This progress is stored **on that device**. (With reports switched on, the teacher's Google Sheet has everything from every device.)
+
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
 It's just `index.html`, `style.css`, `app.js` and the word lists in `words.js`. Nothing to install and no logins.
 
 ## Pupil reports (optional)
 
-Switch on reports and each pupil's results go to **your own Google Sheet**: a tab per pupil summary, the sounds each pupil struggles with most, and every word with each wrong spelling. Setup takes about 10 minutes — see [google-sheet/SETUP.md](google-sheet/SETUP.md). With reports off (the default), pupils aren't asked for a name and nothing is sent anywhere.
+Switch on reports and each pupil's results go to **your own Google Sheet**: a tab per pupil summary, the sounds each pupil struggles with most, and every word with each wrong spelling (new-word challenges are marked "New word"). Setup takes about 10 minutes — see [google-sheet/SETUP.md](google-sheet/SETUP.md). With reports off (the default), nothing is sent anywhere.
 
 ---
 

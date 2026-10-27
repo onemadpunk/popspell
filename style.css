@@ -288,6 +288,57 @@ dialog::backdrop { background: rgba(20, 24, 31, .45); }
 .check { display: flex; align-items: center; gap: 10px; margin-top: 14px; cursor: pointer; }
 .check input { width: 22px; height: 22px; accent-color: var(--primary); }
 
+/* ---------- Sentences and new-word challenges ---------- */
+
+.sentence { font-size: 1.3rem; margin: 14px auto 0; max-width: 560px; }
+.sentence b { color: var(--accent); }
+.blank { display: inline-block; min-width: 4.5em; border-bottom: 3px solid var(--accent); color: transparent; line-height: 1; }
+.phase.challenge { color: var(--primary); }
+.challenge-result { font-size: 1.15rem; background: var(--primary-soft); border-radius: 14px; padding: 10px 14px; }
+.new-tag { font-size: .75rem; font-weight: 700; color: var(--primary); border: 2px solid var(--primary); border-radius: 999px; padding: 0 6px; vertical-align: middle; }
+
+/* ---------- The pupil's corner on the home page ---------- */
+
+.me {
+  max-width: 760px; margin: 28px auto 0; padding: 16px 20px; text-align: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.me .pupil { margin: 0 auto 10px; }
+.me-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.me-card {
+  display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 16px;
+  border: 2px solid var(--line); background: #fffdf7; color: var(--ink); text-decoration: none; font-size: 1.1rem;
+}
+a.me-card:hover { border-color: var(--primary); }
+.me-card.review { border-color: var(--star); background: #fff6df; }
+.me-card.quiet { color: var(--muted); }
+.me-icon { font-size: 1.6rem; }
+
+/* ---------- My sounds ---------- */
+
+.sounds-page h2 { font-size: 1.15rem; margin-top: 24px; }
+.sound-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; }
+.sound-card {
+  font: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 10px 4px; border-radius: 16px; border: 2px dashed var(--line); background: #faf8f2; color: var(--muted);
+}
+.sc-label { font-size: 1.7rem; font-weight: 700; line-height: 1.1; }
+.sc-badge { min-height: 1.3em; font-size: .9rem; }
+.sound-card.learning { border-style: solid; border-color: var(--good); background: #fff; color: var(--ink); }
+.sound-card.tricky { border-style: solid; border-color: var(--oops); background: var(--oops-soft); color: var(--oops); }
+.sound-card.secure { border-style: solid; border-color: var(--star); background: #fff3cf; color: var(--ink); }
+.dots { color: var(--good); letter-spacing: 1px; }
+.dots .dim { color: #ddd6c6; }
+.sound-detail {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; padding: 12px 16px;
+  border-radius: 16px; background: var(--primary-soft); position: sticky; top: 70px; z-index: 2;
+}
+.sound-detail[hidden] { display: none; }
+.chip.big { font-size: 1.6rem; border-color: var(--primary); color: var(--primary); }
+.new-stars { background: #fff3cf; border: 2px solid var(--star); border-radius: 16px; padding: 12px 16px; margin-top: 12px; }
+.new-stars p { margin: 0 0 8px; font-weight: 700; font-size: 1.15rem; }
+.star-badge { display: inline-block; font-size: 1.4rem; font-weight: 700; margin: 0 8px 6px; }
+
 .credits { max-width: 760px; margin: -32px auto 32px; padding: 0 16px; text-align: center; font-size: .8rem; color: var(--muted); }
 
 /* ---------- Small screens ---------- */
