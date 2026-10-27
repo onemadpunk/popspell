@@ -75,6 +75,10 @@ These values are meant to be public. They only say *which* database to use. Who 
 
 The Spark plan allows about 50,000 reads and 20,000 writes a day. A pupil doing a 15-word list uses roughly 20 writes, so that's about 1,000 lists a day. If PopSpell ever grows beyond that, Firebase shows a warning, and the **Blaze** plan charges only for what's used past the free amount.
 
+## If the rules are ever changed
+
+[`rules.test.mjs`](rules.test.mjs) checks 48 situations, such as "a teacher can't read another teacher's pupils" and "a pupil's device can't read results", on Firebase's local emulator. Run it after any change to `firestore.rules` (instructions are at the top of the file).
+
 ## Optional: lock the key to popspell.com
 
 In <https://console.cloud.google.com> → your project → **APIs & Services → Credentials** → the *Browser key* → **Website restrictions** → add `https://popspell.com/*` and `https://www.popspell.com/*`. This stops other websites using your project's key.

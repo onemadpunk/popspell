@@ -24,6 +24,9 @@
   const $ = sel => root.querySelector(sel);
   const ago = ms => { const m = Math.round(ms / 60000); return m < 1 ? "just now" : m === 1 ? "1 min ago" : m < 60 ? `${m} mins ago` : `${Math.round(m / 60)} h ago`; };
   const day = ms => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  // "Sara Green" → "Sara", but "Mr Smith" stays "Mr Smith"
+  const shortName = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
+  window.PopTeacherShortName = shortName;
   const joinLink = code => `${location.origin}${location.pathname}#/join/${code}`;
 
   function stopWatching() {
@@ -95,7 +98,7 @@
       <section class="t-wrap">
         <div class="t-top">
           <div>
-            <h1>Hello, ${esc(me.name.split(" ")[0])}${me.role === "owner" ? ` <span class="t-role">Owner</span>` : ""}</h1>
+            <h1>Hello, ${esc(shortName(me.name))}${me.role === "owner" ? ` <span class="t-role">Owner</span>` : ""}</h1>
             <p class="meta">${esc(me.email)} · <button class="linklike" id="signOut">Sign out</button></p>
           </div>
           ${classes.length ? `

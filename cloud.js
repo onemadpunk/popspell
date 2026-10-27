@@ -26,15 +26,17 @@ async function start() {
     GoogleAuthProvider, signOut, connectAuthEmulator
   } = authLib;
   const {
-    initializeFirestore, persistentLocalCache, connectFirestoreEmulator, doc, getDoc, setDoc, updateDoc,
-    addDoc, deleteDoc, collection, query, where, orderBy, getDocs, onSnapshot, serverTimestamp, Timestamp
+    initializeFirestore, persistentLocalCache, connectFirestoreEmulator, doc, getDoc, getDocFromServer, setDoc,
+    updateDoc, addDoc, deleteDoc, collection, query, where, orderBy, limit, getDocs, getDocsFromServer,
+    onSnapshot, serverTimestamp, Timestamp
   } = db;
 
   const app = initializeApp(config);
   const auth = getAuth(app);
   // Results are kept on the device until they reach the server, even if the page is closed
   const store = initializeFirestore(app, { localCache: persistentLocalCache() });
-  if (SITE.firebaseEmulator && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+  const emulator = !!SITE.firebaseEmulator && /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  if (emulator) {
     connectAuthEmulator(auth, `http://${location.hostname}:9099`, { disableWarnings: true });
     connectFirestoreEmulator(store, location.hostname, 8080);
   }
@@ -49,33 +51,42 @@ async function start() {
   const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), b => CODE_LETTERS[b % CODE_LETTERS.length]).join("");
 
-  let user = auth.currentUser;
   let profile = null; // { email, name, role } once a teacher is signed in
+  let profileReady = null; // the invitation check for whoever signed in last
   const listeners = new Set();
   const authReady = new Promise(resolve => {
-    onAuthStateChanged(auth, async u => {
-      user = u;
-      profile = await loadProfile(u);
-      listeners.forEach(fn => fn(profile));
-      resolve();
+    onAuthStateChanged(auth, u => {
+      const check = loadProfile(u);
+      profileReady = check;
+      check.then(p => {
+        if (profileReady !== check) return; // someone else has signed in since
+        profile = p;
+        listeners.forEach(fn => fn(profile));
+        resolve();
+      });
     });
   });
 
-  // A Google account is a teacher if invited, or an owner (first sign-in creates their record)
+  // A Google account is a teacher if it has been invited, or an owner if the security rules
+  // name it. Always asked of the server, never the device's copy, and without trial writes:
+  // a refused write can linger in the device's copy and make it look as if it worked.
   async function loadProfile(u) {
     if (!u || u.isAnonymous || !u.email) return null;
     const email = lower(u.email);
+    const name = u.displayName || email;
     const ref = doc(store, "teachers", email);
     try {
-      const snap = await getDoc(ref);
-      if (snap.exists()) return { email, name: snap.data().name || u.displayName || email, role: snap.data().role, uid: u.uid };
-    } catch { /* not invited: reading another email's record is refused */ }
+      const snap = await getDocFromServer(ref);
+      if (snap.exists()) return { email, name: snap.data().name || name, role: snap.data().role, uid: u.uid };
+    } catch { return { email, name, role: null, uid: u.uid }; }
     try {
-      await setDoc(ref, { name: u.displayName || email, role: "owner", invitedBy: email, invitedAt: serverTimestamp() });
-      return { email, name: u.displayName || email, role: "owner", uid: u.uid };
+      await getDocsFromServer(query(collection(store, "teachers"), limit(1))); // only owners may list teachers
     } catch {
-      return { email, name: u.displayName || email, role: null, uid: u.uid }; // signed in but not invited
+      return { email, name, role: null, uid: u.uid }; // signed in, but not invited
     }
+    // An owner's first sign-in: make their record so they appear in the Teachers tab
+    await setDoc(ref, { name, role: "owner", invitedBy: email, invitedAt: serverTimestamp() }).catch(() => {});
+    return { email, name, role: "owner", uid: u.uid };
   }
 
   async function pupilAuth() {
@@ -118,13 +129,24 @@ async function start() {
 
     /* ---------- Teachers ---------- */
 
-    async me() { await authReady; return profile; },
+    // Waits until the invitation check has caught up with whoever is signed in right now
+    async me() {
+      await authReady;
+      for (let waited = 0; waited < 8000; waited += 100) {
+        await profileReady;
+        const u = auth.currentUser;
+        const settled = !u || u.isAnonymous || (profile && profile.uid === u.uid);
+        if (settled) break;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return profile;
+    },
     onTeacher(fn) { listeners.add(fn); authReady.then(() => fn(profile)); return () => listeners.delete(fn); },
 
     async signIn() {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
-      try { await signInWithPopup(auth, provider); }
+      try { await signInWithPopup(auth, provider); await api.me(); }
       catch (err) {
         if (/popup-blocked|operation-not-supported/.test(err.code || "")) return signInWithRedirect(auth, provider);
         throw err;
@@ -190,6 +212,12 @@ async function start() {
       { name: String(name || "").trim().slice(0, 60) || lower(email), role, invitedBy: profile.email, invitedAt: serverTimestamp() }),
     removeTeacher: email => deleteDoc(doc(store, "teachers", lower(email)))
   };
+
+  // Testing on this computer only: the emulator accepts a made-up Google sign-in
+  if (emulator) {
+    api._testSignIn = email => authLib.signInWithCredential(auth,
+      GoogleAuthProvider.credential(JSON.stringify({ sub: email, email, email_verified: true, name: email.split("@")[0] })));
+  }
 
   window.PopCloud = api;
   window.__popCloudResolve(api);

@@ -1271,7 +1271,8 @@
     document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
     const link = $("#teacherLink");
     link.hidden = !CLOUD_CONFIGURED;
-    link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${TEACHER.name.split(" ")[0]}` : "👩‍🏫 Teacher";
+    const short = window.PopTeacherShortName || (n => n.split(" ")[0]);
+    link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${short(TEACHER.name)}` : "👩‍🏫 Teacher";
   }
 
   /* ---------- Settings dialog ---------- */

@@ -4,3 +4,4 @@ _listen/
 __pycache__/
 _test.html
 _fakecloud.js
+_e2e.html
