@@ -314,6 +314,17 @@ a.me-card:hover { border-color: var(--primary); }
 .me-card.quiet { color: var(--muted); }
 .me-icon { font-size: 1.6rem; }
 
+.assigned { margin-top: 16px; text-align: left; }
+.assigned h2 { font-size: 1.15rem; margin: 0 0 8px; text-align: center; }
+.class-name { display: inline-block; margin: -8px 0 16px; padding: 4px 14px; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 700; }
+
+/* Help request, beside the progress line */
+.help-btn {
+  font: inherit; font-weight: 700; font-size: .95rem; cursor: pointer; border-radius: 999px;
+  padding: 4px 12px; border: 2px solid var(--line); background: var(--surface); color: var(--ink);
+}
+.help-btn.on { background: #ffedd5; border-color: #c2410c; color: #c2410c; }
+
 /* ---------- My sounds ---------- */
 
 .sounds-page h2 { font-size: 1.15rem; margin-top: 24px; }

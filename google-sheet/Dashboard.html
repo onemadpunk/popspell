@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base target="_top">
+<title>PopSpell — class dashboard</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --surface: #fff; --ink: #1f2933; --muted: #5d6874; --line: #e4dfd3;
+    --primary: #2563eb; --primary-soft: #e8efff; --good: #15803d; --good-soft: #e5f6ea;
+    --oops: #b45309; --oops-soft: #fff4e0; --help: #c2410c; --help-soft: #ffedd5; --star: #f2a91c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 "Andika", "Segoe UI", system-ui, sans-serif; }
+  header { display: flex; align-items: center; gap: 16px; padding: 12px 18px; background: var(--surface); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; flex-wrap: wrap; }
+  header h1 { font-size: 1.15rem; margin: 0; }
+  .tabs { display: flex; gap: 4px; }
+  .tab { font: inherit; font-weight: 700; border: 0; background: none; padding: 8px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); }
+  .tab[aria-selected="true"] { background: var(--primary-soft); color: var(--primary); }
+  .status { margin-left: auto; color: var(--muted); font-size: .85rem; }
+  main { padding: 18px; max-width: 1200px; margin: 0 auto; }
+  .hidden { display: none !important; }
+  h2 { font-size: 1.05rem; margin: 0 0 10px; }
+  .empty { color: var(--muted); background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 18px; text-align: center; }
+  .btn { font: inherit; font-weight: 700; border: 2px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .btn.small { padding: 2px 10px; font-size: .85rem; }
+
+  /* Live */
+  .summary-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pill { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-weight: 700; }
+  .pill.help { background: var(--help-soft); border-color: var(--help); color: var(--help); }
+  .pill.stuck { background: var(--oops-soft); border-color: var(--oops); color: var(--oops); }
+  .live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .kid { background: var(--surface); border: 2px solid var(--line); border-radius: 16px; padding: 12px 14px; display: grid; gap: 6px; }
+  .kid.help { border-color: var(--help); background: var(--help-soft); animation: pulse 1.6s ease-in-out infinite; }
+  .kid.stuck { border-color: var(--oops); }
+  .kid.finished { border-color: var(--good); }
+  .kid.idle { opacity: .6; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(194, 65, 12, .15); } }
+  .kid-top { display: flex; align-items: center; gap: 8px; }
+  .kid-name { font-size: 1.15rem; font-weight: 700; }
+  .badge { margin-left: auto; font-size: .8rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; background: #eef0f3; color: var(--muted); }
+  .badge.working { background: var(--primary-soft); color: var(--primary); }
+  .badge.finished { background: var(--good-soft); color: var(--good); }
+  .badge.stuck { background: var(--oops-soft); color: var(--oops); }
+  .kid-list { color: var(--muted); font-size: .9rem; }
+  .bar { height: 8px; background: #efebe1; border-radius: 999px; overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--primary); }
+  .kid-stats { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); }
+  .help-row { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--help); }
+  .help-row .btn { margin-left: auto; }
+
+  /* Assignments */
+  .assign-help { color: var(--muted); margin: 0 0 12px; }
+  table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 14px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .85rem; color: var(--muted); background: #fbfaf6; }
+  .who { font-weight: 700; white-space: nowrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; background: var(--primary-soft); color: var(--primary); border-radius: 999px; padding: 2px 4px 2px 10px; font-weight: 700; font-size: .9rem; }
+  .chip button { border: 0; background: none; color: inherit; cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 4px; }
+  select, input[type="text"] { font: inherit; padding: 5px 8px; border: 2px solid var(--line); border-radius: 10px; background: #fff; max-width: 100%; }
+  .add-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+
+  /* Pupils */
+  .pupil-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .pcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+  .pcard h3 { margin: 0 0 4px; font-size: 1.15rem; }
+  .pcard .meta { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
+  .sound-chip { display: inline-block; background: var(--oops-soft); color: var(--oops); border: 2px solid var(--oops); border-radius: 999px; padding: 0 9px; margin: 0 4px 4px 0; font-weight: 700; }
+  .recent { margin: 8px 0 0; padding: 0; list-style: none; font-size: .9rem; color: var(--muted); }
+  .error { background: var(--oops-soft); color: var(--oops); border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>✏️ PopSpell — class dashboard</h1>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="live" aria-selected="true">Live class</button>
+    <button class="tab" role="tab" data-tab="assign" aria-selected="false">Assignments</button>
+    <button class="tab" role="tab" data-tab="pupils" aria-selected="false">Pupils</button>
+  </nav>
+  <span class="status" id="status">Loading…</span>
+</header>
+
+<main>
+  <div class="error hidden" id="error"></div>
+
+  <section id="tab-live">
+    <div class="summary-bar" id="liveSummary"></div>
+    <div class="live-grid" id="liveGrid"></div>
+  </section>
+
+  <section id="tab-assign" class="hidden">
+    <p class="assign-help">Choose lists for each pupil. They appear at the top of the site as <b>"Your lists today"</b> when the pupil types their name.
+      A row called <b>Everyone</b> is shown to every pupil. You can also paste a link from <b>Make a list</b>.</p>
+    <table>
+      <thead><tr><th>Pupil</th><th>Lists</th><th>Add a list</th></tr></thead>
+      <tbody id="assignRows"></tbody>
+    </table>
+    <div class="add-row">
+      <input type="text" id="newWho" placeholder="Pupil's name (or Everyone)" maxlength="30">
+      <select id="newList"></select>
+      <input type="text" id="newLink" placeholder="…or paste a Make a list link">
+      <button class="btn primary" id="addAssign">Add</button>
+    </div>
+  </section>
+
+  <section id="tab-pupils" class="hidden">
+    <div class="pupil-grid" id="pupilGrid"></div>
+  </section>
+</main>
+
+<script>
+  "use strict";
+  const REFRESH_MS = 10000;
+  const STUCK_MISSES = 2;      // words missed in a row
+  const STUCK_NOT_FIRST = 3;   // words not right first time in a row
+  const IDLE_MS = 3 * 60 * 1000;
+
+  let data = null;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const ago = ms => { const m = Math.round(ms / 60000); return m < 1 ? "just now" : m === 1 ? "1 min ago" : m < 60 ? m + " mins ago" : Math.round(m / 60) + " h ago"; };
+
+  // Tabs
+  document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    document.querySelectorAll(".tab").forEach(x => x.setAttribute("aria-selected", x === t ? "true" : "false"));
+    ["live", "assign", "pupils"].forEach(n => $("tab-" + n).classList.toggle("hidden", n !== t.dataset.tab));
+  });
+
+  function call(fn, ...args) {
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args);
+    });
+  }
+
+  function showError(err) {
+    $("error").textContent = "Something went wrong: " + (err && err.message ? err.message : err);
+    $("error").classList.remove("hidden");
+  }
+
+  async function refresh() {
+    try {
+      data = await call("dashboardData");
+      $("error").classList.add("hidden");
+      drawLive();
+      drawAssignments();
+      drawPupils();
+      $("status").textContent = "Updated " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) + " · refreshes every 10 s";
+    } catch (err) {
+      showError(err);
+      $("status").textContent = "Couldn't update";
+    }
+  }
+
+  /* ---------- Live class ---------- */
+
+  const titleOf = idOrTitle => {
+    const hit = (data.catalogue || []).find(l => l.id === idOrTitle);
+    if (hit) return hit.title;
+    const m = /[#&?]title=([^&]+)/.exec(idOrTitle);
+    return m ? decodeURIComponent(m[1]) + " (own list)" : idOrTitle;
+  };
+
+  function liveState(p) {
+    if (p.help) return "help";
+    if (p.status === "working" && data.now - p.seen > IDLE_MS) return "idle";
+    if (p.status === "working" && (p.missedRow >= STUCK_MISSES || p.notFirstRow >= STUCK_NOT_FIRST)) return "stuck";
+    return p.status || "working";
+  }
+
+  function drawLive() {
+    const kids = data.live.slice().map(p => Object.assign({ state: liveState(p) }, p));
+    const order = { help: 0, stuck: 1, working: 2, idle: 3, stopped: 4, finished: 5 };
+    kids.sort((a, b) => (order[a.state] - order[b.state]) || (a.helpAt || 0) - (b.helpAt || 0) || a.pupil.localeCompare(b.pupil));
+    const count = s => kids.filter(k => k.state === s).length;
+    $("liveSummary").innerHTML = kids.length ? `
+      <span class="pill">👩‍🎓 ${kids.length} today</span>
+      ${count("help") ? `<span class="pill help">🙋 ${count("help")} need help</span>` : ""}
+      ${count("stuck") ? `<span class="pill stuck">🔶 ${count("stuck")} finding it hard</span>` : ""}
+      <span class="pill">✏️ ${count("working")} working</span>
+      <span class="pill">✅ ${count("finished")} finished</span>` : "";
+    if (!kids.length) {
+      $("liveGrid").innerHTML = `<div class="empty">No pupils yet today. When a pupil starts a list, they'll appear here.</div>`;
+      return;
+    }
+    const label = { help: "Needs help", stuck: "Finding it hard", working: "Working", idle: "Quiet for a while", stopped: "Stopped", finished: "Finished" };
+    $("liveGrid").innerHTML = kids.map(p => {
+      const pct = p.total ? Math.round(((p.done || 0) / p.total) * 100) : 0;
+      return `
+        <article class="kid ${p.state}">
+          <div class="kid-top"><span class="kid-name">${esc(p.pupil)}</span>
+            <span class="badge ${p.state === "help" ? "stuck" : p.state}">${label[p.state]}</span></div>
+          ${p.help ? `<div class="help-row">🙋 Asked for help ${ago(data.now - (p.helpAt || p.seen))}
+            <button class="btn small" data-done="${esc(p.pupil)}">Done</button></div>` : ""}
+          <div class="kid-list">${esc(p.list ? titleOf(p.list) : "Choosing a list")}</div>
+          <div class="bar"><span style="width:${pct}%"></span></div>
+          <div class="kid-stats"><span>${p.done || 0} of ${p.total || 0} words · ${p.right || 0} right first time</span></div>
+          <div class="kid-stats"><span>${p.lastWord ? "Last: " + esc(p.lastWord) : ""}</span><span>${ago(data.now - p.seen)}</span></div>
+        </article>`;
+    }).join("");
+    document.querySelectorAll("[data-done]").forEach(b => b.onclick = async () => {
+      b.disabled = true;
+      try { await call("clearHelp", b.dataset.done); await refresh(); } catch (err) { showError(err); }
+    });
+  }
+
+  /* ---------- Assignments ---------- */
+
+  function listOptions() {
+    const groups = {};
+    (data.catalogue || []).forEach(l => (groups[l.stage] = groups[l.stage] || []).push(l));
+    return `<option value="">Choose a list…</option>` + Object.keys(groups).map(stage =>
+      `<optgroup label="${esc(stage)}">${groups[stage].map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+  }
+
+  async function save(who, lists) {
+    try { data.assignments = await call("saveAssignment", who, lists); drawAssignments(); }
+    catch (err) { showError(err); }
+  }
+
+  function drawAssignments() {
+    // Don't redraw while the teacher is choosing something
+    if ($("tab-assign").contains(document.activeElement) && document.activeElement.tagName !== "BUTTON") return;
+    const options = listOptions();
+    $("newList").innerHTML = options;
+    if (!data.assignments.length) {
+      $("assignRows").innerHTML = `<tr><td colspan="3" class="empty">No assignments yet. Add a pupil below.</td></tr>`;
+      return;
+    }
+    $("assignRows").innerHTML = data.assignments.map((a, i) => `
+      <tr>
+        <td class="who">${esc(a.who)}</td>
+        <td><div class="chips">${a.lists.map((l, j) => `<span class="chip">${esc(titleOf(l))}<button title="Remove" data-row="${i}" data-remove="${j}">×</button></span>`).join("") || "<i>none</i>"}</div></td>
+        <td><select data-add="${i}">${options}</select></td>
+      </tr>`).join("");
+    document.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => {
+      const a = data.assignments[b.dataset.row];
+      save(a.who, a.lists.filter((_, j) => j !== Number(b.dataset.remove)));
+    });
+    document.querySelectorAll("[data-add]").forEach(s => s.onchange = () => {
+      const a = data.assignments[s.dataset.add];
+      if (s.value && !a.lists.includes(s.value)) save(a.who, a.lists.concat(s.value));
+      s.blur();
+    });
+  }
+
+  $("addAssign").onclick = () => {
+    const who = $("newWho").value.trim();
+    const link = $("newLink").value.trim();
+    const list = link ? (link.includes("#/") ? link.slice(link.indexOf("#/")) : link) : $("newList").value;
+    if (!who) { $("newWho").focus(); return; }
+    if (!list) { $("newList").focus(); return; }
+    const existing = data.assignments.find(a => a.who.toLowerCase() === who.toLowerCase());
+    const lists = existing ? existing.lists.concat(existing.lists.includes(list) ? [] : [list]) : [list];
+    $("newWho").value = "";
+    $("newLink").value = "";
+    $("newWho").blur();
+    save(existing ? existing.who : who, lists);
+  };
+
+  /* ---------- Pupils ---------- */
+
+  function drawPupils() {
+    if (!data.pupils.length) {
+      $("pupilGrid").innerHTML = `<div class="empty">No results yet. Each pupil appears here after finishing their first list.</div>`;
+      return;
+    }
+    $("pupilGrid").innerHTML = data.pupils.map(p => `
+      <article class="pcard">
+        <h3>${esc(p.pupil)}</h3>
+        <p class="meta">${p.lists} lists · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${p.last ? new Date(p.last).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "—"}</p>
+        ${p.topSounds.length ? `<div><b>Sounds to work on</b> (last 30 days)<br>${p.topSounds.map(s => `<span class="sound-chip">${esc(s.sound)} ×${s.times}</span>`).join("")}</div>` : `<div>No missed sounds in the last 30 days 🎉</div>`}
+        <ul class="recent">${p.recent.map(r => `<li>${new Date(r.when).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
+      </article>`).join("");
+  }
+
+  refresh();
+  setInterval(() => { if (!document.hidden) refresh(); }, REFRESH_MS);
+</script>
+</body>
+</html>

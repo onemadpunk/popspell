@@ -23,9 +23,17 @@ There are 48 ready-made lists of up to 15 words, grouped into stages: short vowe
 
 It's just `index.html`, `style.css`, `app.js` and the word lists in `words.js`. Nothing to install and no logins.
 
-## Pupil reports (optional)
+## Reports and the teacher dashboard (optional)
 
-Switch on reports and each pupil's results go to **your own Google Sheet**: a tab per pupil summary, the sounds each pupil struggles with most, and every word with each wrong spelling (new-word challenges are marked "New word"). Setup takes about 10 minutes — see [google-sheet/SETUP.md](google-sheet/SETUP.md). With reports off (the default), nothing is sent anywhere.
+Connect **your own Google Sheet** (about 15 minutes, see [google-sheet/SETUP.md](google-sheet/SETUP.md)) and you get:
+
+- **Reports:** every pupil's results, the sounds each struggles with most, and every wrong spelling.
+- **A private class dashboard**, protected by your Google sign-in. It shows every pupil live: who has pressed 🙋 **Help**, who's finding it hard, who has finished.
+- **Assignments:** choose lists for each pupil (or *Everyone*). They appear on that pupil's home page as "📌 Your lists today".
+- **A teacher PIN** that hides Settings and Make a list from pupils.
+- **More than one tutor:** each tutor has their own sheet and dashboard, and pupil devices join a class once with a link like `#/join/smith`.
+
+With nothing connected (the default), nothing is sent anywhere.
 
 ---
 

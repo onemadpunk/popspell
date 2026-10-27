@@ -16,8 +16,9 @@
     <a href="#/" class="brand"><span aria-hidden="true">✏️</span> <span id="siteTitle">Spelling Practice</span></a>
     <nav class="topnav">
       <a href="#/sounds" class="navlink">⭐ My sounds</a>
-      <a href="#/make" class="navlink">Make a list</a>
-      <button type="button" class="navlink" id="settingsBtn">⚙️ Settings</button>
+      <a href="#/make" class="navlink teacher-only">Make a list</a>
+      <button type="button" class="navlink teacher-only" id="settingsBtn">⚙️ Settings</button>
+      <button type="button" class="navlink" id="teacherBtn" hidden>🔒 Teacher</button>
     </nav>
   </header>
 
@@ -68,6 +69,20 @@
 
       <div class="row end">
         <button class="btn primary" value="close">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="pinDialog" aria-labelledby="pinTitle">
+    <form method="dialog" class="settings-form" id="pinForm">
+      <h2 id="pinTitle">Teacher</h2>
+      <label class="field">PIN
+        <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="12">
+      </label>
+      <p class="hint" id="pinHint">Unlocks Settings and Make a list on this device until the browser is closed.</p>
+      <div class="row end">
+        <button class="btn" type="button" id="pinCancel">Cancel</button>
+        <button class="btn primary" type="submit">Unlock</button>
       </div>
     </form>
   </dialog>

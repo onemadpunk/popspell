@@ -310,7 +310,14 @@
 
   /* ---------- Reports to the teacher's Google Sheet ---------- */
 
-  const REPORTING = /^https?:\/\//.test(SITE.reportUrl || "");
+  // Each tutor has their own Google Sheet. A device joins a tutor's class once with #/join/<code>,
+  // and from then on reports to that tutor. With no tutors set up, reportUrl is used.
+  const TUTORS = SITE.tutors || {};
+  const TUTOR_KEY = "popspell-tutor-v1";
+  const TUTOR = (() => { try { return TUTORS[localStorage.getItem(TUTOR_KEY)] || null; } catch { return null; } })();
+  const REPORT_URL = TUTOR ? TUTOR.reportUrl : SITE.reportUrl;
+  const REPORT_KEY = (TUTOR ? TUTOR.reportKey : SITE.reportKey) || "";
+  const REPORTING = /^https?:\/\//.test(REPORT_URL || "");
   const PUPIL_KEY = "spelling-pupil-v1";
   const OUTBOX_KEY = "spelling-outbox-v1";
   const getPupil = () => { try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; } };
@@ -323,7 +330,7 @@
 
   // Apps Script can't answer cross-site requests, so this is sent "no-cors": we learn the
   // request went out, not what the sheet said. Plain text avoids a blocked pre-flight check.
-  const post = payload => fetch(SITE.reportUrl, {
+  const post = (payload, to = REPORT_URL) => fetch(to, {
     method: "POST",
     mode: "no-cors",
     keepalive: true,
@@ -331,12 +338,15 @@
     body: JSON.stringify(payload)
   });
 
+  // Each waiting report remembers which tutor's sheet it's for, in case the device changes class
   async function flushOutbox() {
-    if (!REPORTING || !navigator.onLine) return;
+    if (!navigator.onLine) return;
     const box = readOutbox();
     const left = [];
-    for (const payload of box) {
-      try { await post(payload); } catch { left.push(payload); }
+    for (const entry of box) {
+      const to = entry.to || REPORT_URL;
+      if (!to) { left.push(entry); continue; }
+      try { await post(entry.payload || entry, to); } catch { left.push(entry); }
     }
     if (left.length !== box.length) writeOutbox(left);
   }
@@ -345,7 +355,7 @@
     if (!REPORTING || s.sent || !s.results.length) return Promise.resolve(null);
     s.sent = true;
     const payload = {
-      key: SITE.reportKey || "",
+      key: REPORT_KEY,
       pupil: s.pupil,
       list: s.list.title,
       listId: s.list.id || "custom",
@@ -360,7 +370,71 @@
         missed: r.missed.map(label)
       }))
     };
-    return post(payload).then(() => true, () => { writeOutbox(readOutbox().concat([payload])); return false; });
+    return post(payload).then(() => true, () => { writeOutbox(readOutbox().concat([{ to: REPORT_URL, payload }])); return false; });
+  }
+
+  // Live class: tells the teacher's dashboard where this pupil is up to (best effort, never queued)
+  function liveStats(s) {
+    const firstTry = x => x.correct && !x.wrong.length;
+    const run = test => { let n = 0; for (let k = s.results.length - 1; k >= 0 && test(s.results[k]); k--) n++; return n; };
+    return {
+      done: s.results.length,
+      right: s.results.filter(firstTry).length,
+      missedRow: run(x => !x.correct),
+      notFirstRow: run(x => !firstTry(x))
+    };
+  }
+  function livePing(s, event, extra = {}) {
+    if (!REPORTING || !s || !s.pupil) return;
+    const body = Object.assign({ key: REPORT_KEY, type: "live", event, pupil: s.pupil, list: s.list.title, total: s.items.length },
+      event === "start" ? {} : liveStats(s), extra);
+    post(body).catch(() => { /* the next update will catch up */ });
+  }
+  function askForHelp(on) {
+    if (!REPORTING || !getPupil()) return;
+    post({ key: REPORT_KEY, type: "help", pupil: getPupil(), on }).catch(() => {});
+  }
+  // Leaving a list part-way: the report and the dashboard both hear about it
+  function leaveSession(s) {
+    if (!s) return;
+    if (!s.ended) livePing(s, "stop");
+    s.ended = true;
+    sendReport(s, false);
+  }
+
+  // "Your lists today": the teacher's sheet is asked for this pupil's lists by a fingerprint
+  // (SHA-256) of their name, so no names travel in web addresses
+  async function fetchAssigned(name) {
+    if (!REPORTING || !name || !window.crypto?.subtle) return [];
+    const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(name.trim().toLowerCase()));
+    const hash = [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
+    return new Promise(resolve => {
+      const cb = `popspellLists${Date.now()}`;
+      const tag = document.createElement("script");
+      let done = false;
+      const finish = lists => { if (done) return; done = true; delete window[cb]; tag.remove(); resolve(lists); };
+      window[cb] = reply => finish(reply && reply.ok && Array.isArray(reply.lists) ? reply.lists : []);
+      tag.onerror = () => finish([]);
+      setTimeout(() => finish([]), 8000);
+      tag.src = `${REPORT_URL}?action=assignments&pupil=${hash}&key=${encodeURIComponent(REPORT_KEY)}&callback=${cb}`;
+      document.head.appendChild(tag);
+    });
+  }
+
+  // An assigned entry can be a list id, a list title, or a "Make a list" link
+  function resolveAssigned(entry) {
+    const text = String(entry).trim();
+    if (LISTS[text]) return { href: `#/list/${encodeURIComponent(text)}`, title: LISTS[text].title, example: LISTS[text].items[0]?.spelling, accent: LISTS[text].accent };
+    const byTitle = Object.values(LISTS).find(l => l.title.toLowerCase() === text.toLowerCase());
+    if (byTitle) return { href: `#/list/${encodeURIComponent(byTitle.id)}`, title: byTitle.title, example: byTitle.items[0]?.spelling, accent: byTitle.accent };
+    const at = text.indexOf("#/custom?");
+    if (at >= 0) {
+      const hash = text.slice(at);
+      const params = new URLSearchParams(hash.split("?")[1]);
+      const words = parseWords(params.get("words") || "");
+      if (words.length) return { href: hash, title: params.get("title") || "Your teacher's list", example: analyse(words[0]).spelling, accent: "#0f766e" };
+    }
+    return null;
   }
 
   /* ---------- Each pupil's progress: spaced review and "My sounds" (kept on this device) ---------- */
@@ -516,7 +590,7 @@
 
   function route() {
     newScreen();
-    if (session) sendReport(session, false); // left part-way through a list
+    leaveSession(session); // left part-way through a list
     session = null;
     const hash = location.hash.replace(/^#/, "") || "/";
     const [path, query = ""] = hash.split("?");
@@ -530,12 +604,29 @@
         words: parseWords(params.get("words"))
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
-    else if (parts[0] === "make") showMake();
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""));
+    else if (parts[0] === "make" && teacherUnlocked()) showMake();
+    else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
     else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
     else if (parts[0] === "sound" && soundList(decodeURIComponent(parts[1] || ""))) showStart(soundList(decodeURIComponent(parts[1])));
     else showHome();
     window.scrollTo(0, 0);
+  }
+
+  // A tutor's join link (#/join/smith) puts this device in their class, then starts afresh
+  function joinClass(code) {
+    if (!TUTORS[code]) {
+      app.innerHTML = `<section class="panel start"><h1>Hmm, that class link didn't work</h1>
+        <p>Please check the link with your teacher.</p><a class="btn primary" href="#/">Go to the lists</a></section>`;
+      return;
+    }
+    try {
+      localStorage.setItem(TUTOR_KEY, code);
+      sessionStorage.setItem("popspell-joined", "1");
+    } catch { /* private mode: the class can't be remembered */ }
+    location.replace(location.href.split("#")[0] + "#/");
+    location.reload();
   }
 
   // Today's review: words from any list that are due to come back
@@ -608,7 +699,7 @@
     return true;
   }
   window.addEventListener("hashchange", route);
-  window.addEventListener("pagehide", () => { if (session) sendReport(session, false); });
+  window.addEventListener("pagehide", () => leaveSession(session));
 
   /* ---------- Home ---------- */
 
@@ -618,6 +709,7 @@
       <section class="hero">
         <h1>${esc(SITE.title)}</h1>
         <p class="lead">${esc(SITE.subtitle)}</p>
+        ${TUTOR ? `<p class="class-name">${esc(TUTOR.name || "My class")}${justJoined() ? " — this device has joined the class ✓" : ""}</p>` : ""}
         <ol class="steps">
           <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Listen</b> to the word</span></li>
           <li><span class="step-icon" aria-hidden="true">🗣️</span><span><b>Say</b> each sound</span></li>
@@ -659,6 +751,23 @@
         ? `<a class="me-card review" href="#/review"><span class="me-icon" aria-hidden="true">🔁</span><span><b>${plural(due, "word", "words")}</b> to practise again today</span></a>`
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
       <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>`;
+
+    // Lists the teacher has set for this pupil, if the sheet is connected
+    const my = phase;
+    fetchAssigned(getPupil()).then(entries => {
+      const lists = entries.map(resolveAssigned).filter(Boolean);
+      if (my !== phase || !lists.length || !$("#homePupil")) return;
+      const section = document.createElement("div");
+      section.className = "assigned";
+      section.innerHTML = `
+        <h2>📌 Your lists today</h2>
+        <div class="grid">${lists.map(l => `
+          <a class="list-card" href="${esc(l.href)}" style="--accent:${esc(l.accent)}">
+            <span class="lc-example">${esc(l.example || "")}</span>
+            <span class="lc-title">${esc(l.title)}</span>
+          </a>`).join("")}</div>`;
+      $("#meCards").after(section);
+    });
   }
 
   /* ---------- My sounds ---------- */
@@ -758,27 +867,45 @@
       items: (settings.shuffle ? shuffle(items) : items.slice()).concat(checks),
       secureBefore: secureSounds(loadProgress())
     };
+    livePing(session, "start");
     showLook();
   }
+
+  let helpOn = false; // the pupil has asked for help; the teacher clears it on the dashboard
 
   function progressHTML() {
     const n = session.items.length;
     const earned = session.results.reduce((t, r) => t + r.stars, 0);
+    const help = REPORTING
+      ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
+      : "";
     return `
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
         <span>Word ${session.i + 1} of ${n}</span>
+        ${help}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
       <div class="bar" aria-hidden="true"><span style="width:${(session.i / n) * 100}%"></span></div>`;
   }
 
-  // The address doesn't change during practice, so "Stop" has to redraw the start screen itself
+  // The address doesn't change during practice, so "Stop" has to redraw the start screen itself.
+  // Every practice screen calls this, so it also wires up the help button.
   function wireStop() {
+    const helpBtn = $("#helpBtn");
+    if (helpBtn) {
+      helpBtn.onclick = () => {
+        helpOn = !helpOn;
+        askForHelp(helpOn);
+        helpBtn.classList.toggle("on", helpOn);
+        helpBtn.setAttribute("aria-pressed", helpOn);
+        helpBtn.textContent = helpOn ? "🙋 Help is coming" : "🙋 Help";
+      };
+    }
     $("#stopLink").onclick = e => {
       e.preventDefault();
       const list = session.list;
-      sendReport(session, false); // the words done so far still count
+      leaveSession(session); // the words done so far still count
       newScreen();
       session = null;
       showStart(list);
@@ -955,6 +1082,7 @@
     const earned = correct ? settings.tries - wrong.length : 0;
     session.results.push({ item, correct, wrong: wrong.slice(), stars: earned, missed: [...new Set(firstMissed)] });
     recordProgress(item, correct, wrong.length, firstMissed);
+    livePing(session, "word", { word: item.spelling, ok: correct && !wrong.length });
     const isLast = session.i === session.items.length - 1;
     const praise = pick(PRAISE);
     const missed = correct ? new Set() : new Set(last.boxes.map((b, g) => (b.ok ? -1 : g)).filter(g => g >= 0));
@@ -1054,6 +1182,8 @@
       </section>`;
 
     sayPhrase(right === r.length ? PHRASES.allRight : PHRASES.finished);
+    livePing(session, "end");
+    session.ended = true;
     const my = phase;
     sendReport(session, true).then(sent => {
       const note = $("#sent");
@@ -1130,6 +1260,45 @@
     };
   }
 
+  /* ---------- Teacher PIN: keeps Settings and Make a list away from pupils (not real security) ---------- */
+
+  const PIN = String((TUTOR && TUTOR.pin) || SITE.teacherPin || "");
+  const UNLOCK_KEY = "popspell-teacher";
+  const teacherUnlocked = () => { if (!PIN) return true; try { return sessionStorage.getItem(UNLOCK_KEY) === "1"; } catch { return false; } };
+  const justJoined = () => { try { const j = sessionStorage.getItem("popspell-joined"); sessionStorage.removeItem("popspell-joined"); return !!j; } catch { return false; } };
+
+  function applyTeacherMode() {
+    const open = teacherUnlocked();
+    document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
+    const btn = $("#teacherBtn");
+    btn.hidden = !PIN;
+    btn.textContent = open ? "🔓 Lock" : "🔒 Teacher";
+  }
+
+  const pinDlg = $("#pinDialog");
+  $("#teacherBtn").onclick = () => {
+    if (teacherUnlocked()) {
+      try { sessionStorage.removeItem(UNLOCK_KEY); } catch { /* nothing to undo */ }
+      applyTeacherMode();
+      if (/^#\/make/.test(location.hash)) location.hash = "#/";
+      return;
+    }
+    $("#pinInput").value = "";
+    $("#pinHint").textContent = "Unlocks Settings and Make a list on this device until the browser is closed.";
+    pinDlg.showModal();
+  };
+  $("#pinCancel").onclick = () => pinDlg.close();
+  $("#pinForm").onsubmit = e => {
+    if ($("#pinInput").value.trim() !== PIN) {
+      e.preventDefault();
+      $("#pinHint").textContent = "That PIN isn't right. Try again.";
+      $("#pinInput").select();
+      return;
+    }
+    try { sessionStorage.setItem(UNLOCK_KEY, "1"); } catch { /* stays locked in private mode */ }
+    applyTeacherMode();
+  };
+
   /* ---------- Settings dialog ---------- */
 
   const dlg = $("#settings");
@@ -1145,6 +1314,7 @@
   }
 
   function openSettings() {
+    if (!teacherUnlocked()) return;
     fillVoiceSelect();
     $("#setRate").value = settings.rate;
     $("#setLook").value = String(settings.lookSeconds);
@@ -1182,6 +1352,7 @@
   }
   $("#siteTitle").textContent = SITE.title;
   $("#credits").hidden = !albaWords.size;
+  applyTeacherMode();
   flushOutbox();
   window.addEventListener("online", flushOutbox);
   if (synth) {

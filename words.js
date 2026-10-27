@@ -34,6 +34,18 @@
    paste the web app address into reportUrl below. Leave it empty for no reports
    (pupils then aren't asked for their name).
 
+  Teacher PIN:
+   Set teacherPin (e.g. "4821") to hide Settings and Make a list from pupils behind
+   a "🔒 Teacher" button. This stops curious fingers, but it isn't real security —
+   anyone who reads this file can see the PIN. Pupils' results stay in your own
+   Google Sheet, which only you can open. Leave it empty to show everything.
+
+  More than one tutor:
+   Each tutor makes their own copy of the Google Sheet (google-sheet/SETUP.md) and
+   gets added to "tutors" below with a short code. Pupils' devices join a tutor's
+   class once by opening  .../popspell/#/join/CODE  — from then on their results go
+   to that tutor's sheet. A tutor's "pin" (optional) replaces teacherPin for their pupils.
+
   After editing on GitHub, press "Commit changes" — the site updates in a minute or two.
 */
 
@@ -42,7 +54,11 @@ window.SITE = {
   subtitle: "Listen · Say the sounds · Spell it",
   fontFile: "",
   reportUrl: "",
-  reportKey: ""
+  reportKey: "",
+  teacherPin: "",
+  tutors: {
+    // green: { name: "Mrs Green's class", reportUrl: "https://script.google.com/macros/s/.../exec", reportKey: "", pin: "" },
+  }
 };
 
 window.SPELLING_LISTS = [
