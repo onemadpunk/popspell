@@ -469,6 +469,7 @@
         prog.sounds[tok] = s;
       });
     }
+    tally(prog);
     saveProgress(prog);
   }
 
@@ -481,6 +482,78 @@
       .slice(0, REVIEW_SIZE)
       .map(w => analyse(w.entry));
   }
+
+  /* ---------- Personal bests: each pupil only ever races their own record ---------- */
+
+  // Kept with the pupil's progress. "Goes" counts every word and question tried, right or wrong,
+  // so effort counts as well as accuracy. Weeks start on Monday. Only the lists and activities
+  // with a fixed id keep a best score (review and "Make a list" words change each time).
+  const weekKey = (d = new Date()) => dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7));
+  const loadBests = (prog = loadProgress()) => Object.assign({ weeks: {}, lists: {} }, prog.bests);
+  const bestTitle = id => (LISTS[id] && LISTS[id].title) || (window.PopActivities && window.PopActivities.get(id) || {}).title || "";
+
+  function tally(prog) {
+    const b = loadBests(prog);
+    const wk = weekKey();
+    b.weeks[wk] = (b.weeks[wk] || 0) + 1;
+    b.weeks = Object.fromEntries(Object.entries(b.weeks).sort().slice(-60));
+    prog.bests = b;
+  }
+  function countGo() {
+    const prog = loadProgress();
+    tally(prog);
+    saveProgress(prog);
+  }
+
+  // This week's goes, the best earlier week, and how many weeks in a row (this week counts once started)
+  function weekStats(b) {
+    const wk = weekKey();
+    const thisWeek = b.weeks[wk] || 0;
+    const bestWeek = Math.max(0, ...Object.entries(b.weeks).filter(([k]) => k !== wk).map(([, n]) => n));
+    let run = 0;
+    for (let k = thisWeek ? wk : addDays(wk, -7); b.weeks[k]; k = addDays(k, -7)) run++;
+    return { thisWeek, bestWeek, run };
+  }
+
+  // Taken when a list starts, so the results screen can tell what this go has beaten
+  function bestsSnapshot(list, full) {
+    const b = loadBests();
+    const scored = full && !!bestTitle(list.id);
+    return Object.assign(weekStats(b), { scored, best: scored ? b.lists[list.id] || null : null });
+  }
+
+  // On the results screen: saves a new best score and returns what's worth celebrating
+  function personalBests(s, firstGo, total) {
+    const before = s.bestsBefore;
+    if (!before) return [];
+    const prog = loadProgress();
+    const b = loadBests(prog);
+    const now = weekStats(b);
+    const notes = [];
+    const old = before.best;
+    if (before.scored) {
+      if (!old) notes.push({ big: true, text: `First go: ${firstGo} right first time. That's your score to beat!` });
+      else if (firstGo > old.best) notes.push({ big: true, text: `New personal best: ${firstGo} right first time! Your old best was ${old.best}.` });
+      else if (firstGo === old.best) notes.push({ big: true, text: `You matched your best: ${firstGo} right first time!` });
+      else notes.push({ text: `Your best here is ${old.best} right first time. Have another go to beat it!` });
+      if (!old || firstGo > old.best) {
+        b.lists[s.list.id] = { best: firstGo, of: total, day: dayKey() };
+        prog.bests = b;
+        saveProgress(prog);
+      }
+    }
+    if (!before.bestWeek) notes.push({ text: `${plural(now.thisWeek, "go", "goes")} this week.` });
+    else if (now.thisWeek > before.bestWeek && before.thisWeek <= before.bestWeek) notes.push({ big: true, text: `Your best week ever: ${plural(now.thisWeek, "go", "goes")}!` });
+    else if (now.thisWeek > before.bestWeek) notes.push({ text: `Best week ever: ${plural(now.thisWeek, "go", "goes")} and counting!` });
+    else notes.push({ text: `${plural(now.thisWeek, "go", "goes")} this week. ${before.bestWeek - now.thisWeek + 1} more to beat your best week!` });
+    if (now.run >= 2 && now.run > before.run) notes.push({ big: true, text: `${now.run} weeks in a row! 🔥` });
+    return notes;
+  }
+  const bestsHTML = notes => notes.length ? `
+    <div class="bests${notes.some(n => n.big) ? " pop" : ""}">
+      ${notes.map(n => `<p class="${n.big ? "pb-big" : ""}">${n.big ? "🏅 " : ""}${esc(n.text)}</p>`).join("")}
+      <a class="linklike" href="#/bests">See my bests</a>
+    </div>` : "";
 
   /* ---------- Little sounds ---------- */
 
@@ -588,6 +661,7 @@
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
+    else if (parts[0] === "bests") showBests();
     else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
     else if (parts[0] === "sound" && soundList(decodeURIComponent(parts[1] || ""))) showStart(soundList(decodeURIComponent(parts[1])));
     else showHome();
@@ -772,11 +846,13 @@
     const prog = loadProgress();
     const due = dueItems(prog).length;
     const secure = secureSounds(prog).size;
+    const week = weekStats(loadBests(prog));
     $("#meCards").innerHTML = `
       ${due
         ? `<a class="me-card review" href="#/review"><span class="me-icon" aria-hidden="true">🔁</span><span><b>${plural(due, "word", "words")}</b> to practise again today</span></a>`
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
-      <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>`;
+      <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
+      <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>`;
 
     // Lists the teacher has set for this pupil, if the sheet is connected
     const my = phase;
@@ -854,6 +930,39 @@
     });
   }
 
+  /* ---------- My bests ---------- */
+
+  function showBests() {
+    document.title = `My bests · ${SITE.title}`;
+    const name = getPupil();
+    const b = loadBests();
+    const w = weekStats(b);
+    const scores = Object.entries(b.lists)
+      .filter(([id]) => bestTitle(id))
+      .sort((x, y) => (x[1].day < y[1].day ? 1 : x[1].day > y[1].day ? -1 : 0));
+    const href = id => LISTS[id] ? `#/list/${encodeURIComponent(id)}` : `#/activity/${encodeURIComponent(id)}`;
+    app.innerHTML = `
+      <section class="panel sounds-page bests-page">
+        <a class="back" href="#/">← All lists</a>
+        <h1>${name ? `${esc(name)}'s bests` : "My bests"}</h1>
+        <p class="hint">Every word and question you try is a go, right or wrong. Beat your own best. Nobody else's counts!</p>
+        <div class="bests-stats">
+          <div><b>${w.thisWeek}</b><span>${w.thisWeek === 1 ? "go" : "goes"} this week</span></div>
+          <div><b>${Math.max(w.bestWeek, w.thisWeek)}</b><span>goes in my best week</span></div>
+          <div><b>${w.run}</b><span>${w.run === 1 ? "week" : "weeks"} in a row</span></div>
+        </div>
+        <h2>My best scores</h2>
+        ${scores.length ? `
+          <table class="results">
+            <thead><tr><th>List or activity</th><th>Best</th><th></th></tr></thead>
+            <tbody>${scores.map(([id, s]) => `
+              <tr><td class="rw">${esc(bestTitle(id))}</td>
+                <td>${s.best} of ${s.of} right first time</td>
+                <td><a class="btn small" href="${href(id)}">Beat it</a></td></tr>`).join("")}</tbody>
+          </table>` : `<p>Finish a list or an activity to set your first best score.</p>`}
+      </section>`;
+  }
+
   /* ---------- Start screen ---------- */
 
   function showStart(list) {
@@ -899,7 +1008,9 @@
     session = {
       list, i: 0, results: [], pupil: getPupil(), sent: false,
       items: (settings.shuffle ? shuffle(items) : items.slice()).concat(checks),
-      secureBefore: secureSounds(loadProgress())
+      secureBefore: secureSounds(loadProgress()),
+      // Practising just the tricky words doesn't count towards the list's best score
+      bestsBefore: bestsSnapshot(list, items.length === (list.items || []).length)
     };
     livePing(session, "start");
     showLook();
@@ -1155,6 +1266,7 @@
     const challengeRight = challenges.filter(x => x.correct).length;
     const newStars = [...secureSounds(loadProgress())].filter(t => !session.secureBefore.has(t));
     const comingBack = all.filter(x => !(x.correct && !x.wrong.length)).length;
+    const bestNotes = personalBests(session, firstGo, r.length);
 
     // Which sounds went wrong on the first try, and in which words — the useful bit for the teacher
     const bySound = {};
@@ -1173,6 +1285,7 @@
             ${newStars.map(t => `<span class="star-badge">⭐ ${esc(label(t))}</span>`).join("")}
             <a class="linklike" href="#/sounds">See all my sounds</a>
           </div>` : ""}
+        ${bestsHTML(bestNotes)}
         ${challenges.length ? `
           <p class="challenge-result">🔍 New words: <b>${challengeRight} of ${challenges.length}</b> right${challengeRight === challenges.length ? " — you can use the rule!" : ""}</p>` : ""}
         ${comingBack ? `<p class="hint">🔁 ${plural(comingBack, "word", "words")} will come back tomorrow for more practice.</p>` : ""}
@@ -1246,6 +1359,7 @@
     session = {
       list: { id: act.id, title: act.title, accent: act.colour }, activity: act, i: 0, results: [],
       pupil: getPupil(), sent: false, secureBefore: new Set(),
+      bestsBefore: bestsSnapshot({ id: act.id }, true),
       items: questions.map(q => Object.assign({ spelling: q.label, tokens: [] }, q))
     };
     livePing(session, "start");
@@ -1328,6 +1442,7 @@
       const earned = correct ? ACTIVITY_TRIES - wrong.length : 0;
       session.results.push({ item: q, correct, wrong: wrong.slice(), stars: earned,
         missed: correct && !wrong.length ? [] : (missed.length ? missed : [q.skill]) });
+      countGo();
       livePing(session, "word", { word: q.label, ok: correct && !wrong.length });
       const isLast = session.i === session.items.length - 1;
       const fb = $("#feedback");
@@ -1416,12 +1531,14 @@
     const skills = {};
     r.forEach(x => x.missed.forEach(s => { skills[s] = (skills[s] || 0) + 1; }));
     const act = session.activity;
+    const bestNotes = personalBests(session, firstGo, r.length);
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
         <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${bestsHTML(bestNotes)}
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
           .map(([s, n]) => `<li><span class="chip">${esc(s)}</span> ×${n}</li>`).join("")}</ul></div>` : ""}
         <table class="results">

@@ -17,7 +17,9 @@ A free, sounds-first spelling website for pupils, built on **systematic syntheti
 - **Spaced review.** Every word a pupil practises is scheduled to come back: missed words the next day, then after 3, 7, 14 and 30 days as they get them right first time. The home page shows "🔁 6 words to practise again today".
 - **My sounds** is each pupil's collection of every sound in the lists. A sound earns its ⭐ when it's spelled right first time at least 4 times, on 2 different days, and the last 3 times in a row. New stars are celebrated at the end of a list, and tapping a sound lets the pupil practise just that sound.
 
-Pupils type their first name before starting, so each child on a shared device has their own review words and stars. Review words and stars are stored **on that device**. The pupil's results also go to their teacher (below).
+- **My bests.** Pupils only ever compete with themselves. Every word and question they try is a "go", right or wrong, so effort counts as well as accuracy. The results screen celebrates a new best score on a list or activity (most right first time), a best week ever (most goes), and weeks in a row of practice. When it isn't a best, it says how close they are ("4 more to beat your best week!"). There are no leaderboards. The **🏅 My bests** page shows each best score with a "Beat it" button.
+
+Pupils type their first name before starting, so each child on a shared device has their own review words, stars and bests. Review words, stars and bests are stored **on that device**. The pupil's results also go to their teacher (below).
 
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
