@@ -45,7 +45,11 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
 - **Assignments and plans:** choose lists for each pupil or for *Everyone*, and schedule lists between dates.
-- **Next steps:** one card per pupil showing their next lesson, what's planned, how they did last time, what to work on, and a suggestion that follows the teaching order. **Plan it** schedules it in one click. Pupils with nothing planned stand out.
+- **Starting checks** (🧭 on the home page, or set one as work): a placement check for a new pupil's first lesson, about 10 minutes, with one try per question and no marks shown.
+  - **Spelling** uses new words the pupil hasn't practised. It tries a few lists spread through each stage, and goes through a stage list by list only once a word is missed.
+  - **Numbers** asks two questions from each numeracy activity, from Early level up.
+  - **Both stop after 3 gaps.** Next steps then suggests starting at the first gap and names the others. Checks are left out of the Curriculum for Excellence overview, because they deliberately go past what the pupil can do yet.
+- **Next steps:** one card per pupil showing their next lesson, what's planned, how they did last time, what to work on, their starting check, and a suggestion that follows the teaching order. **Plan it** schedules it in one click. Pupils with nothing planned stand out.
 - **Plans & worksheets:** print a sound-mapping worksheet with one box per phoneme, a dictation worksheet, a teacher key, a **handwriting** sheet (model, grey trace, dotted trace, own go on four-line ruling), a **sentence** sheet (fill the blank, then copy the sentence), and a **letter formation** sheet. Handwriting sheets use the reading font (Sassoon or Andika). Mark printed work by word and missed grapheme; worksheet results appear alongside online results.
 - **"Pupils only see the work I set":** a per-class setting (in Classes) that hides the rest of the library from that class's devices.
 - **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.

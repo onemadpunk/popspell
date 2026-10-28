@@ -201,7 +201,8 @@
   // Everything a teacher can set: spelling lists by stage, then writing, reading, listening and
   // numeracy activities (activities.js), then sentence dictation for any spelling list
   function catalogueOptions() {
-    const groups = P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`);
+    const checks = Object.values(P().CHECKS).filter(c => c.id === "check-spelling" || window.PopActivities);
+    const groups = [`<optgroup label="🧭 Starting checks">${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`].concat(P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
     const A = window.PopActivities;
     if (A) {
       A.AREAS.forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
@@ -480,6 +481,20 @@
       text: `Re-teach ${latest.list} — only ${pct}% right first time${top ? `; ${top} missed most` : ""}` };
   }
 
+  // A starting check (app.js) places the pupil at the first list or activity with a gap
+  function checkResult(check) {
+    const area = P().checkKind(check.listId) === "spelling" ? "Spelling" : "Numbers";
+    const gaps = P().checkGaps(check.words || []);
+    const unfinished = check.finished === false ? " (stopped early)" : "";
+    if (!gaps.length) {
+      return { kind: "check", list: "", short: `${area}: no gaps found${unfinished}`,
+        text: `Starting check on ${day(check.at)}: no gaps found in ${area.toLowerCase()}${unfinished}. Choose the next work yourself` };
+    }
+    const also = gaps.length > 1 ? `; also gaps in ${gaps.slice(1).map(titleOf).join(", ")}` : "";
+    return { kind: "check", list: gaps[0], short: `${area}: start with ${titleOf(gaps[0])}${unfinished}`,
+      text: `Starting check on ${day(check.at)}: start ${area.toLowerCase()} with ${titleOf(gaps[0])}${also}` };
+  }
+
   async function drawNext(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
     let sessions, roster, assignments;
@@ -504,7 +519,12 @@
       const latestInOrder = sessions.find(s => key(s.pupil) === k && order.includes(s.listId)) || null;
       const summary = summaries.find(x => key(x.pupil) === k) || null;
       const lessonDate = r && r.nextLessonDate >= today ? r.nextLessonDate : "";
-      return { k, name, r, a, upcoming, latest, summary, lessonDate, suggestion: suggestFor(latestInOrder, summary) };
+      // The newest starting check of each kind; it leads the suggestion until newer work comes in
+      const checks = Object.values(P().CHECKS).map(c => sessions.find(s => key(s.pupil) === k && s.listId === c.id)).filter(Boolean);
+      const newestCheck = checks.slice().sort((x, y) => y.at - x.at)[0];
+      const suggestion = newestCheck && (!latestInOrder || newestCheck.at > latestInOrder.at)
+        ? checkResult(newestCheck) : suggestFor(latestInOrder, summary);
+      return { k, name, r, a, upcoming, latest, summary, lessonDate, checks, suggestion };
     }).sort((x, y) => (x.lessonDate || "9999").localeCompare(y.lessonDate || "9999") || x.name.localeCompare(y.name));
     const when = d => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "";
     const unplanned = rows.filter(x => !x.upcoming).length;
@@ -518,6 +538,7 @@
             <span class="meta">${x.lessonDate ? `Next lesson ${esc(when(x.lessonDate))}${x.r && x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : "No lesson date set"}</span></div>
           <p><b>Planned:</b> ${x.upcoming ? `${esc(titleOf(x.upcoming.list))} · ${esc(when(x.upcoming.from))}${x.upcoming.until !== x.upcoming.from ? `–${esc(when(x.upcoming.until))}` : ""}` : `<span class="miss">Nothing planned</span>`}</p>
           <p><b>Last time:</b> ${x.latest ? `${esc(x.latest.list)} · ${(x.latest.words || []).filter(w => w.correct && w.triesUsed === 1).length}/${(x.latest.words || []).length} first time · ${esc(day(x.latest.at))}${x.latest.source === "worksheet" ? " (worksheet)" : ""}` : "—"}</p>
+          ${x.checks.length ? `<p><b>🧭 Starting check:</b> ${x.checks.map(c => esc(checkResult(c).short)).join(" · ")}</p>` : ""}
           ${x.summary && x.summary.topSounds.length ? `<p><b>To work on:</b> ${x.summary.topSounds.slice(0, 3).map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</p>` : ""}
           <div class="next-suggest"><span>💡 ${esc(x.suggestion.text)}</span></div>
           <form class="add-row" data-plan-row="${i}">
@@ -668,7 +689,9 @@
   function cfeRows(sessions, pupilName) {
     const A = window.PopActivities;
     const rows = {};
-    sessions.filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
+    // Starting checks deliberately go past what a pupil can do, so they'd drag the status down
+    sessions.filter(s => !P().checkKind(s.listId))
+      .filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
       const tag = (A && A.tag(s.listId)) || { organiser: "Other work", level: "" };
       const r = rows[tag.organiser] = rows[tag.organiser] || { organiser: tag.organiser, levels: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
       if (tag.level) r.levels.add(tag.level);

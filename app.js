@@ -347,7 +347,9 @@
         challenge: !!r.item.challenge,
         triesUsed: r.correct ? r.wrong.length + 1 : null,
         wrong: r.wrong,
-        missed: r.missed.map(label)
+        missed: r.missed.map(label),
+        // Starting checks: the list or activity each word was testing
+        ...(r.item.from ? { from: r.item.from } : {})
       }))
     };
     const saved = cloud.session(CLASS.id, payload).then(() => true, err => { console.warn("PopSpell: report not sent", err); return false; });
@@ -400,6 +402,8 @@
   function resolveAssigned(entry) {
     const text = String(entry).trim();
     if (LISTS[text]) return { href: `#/list/${encodeURIComponent(text)}`, title: LISTS[text].title, example: LISTS[text].items[0]?.spelling, accent: LISTS[text].accent };
+    const check = checkKind(text);
+    if (check) return { href: `#/check/${check}`, title: CHECKS[check].title, example: CHECKS[check].icon, accent: CHECKS[check].accent };
     const act = window.PopActivities && window.PopActivities.get(text);
     if (act) return { href: `#/activity/${encodeURIComponent(act.id)}`, title: act.title, example: act.icon, accent: act.colour };
     const byTitle = Object.values(LISTS).find(l => l.title.toLowerCase() === text.toLowerCase());
@@ -662,6 +666,7 @@
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
     else if (parts[0] === "bests") showBests();
+    else if (parts[0] === "check" && CHECKS[parts[1]] && (parts[1] === "spelling" || window.PopActivities)) showCheckStart(parts[1]);
     else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
     else if (parts[0] === "sound" && soundList(decodeURIComponent(parts[1] || ""))) showStart(soundList(decodeURIComponent(parts[1])));
     else showHome();
@@ -818,7 +823,20 @@
                 <span class="lc-count">${esc(a.level)} level</span>
               </a>`).join("")}
           </div>
-        </section>`).join("")}`;
+        </section>`).join("")}
+      ${locked ? "" : `
+        <section class="stage" style="--accent:#0f766e">
+          <h2>🧭 Starting checks</h2>
+          <p class="hint">For a new pupil's first lesson: about 10 minutes, and the results go to the teacher's Next steps.</p>
+          <div class="grid">
+            ${Object.entries(CHECKS).filter(([k]) => k === "spelling" || window.PopActivities).map(([k, c]) => `
+              <a class="list-card" href="#/check/${k}" style="--accent:${esc(c.accent)}">
+                <span class="lc-example" aria-hidden="true">${c.icon}</span>
+                <span class="lc-title">${esc(c.title.replace("Starting check: ", ""))}</span>
+                <span class="lc-count">Starting check</span>
+              </a>`).join("")}
+          </div>
+        </section>`}`;
 
     const joinForm = $("#joinForm");
     if (joinForm) {
@@ -1018,17 +1036,18 @@
 
   let helpOn = false; // the pupil has asked for help; the teacher clears it on the dashboard
 
+  const helpHTML = () => REPORTING
+    ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
+    : "";
+
   function progressHTML() {
     const n = session.items.length;
     const earned = session.results.reduce((t, r) => t + r.stars, 0);
-    const help = REPORTING
-      ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
-      : "";
     return `
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
         <span>${session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
-        ${help}
+        ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
       <div class="bar" aria-hidden="true"><span style="width:${(session.i / n) * 100}%"></span></div>`;
@@ -1051,10 +1070,11 @@
       e.preventDefault();
       const list = session.list;
       const activity = session.activity;
+      const check = session.check;
       leaveSession(session); // the words done so far still count
       newScreen();
       session = null;
-      if (activity) showActivityStart(activity); else showStart(list);
+      if (check) showCheckStart(check); else if (activity) showActivityStart(activity); else showStart(list);
     };
   }
 
@@ -1564,6 +1584,204 @@
     $("#againAct").onclick = () => startActivity(act);
   }
 
+  /* ---------- Starting checks: where each pupil starts in the teaching order ---------- */
+
+  // One try per question, no help and no marks shown, so the teacher's Next steps can start each
+  // pupil in the right place. Spelling uses new words (each list's challenge words): it tries a few
+  // lists spread through each stage, and only goes through a stage list by list once one is missed.
+  // Numbers tries two questions from each numeracy activity, easiest level first. Both stop after
+  // 3 gaps, as the work beyond them is too hard for now.
+  const CHECK_GAPS = 3;
+  const CHECK_SCREEN = 4;
+  const CHECKS = {
+    spelling: { id: "check-spelling", title: "Starting check: spelling", icon: "🔤", accent: "#0f766e",
+      blurb: "Listen to each word and spell it. Some words get tricky. That's fine, just have a go!" },
+    numbers: { id: "check-numbers", title: "Starting check: numbers", icon: "🔢", accent: "#FF4081",
+      blurb: "Answer each question. Some get tricky. That's fine, just have a go!" }
+  };
+  const checkKind = id => Object.keys(CHECKS).find(k => CHECKS[k].id === id) || null;
+
+  const LEVELS = ["Early", "First", "Second"];
+  const numberOrder = () => {
+    const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
+    return area ? area.activities.slice().sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)) : [];
+  };
+  // Up to n lists spread evenly through a stage, always including its first and last
+  const spread = (ids, n) => ids.length <= n ? ids : Array.from({ length: n }, (_, k) => ids[Math.round((k * (ids.length - 1)) / (n - 1))]);
+
+  function checkWord(id) {
+    const l = LISTS[id];
+    const pool = l.checks.length ? l.checks : l.items;
+    return Object.assign({}, pool[Math.floor(Math.random() * pool.length)], { challenge: false, from: id });
+  }
+
+  // Each yields the next question; the answer to it is in results by the time it resumes
+  function* spellingQuestions(results) {
+    const lastRight = () => results[results.length - 1].correct;
+    let gaps = 0;
+    for (const stage of STAGES) {
+      const ids = stage.lists.map(l => l.id);
+      const tried = {};
+      let missed = false;
+      for (const id of spread(ids, CHECK_SCREEN)) {
+        yield checkWord(id);
+        tried[id] = lastRight();
+        if (!tried[id]) { missed = true; break; }
+      }
+      if (!missed) continue;
+      for (const id of ids) {
+        if (!(id in tried)) { yield checkWord(id); tried[id] = lastRight(); }
+        if (!tried[id] && ++gaps >= CHECK_GAPS) return;
+      }
+    }
+  }
+  function* numberQuestions(results) {
+    let gaps = 0;
+    for (const act of numberOrder()) {
+      let missed = false;
+      for (const q of act.make().slice(0, 2)) {
+        yield Object.assign({ spelling: q.label, tokens: [] }, q, { from: act.id });
+        if (!results[results.length - 1].correct) missed = true;
+      }
+      if (missed && ++gaps >= CHECK_GAPS) return;
+    }
+  }
+
+  // The lists or activities with a gap (any word or question missed), in teaching order
+  function checkGaps(words) {
+    const order = STAGES.flatMap(st => st.lists.map(l => l.id)).concat(numberOrder().map(a => a.id));
+    return [...new Set(words.filter(w => w.from && !w.correct).map(w => w.from))]
+      .sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  }
+
+  function showCheckStart(kind) {
+    const c = CHECKS[kind];
+    document.title = `${c.title} · ${SITE.title}`;
+    app.innerHTML = `
+      <section class="panel start" style="--accent:${esc(c.accent)}">
+        <a class="back" href="#/">← All lists</a>
+        <p class="eyebrow">${c.icon} Starting check</p>
+        <h1>${esc(c.title.replace("Starting check: ", "Let's see what you know: "))}</h1>
+        <p class="tip">${esc(c.blurb)}</p>
+        <p class="hint">You get one go at each question, and it stops by itself when the questions get too hard. It takes about 10 minutes.</p>
+        <div class="pupil" id="pupilBox"></div>
+        <button class="btn big primary" id="go">▶ Start</button>
+      </section>`;
+    const go = $("#go");
+    const box = $("#pupilBox");
+    mountPupil(box, { onEnter: () => go.click() });
+    (getPupil() ? go : box.querySelector(".pupil-name")).focus();
+    go.onclick = () => { if (takePupilName(box)) startCheck(kind); };
+  }
+
+  function startCheck(kind) {
+    const c = CHECKS[kind];
+    const results = [];
+    session = {
+      list: { id: c.id, title: c.title, accent: c.accent }, check: kind, i: -1, results, items: [],
+      pupil: getPupil(), sent: false, secureBefore: new Set(),
+      questions: kind === "spelling" ? spellingQuestions(results) : numberQuestions(results)
+    };
+    livePing(session, "start");
+    nextCheckQuestion();
+  }
+
+  function nextCheckQuestion() {
+    const step = session.questions.next();
+    if (step.done) return showCheckEnd();
+    session.items.push(step.value);
+    session.i = session.items.length - 1;
+    showCheckQuestion();
+  }
+
+  function showCheckQuestion() {
+    newScreen();
+    const q = session.items[session.i];
+    const spelling = session.check === "spelling";
+    app.innerHTML = `
+      <section class="panel practice activity" style="--accent:${esc(session.list.accent)}">
+        <div class="progress">
+          <a class="stop" href="#/" id="stopLink">✕ Stop</a>
+          <span>${spelling ? "Word" : "Question"} ${session.i + 1}</span>
+          ${helpHTML()}
+        </div>
+        <p class="phase q-prompt">${spelling ? "Listen, then spell the word" : esc(q.prompt)}</p>
+        ${spelling ? sentenceHTML(q, true) : q.html || ""}
+        ${q.kind === "choice"
+          ? `<div class="q-options">${q.options.map((opt, i) => `<div class="q-option-wrap"><button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button></div>`).join("")}</div>`
+          : `<form class="spell-form" id="checkForm" autocomplete="off">
+              <label for="checkAnswer" class="sr-only">Your answer</label>
+              <input id="checkAnswer" class="answer" type="text" inputmode="${q.input === "numeric" ? "numeric" : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">
+              <button class="btn primary" type="submit">Next →</button></form>`}
+        ${spelling ? `<div class="row center">
+          <button class="btn" id="hear" type="button">🔊 Hear the word</button>
+          ${wantSentence(q) ? `<button class="btn" id="hearSentence" type="button">💬 Hear the sentence</button>` : ""}
+        </div>` : q.say ? `<div class="row center"><button class="btn" id="hearQ" type="button">🔊 Hear it again</button></div>` : ""}
+      </section>`;
+    wireStop();
+
+    // No marks during the check: the answer is kept and the next question comes straight away
+    const answer = value => {
+      let correct;
+      let missed = [];
+      if (spelling) {
+        const res = compare(value, q);
+        correct = res.right;
+        if (!correct) missed = res.boxes.filter(b => !b.ok).map(b => b.tok);
+      } else {
+        correct = [q.answer].concat(q.accept || []).some(a => norm(a) === norm(value));
+        if (!correct) missed = [q.skill];
+      }
+      session.results.push({ item: q, correct, wrong: correct ? [] : [value], stars: 0, missed });
+      livePing(session, "word", { word: q.label || q.spelling, ok: correct });
+      nextCheckQuestion();
+    };
+
+    if (spelling) {
+      $("#hear").onclick = () => { sayWord(q.spelling); $("#checkAnswer").focus(); };
+      if ($("#hearSentence")) $("#hearSentence").onclick = () => { saySentence(q); $("#checkAnswer").focus(); };
+      sayWordInSentence(q);
+    } else {
+      if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);
+      sayQuestion(q);
+    }
+    if (q.kind === "choice") {
+      app.querySelectorAll(".q-option").forEach(b => { b.onclick = () => answer(q.options[Number(b.dataset.opt)]); });
+      return;
+    }
+    const input = $("#checkAnswer");
+    input.focus();
+    $("#checkForm").onsubmit = e => {
+      e.preventDefault();
+      const value = input.value.trim();
+      if (!value) return input.focus();
+      answer(value);
+    };
+  }
+
+  function showCheckEnd() {
+    newScreen();
+    const n = session.results.length;
+    app.innerHTML = `
+      <section class="panel summary" style="--accent:${esc(session.list.accent)}">
+        <p class="trophy" aria-hidden="true">🌟</p>
+        <h1>All done, thank you!</h1>
+        <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ${plural(n, session.check === "spelling" ? "word" : "question", session.check === "spelling" ? "words" : "questions")}</p>
+        <p class="tip">You worked really hard. Your teacher will use this to choose the right work for you.</p>
+        ${REPORTING ? `<p class="sent" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        <div class="row center"><a class="btn primary" href="#/">Back to the start</a></div>
+      </section>`;
+    sayPhrase(PHRASES.finished);
+    livePing(session, "end");
+    session.ended = true;
+    const my = phase;
+    sendReport(session, true).then(sent => {
+      const note = $("#sent");
+      if (!note || my !== phase || sent === null) return;
+      note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
+    });
+  }
+
   /* ---------- Make a list (for the teacher) ---------- */
 
   function showMake() {
@@ -1704,7 +1922,7 @@
 
   // What the teacher pages (teacher.js) need from here
   window.PopSpell = {
-    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned,
+    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned, CHECKS, checkKind, checkGaps,
     get teacher() { return TEACHER; }
   };
 
