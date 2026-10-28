@@ -234,11 +234,12 @@ window.PopActivities = (() => {
     ["___ is your name?", "What"], ["___ are my shoes?", "Where"], ["This is ___ bike.", "my"], ["I gave ___ a book.", "her"],
     ["Is this ___ hat?", "your"]
   ];
+  const storyQuestions = (p, listen) => () => p.questions.map((q, i) => choice(q.q, q.a, q.others, {
+    label: `${p.title} Q${i + 1}`, skill: q.skill || "comprehension", explain: q.why || "",
+    say: listen ? { text: q.q, clip: `audio/passages/${p.id}-q${i + 1}.mp3` } : undefined
+  }));
   const passageActivities = (window.PASSAGES || []).flatMap(p => {
-    const make = listen => () => p.questions.map((q, i) => choice(q.q, q.a, q.others, {
-      label: `${p.title} Q${i + 1}`, skill: q.skill || "comprehension", explain: q.why || "",
-      say: listen ? { text: q.q, clip: `audio/passages/${p.id}-q${i + 1}.mp3` } : undefined
-    }));
+    const make = listen => storyQuestions(p, listen);
     const read = { id: `r-${p.id}`, title: p.title, level: p.level, organiser: READ, blurb: p.blurb || "Read the story, then answer the questions.", passage: p, make: make(false) };
     const listen = p.listen ? [{ id: `lc-${p.id}`, area: "listening", title: `Listen: ${p.title}`, level: "Early",
       organiser: LISTEN, blurb: "Listen to the story, then answer the questions.", passage: p, listen: true, make: make(true) }] : [];
@@ -250,11 +251,20 @@ window.PopActivities = (() => {
         { label: w.toLowerCase(), skill: `tricky word "${w.toLowerCase()}"`, say: { text: s.replace("___", w) }, explain: s.replace("___", w) })) }
   ].concat(passageActivities.filter(a => !a.area));
 
+  // Decodable stories (stories.js): read alone, sound by sound. The pupil site matches them to
+  // the sounds each pupil has practised.
+  const stories = (window.STORIES || []).map(s => ({
+    id: `s-${s.id}`, title: s.title, level: spellingLevel(s.stage - 1), organiser: "Literacy · Reading · Tools for reading",
+    blurb: `Stage ${s.stage} sounds. Read it by yourself, then answer the questions.`,
+    passage: s, decodable: true, stage: s.stage, make: storyQuestions(s, false)
+  }));
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
+    { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
     { id: "numeracy", title: "Numeracy", colour: "#FF4081", icon: "🔢", activities: numeracy }
   ];

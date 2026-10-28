@@ -121,7 +121,7 @@ def plan():
         jobs[f"letters/{c}"] = text
     for key, text in PHRASES.items():
         jobs[f"phrases/{key}"] = text
-    for pid, story, questions in list_passages(ROOT / "passages.js"):
+    for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
         jobs[f"passages/{pid}"] = story
         for n, q in enumerate(questions, 1):
             jobs[f"passages/{pid}-q{n}"] = q

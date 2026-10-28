@@ -666,6 +666,7 @@
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
     else if (parts[0] === "bests") showBests();
+    else if (parts[0] === "stories") showStories();
     else if (parts[0] === "check" && CHECKS[parts[1]] && (parts[1] === "spelling" || window.PopActivities)) showCheckStart(parts[1]);
     else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
     else if (parts[0] === "sound" && soundList(decodeURIComponent(parts[1] || ""))) showStart(soundList(decodeURIComponent(parts[1])));
@@ -812,7 +813,7 @@
               </a>`).join("")}
           </div>
         </section>`).join("")}
-      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.map(area => `
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories").map(area => `
         <section class="stage" style="--accent:${esc(area.colour)}">
           <h2>${area.icon} ${esc(area.title)}</h2>
           <div class="grid">
@@ -870,7 +871,8 @@
         ? `<a class="me-card review" href="#/review"><span class="me-icon" aria-hidden="true">🔁</span><span><b>${plural(due, "word", "words")}</b> to practise again today</span></a>`
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
       <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
-      <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>`;
+      <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>
+      ${storyActivities().length && !locked ? `<a class="me-card" href="#/stories"><span class="me-icon" aria-hidden="true">📚</span><span><b>My stories</b> · ${readyStories(prog).length} ready to read</span></a>` : ""}`;
 
     // Lists the teacher has set for this pupil, if the sheet is connected
     const my = phase;
@@ -946,6 +948,112 @@
         detail.scrollIntoView({ block: "nearest", behavior: "smooth" });
       };
     });
+  }
+
+  /* ---------- My stories: decodable stories matched to the sounds each pupil knows ---------- */
+
+  // Early tricky words every pupil learns alongside the first sounds; others are listed per story
+  const STARTER_TRICKY = new Set("the a i to no go so into he she we me be was my you they said of".split(" "));
+  const storyWords = text => text.toLowerCase().replace(/['’]s\b/g, "").match(/[a-z']+/g) || [];
+  const storyActivities = () => window.PopActivities ? window.PopActivities.all().filter(a => a.decodable) : [];
+
+  const storyNeeds = {};
+  function needsFor(story) {
+    if (storyNeeds[story.id]) return storyNeeds[story.id];
+    const sounds = new Set();
+    const tricky = new Set();
+    storyWords(story.text).forEach(w => {
+      if (STARTER_TRICKY.has(w)) return;
+      const it = analyse(w);
+      if ((story.tricky || []).includes(w) || it.whole) tricky.add(w);
+      else it.tokens.forEach(t => sounds.add(t));
+    });
+    return (storyNeeds[story.id] = { sounds, tricky });
+  }
+
+  // Ready once every sound has been spelled right at least once (a double letter like "pp" counts
+  // as its single letter), and every extra tricky word practised. ⭐ when every sound is secure.
+  function storyMatch(story, prog) {
+    const { sounds, tricky } = needsFor(story);
+    const single = t => (t.length === 2 && t[0] === t[1] && !SOUND_ORDER.includes(t) ? t[0] : t);
+    const has = t => !SOUND_ORDER.includes(single(t)) || (prog.sounds[single(t)] && prog.sounds[single(t)].right > 0);
+    const missing = [...sounds].filter(t => !has(t)).map(label)
+      .concat([...tricky].filter(w => !(prog.words[w] && prog.words[w].right > 0)).map(w => `"${w}"`));
+    const stars = [...sounds].every(t => !SOUND_ORDER.includes(single(t)) || soundLevel(prog.sounds[single(t)]) === "secure");
+    return { missing: [...new Set(missing)], ready: !missing.length, stars: !missing.length && stars };
+  }
+  const readyStories = prog => storyActivities().filter(a => storyMatch(a.passage, prog).ready);
+
+  function showStories() {
+    document.title = `My stories · ${SITE.title}`;
+    const name = getPupil();
+    const prog = loadProgress();
+    const b = loadBests(prog);
+    const rows = storyActivities().map(a => Object.assign({ act: a }, storyMatch(a.passage, prog)));
+    const card = x => `
+      <a class="list-card story-card" href="#/activity/${encodeURIComponent(x.act.id)}" style="--accent:${esc(x.act.colour)}">
+        <span class="lc-example" aria-hidden="true">${x.stars ? "⭐" : "📖"}</span>
+        <span class="lc-title">${esc(x.act.title)}</span>
+        <span class="lc-count">${x.ready ? (b.lists[x.act.id] ? `Best: ${b.lists[x.act.id].best} of ${b.lists[x.act.id].of}` : `Stage ${x.act.stage}`) : `Needs: ${esc(x.missing.slice(0, 4).join(", "))}${x.missing.length > 4 ? "…" : ""}`}</span>
+      </a>`;
+    const ready = rows.filter(x => x.ready);
+    const nearly = rows.filter(x => !x.ready && x.missing.length <= 2);
+    const later = rows.filter(x => !x.ready && x.missing.length > 2);
+    app.innerHTML = `
+      <section class="panel sounds-page stories-page">
+        <a class="back" href="#/">← All lists</a>
+        <h1>${name ? `${esc(name)}'s stories` : "My stories"}</h1>
+        <p class="hint">Stories that only use sounds you've practised, so you can read them all by yourself. ⭐ means every sound in it is one of your star sounds.</p>
+        <h2>Ready to read</h2>
+        ${ready.length ? `<div class="grid">${ready.map(card).join("")}</div>`
+          : `<p>Practise some spelling lists and your first stories will appear here. You can still try any story below.</p>`}
+        ${nearly.length ? `<h2>Nearly ready</h2><p class="hint">Just one or two new sounds to learn first.</p><div class="grid">${nearly.map(card).join("")}</div>` : ""}
+        ${later.length ? `<details class="later"><summary>Coming later (${later.length})</summary><div class="grid">${later.map(card).join("")}</div></details>` : ""}
+      </section>`;
+  }
+
+  // The story with sound buttons under every word. Tricky words have a heart and no buttons.
+  function storyHTML(story) {
+    return story.text.split(/(\s+)/).map(chunk => {
+      const m = /^([^A-Za-z']*)([A-Za-z]+)(['’]s)?([^A-Za-z]*)$/.exec(chunk);
+      if (!m) return esc(chunk);
+      const [, before, word, poss, after] = m;
+      const lower = word.toLowerCase();
+      // "a" and "I" are tricky-word list members but sound out fine, so they keep their dot
+      const tricky = (STARTER_TRICKY.has(lower) && lower !== "a" && lower !== "i") || (story.tricky || []).includes(lower);
+      let inner;
+      const it = tricky ? null : analyse(lower);
+      if (!it || it.whole) inner = `<span class="g whole">${esc(word)}</span>`;
+      else {
+        const cap = word[0] !== lower[0];
+        inner = wordHTML(cap ? Object.assign({}, it, { chunks: it.chunks.map((c, k) => (k ? c : Object.assign({}, c, { text: c.text[0].toUpperCase() + c.text.slice(1) }))) }) : it);
+      }
+      // Kept together so punctuation never wraps onto the next line on its own
+      return `<span class="sw-wrap">${esc(before)}<button type="button" class="sw${tricky ? " tricky" : ""}" data-word="${esc(lower)}">${inner}${poss ? esc(poss) : ""}</button>${esc(after)}</span>`;
+    }).join("");
+  }
+
+  function showStoryRead() {
+    newScreen();
+    const act = session.activity;
+    app.innerHTML = `
+      <section class="panel practice story-read" style="--accent:${esc(act.colour)}">
+        <div class="progress">
+          <a class="stop" href="#/" id="stopLink">✕ Stop</a>
+          <span>Read, then ${plural(session.items.length, "question", "questions")}</span>
+          ${helpHTML()}
+        </div>
+        <p class="phase">📖 Read the story by yourself</p>
+        <p class="hint">Say the sounds and blend them into words. ♥ words are tricky words. Stuck? Tap the word to hear it.</p>
+        <h2 class="story-title">${esc(act.passage.title)}</h2>
+        <div class="story-text" id="storyText">${storyHTML(act.passage)}</div>
+        <label class="toggle"><input type="checkbox" id="soundButtons" checked> Show sound buttons</label>
+        <div class="row center"><button class="btn big primary" id="readDone">I've read it →</button></div>
+      </section>`;
+    wireStop();
+    app.querySelectorAll(".sw").forEach(b => { b.onclick = () => sayWord(b.dataset.word); });
+    $("#soundButtons").onchange = e => $("#storyText").classList.toggle("plain", !e.target.checked);
+    $("#readDone").onclick = () => showQuestion();
   }
 
   /* ---------- My bests ---------- */
@@ -1383,7 +1491,7 @@
       items: questions.map(q => Object.assign({ spelling: q.label, tokens: [] }, q))
     };
     livePing(session, "start");
-    showQuestion();
+    if (act.decodable) showStoryRead(); else showQuestion();
   }
 
   // Plays a question's sound: a recorded word, a recording (with the device voice as back-up), or text

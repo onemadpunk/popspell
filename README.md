@@ -25,7 +25,7 @@ There are 48 ready-made lists of up to 15 words, grouped into stages: short vowe
 
 ## Beyond spelling: writing, reading, listening and numeracy
 
-Alongside the spelling lists, [`activities.js`](activities.js) adds 33 activities that make fresh questions each time, all using the same stars, Help button, live class and teacher results:
+Alongside the spelling lists, [`activities.js`](activities.js) adds activities that make fresh questions each time, all using the same stars, Help button, live class and teacher results:
 
 | Area | Activities |
 |---|---|
@@ -37,6 +37,20 @@ Alongside the spelling lists, [`activities.js`](activities.js) adds 33 activitie
 Every list and activity is labelled with a **Curriculum for Excellence level** (Early, First or Second) and **organiser** (e.g. *Literacy · Writing · Tools for writing*, *Numeracy · Money*). Teachers' reports are grouped by these. They're a starting guide; teachers should check them against their own planning.
 
 The stories and their questions are in [`passages.js`](passages.js) and can be edited there. New or changed stories are recorded in Eponine's voice automatically.
+
+### 📚 My stories: decodable stories matched to each pupil
+
+[`stories.js`](stories.js) holds 12 short decodable stories, two for each spelling stage, each with three questions.
+
+- **Matched automatically.** The site sounds out every word in a story to find the sounds it needs. **My stories** (on the pupil's home page) then sorts them:
+  - **Ready to read:** every sound has been spelled right at least once. ⭐ means every sound is one of the pupil's star sounds.
+  - **Nearly ready:** one or two sounds still to learn.
+  - **Coming later:** everything else.
+- **Tricky words count too.** Early ones (the, to, said, was, they…) are allowed from the start. A story can list others in `tricky`, and the pupil needs to have practised those first.
+- **The reader.** Pupils read the story themselves before the questions, with sound buttons under every word (dots, lines and arcs, which can be switched off) and a ♥ on tricky words. Tapping a word reads it aloud for when they're stuck. During the questions the story can be re-read or read aloud.
+- **Adding a story.** A new story in `stories.js` is matched to pupils with no extra work. Keep it to the sounds of its stage.
+
+Stories can also be set as work from the teacher area.
 
 ## Teachers
 

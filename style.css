@@ -372,6 +372,20 @@ a.me-card:hover { border-color: var(--primary); }
 .new-stars p { margin: 0 0 8px; font-weight: 700; font-size: 1.15rem; }
 .star-badge { display: inline-block; font-size: 1.4rem; font-weight: 700; margin: 0 8px 6px; }
 
+/* Decodable stories */
+.story-title { margin: 6px 0 4px; }
+.story-text { text-align: left; font-size: 1.7rem; line-height: 2.3; background: #fffdf7; border: 2px solid var(--line); border-radius: 16px; padding: 14px 20px; margin: 10px 0; }
+.sw { font: inherit; line-height: 1.2; color: inherit; background: none; border: 0; padding: 0 .02em; cursor: pointer; border-radius: 8px; }
+.sw:hover { background: var(--primary-soft); }
+.sw-wrap { white-space: nowrap; }
+@media (max-width: 600px) { .story-text { font-size: 1.35rem; padding: 10px 14px; } }
+.sw.tricky { position: relative; }
+.sw.tricky::before { content: "♥"; position: absolute; top: -.6em; left: 50%; transform: translateX(-50%); font-size: .5em; line-height: 1; color: var(--oops); }
+.story-text.plain .g::after, .story-text.plain .split::after { display: none; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 8px; }
+.stories-page details.later { margin-top: 24px; }
+.stories-page details.later summary { cursor: pointer; font-weight: 700; font-size: 1.15rem; margin-bottom: 12px; }
+
 /* Personal bests */
 .bests { background: var(--primary-soft); border: 2px solid var(--accent); border-radius: 16px; padding: 12px 16px; margin-top: 12px; }
 .bests p { margin: 0 0 6px; }
