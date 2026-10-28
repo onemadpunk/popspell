@@ -336,6 +336,8 @@
   let TEACHER = null;  // the signed-in teacher on this device, if any
   let CLASS = (() => { try { return JSON.parse(localStorage.getItem(CLASS_KEY)) || null; } catch { return null; } })();
   let REPORTING = false;
+  let previewMode = false;
+  const previewBanner = () => previewMode ? `<p class="preview-banner">👀 Teacher preview · Nothing here is saved to a pupil. Close this tab to return to planning.</p>` : "";
   const updateReporting = () => { REPORTING = !!(cloud && CLASS); };
   function saveClass(c) {
     CLASS = c;
@@ -346,7 +348,7 @@
   // Resolves true once the teacher has it, false if it's still waiting (it's kept on the
   // device and sent when the connection is back), null if there's nothing to send
   function sendReport(s, finished) {
-    if (!REPORTING || s.sent || !s.results.length) return Promise.resolve(null);
+    if (!REPORTING || s.preview || s.sent || !s.results.length) return Promise.resolve(null);
     s.sent = true;
     const payload = {
       pupil: s.pupil,
@@ -381,7 +383,7 @@
     };
   }
   function livePing(s, event, extra = {}) {
-    if (!REPORTING || !s || !s.pupil) return;
+    if (!REPORTING || !s || s.preview || !s.pupil) return;
     const stats = event === "start" ? { done: 0, right: 0, missedRow: 0, notFirstRow: 0 } : liveStats(s);
     const fields = Object.assign({
       list: s.list.title,
@@ -393,7 +395,7 @@
     cloud.live(CLASS.id, s.pupil, fields).catch(() => { /* the next update will catch up */ });
   }
   function askForHelp(on) {
-    if (!REPORTING || !getPupil()) return;
+    if (!REPORTING || previewMode || !getPupil()) return;
     cloud.live(CLASS.id, getPupil(), { help: on, helpAt: on ? Date.now() : null }).catch(() => {});
   }
   // Leaving a list part-way: the report and the dashboard both hear about it
@@ -541,6 +543,7 @@
 
   // On the results screen: saves a new best score and returns what's worth celebrating
   function personalBests(s, firstGo, total) {
+    if (s.preview) return [];
     const before = s.bestsBefore;
     if (!before) return [];
     const prog = loadProgress();
@@ -663,6 +666,7 @@
     const [path, query = ""] = hash.split("?");
     const parts = path.split("/").filter(Boolean);
     const params = new URLSearchParams(query);
+    previewMode = params.get("preview") === "1";
 
     const activity = parts[0] === "activity" && window.PopActivities ? window.PopActivities.get(decodeURIComponent(parts[1] || "")) : null;
     if (parts[0] === "list" && LISTS[parts[1]]) showStart(LISTS[parts[1]]);
@@ -1120,14 +1124,15 @@
     app.innerHTML = `
       <section class="panel start" style="--accent:${esc(list.accent)}">
         <a class="back" href="#/">← All lists</a>
+        ${previewBanner()}
         <p class="eyebrow">${esc(list.stage || "")}</p>
         <h1>${esc(list.title)}</h1>
         ${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
         <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>
-        <div class="pupil" id="pupilBox"></div>
-        <button class="btn big primary" id="go">▶ Start</button>
+        ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
+        <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
         ${LISTS[list.id] && list.items.some(it => it.sentence) && window.PopActivities
-          ? `<p><a class="btn" href="#/activity/${encodeURIComponent(`dictate:${list.id}`)}">✍️ Sentence dictation with these words</a></p>` : ""}
+          ? `<p><a class="btn" href="#/activity/${encodeURIComponent(`dictate:${list.id}`)}${previewMode ? "?preview=1" : ""}">✍️ Sentence dictation with these words</a></p>` : ""}
         ${synth ? "" : `<p class="warn">This browser can't read words aloud. Please try Chrome, Edge or Safari.</p>`}
         <details class="teacher">
           <summary>Words in this list</summary>
@@ -1135,6 +1140,7 @@
         </details>
       </section>`;
     const go = $("#go");
+    if (previewMode) { go.onclick = () => startPractice(list, list.items, checksFor(list)); go.focus(); return; }
 
     // Pupils say who they are first, so their progress (and any report) is theirs
     const box = $("#pupilBox");
@@ -1156,7 +1162,7 @@
   // New-word challenges always come last, after the practised words
   function startPractice(list, items, checks = []) {
     session = {
-      list, i: 0, results: [], pupil: getPupil(), sent: false,
+      list, i: 0, results: [], pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode,
       items: (settings.shuffle ? shuffle(items) : items.slice()).concat(checks),
       secureBefore: secureSounds(loadProgress()),
       // Practising just the tricky words doesn't count towards the list's best score
@@ -1169,13 +1175,14 @@
   let helpOn = false; // the pupil has asked for help; the teacher clears it on the dashboard
 
   const helpHTML = () => REPORTING
-    ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
+    && !previewMode ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
     : "";
 
   function progressHTML() {
     const n = session.items.length;
     const earned = session.results.reduce((t, r) => t + r.stars, 0);
     return `
+      ${previewBanner()}
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
         <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
@@ -1365,7 +1372,7 @@
     const item = session.items[session.i];
     const earned = correct ? settings.tries - wrong.length : 0;
     session.results.push({ item, correct, wrong: wrong.slice(), stars: earned, missed: [...new Set(firstMissed)] });
-    recordProgress(item, correct, wrong.length, firstMissed);
+    if (!session.preview) recordProgress(item, correct, wrong.length, firstMissed);
     livePing(session, "word", { word: item.spelling, ok: correct && !wrong.length });
     const isLast = session.i === session.items.length - 1;
     const praise = pick(PRAISE);
@@ -1417,7 +1424,7 @@
       : `You spelled ${right} out of ${plural(r.length, "word", "words")}!`;
     const challengeRight = challenges.filter(x => x.correct).length;
     const newStars = [...secureSounds(loadProgress())].filter(t => !session.secureBefore.has(t));
-    const comingBack = all.filter(x => !(x.correct && !x.wrong.length)).length;
+    const comingBack = session.preview ? 0 : all.filter(x => !(x.correct && !x.wrong.length)).length;
     const bestNotes = personalBests(session, firstGo, r.length);
 
     // Which sounds went wrong on the first try, and in which words — the useful bit for the teacher
@@ -1427,10 +1434,11 @@
 
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
+        ${previewBanner()}
         <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
         <h1>${esc(headline)}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
-        ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${newStars.length ? `
           <div class="new-stars pop">
             <p>🎉 New sound ${newStars.length === 1 ? "star" : "stars"} for your collection!</p>
@@ -1492,6 +1500,7 @@
     app.innerHTML = `
       <section class="panel start" style="--accent:${esc(act.colour)}">
         <a class="back" href="#/">← All activities</a>
+        ${previewBanner()}
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
@@ -1500,8 +1509,8 @@
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
             <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
           </select></label>` : ""}
-        <div class="pupil" id="pupilBox"></div>
-        <button class="btn big primary" id="go">▶ Start</button>
+        ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
+        <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
       </section>`;
     const go = $("#go");
     const box = $("#pupilBox");
@@ -1510,6 +1519,7 @@
       accent.value = R_SOUNDED ? "scottish" : "english";
       accent.onchange = () => { settings.accent = accent.value; saveSettings(); location.reload(); };
     }
+    if (previewMode) { go.onclick = () => startActivity(act); go.focus(); return; }
     mountPupil(box, { onEnter: () => go.click() });
     (getPupil() ? go : box.querySelector(".pupil-name")).focus();
     go.onclick = () => { if (takePupilName(box)) startActivity(act); };
@@ -1520,7 +1530,7 @@
     if (!questions.length) { app.innerHTML = `<section class="panel start"><h1>Nothing to practise here yet</h1><a class="btn primary" href="#/">Back</a></section>`; return; }
     session = {
       list: { id: act.id, title: act.title, accent: act.colour }, activity: act, i: 0, results: [],
-      pupil: getPupil(), sent: false, secureBefore: new Set(),
+      pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode, secureBefore: new Set(),
       bestsBefore: bestsSnapshot({ id: act.id }, true),
       items: questions.map(q => Object.assign({ spelling: q.label, tokens: [] }, q))
     };
@@ -1605,7 +1615,7 @@
       const earned = correct ? ACTIVITY_TRIES - wrong.length : 0;
       session.results.push({ item: q, correct, wrong: wrong.slice(), stars: earned,
         missed: correct && !wrong.length ? [] : (missed.length ? missed : [q.skill]) });
-      countGo();
+      if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: correct && !wrong.length });
       const isLast = session.i === session.items.length - 1;
       const fb = $("#feedback");
@@ -1855,7 +1865,7 @@
       finished = true;
       const earned = wrong.length ? 1 : 2;
       session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned, missed: [...missed] });
-      countGo();
+      if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: !wrong.length });
       scene.classList.add("crossed");
       $("#hopperReward").textContent = wrong.length ? "♪ Bridge built!" : "✨ 💎 Perfect bridge!";
@@ -1889,10 +1899,11 @@
     const bestNotes = personalBests(session, firstGo, r.length);
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
+        ${previewBanner()}
         <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
-        ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${bestsHTML(bestNotes)}
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
           .map(([s, n]) => `<li><span class="chip">${esc(s)}</span> ×${n}</li>`).join("")}</ul></div>` : ""}
@@ -1995,14 +2006,16 @@
     app.innerHTML = `
       <section class="panel start" style="--accent:${esc(c.accent)}">
         <a class="back" href="#/">← All lists</a>
+        ${previewBanner()}
         <p class="eyebrow">${c.icon} Starting check</p>
         <h1>${esc(c.title.replace("Starting check: ", "Let's see what you know: "))}</h1>
         <p class="tip">${esc(c.blurb)}</p>
         <p class="hint">You get one go at each question, and it stops by itself when the questions get too hard. It takes about 10 minutes.</p>
-        <div class="pupil" id="pupilBox"></div>
-        <button class="btn big primary" id="go">▶ Start</button>
+        ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
+        <button class="btn big primary" id="go">${previewMode ? "▶ Test this check" : "▶ Start"}</button>
       </section>`;
     const go = $("#go");
+    if (previewMode) { go.onclick = () => startCheck(kind); go.focus(); return; }
     const box = $("#pupilBox");
     mountPupil(box, { onEnter: () => go.click() });
     (getPupil() ? go : box.querySelector(".pupil-name")).focus();
@@ -2014,7 +2027,7 @@
     const results = [];
     session = {
       list: { id: c.id, title: c.title, accent: c.accent }, check: kind, i: -1, results, items: [],
-      pupil: getPupil(), sent: false, secureBefore: new Set(),
+      pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode, secureBefore: new Set(),
       questions: kind === "spelling" ? spellingQuestions(results) : numberQuestions(results)
     };
     livePing(session, "start");
@@ -2035,6 +2048,7 @@
     const spelling = session.check === "spelling";
     app.innerHTML = `
       <section class="panel practice activity" style="--accent:${esc(session.list.accent)}">
+        ${previewBanner()}
         <div class="progress">
           <a class="stop" href="#/" id="stopLink">✕ Stop</a>
           <span>${spelling ? "Word" : "Question"} ${session.i + 1}</span>
@@ -2099,11 +2113,12 @@
     const n = session.results.length;
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
+        ${previewBanner()}
         <p class="trophy" aria-hidden="true">🌟</p>
         <h1>All done, thank you!</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ${plural(n, session.check === "spelling" ? "word" : "question", session.check === "spelling" ? "words" : "questions")}</p>
         <p class="tip">You worked really hard. Your teacher will use this to choose the right work for you.</p>
-        ${REPORTING ? `<p class="sent" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${REPORTING && !session.preview ? `<p class="sent" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         <div class="row center"><a class="btn primary" href="#/">Back to the start</a></div>
       </section>`;
     sayPhrase(PHRASES.finished);
