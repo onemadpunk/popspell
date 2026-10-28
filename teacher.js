@@ -513,7 +513,7 @@
           <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label></div>
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
         <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
-          ${r.reminderOptIn && r.parentEmail && r.nextLessonDate ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare reminder email</button>` : ""}
+          ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}
           ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}</div>
       </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}
       <div class="row t-row">
@@ -560,10 +560,10 @@
       const date = new Date(`${pupil.nextLessonDate}T12:00:00Z`).toLocaleDateString("en-GB",
         { weekday: "long", day: "numeric", month: "long" });
       const list = catalogueList(pupil.homeworkList);
-      const subject = `PopSpell lesson ${date} for ${pupil.name}`;
-      const bodyText = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson on ${date}`
+      const subject = `PopSpell lesson tomorrow for ${pupil.name}`;
+      const bodyText = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson tomorrow, ${date}`
         + (pupil.lessonTime ? ` at ${pupil.lessonTime}` : "") + `.\n\n`
-        + (list ? `Homework: ${list.title}. Please say each word aloud, then ask ${pupil.name} to segment it into sounds and write the matching letters in the boxes on the sound-mapping worksheet.\n\n` : "")
+        + (list ? `Homework: ${list.title}. The sound-mapping worksheet is attached. Please say each word aloud, then ask ${pupil.name} to segment it into sounds and write the matching letters in the boxes.\n\n` : "")
         + `Best wishes,\nPopSpell`;
       location.href = `mailto:${encodeURIComponent(pupil.parentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
     }; });
