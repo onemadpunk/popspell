@@ -188,6 +188,16 @@ await check("site admin updates the page", assertSucceeds(setDoc(doc(admin, `par
 await check("another teacher can't turn the page off", assertFails(deleteDoc(doc(other, `parents/${LINK}`))));
 await check("teacher turns the page off", assertSucceeds(deleteDoc(doc(tutor, `parents/${LINK}`))));
 
+console.log("Deleting a pupil's records");
+const diaryRef = await addDoc(collection(tutor, "classes/ABC234/diary"), { pupil: "Ava", lessonDate: "2026-10-01", lastWork: "", nextLesson: "", nextList: "", nextDate: "", by: "tutor@example.com", at: serverTimestamp() });
+await check("a pupil device can't delete the roster record", assertFails(deleteDoc(doc(pupil, "classes/ABC234/pupils/ava"))));
+await check("another teacher can't delete the roster record", assertFails(deleteDoc(doc(other, "classes/ABC234/pupils/ava"))));
+await check("a pupil device can't delete lesson notes", assertFails(deleteDoc(doc(pupil, diaryRef.path))));
+await check("another teacher can't delete lesson notes", assertFails(deleteDoc(doc(other, diaryRef.path))));
+await check("teacher deletes their pupil's lesson notes", assertSucceeds(deleteDoc(diaryRef)));
+await check("teacher deletes their pupil's live status", assertSucceeds(deleteDoc(doc(tutor, "classes/ABC234/live/ava"))));
+await check("teacher deletes their pupil's roster record", assertSucceeds(deleteDoc(doc(tutor, "classes/ABC234/pupils/ava"))));
+
 console.log(`\n${passed} passed, ${failed} failed`);
 await env.cleanup();
 process.exit(failed ? 1 : 0);

@@ -116,7 +116,7 @@ service cloud.firestore {
 
       // Lesson notes are private to the class teacher and site admins.
       match /diary/{entry} {
-        allow read: if canSee(c);
+        allow read, delete: if canSee(c);
         allow create: if canSee(c)
           && request.resource.data.keys().hasOnly([
             'pupil', 'lessonDate', 'lastWork', 'nextLesson', 'nextList', 'nextDate', 'by', 'at'])
@@ -131,7 +131,7 @@ service cloud.firestore {
 
       // Pupil roster and parent contact details are never readable by pupil devices.
       match /pupils/{p} {
-        allow read: if canSee(c);
+        allow read, delete: if canSee(c);
         function validPupil() {
           return canSee(c)
           && request.resource.data.keys().hasOnly([

@@ -1318,3 +1318,9 @@ a.me-card:hover { border-color: var(--primary); }
 .cal-sync { background: var(--primary-soft); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
 .cal-sync .hint { margin: 8px 0 0; }
 .cal-or { margin: 4px 0 8px; }
+
+/* Deleting a pupil's records */
+.btn.danger { border-color: var(--oops); color: var(--oops); background: var(--surface); }
+.btn.danger:hover { background: var(--oops-soft); }
+.old-table tr.old-row td { background: var(--oops-soft); }
+#checkOld { margin-bottom: 10px; }

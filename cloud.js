@@ -342,6 +342,31 @@ async function start() {
         { parentLink: link, parentAt: Date.now(), updated: serverTimestamp() });
       await batch.commit();
     },
+    // Everything kept about one pupil in a class: results, saved progress, live status, plans, lesson
+    // notes, parent page and roster record. Results are matched however the name was typed.
+    async deletePupilRecords(classId, name, parentLink) {
+      const same = v => lower(v) === lower(name);
+      const [sessions, diary, key] = await Promise.all([
+        getDocs(collection(store, "classes", classId, "sessions")),
+        getDocs(collection(store, "classes", classId, "diary")),
+        fingerprint(name)]);
+      // The parent page goes first, on its own: it may already have been turned off
+      if (parentLink) await deleteDoc(doc(store, "parents", parentLink)).catch(() => {});
+      const refs = [
+        ...sessions.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
+        ...diary.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
+        ...["progress", "assign", "pupils"].map(c => doc(store, "classes", classId, c, key)),
+        doc(store, "classes", classId, "live", pupilKey(name))
+      ];
+      // Firestore takes up to 500 changes at once
+      for (let i = 0; i < refs.length; i += 400) {
+        const batch = writeBatch(store);
+        refs.slice(i, i + 400).forEach(r => batch.delete(r));
+        await batch.commit();
+      }
+      return sessions.docs.filter(d => same(d.data().pupil)).length;
+    },
+
     async stopParent(classId, pupilName, link) {
       const batch = writeBatch(store);
       batch.delete(doc(store, "parents", link));

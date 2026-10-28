@@ -1869,7 +1869,8 @@
         </div>
         <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
           ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}
-          ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}</div>
+          ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}
+          <button class="btn small danger" data-delete-pupil="${esc(r.key)}">🗑️ Delete pupil and records</button></div>
       </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}
       <div class="row t-row">
         <label class="t-class">Show <select id="days">${PERIODS.map(([d, t]) => `<option value="${d}"${d === days ? " selected" : ""}>${t}</option>`).join("")}</select></label>
@@ -1902,7 +1903,12 @@
           <tbody>${pupils.map(p => { const rows = cfeRows(sessions, p.pupil);
             return `<tr><td class="who">${esc(p.pupil)}</td>${organisers.map(o => { const r = rows.find(x => x.organiser === o);
               return `<td>${r ? `<span class="cfe ${r.status.key}">${esc(r.status.text)}</span><br><span class="meta">${r.pct}% · ${r.items} q</span>` : "—"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>`;
-      })() : ""}`;
+      })() : ""}
+      <h2 class="t-h2">🧹 Old records</h2>
+      <p class="hint">PopSpell's privacy page promises to delete a child's records within 12 months of their last lesson.
+        This checks every result ever saved in ${esc(current.name)} and lists anyone with no lessons or results for over a year.</p>
+      <button class="btn" id="checkOld">Check for records over 12 months old</button>
+      <div id="oldRecords"></div>`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
     body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
@@ -1948,6 +1954,58 @@
         drawPupils(body);
       } catch (err) { showError(err); }
     }; });
+    // Deleting is for good, so the teacher types the pupil's name to confirm
+    async function deletePupil(name, record, button) {
+      const typed = prompt(`This permanently deletes everything PopSpell holds about ${name} in ${current.name}: their results, saved progress, plans, lesson notes, parent page and roster details. It can't be undone.\n\nType ${name} to confirm.`);
+      if (typed == null) return;
+      if (!sameName(typed, name)) return notice("The name didn't match, so nothing was deleted.");
+      if (button) button.disabled = true;
+      try {
+        const n = await cloud.deletePupilRecords(current.id, name, record && record.parentLink);
+        // Their lesson comes out of Google Calendar too, while Google's permission lasts
+        if (record && calendarPrefs().google) {
+          const token = await cloud.calendarToken();
+          if (token) await gcalRemove(token, record).catch(() => {});
+        }
+        await drawPupils(body);
+        notice(`🗑️ Deleted everything PopSpell held about ${name} (${plural(n, "result", "results")}).`);
+      } catch (err) { if (button) button.disabled = false; showError(err); }
+    }
+    body.querySelectorAll("[data-delete-pupil]").forEach(b => {
+      b.onclick = () => { const r = roster.find(x => x.key === b.dataset.deletePupil); deletePupil(r.name, r, b); };
+    });
+    // Everyone with results or on the roster, and when they last had a lesson or a result
+    $("#checkOld").onclick = async () => {
+      const button = $("#checkOld"), out = $("#oldRecords");
+      button.disabled = true;
+      out.innerHTML = `<div class="empty">Checking every result in ${esc(current.name)}…</div>`;
+      try {
+        const all = await cloud.sessions(current.id, 3650);
+        const yearAgo = Date.now() - 365 * DAY_MS;
+        const people = new Map();
+        const add = n => {
+          const k = String(n || "").trim().toLowerCase();
+          if (!people.has(k)) people.set(k, { name: String(n || "").trim(), last: 0, results: 0, record: null });
+          return people.get(k);
+        };
+        roster.forEach(r => {
+          const p = add(r.name);
+          p.record = r;
+          if (r.nextLessonDate) p.last = Math.max(p.last, new Date(`${r.nextLessonDate}T12:00:00`).getTime());
+        });
+        all.forEach(x => { const p = add(x.pupil); p.results++; p.last = Math.max(p.last, x.at); });
+        const rows = [...people.values()].filter(p => p.name).map(p => Object.assign(p, { old: !!p.last && p.last < yearAgo }))
+          .sort((a, b) => b.old - a.old || a.last - b.last);
+        const old = rows.filter(p => p.old).length;
+        out.innerHTML = `<p class="pill${old ? " stuck" : ""}">${old ? `⚠ ${plural(old, "pupil has", "pupils have")} had no lessons or results for over 12 months` : "✓ Nobody's records are over 12 months old"}</p>
+          ${rows.length ? `<div class="t-scroll"><table class="t-table old-table"><thead><tr><th>Pupil</th><th>Last lesson or result</th><th>Results</th><th></th></tr></thead><tbody>
+          ${rows.map((p, i) => `<tr${p.old ? ` class="old-row"` : ""}><td class="who">${esc(p.name)}${p.record ? "" : ` <span class="meta">(not on the roster)</span>`}</td>
+            <td>${p.last ? esc(longDay(p.last)) : "No lessons yet"}${p.old ? " ⚠ over 12 months" : ""}</td><td>${p.results}</td>
+            <td><button class="btn small danger" data-old="${i}">🗑️ Delete</button></td></tr>`).join("")}</tbody></table></div>` : ""}`;
+        out.querySelectorAll("[data-old]").forEach(b => { b.onclick = () => deletePupil(rows[b.dataset.old].name, rows[b.dataset.old].record, b); });
+      } catch (err) { out.innerHTML = ""; showError(err); }
+      button.disabled = false;
+    };
     // Uses what's on the card now, saved or not
     body.querySelectorAll("[data-calendar]").forEach(b => { b.onclick = () => {
       const card = b.closest(".roster-card");

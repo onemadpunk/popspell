@@ -115,7 +115,7 @@ Google emails the project owner with any questions. Until it's approved, everyth
 - Use first names plus an initial, or pupil codes (e.g. *Owl 3*), rather than full names.
 - The data is held by Google (Firebase) in London. The business is the *data controller*, and Google is its *processor*. Firebase's data processing terms cover this; tell parents in the business's privacy notice that spelling results are stored this way.
 - Pupils' devices can only add results to a class whose code they know. They can never read other pupils' results or the class list.
-- To delete old records, use **Firestore Database → Data** in the Firebase console: `classes → (class code) → sessions`.
+- **Deleting records:** the privacy page promises deletion within 12 months of a child's last lesson. In **Pupils**, **🧹 Old records → Check for records over 12 months old** lists everyone (including names typed on a device but not on the roster) with their last lesson or result, flagging anyone over a year. **🗑️ Delete** (or **Delete pupil and records** on a roster card) removes the child's results, saved progress, live status, plans, lesson notes, parent page, roster record and Google Calendar lesson, after the teacher types the child's name to confirm. It can't be undone. Do this check once a term.
 
 ## Free plan limits
 
