@@ -859,10 +859,12 @@
 
   /* ---------- Home: Pip's welcome, today's work, the sound journey and more to explore ---------- */
 
-  // Pip, the PopSpell mascot (art in assets/brand); mood is an animation: bob, hop or cheer
-  const pipHTML = (size, mood = "bob", says = "") => `
+  // Pip, the PopSpell mascot (art in assets/brand). pose is the picture: mascot (welcome), hop
+  // (on the journey), listen (before starting), think (checks, sounds, stories) or celebrate
+  // (results, bests). mood is the animation: bob, hop or cheer.
+  const pipHTML = (size, mood = "bob", says = "", pose = "mascot") => `
     <div class="pip-wrap pip-${size}">
-      <img class="pip ${mood}" src="assets/brand/${size === "small" ? "pip-small" : "pip"}.webp" alt="Pip" width="${size === "small" ? 80 : 180}" height="${size === "small" ? 80 : 180}">
+      <img class="pip ${mood}" src="assets/brand/pip-${pose}${size === "small" ? "-small" : ""}.webp" alt="Pip" width="${size === "small" ? 80 : 180}" height="${size === "small" ? 80 : 180}">
       ${says ? `<p class="speech" aria-live="polite">${says}</p>` : ""}
     </div>`;
 
@@ -905,7 +907,7 @@
       <ol class="journey-map">${STAGES.map((st, i) => {
         const done = stageDone(st, b);
         return `<li class="stop${i === homeStage ? " open" : ""}${done === st.lists.length ? " finished" : ""}" style="--accent:${esc(st.colour)}">
-          ${i === here ? `<img class="stop-pip hop" src="assets/brand/pip-small.webp" alt="" width="44" height="44">` : ""}
+          ${i === here ? `<img class="stop-pip hop" src="assets/brand/pip-hop-small.webp" alt="" width="44" height="44">` : ""}
           <button type="button" class="stop-btn" data-stage="${i}" aria-expanded="${i === homeStage}">
             <span class="stop-num">${done === st.lists.length ? "★" : i + 1}</span>
             <span class="stop-name">${esc(st.stage.replace(/^Stage \d+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
@@ -1079,7 +1081,7 @@
     app.innerHTML = `
       <section class="panel sounds-page">
         <a class="back" href="#/">← All lists</a>
-        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1></div>
+        <div class="page-head">${pipHTML("small", "hop", "", "think")}<h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1></div>
         <p class="meta">⭐ ${count("secure")} secure · 🌱 ${count("learning")} learning · 🔶 ${count("tricky")} to practise</p>
         <p class="hint">Spell a sound right first time on two different days to win its star. Tap a sound to hear it and practise it.</p>
         <div class="sound-detail" id="soundDetail" hidden></div>
@@ -1156,7 +1158,7 @@
     app.innerHTML = `
       <section class="panel sounds-page stories-page">
         <a class="back" href="#/">← All lists</a>
-        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s stories` : "My stories"}</h1></div>
+        <div class="page-head">${pipHTML("small", "hop", "", "think")}<h1>${name ? `${esc(name)}'s stories` : "My stories"}</h1></div>
         <p class="hint">Stories that only use sounds you've practised, so you can read them all by yourself. ⭐ means every sound in it is one of your star sounds.</p>
         <h2>Ready to read</h2>
         ${ready.length ? `<div class="grid">${ready.map(card).join("")}</div>`
@@ -1224,7 +1226,7 @@
     app.innerHTML = `
       <section class="panel sounds-page bests-page">
         <a class="back" href="#/">← All lists</a>
-        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s bests` : "My bests"}</h1></div>
+        <div class="page-head">${pipHTML("small", "hop", "", "celebrate")}<h1>${name ? `${esc(name)}'s bests` : "My bests"}</h1></div>
         <p class="hint">Every word and question you try is a go, right or wrong. Beat your own best. Nobody else's counts!</p>
         <div class="bests-stats">
           <div><b>${w.thisWeek}</b><span>${w.thisWeek === 1 ? "go" : "goes"} this week</span></div>
@@ -1251,6 +1253,7 @@
       <section class="panel start" style="--accent:${esc(list.accent)}">
         <a class="back" href="#/">← All lists</a>
         ${previewBanner()}
+        <div class="start-pip">${pipHTML("small", "bob", "", "listen")}</div>
         <p class="eyebrow">${esc(list.stage || "")}</p>
         <h1>${esc(list.title)}</h1>
         ${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
@@ -1564,7 +1567,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
-        ${pipHTML("big", "cheer")}
+        ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${esc(headline)}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
@@ -1631,6 +1634,7 @@
       <section class="panel start" style="--accent:${esc(act.colour)}">
         <a class="back" href="#/">← All activities</a>
         ${previewBanner()}
+        <div class="start-pip">${pipHTML("small", "bob", "", "listen")}</div>
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
@@ -2256,7 +2260,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
         ${previewBanner()}
-        ${pipHTML("big", "cheer")}
+        ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
@@ -2364,6 +2368,7 @@
       <section class="panel start" style="--accent:${esc(c.accent)}">
         <a class="back" href="#/">← All lists</a>
         ${previewBanner()}
+        <div class="start-pip">${pipHTML("small", "bob", "", "think")}</div>
         <p class="eyebrow">${c.icon} Starting check</p>
         <h1>${esc(c.title.replace("Starting check: ", "Let's see what you know: "))}</h1>
         <p class="tip">${esc(c.blurb)}</p>
@@ -2471,7 +2476,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
-        ${pipHTML("big", "cheer")}
+        ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>All done, thank you!</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ${plural(n, session.check === "spelling" ? "word" : "question", session.check === "spelling" ? "words" : "questions")}</p>
         <p class="tip">You worked really hard. Your teacher will use this to choose the right work for you.</p>

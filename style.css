@@ -258,7 +258,9 @@ body {
 .summary .pip-big .pip { width: 120px; }
 .page-head { display: flex; align-items: center; gap: 14px; }
 .page-head h1 { margin: 0; }
-.page-head .pip-small .pip { width: 64px; }
+.page-head .pip-small .pip, .parent-page .page-head > .pip { width: 64px; }
+.start-pip { display: flex; justify-content: center; margin: -4px 0 2px; }
+.start-pip .pip { width: 72px; }
 
 /* More to explore */
 .area-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; padding: 4px 2px 8px; }

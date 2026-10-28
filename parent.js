@@ -26,7 +26,7 @@
     app.innerHTML = `
       <section class="panel parent-page">
         <p class="eyebrow">👪 Progress at home</p>
-        <h1>${esc(name)}'s progress</h1>
+        <div class="page-head"><img class="pip" src="assets/brand/pip-celebrate-small.webp" alt="Pip" width="64" height="64"><h1>${esc(name)}'s progress</h1></div>
         <p class="meta">${s.teacher ? `From ${esc(s.teacher)} · ` : ""}updated ${esc(day(p.updated))}</p>
 
         ${p.note ? `<div class="parent-note"><b>💬 A note from ${esc(s.teacher || "the tutor")}</b><p>${esc(p.note)}</p></div>` : ""}

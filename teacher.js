@@ -941,7 +941,7 @@
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d6e5f7;border-radius:18px;border-collapse:separate;">
 <tr><td style="padding:20px 24px 14px;text-align:center;border-bottom:4px solid #ffc837;">
   <img src="${SITE_ROOT}assets/brand/wordmark.png" alt="PopSpell" width="150" style="display:block;margin:0 auto 8px;border:0;width:150px;height:auto;">
-  <img src="${SITE_ROOT}assets/brand/children.png" alt="" width="120" style="display:block;margin:0 auto;border:0;width:120px;height:auto;">
+  <img src="${SITE_ROOT}assets/brand/pip-mascot.png" alt="Pip" width="110" style="display:block;margin:0 auto;border:0;width:110px;height:auto;">
 </td></tr>
 <tr><td style="padding:22px 28px 10px;">
   <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;color:#0b2e6b;">${title}</h1>
