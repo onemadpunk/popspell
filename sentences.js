@@ -7,7 +7,7 @@
    • Keep them short and use no double quotes (") inside a sentence.
    • A word with no sentence here is simply read on its own.
 
-  New sentences are recorded in the Alba voice automatically on GitHub.
+  New sentences are recorded in the Eponine voice automatically on GitHub.
 */
 window.SENTENCES = {
   // Short a

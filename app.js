@@ -189,7 +189,7 @@
 
   // Resolves when speaking finishes (or after a safety timeout, as some browsers never fire onend)
   function speak(text, rate = settings.rate) {
-    stopAlba();
+    stopRecorded();
     return new Promise(resolve => {
       if (!synth) return resolve();
       let timer;
@@ -214,20 +214,20 @@
   // Simultaneous Oral Spelling: the word, then the letters sound by sound, then the word
   const sos = item => `${item.spelling}. ${item.chunks.map(ch => letterNames(ch.text)).join(". ")}. ${item.spelling}.`;
 
-  /* ---------- Alba: the recorded Scottish voice (made by tools/make_audio.py) ---------- */
+  /* ---------- Recorded voice (Pocket TTS "eponine", made by tools/make_audio.py) ---------- */
 
-  const ALBA = Object.assign({ words: [], letters: false, phrases: [], sentences: [] }, window.ALBA_AUDIO);
-  const albaWords = new Set(ALBA.words);
-  const albaPhrases = new Set(ALBA.phrases);
-  const albaSentences = new Set(ALBA.sentences);
-  const ALBA_ID = "alba";
-  const useAlba = () => albaWords.size > 0 && (settings.voice === ALBA_ID || !settings.voice);
+  const RECORDED = Object.assign({ words: [], letters: false, phrases: [], sentences: [] }, window.POPSPELL_AUDIO);
+  const recWords = new Set(RECORDED.words);
+  const recPhrases = new Set(RECORDED.phrases);
+  const recSentences = new Set(RECORDED.sentences);
+  const RECORDED_ID = "alba"; // the saved setting's name from before; kept so devices keep their choice
+  const useRecorded = () => recWords.size > 0 && (settings.voice === RECORDED_ID || !settings.voice);
 
   // One shared player: iPads only allow sound from an element that first played during a tap
   const player = new Audio();
   player.preload = "auto";
   let playToken = 0;
-  function stopAlba() {
+  function stopRecorded() {
     playToken++;
     player.pause();
   }
@@ -262,13 +262,13 @@
   const orSpeak = (steps, text, rate) => playSteps(steps).then(ok => (ok === false ? speak(text, rate) : ok));
 
   const wordClip = w => `audio/words/${encodeURIComponent(w.toLowerCase())}.mp3`;
-  const hasWordClip = w => useAlba() && albaWords.has(w.toLowerCase());
-  const hasLetterClips = text => useAlba() && ALBA.letters && /^[a-z]+$/i.test(text);
+  const hasWordClip = w => useRecorded() && recWords.has(w.toLowerCase());
+  const hasLetterClips = text => useRecorded() && RECORDED.letters && /^[a-z]+$/i.test(text);
   const letterSteps = text => text.toLowerCase().split("").flatMap((c, n) => (n ? [150, `audio/letters/${c}.mp3`] : [`audio/letters/${c}.mp3`]));
 
   const sayWord = w => (hasWordClip(w) ? orSpeak([wordClip(w)], w) : speak(w));
   const sayLetters = text => (hasLetterClips(text) ? orSpeak(letterSteps(text), letterNames(text)) : speak(letterNames(text)));
-  const sayPhrase = ([key, text]) => (useAlba() && albaPhrases.has(key) ? orSpeak([`audio/phrases/${key}.mp3`], text) : speak(text));
+  const sayPhrase = ([key, text]) => (useRecorded() && recPhrases.has(key) ? orSpeak([`audio/phrases/${key}.mp3`], text) : speak(text));
   function saySOS(item) {
     const w = item.spelling;
     if (!hasWordClip(w) || !hasLetterClips(w)) return speak(sos(item), settings.rate * 0.9);
@@ -279,7 +279,7 @@
   }
 
   const sentenceClip = w => `audio/sentences/${encodeURIComponent(w.toLowerCase())}.mp3`;
-  const hasSentenceClip = item => hasWordClip(item.spelling) && albaSentences.has(item.spelling.toLowerCase());
+  const hasSentenceClip = item => hasWordClip(item.spelling) && recSentences.has(item.spelling.toLowerCase());
   const wantSentence = item => settings.sentences && !!item.sentence;
 
   // Like a spelling test: the word, the word in its sentence, then the word again
@@ -515,7 +515,7 @@
     timers.forEach(clearTimeout);
     timers = [];
     if (synth) synth.cancel();
-    stopAlba();
+    stopRecorded();
     return ++phase;
   }
 
@@ -1282,10 +1282,10 @@
   function fillVoiceSelect() {
     const sel = $("#setVoice");
     if (!sel) return;
-    const alba = albaWords.size ? `<option value="${ALBA_ID}">Alba — Scottish (recorded, recommended)</option>` : "";
+    const recorded = recWords.size ? `<option value="${RECORDED_ID}">Eponine (recorded, recommended)</option>` : "";
     const device = voices.map(v => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("");
-    sel.innerHTML = alba + device || `<option value="">No voices found</option>`;
-    if (useAlba()) sel.value = ALBA_ID;
+    sel.innerHTML = recorded + device || `<option value="">No voices found</option>`;
+    if (useRecorded()) sel.value = RECORDED_ID;
     else if (currentVoice()) sel.value = currentVoice().voiceURI;
   }
 
@@ -1333,7 +1333,7 @@
     document.head.appendChild(face);
   }
   $("#siteTitle").textContent = SITE.title;
-  $("#credits").hidden = !albaWords.size;
+  $("#credits").hidden = !recWords.size;
   applyTeacherMode();
   if (synth) {
     refreshVoices();

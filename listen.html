@@ -70,9 +70,9 @@
       const KEY = "popspell-listen-v1";
       const $ = id => document.getElementById(id);
       const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-      const ALBA = Object.assign({ words: [], sentences: [] }, window.ALBA_AUDIO);
-      const hasWord = new Set(ALBA.words);
-      const hasSentence = new Set(ALBA.sentences);
+      const RECORDED = Object.assign({ words: [], sentences: [] }, window.POPSPELL_AUDIO);
+      const hasWord = new Set(RECORDED.words);
+      const hasSentence = new Set(RECORDED.sentences);
       const SENTENCES = window.SENTENCES || {};
       const state = (() => { try { return Object.assign({ heard: {}, bad: {} }, JSON.parse(localStorage.getItem(KEY))); } catch { return { heard: {}, bad: {} }; } })();
       const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* not saved */ } };
@@ -137,7 +137,7 @@
       function draw() {
         const onlyBad = $("onlyBad").checked;
         const hideHeard = $("hideHeard").checked;
-        const letters = ALBA.letters ? `
+        const letters = RECORDED.letters ? `
           <section class="list-block"><h2>Letter names (used when a word is spelled out)</h2>
             <div class="letter-row">${"abcdefghijklmnopqrstuvwxyz".split("").map(c =>
               `<button class="play letter${state.heard[`l:${c}`] ? " played" : ""}${state.bad[`letter ${c}`] ? " bad-letter" : ""}" data-letter="${c}">▶ ${c.toUpperCase()}</button>`).join("")}</div>

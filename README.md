@@ -91,20 +91,20 @@ fontFile: "fonts/SassoonPrimary.woff2"
 
 ## Voices
 
-### Alba — the Scottish voice (default)
+### Eponine — the recorded voice (default)
 
-Every word in the lists, the letter names and the praise phrases are pre-recorded with **Alba**, a Scottish neural voice from the [Piper](https://github.com/rhasspy/piper) project, trained on the Alba speech corpus from the University of Edinburgh (CC BY 4.0 — the credit line at the bottom of the site covers this). The recordings are small MP3s in the `audio` folder, so they play instantly on any device.
+Every word in the lists, every sentence, the letter names and the praise phrases are pre-recorded with **Eponine**, a voice from [Pocket TTS](https://github.com/kyutai-labs/pocket-tts) by Kyutai, based on the VCTK corpus from the University of Edinburgh (both CC BY 4.0, which the credit line at the bottom of the site covers). The recordings are small MP3s in the `audio` folder, so they play instantly on any device.
 
-**New words get recorded automatically.** When `words.js` is changed on GitHub, the *Make alba recordings* action (in the repository's **Actions** tab) records any new words and adds them to the site within a few minutes. To record on your own computer instead:
+**New words get recorded automatically.** When `words.js` or `sentences.js` is changed on GitHub, the *Make recordings* action (in the repository's **Actions** tab) records any new or changed words and sentences, and adds them to the site within a few minutes. To record on your own computer instead:
 
 ```
-pip install piper-tts lameenc
-python tools/make_audio.py --model voice/en_GB-alba-medium.onnx
+pip install pocket-tts lameenc
+python tools/make_audio.py
 ```
 
-(download `en_GB-alba-medium.onnx` and `.onnx.json` from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/alba/medium) into a `voice` folder first). Words in **Make a list** links that aren't in any list use the device's own voice.
+Words in **Make a list** links that aren't in any list use the device's own voice.
 
-**Checking the recordings:** open **popspell.com/listen.html** (also linked from Settings). Play each word and sentence, mark any that sound wrong with a note, then copy the list. Those words get fixed in `tools/make_audio.py`: either a new take (`--only crash`), or a different way of saying it in `WORD_FIXES` (a respelling, or exact sounds such as `"[[ kɹˈaʃ ]]"`). Takes approved by ear go in `APPROVED`, so they're never replaced.
+**Checking the recordings:** open **popspell.com/listen.html** (also linked from Settings). Play each word, sentence and letter, mark any that sound wrong with a note, then copy the list. Those words get fixed in `tools/make_audio.py`: either a new take (`--only crash`), or a different way of writing it for the voice in `WORD_FIXES`. Takes approved by ear go in `APPROVED`, so they're never replaced.
 
 ### Device voices (fallback)
 

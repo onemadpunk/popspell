@@ -1,6 +1,6 @@
-# Records any new words in words.js with the alba voice and commits the MP3s,
-# so editing a list on github.com is all it takes to get recordings for it.
-name: Make alba recordings
+# Records any new or changed words and sentences with Pocket TTS (voice "eponine") and commits
+# the MP3s, so editing a list on github.com is all it takes to get recordings for it.
+name: Make recordings
 
 on:
   push:
@@ -20,29 +20,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Keep the voice between runs
+      - name: Keep the voice model between runs
         uses: actions/cache@v4
         with:
-          path: voice
-          key: piper-en_GB-alba-medium
+          path: ~/.cache/huggingface
+          key: pocket-tts-eponine
 
-      - name: Install Piper and the MP3 encoder
-        run: pip install piper-tts lameenc
-
-      - name: Download the alba voice (Piper, CC BY 4.0)
+      - name: Install Pocket TTS (CPU only) and the MP3 encoder
         run: |
-          mkdir -p voice
-          base=https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/alba/medium
-          for f in en_GB-alba-medium.onnx en_GB-alba-medium.onnx.json; do
-            [ -f "voice/$f" ] || curl -fsSL -o "voice/$f" "$base/$f"
-          done
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install pocket-tts lameenc
 
-      - name: Record new words
-        run: python tools/make_audio.py --model voice/en_GB-alba-medium.onnx
+      - name: Record new words and sentences
+        run: python tools/make_audio.py
 
       - name: Commit the recordings
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add audio
-          git diff --cached --quiet || { git commit -m "Add alba recordings for new words" && git push; }
+          git diff --cached --quiet || { git commit -m "Add recordings for new words" && git push; }
