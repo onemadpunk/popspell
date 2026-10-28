@@ -616,9 +616,53 @@ window.PopActivities = (() => {
     passage: s, decodable: true, stage: s.stage, make: storyQuestions(s, false)
   }));
 
+  /* ---------- Sound Hopper: count the beats, then map one grapheme to each sound ---------- */
+
+  const MAP_ALTERNATIVES = {
+    a: ["e", "o"], e: ["i", "a"], i: ["e", "u"], o: ["a", "u"], u: ["o", "i"],
+    sh: ["ch", "th"], ch: ["sh", "tch"], th: ["sh", "ch"],
+    ai: ["ay", "a_e"], ay: ["ai", "a_e"], a_e: ["ai", "ay"],
+    ee: ["ea", "e_e"], ea: ["ee", "e_e"], e_e: ["ee", "ea"],
+    ar: ["or", "er"], or: ["ar", "ur"], er: ["ir", "ur"], ir: ["er", "ur"], ur: ["er", "ir"],
+    c: ["k", "ck"], k: ["c", "ck"], ck: ["c", "k"],
+    b: ["d", "p"], d: ["b", "t"], p: ["b", "t"],
+    f: ["v", "th"], v: ["f", "w"], m: ["n", "w"], n: ["m", "ng"],
+    s: ["z", "sh"], t: ["d", "th"], g: ["j", "k"], h: ["ch", "sh"],
+    l: ["r", "n"], r: ["l", "w"], w: ["v", "r"], y: ["i", "ee"]
+  };
+  const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || ["a", "e"])]
+    .filter((v, i, a) => a.indexOf(v) === i)).slice(0, 3);
+  const trailWords = ids => {
+    const lists = (window.PopSpell || {}).LISTS || {};
+    return shuffle(ids.flatMap(id => (lists[id] || {}).items || [])
+      .filter(it => !it.whole && it.tokens.length >= 2 && it.tokens.length <= 5))
+      .slice(0, 6).map(it => ({
+        kind: "map", prompt: "Listen. Say each sound. Build the word, one sound at a time.",
+        answer: it.spelling, spelling: it.spelling, tokens: it.tokens,
+        optionsBySlot: it.tokens.map(mapOptions),
+        say: { word: it.spelling.toLowerCase() },
+        label: it.spelling, skill: "sound mapping"
+      }));
+  };
+  const trailGames = [
+    { id: "g-hopper-short", title: "Sound Hopper: short vowels", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Tap the beats you hear. Build each sound into a bridge and help Pip cross the river.",
+      make: () => trailWords(["short-a", "short-e", "short-i", "short-o", "short-u"]) },
+    { id: "g-hopper-digraphs", title: "Sound Hopper: two-letter sounds", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Count the sounds, then build a bridge with sh, ch, th and more.",
+      make: () => trailWords(["sh", "ch", "th"]) },
+    { id: "g-hopper-long-a", title: "Sound Hopper: long a", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Hear the beats and choose between ai, ay and a–e to make a bridge.",
+      make: () => trailWords(["ai", "ay", "a-e"]) },
+    { id: "g-hopper-r", title: "Sound Hopper: r sounds", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "In Scottish mode, hear the vowel then r as two sounds. Try the same words in English mode to compare.",
+      make: () => trailWords(["ar", "or", "er-ir-ur"]) }
+  ];
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
+    { id: "games", title: "Sound Hopper games", colour: "#0F766E", icon: "🎮", activities: trailGames },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },

@@ -239,6 +239,78 @@ button.box { cursor: pointer; }
 .box.lit { background: color-mix(in srgb, var(--accent) 22%, white); border-color: var(--accent); }
 .box.ok { background: var(--good-soft); border-color: var(--good); color: var(--good); }
 .box.bad { background: var(--oops-soft); border-color: var(--oops); color: var(--oops); }
+
+/* Sound Hopper: beat-counting, bridge building and a visible crossing. */
+.game-trail { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 16px 0 22px; flex-wrap: wrap; }
+.trail-stone { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%;
+  border: 3px solid #c5d7d5; background: #fff; color: var(--muted); font-weight: 900; }
+.trail-stone.done { background: var(--good-soft); border-color: var(--good); color: var(--good); }
+.trail-stone.current { background: #fff2b8; border-color: var(--accent); color: var(--ink); transform: scale(1.12); }
+.hopper { background: linear-gradient(160deg, #fffcf4, #f1fcff); }
+.hopper-title { margin: 18px 0 4px; }
+.hopper-instruction { font-size: 1.2rem; font-weight: 800; margin: 0 0 12px; }
+.hopper-scene { position: relative; height: 218px; overflow: hidden; border-radius: 25px;
+  background: radial-gradient(circle at 75% 20%, #fff6a9 0 8%, transparent 9%), linear-gradient(#c3f5ff, #f2feff 62%, #76d1d5 63%); }
+.hopper-river { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; color: #eaffff;
+  background: repeating-linear-gradient(170deg, #12a9bb 0 18px, #20b8c8 18px 35px); font-size: 1.7rem; letter-spacing: 1.4em; }
+.hopper-bank { position: absolute; bottom: 0; width: 20%; height: 86px; z-index: 2;
+  background: #77c653; border-top: 12px solid #b4e66e; }
+.hopper-bank.left { left: 0; border-radius: 0 28px 0 0; }
+.hopper-bank.right { right: 0; border-radius: 28px 0 0 0; }
+.hopper-bridge { display: none; position: absolute; left: 19%; right: 19%; bottom: 48px; z-index: 3;
+  align-items: end; gap: 4px; }
+.hopper-scene.mapping .hopper-bridge { display: flex; }
+.bridge-plank { flex: 1; min-width: 0; height: 28px; border: 2px dashed #e8f8ff; border-radius: 8px;
+  background: rgba(255,255,255,.32); color: #062b58; font-family: var(--reading-font); font-size: 1.15rem; font-weight: 900; }
+.bridge-plank.built { height: 48px; border: 3px solid #17416d; background: #ffe36b; box-shadow: 0 5px 0 #9b7534; }
+.bridge-plank.vowel { background: #ffafcc; }
+.bridge-plank.digraph { background: #a7b9ff; }
+.bridge-plank.consonant { background: #ffe36b; }
+.hopper-creature { position: absolute; left: 8%; bottom: 75px; z-index: 4; width: 70px; height: 69px;
+  border-radius: 44% 44% 42% 42%; background: linear-gradient(145deg, #ffe46a, #ff9e51);
+  border: 3px solid #173665; box-shadow: 0 7px 0 #d46d4b; animation: hopper-bob 1s ease-in-out infinite alternate; }
+.hopper-ear { position: absolute; top: -19px; width: 18px; height: 27px; border: 3px solid #173665;
+  border-radius: 80% 80% 20% 20%; background: #ffc95e; }
+.hopper-ear.one { left: 11px; transform: rotate(-17deg); }
+.hopper-ear.two { right: 11px; transform: rotate(17deg); }
+.hopper-eye { position: absolute; top: 23px; width: 8px; height: 12px; border-radius: 50%; background: #173665; }
+.hopper-eye.one { left: 17px; }.hopper-eye.two { right: 17px; }
+.hopper-cheek { position: absolute; left: 30px; top: 40px; width: 10px; height: 6px; border-bottom: 3px solid #173665; border-radius: 50%; }
+.hopper-foot { position: absolute; bottom: -10px; width: 20px; height: 12px; border: 3px solid #173665; border-radius: 10px; background: #ffc65b; }
+.hopper-foot.one { left: 7px; }.hopper-foot.two { right: 7px; }
+.hopper-scene.crossed .hopper-creature { animation: hopper-cross 1.3s ease-in-out forwards; }
+.hopper-reward { position: absolute; right: 7%; top: 25px; z-index: 5; font-size: 1.5rem; font-weight: 900; color: #173665; }
+.hopper-wave { position: absolute; left: 15%; top: 25px; display: flex; align-items: center; gap: 5px; height: 35px; }
+.hopper-wave span { width: 6px; height: 12px; border-radius: 99px; background: #145b9d; }
+.hopper-wave.pulse span { animation: hopper-wave .55s ease-in-out 3 alternate; }
+.hopper-wave.pulse span:nth-child(2) { animation-delay: .12s; }.hopper-wave.pulse span:nth-child(3) { animation-delay: .24s; }
+@keyframes hopper-bob { to { transform: translateY(-6px); } }
+@keyframes hopper-cross { 0% { left: 8%; transform: translateY(0); } 35% { left: 39%; transform: translateY(-55px); }
+  70% { left: 66%; transform: translateY(-30px); } 100% { left: calc(100% - 80px); transform: translateY(0); } }
+@keyframes hopper-wave { to { height: 33px; background: #ff4081; } }
+.hopper-beats { margin: 16px auto 0; }
+.beat-pad { width: 136px; height: 136px; border-radius: 50%; border: 6px solid #173665; background: linear-gradient(145deg, #ff8fc1, #ff4081);
+  color: #fff; box-shadow: 0 9px 0 #9c1f56; font: inherit; font-size: 2.5rem; font-weight: 900; cursor: pointer; }
+.beat-pad span { display: block; font-size: 1rem; }
+.beat-pad:active { transform: translateY(6px); box-shadow: 0 3px 0 #9c1f56; }
+.beat-dots { min-height: 42px; margin: 16px 0; color: #173665; font-size: 1.5rem; font-weight: 900; letter-spacing: .2em; }
+.beat-pad:focus-visible { outline: 4px solid #173665; outline-offset: 5px; }
+.map-game { max-width: 680px; margin: 16px auto 0; }
+.map-slots, .map-choices { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.map-slots { margin: 18px auto 22px; }
+.map-slot { min-width: 70px; min-height: 82px; padding: 6px 12px; border: 3px solid #78cbd0; border-radius: 18px;
+  background: #effaff; color: var(--ink); font: inherit; font-weight: 800; cursor: pointer; display: flex;
+  flex-direction: column; align-items: center; justify-content: center; }
+.map-slot.active { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, white); }
+.map-slot.ok { border-color: var(--good); background: var(--good-soft); }
+.map-number { font-size: .75rem; color: var(--muted); }
+.map-value { font-family: var(--reading-font); font-size: clamp(1.3rem, 5vw, 2rem); }
+.map-choices { min-height: 68px; margin-bottom: 22px; }
+.map-choice { min-width: 72px; min-height: 58px; padding: 6px 16px; border: 3px solid var(--line); border-radius: 16px;
+  background: #fff; color: var(--ink); font: inherit; font-family: var(--reading-font); font-size: 1.5rem;
+  font-weight: 800; cursor: pointer; }
+.map-choice:hover, .map-choice.chosen { border-color: var(--accent); background: #effaff; }
+.map-slot:focus-visible, .map-choice:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
 .tip-inline { display: block; margin-top: 6px; font-weight: 400; color: var(--ink); }
 
 .timer { height: 12px; background: #efebe1; border-radius: 999px; overflow: hidden; margin: 16px auto 0; max-width: 420px; }
@@ -568,6 +640,7 @@ a.me-card:hover { border-color: var(--primary); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; }
   .btn, .list-card, .bar span { transition: none; }
+  .hopper-scene.crossed .hopper-creature { left: calc(100% - 80px); }
 }
 
 /* ---------- Print (results sheet or a child's worksheet) ---------- */

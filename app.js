@@ -358,7 +358,7 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? r.wrong.length + 1 : null,
+        triesUsed: r.correct ? (r.item.kind === "map" ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
         // Starting checks: the list or activity each word was testing
@@ -814,6 +814,16 @@
         <div class="pupil" id="homePupil"></div>
         <div class="me-cards" id="meCards"></div>
       </section>
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id === "games").map(area => `
+        <section class="stage" style="--accent:${esc(area.colour)}">
+          <h2>${area.icon} ${esc(area.title)}</h2>
+          <div class="grid">${area.activities.map(a => `
+            <a class="list-card" href="#/activity/${encodeURIComponent(a.id)}">
+              <span class="lc-example" aria-hidden="true">${a.icon}</span>
+              <span class="lc-title">${esc(a.title)}</span>
+              <span class="lc-count">${esc(a.level)} level · 6 words</span>
+            </a>`).join("")}</div>
+        </section>`).join("")}
       ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${getPupil() ? "Looking for today's work…" : "Type your name to see it."}</p>` : STAGES.map(stage => `
         <section class="stage" style="--accent:${esc(stage.colour)}">
           <h2>${esc(stage.stage)}</h2>
@@ -826,7 +836,7 @@
               </a>`).join("")}
           </div>
         </section>`).join("")}
-      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories").map(area => `
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories" && area.id !== "games").map(area => `
         <section class="stage" style="--accent:${esc(area.colour)}">
           <h2>${area.icon} ${esc(area.title)}</h2>
           <div class="grid">
@@ -885,6 +895,7 @@
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
       <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
       <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>
+      ${locked ? "" : `<a class="me-card" href="#/activity/g-hopper-short"><span class="me-icon" aria-hidden="true">🎮</span><span><b>Play Sound Hopper</b> · tap beats and build bridges</span></a>`}
       ${storyActivities().length && !locked ? `<a class="me-card" href="#/stories"><span class="me-icon" aria-hidden="true">📚</span><span><b>My stories</b> · ${readyStories(prog).length} ready to read</span></a>` : ""}`;
 
     // Lists the teacher has set for this pupil, if the sheet is connected
@@ -1167,7 +1178,7 @@
     return `
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>${session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
+        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
         ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -1484,11 +1495,21 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
+        ${act.area === "games" ? `<label class="field hopper-accent">How do you say r sounds?
+          <select id="hopperAccent">
+            <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
+            <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
+          </select></label>` : ""}
         <div class="pupil" id="pupilBox"></div>
         <button class="btn big primary" id="go">▶ Start</button>
       </section>`;
     const go = $("#go");
     const box = $("#pupilBox");
+    const accent = $("#hopperAccent");
+    if (accent) {
+      accent.value = R_SOUNDED ? "scottish" : "english";
+      accent.onchange = () => { settings.accent = accent.value; saveSettings(); location.reload(); };
+    }
     mountPupil(box, { onEnter: () => go.click() });
     (getPupil() ? go : box.querySelector(".pupil-name")).focus();
     go.onclick = () => { if (takePupilName(box)) startActivity(act); };
@@ -1543,6 +1564,7 @@
     const my = newScreen();
     const act = session.activity;
     const q = session.items[session.i];
+    if (q.kind === "map") return showSoundHopper(q);
     const wrong = [];
     let missed = [];
     const passage = act.passage;
@@ -1661,6 +1683,198 @@
       if (!right) wrong.push(value);
       finish(right);
     };
+  }
+
+  // A separate play scene for Sound Hopper. The activity result still uses the usual
+  // teacher report, help button, personal best and class progress flow.
+  let hopperAudio = null;
+  function hopperTone(pitch) {
+    try {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      hopperAudio = hopperAudio || new Audio();
+      const tone = hopperAudio.createOscillator();
+      const volume = hopperAudio.createGain();
+      tone.type = "sine";
+      tone.frequency.value = pitch;
+      volume.gain.setValueAtTime(0.001, hopperAudio.currentTime);
+      volume.gain.exponentialRampToValueAtTime(0.11, hopperAudio.currentTime + 0.015);
+      volume.gain.exponentialRampToValueAtTime(0.001, hopperAudio.currentTime + 0.16);
+      tone.connect(volume).connect(hopperAudio.destination);
+      tone.start();
+      tone.stop(hopperAudio.currentTime + 0.17);
+      navigator.vibrate?.(12);
+    } catch { /* sound and haptics are optional */ }
+  }
+
+  function showSoundHopper(q) {
+    const act = session.activity;
+    const wrong = [];
+    const missed = new Set();
+    const rejected = q.tokens.map(() => new Set());
+    const locked = new Set();
+    let beats = 0;
+    let active = 0;
+    let finished = false;
+    app.innerHTML = `
+      <section class="panel practice activity hopper" style="--accent:${esc(act.colour)}">
+        ${progressHTML()}
+        <div class="game-trail" aria-label="River crossings">${session.items.map((_, i) =>
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Crossing ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>
+        <div class="hopper-scene" id="hopperScene" aria-label="Help Pip cross the musical river">
+          <div class="hopper-wave" id="hopperWave" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="hopper-river" aria-hidden="true">♪ &nbsp; ♫ &nbsp; ♪ &nbsp; ♫</div>
+          <div class="hopper-bank left" aria-hidden="true"></div><div class="hopper-bank right" aria-hidden="true"></div>
+          <div class="hopper-bridge" aria-hidden="true">${q.tokens.map((_, i) => `<span class="bridge-plank" data-plank="${i}"></span>`).join("")}</div>
+          <div class="hopper-creature" id="hopperCreature" role="img" aria-label="Pip, the sound hopper">
+            <span class="hopper-ear one"></span><span class="hopper-ear two"></span>
+            <span class="hopper-eye one"></span><span class="hopper-eye two"></span>
+            <span class="hopper-cheek"></span><span class="hopper-foot one"></span><span class="hopper-foot two"></span>
+          </div>
+          <div class="hopper-reward" id="hopperReward" aria-live="polite"></div>
+        </div>
+        <h1 class="hopper-title">${session.i === 0 ? "Help Pip cross!" : "Another river to cross!"}</h1>
+        <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap one beat for every sound you hear.</p>
+        <button type="button" class="btn" id="hearQ">🔊 Hear the word again</button>
+        <div class="hopper-beats" id="beatPhase">
+          <button type="button" class="beat-pad" id="beatPad" aria-label="Tap one beat for a sound">🥁<span>Tap a beat</span></button>
+          <div class="beat-dots" id="beatDots" aria-live="polite">No beats yet</div>
+          <div class="row center"><button type="button" class="btn" id="beatUndo" disabled>Undo a beat</button>
+            <button type="button" class="btn primary" id="beatCheck" disabled>Check my beats</button></div>
+        </div>
+        <div class="map-game" id="mapPhase" hidden>
+          <p class="hint">Tap a tile, or drag it into the highlighted sound box.</p>
+          <div class="map-slots" role="group" aria-label="Sound boxes">${q.tokens.map((_, i) =>
+            `<button type="button" class="map-slot" data-slot="${i}" aria-label="Sound ${i + 1}, empty"><span class="map-number">Sound ${i + 1}</span><span class="map-value">?</span></button>`).join("")}</div>
+          <div class="map-choices" id="mapChoices" role="group" aria-label="Letter tiles"></div>
+        </div>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+      </section>`;
+    wireStop();
+    const scene = $("#hopperScene");
+    const feedback = $("#feedback");
+    const slots = [...app.querySelectorAll(".map-slot")];
+    const sayAgain = () => {
+      const wave = $("#hopperWave");
+      wave.classList.remove("pulse");
+      void wave.offsetWidth;
+      wave.classList.add("pulse");
+      sayQuestion(q);
+    };
+    $("#hearQ").onclick = sayAgain;
+    sayAgain();
+
+    const renderBeats = () => {
+      $("#beatDots").textContent = beats ? "● ".repeat(beats).trim() : "No beats yet";
+      $("#beatUndo").disabled = beats === 0;
+      $("#beatCheck").disabled = beats === 0;
+    };
+    $("#beatPad").onclick = () => {
+      if (beats >= 8) return;
+      beats++;
+      hopperTone(240 + beats * 45);
+      renderBeats();
+    };
+    $("#beatUndo").onclick = () => { beats = Math.max(0, beats - 1); renderBeats(); };
+    $("#beatCheck").onclick = () => {
+      if (beats !== q.tokens.length) {
+        if (wrong.length < 6) wrong.push(`counted ${beats} sounds`);
+        missed.add("segmenting sounds");
+        feedback.className = "feedback oops";
+        feedback.textContent = `You tapped ${beats}. Listen once more and tap a beat for each sound.`;
+        beats = 0;
+        renderBeats();
+        hopperTone(190);
+        sayAgain();
+        return;
+      }
+      hopperTone(540);
+      $("#beatPhase").hidden = true;
+      $("#mapPhase").hidden = false;
+      scene.classList.add("mapping");
+      $("#hopperInstruction").textContent = `${beats} sounds! Now choose the letters for each one.`;
+      feedback.className = "feedback good";
+      feedback.textContent = "Great listening. Build Pip's bridge!";
+      renderChoices();
+      slots[0].focus();
+    };
+
+    const renderChoices = () => {
+      slots.forEach((slot, i) => {
+        slot.classList.toggle("active", i === active && !locked.has(i));
+        slot.classList.toggle("ok", locked.has(i));
+        slot.disabled = locked.has(i);
+        slot.setAttribute("aria-label", `Sound ${i + 1}${locked.has(i) ? `, ${label(q.tokens[i])}, correct` : ", empty"}`);
+      });
+      const choices = q.optionsBySlot[active] || [];
+      $("#mapChoices").innerHTML = choices.map((token, i) =>
+        `<button type="button" class="map-choice" data-choice="${i}" draggable="true" ${rejected[active].has(token) ? "disabled" : ""}>${esc(label(token))}</button>`).join("");
+      app.querySelectorAll(".map-choice").forEach(button => {
+        const token = choices[Number(button.dataset.choice)];
+        button.onclick = () => chooseTile(token);
+        button.ondragstart = event => event.dataTransfer.setData("text/plain", token);
+      });
+    };
+    const chooseTile = token => {
+      if (finished || locked.has(active) || rejected[active].has(token) || !q.optionsBySlot[active].includes(token)) return;
+      if (token !== q.tokens[active]) {
+        if (wrong.length < 6) wrong.push(`sound ${active + 1}: ${label(token)}`);
+        missed.add(q.tokens[active]);
+        rejected[active].add(token);
+        feedback.className = "feedback oops";
+        feedback.textContent = `That tile doesn't write sound ${active + 1} in this word. Listen and try another.`;
+        hopperTone(190);
+        renderChoices();
+        return;
+      }
+      locked.add(active);
+      const slot = slots[active];
+      slot.querySelector(".map-value").textContent = label(token);
+      const plank = app.querySelector(`[data-plank="${active}"]`);
+      plank.textContent = label(token);
+      plank.classList.add("built", token.includes("_") || /[aeiou]/.test(token) ? "vowel" : token.length > 1 ? "digraph" : "consonant");
+      hopperTone(390 + locked.size * 65);
+      feedback.className = "feedback good";
+      feedback.textContent = token.length > 1 ? `${label(token)} writes one sound. The bridge is growing!` : "That sound is mapped. Keep building!";
+      if (locked.size === q.tokens.length) return finishHopper();
+      active = q.tokens.findIndex((_, i) => !locked.has(i));
+      renderChoices();
+      slots[active].focus();
+    };
+    slots.forEach((slot, i) => {
+      slot.onclick = () => { if (!locked.has(i)) { active = i; renderChoices(); } };
+      slot.ondragover = event => { if (!locked.has(i)) event.preventDefault(); };
+      slot.ondrop = event => {
+        event.preventDefault();
+        if (!locked.has(i)) { active = i; chooseTile(event.dataTransfer.getData("text/plain")); }
+      };
+    });
+
+    function finishHopper() {
+      if (finished) return;
+      finished = true;
+      const earned = wrong.length ? 1 : 2;
+      session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned, missed: [...missed] });
+      countGo();
+      livePing(session, "word", { word: q.label, ok: !wrong.length });
+      scene.classList.add("crossed");
+      $("#hopperReward").textContent = wrong.length ? "♪ Bridge built!" : "✨ 💎 Perfect bridge!";
+      feedback.className = "feedback good";
+      feedback.innerHTML = `You built <b>${esc(q.answer)}</b> — ${q.tokens.map(t => `<span class="chip">${esc(label(t))}</span>`).join("")} <span class="stars-inline">${stars(earned)}</span>`;
+      chimeRight();
+      app.querySelectorAll(".map-slot, .map-choice").forEach(el => { el.disabled = true; });
+      const next = document.createElement("div");
+      next.className = "row center";
+      const isLast = session.i === session.items.length - 1;
+      next.innerHTML = `<button class="btn big primary" id="nextQ">${isLast ? "See my stars 🏆" : "Next river →"}</button>`;
+      feedback.after(next);
+      $("#nextQ").focus();
+      $("#nextQ").onclick = () => {
+        if (isLast) return showActivitySummary();
+        session.i++;
+        showQuestion();
+      };
+    }
   }
 
   function showActivitySummary() {
