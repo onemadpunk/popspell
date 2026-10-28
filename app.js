@@ -1555,7 +1555,7 @@
               <label for="qAnswer" class="sr-only">Your answer</label>
               ${q.kind === "dictation"
                 ? `<textarea id="qAnswer" class="answer dictation" rows="2" autocapitalize="sentences" spellcheck="false"></textarea>`
-                : `<input id="qAnswer" class="answer" type="text" inputmode="${q.input === "numeric" ? "numeric" : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">`}
+                : `<input id="qAnswer" class="answer" type="text" inputmode="${q.input === "numeric" || q.input === "decimal" ? q.input : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">`}
               <button class="btn primary" type="submit">Check ✓</button></form>`}
         <p class="feedback" id="feedback" aria-live="polite"></p>
       </section>`;
@@ -1712,7 +1712,7 @@
   const LEVELS = ["Early", "First", "Second"];
   const numberOrder = () => {
     const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
-    return area ? area.activities.slice().sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)) : [];
+    return area ? area.activities.filter(a => a.check !== false).sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)) : [];
   };
   // Up to n lists spread evenly through a stage, always including its first and last
   const spread = (ids, n) => ids.length <= n ? ids : Array.from({ length: n }, (_, k) => ids[Math.round((k * (ids.length - 1)) / (n - 1))]);
@@ -1819,7 +1819,7 @@
           ? `<div class="q-options">${q.options.map((opt, i) => `<div class="q-option-wrap"><button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button></div>`).join("")}</div>`
           : `<form class="spell-form" id="checkForm" autocomplete="off">
               <label for="checkAnswer" class="sr-only">Your answer</label>
-              <input id="checkAnswer" class="answer" type="text" inputmode="${q.input === "numeric" ? "numeric" : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">
+              <input id="checkAnswer" class="answer" type="text" inputmode="${q.input === "numeric" || q.input === "decimal" ? q.input : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">
               <button class="btn primary" type="submit">Next →</button></form>`}
         ${spelling ? `<div class="row center">
           <button class="btn" id="hear" type="button">🔊 Hear the word</button>

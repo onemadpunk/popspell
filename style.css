@@ -487,6 +487,9 @@ a.me-card:hover { border-color: var(--primary); }
 /* Activities: questions, options and passages */
 .q-prompt { font-size: clamp(1.3rem, 4vw, 1.8rem); font-family: var(--reading-font); }
 .q-pic { display: block; margin: 8px auto 12px; max-width: 100%; height: auto; }
+.q-table { margin: 8px auto 12px; border-collapse: collapse; font-size: 1.05rem; }
+.q-table th, .q-table td { border: 2px solid var(--line); padding: 6px 14px; text-align: left; }
+.q-table th { background: var(--primary-soft); }
 .q-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 12px; }
 .q-option-wrap { display: flex; align-items: stretch; gap: 4px; }
 .q-option {
