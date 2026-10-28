@@ -106,6 +106,8 @@ Open `words.js` on GitHub, click the ✏️ pencil icon, make your changes and p
 
 ### Sounds (graphemes)
 
+**Scottish or English accent** (⚙️ Settings, Scottish by default). In a Scottish accent the r is sounded, so the site splits *car* as `c · a · r`, *her* as `h · e · r`, *hair* as `h · ai · r` and *care* as `c · a–e · r`. The English setting treats ar, er, ir, or, ur, air, are, ear and eer as one sound each (`c · ar`). This setting changes the sound buttons, sound boxes, worksheets, My sounds and which stories are ready. The r-vowel lists get their own tips for each accent (`tipScottish` in `words.js`). It's set on each device.
+
 The site splits words into sounds by itself, and gets the common patterns right. Open a list and click **Words in this list** to check the sound buttons. If a word is split wrongly (usually tricky words), write its sounds with dashes, and a split digraph as `a_e`, `i_e`, `o_e`, `u_e` or `e_e`:
 
 ```

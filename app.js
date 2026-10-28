@@ -13,11 +13,21 @@
 
   /* ---------- Phonics: splitting words into graphemes ---------- */
 
+  // Scottish accents sound the r, so "car" is c·a·r and "hair" is h·ai·r. In most English accents
+  // the r is silent and "ar" is one sound: c·ar. Chosen in Settings (read here, before the lists are split).
+  const R_SOUNDED = (() => {
+    try { return (JSON.parse(localStorage.getItem("spelling-settings-v2")) || {}).accent !== "english"; } catch { return true; }
+  })();
+  const R_GRAPHEMES = ["air", "are", "ear", "eer", "ere", "ar", "or", "er", "ir", "ur"];
+  const keepR = g => !(R_SOUNDED && R_GRAPHEMES.includes(g));
+  // The part a pupil has to choose when the r is sounded: er, ir or ur is the vowel before the r
+  const R_VOWEL = { ar: "a", or: "o", er: "e", ir: "i", ur: "u", air: "ai", are: "a_e", ear: "ea", eer: "ee", ere: "e_e" };
+
   const VOWELS = "aeiou";
-  const TRIGRAPHS = ["tch", "igh", "air", "are", "ear", "eer", "ere"];
+  const TRIGRAPHS = ["tch", "igh", "air", "are", "ear", "eer", "ere"].filter(keepR);
   const DIGRAPHS = ["sh", "ch", "th", "wh", "ph", "ck", "ng", "qu", "kn", "wr",
     "ai", "ay", "ee", "ea", "oa", "ow", "oo", "ou", "oi", "oy", "aw", "au", "ew", "ue",
-    "ar", "or", "er", "ir", "ur", "bb", "dd", "ff", "gg", "ll", "mm", "nn", "pp", "rr", "ss", "tt", "zz"];
+    "ar", "or", "er", "ir", "ur", "bb", "dd", "ff", "gg", "ll", "mm", "nn", "pp", "rr", "ss", "tt", "zz"].filter(keepR);
 
   // "cake" -> ["c", "a_e", "k"]; longest grapheme first, split digraphs at the end of a word
   function autoSplit(w) {
@@ -31,7 +41,9 @@
       const three = free(3) ? w.substr(i, 3) : "";
       const two = free(2) ? w.substr(i, 2) : "";
       if (TRIGRAPHS.includes(three)) { out.push(three); i += 3; continue; }
-      if (VOWELS.includes(c) && i + 2 === w.length - 1 && w[i + 2] === "e" && !VOWELS.includes(w[i + 1]) && !"wy".includes(w[i + 1])) {
+      // With the r sounded, "scared" and "cares" keep their split digraph too: sc·a_e·r·d
+      const endE = i + 2 === w.length - 1 || (R_SOUNDED && w[i + 1] === "r" && i + 2 === w.length - 2 && "ds".includes(w[w.length - 1]));
+      if (VOWELS.includes(c) && endE && w[i + 2] === "e" && !VOWELS.includes(w[i + 1]) && !"wy".includes(w[i + 1])) {
         out.push(c + "_e");
         claimedE = i + 2;
         i++;
@@ -82,7 +94,7 @@
 
   // Sounds a list is practising: its "focus", or graphemes found in most of its words
   function listFocus(list) {
-    if (Array.isArray(list.focus)) return new Set(list.focus);
+    if (Array.isArray(list.focus)) return new Set(list.focus.map(g => (keepR(g) ? g : R_VOWEL[g])));
     const counts = {};
     list.items.forEach(it => new Set(it.tokens).forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
     return new Set(Object.keys(counts).filter(t => counts[t] >= list.items.length * 0.6));
@@ -148,6 +160,7 @@
   const LISTS = {};
   const prepare = (list, extras) => {
     const ready = Object.assign({}, extras, list, {
+      tip: R_SOUNDED && list.tipScottish ? list.tipScottish : list.tip,
       items: list.words.map(analyse),
       // New words with the same pattern, never shown first: can the pupil use the rule?
       checks: (list.check || []).map(w => Object.assign(analyse(w), { challenge: true }))
@@ -161,7 +174,7 @@
 
   /* ---------- Settings (kept in this browser only) ---------- */
 
-  const DEFAULTS = { rate: 0.85, voice: "", tries: 3, shuffle: true, spellOut: true, sounds: true,
+  const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: true, spellOut: true, sounds: true,
     sentences: true, checks: true };
   const STORE_KEY = "spelling-settings-v2";
   const settings = (() => {
@@ -1991,6 +2004,7 @@
     $("#setChecks").checked = settings.checks;
     $("#setSpell").checked = settings.spellOut;
     $("#setSounds").checked = settings.sounds;
+    $("#setAccent").value = R_SOUNDED ? "scottish" : "english";
     const line = $("#classLine");
     line.hidden = !CLOUD_CONFIGURED;
     line.innerHTML = CLASS
@@ -2009,6 +2023,8 @@
   $("#setChecks").onchange = e => { settings.checks = e.target.checked; saveSettings(); };
   $("#setSpell").onchange = e => { settings.spellOut = e.target.checked; saveSettings(); };
   $("#setSounds").onchange = e => { settings.sounds = e.target.checked; saveSettings(); };
+  // Every list is split into sounds when the page loads, so a new accent needs a fresh start
+  $("#setAccent").onchange = e => { settings.accent = e.target.value; saveSettings(); location.reload(); };
   $("#testVoice").onclick = () => sayPhrase(PHRASES.test);
   // Re-draw menus so they show the new settings; never interrupt a pupil mid-practice
   dlg.addEventListener("close", () => { if (!session) route(); });

@@ -9,7 +9,8 @@
    • Each list can have up to 15 words (more will still work).
    • "id" must be unique, lower case, no spaces (it appears in the web address).
    • "tip" is the hint shown before starting, and again when a pupil misses
-     the list's main sound. It can be left out.
+     the list's main sound. It can be left out. "tipScottish" (optional) is used
+     instead when Settings is set to the Scottish accent (the r is sounded).
    • "colour" is the colour used for that stage's cards.
    • "check" (optional) is 2–3 NEW words with the same pattern, given at the end
      without being shown first, to see whether the pupil can use the rule.
@@ -17,7 +18,10 @@
 
   Sounds (graphemes):
    The site splits each word into its sounds by itself (cake → c · a–e · k)
-   and draws sound buttons under them. If it gets a word wrong, write the
+   and draws sound buttons under them. With the Scottish accent (the default
+   in Settings) the r is its own sound: car → c · a · r, hair → h · ai · r.
+   With the English accent, ar, er, ir, or, ur, air, are, ear and eer are one
+   sound: car → c · ar. If it gets a word wrong, write the
    sounds yourself with dashes, and a split digraph as a_e, i_e, o_e, u_e or e_e:
        "h-a-ve"     "c-oul-d"     "sc-e_e-n"
    A dash at the end keeps a whole word as one chunk, with no sound buttons:  "one-"
@@ -185,19 +189,19 @@ window.SPELLING_LISTS = [
     stage: "Stage 5 · Vowels with r",
     colour: "#ea580c",
     lists: [
-      { id: "ar", title: "ar", tip: "a + r work together to make the 'ar' sound.",
+      { id: "ar", title: "ar", tipScottish: "Say both sounds: a, then r. Car is c-a-r.", tip: "a + r work together to make the 'ar' sound.",
         words: ["car", "star", "park", "farm", "card", "hard", "dark", "shark", "start", "garden", "jar", "arm", "cart", "smart", "scarf"],
         check: ["harp", "march", "sharp"] },
-      { id: "or", title: "or", tip: "o + r work together to make the 'or' sound.",
+      { id: "or", title: "or", tipScottish: "Say both sounds: o, then r. Fork is f-o-r-k.", tip: "o + r work together to make the 'or' sound.",
         words: ["for", "fork", "corn", "horse", "short", "sport", "storm", "born", "horn", "torch", "north", "morning", "cord", "snort", "thorn"],
         check: ["porch", "stork", "sort"] },
-      { id: "er-ir-ur", title: "er, ir and ur", tip: "er, ir and ur can sound alike. Look carefully at which one each word uses.", focus: ["er", "ir", "ur"],
+      { id: "er-ir-ur", title: "er, ir and ur", tipScottish: "You can hear the vowel before the r: h-e-r, b-i-r-d, f-u-r. Listen for it, and look carefully at which one each word uses.", tip: "er, ir and ur can sound alike. Look carefully at which one each word uses.", focus: ["er", "ir", "ur"],
         words: ["her", "term", "fern", "herd", "bird", "girl", "first", "shirt", "third", "skirt", "burn", "fur", "hurt", "turn", "church"],
         check: ["perch", "twirl", "curl"] },
-      { id: "air-are", title: "air and are", tip: "air and are make the same sound. Look carefully!", focus: ["air", "are"],
+      { id: "air-are", title: "air and are", tipScottish: "Say the sound before the r, then the r. air and are say the same thing, so look carefully!", tip: "air and are make the same sound. Look carefully!", focus: ["air", "are"],
         words: ["hair", "chair", "fair", "pair", "stair", "care", "share", "stare", "scare", "square", "dare", "spare", "bare", "flare", "glare"],
         check: ["repair", "beware"] },
-      { id: "ear-eer", title: "ear and eer", tip: "ear and eer make the same sound. Look carefully!", focus: ["ear", "eer"],
+      { id: "ear-eer", title: "ear and eer", tipScottish: "You hear ee, then r: n-ea-r, d-ee-r. ear and eer say the same thing, so look carefully!", tip: "ear and eer make the same sound. Look carefully!", focus: ["ear", "eer"],
         words: ["ear", "hear", "near", "fear", "year", "clear", "beard", "dear", "gear", "spear", "deer", "cheer", "steer", "peer", "sneer"],
         check: ["smear", "cheerful"] }
     ]
