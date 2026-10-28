@@ -668,10 +668,66 @@ window.PopActivities = (() => {
       make: () => trailWords(["ar", "or", "er-ir-ur"]) }
   ];
 
+  /* ---------- Sound Switch: change one phoneme to open Pip's next door ---------- */
+
+  // Each pair is checked against the current Scottish or English sound map when play starts.
+  // The target spelling stays out of the puzzle until the child has made the change.
+  const switchRound = ([source, target, action, choices]) => {
+    const analyse = window.PopSpell.analyse;
+    const before = analyse(source).tokens;
+    const after = analyse(target).tokens;
+    let index = -1;
+    if (action === "swap") {
+      if (before.length !== after.length) throw new Error(`Sound Switch: ${source} → ${target} is not a swap`);
+      const changed = before.map((sound, i) => sound === after[i] ? -1 : i).filter(i => i >= 0);
+      if (changed.length !== 1) throw new Error(`Sound Switch: ${source} → ${target} must change one sound`);
+      index = changed[0];
+    } else if (action === "add") {
+      if (after.length !== before.length + 1) throw new Error(`Sound Switch: ${source} → ${target} is not an addition`);
+      index = after.findIndex((_, i) => before.every((sound, j) => sound === after[j < i ? j : j + 1]));
+    } else {
+      if (before.length !== after.length + 1) throw new Error(`Sound Switch: ${source} → ${target} is not a deletion`);
+      index = before.findIndex((_, i) => after.every((sound, j) => sound === before[j < i ? j : j + 1]));
+    }
+    if (index < 0) throw new Error(`Sound Switch: ${source} → ${target} is not a one-sound change`);
+    const answerSound = action === "remove" ? before[index] : after[index];
+    if (action !== "remove" && !choices.includes(answerSound)) throw new Error(`Sound Switch: missing ${answerSound} tile`);
+    return {
+      kind: "switch", source, answer: target, spelling: `${source} → ${target}`,
+      label: `${source} → ${target}`, tokens: after, before, after, action, index,
+      choices: action === "remove" ? [] : shuffle(choices), answerSound,
+      skill: action === "swap" ? (answerSound.length > 1 || before[index].length > 1 ? "changing a digraph" : "changing one sound")
+        : action === "add" ? "adding a sound" : "removing a sound"
+    };
+  };
+  const switchGames = [
+    { id: "g-switch-first", title: "Sound Switch: first doors", level: "Early", organiser: "Literacy · Reading · Tools for reading",
+      blurb: "Help Pip open six doors by changing one sound at a time. Hear the new word, then switch its sound tile.",
+      make: () => [
+        ["cat", "cot", "swap", ["o", "u", "e"]], ["cot", "cut", "swap", ["u", "a", "i"]],
+        ["cut", "cup", "swap", ["p", "b", "d"]], ["cup", "cap", "swap", ["a", "e", "o"]],
+        ["cap", "map", "swap", ["m", "n", "t"]], ["map", "mop", "swap", ["o", "u", "e"]]
+      ].map(switchRound) },
+    { id: "g-switch-digraphs", title: "Sound Switch: letter teams", level: "Early", organiser: "Literacy · Reading · Tools for reading",
+      blurb: "Swap sh, ch, th and tch as one sound tile to open Pip's workshop doors.",
+      make: () => [
+        ["shop", "chop", "swap", ["ch", "th", "sh"]], ["ship", "chip", "swap", ["ch", "th", "sh"]],
+        ["thin", "shin", "swap", ["sh", "ch", "th"]], ["chat", "that", "swap", ["th", "sh", "ch"]],
+        ["cash", "catch", "swap", ["tch", "ch", "sh"]], ["with", "wish", "swap", ["sh", "ch", "th"]]
+      ].map(switchRound) },
+    { id: "g-switch-build", title: "Sound Switch: secret passages", level: "First", organiser: "Literacy · Reading · Tools for reading",
+      blurb: "Add or remove one sound to open a secret passage. Pip needs sharp ears and careful reading.",
+      make: () => [
+        ["pot", "spot", "add", ["s", "f", "t"]], ["stop", "top", "remove", []],
+        ["pin", "spin", "add", ["s", "f", "t"]], ["frog", "fog", "remove", []],
+        ["spoon", "soon", "remove", []], ["star", "start", "add", ["t", "p", "d"]]
+      ].map(switchRound) }
+  ];
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
-    { id: "games", title: "Sound Hopper games", colour: "#0F766E", icon: "🎮", activities: trailGames },
+    { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames) },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
