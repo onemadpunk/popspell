@@ -136,7 +136,8 @@ service cloud.firestore {
           return canSee(c)
           && request.resource.data.keys().hasOnly([
             'name', 'parentEmail', 'reminderOptIn', 'nextLessonDate',
-            'lessonTime', 'homeworkList', 'updated', 'parentLink', 'parentAt', 'parentNote'])
+            'lessonTime', 'homeworkList', 'updated', 'parentLink', 'parentAt', 'parentNote',
+            'yearGroup', 'needs', 'likes'])
           && shortText(request.resource.data.name, 40)
           && shortText(request.resource.data.parentEmail, 254)
           && request.resource.data.reminderOptIn is bool
@@ -145,7 +146,10 @@ service cloud.firestore {
           && shortText(request.resource.data.homeworkList, 100)
           && (!('parentLink' in request.resource.data) || shortText(request.resource.data.parentLink, 64))
           && (!('parentAt' in request.resource.data) || request.resource.data.parentAt is number)
-          && (!('parentNote' in request.resource.data) || shortText(request.resource.data.parentNote, 1000));
+          && (!('parentNote' in request.resource.data) || shortText(request.resource.data.parentNote, 1000))
+          && (!('yearGroup' in request.resource.data) || shortText(request.resource.data.yearGroup, 10))
+          && (!('needs' in request.resource.data) || shortText(request.resource.data.needs, 500))
+          && (!('likes' in request.resource.data) || shortText(request.resource.data.likes, 300));
         }
         allow create: if validPupil();
         allow update: if validPupil()

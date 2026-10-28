@@ -296,6 +296,10 @@ async function start() {
         lessonTime: String(pupil.lessonTime || "").slice(0, 5),
         homeworkList: String(pupil.homeworkList || "").slice(0, 100),
         ...(pupil.parentNote !== undefined ? { parentNote: String(pupil.parentNote).trim().slice(0, 1000) } : {}),
+        // The New pupil profile (teacher-only, like the rest of the roster)
+        ...(pupil.yearGroup !== undefined ? { yearGroup: String(pupil.yearGroup).slice(0, 10) } : {}),
+        ...(pupil.needs !== undefined ? { needs: String(pupil.needs).trim().slice(0, 500) } : {}),
+        ...(pupil.likes !== undefined ? { likes: String(pupil.likes).trim().slice(0, 300) } : {}),
         updated: serverTimestamp()
       }, { merge: true });
     },

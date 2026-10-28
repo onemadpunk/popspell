@@ -148,6 +148,9 @@ await check("teacher changes next lesson", assertSucceeds(updateDoc(doc(tutor, "
 await check("teacher can't rename a roster identity", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { name: "Someone else" })));
 
 await check("teacher saves a parent link and note", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLink: "abcdefghijklmnopqrstuvwxyz012345", parentAt: Date.now(), parentNote: "Well done!" })));
+await check("teacher saves a pupil's profile", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { yearGroup: "P3", needs: "Dyslexia; likes short tasks", likes: "Dinosaurs" })));
+await check("a profile note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { needs: "x".repeat(501) })));
+await check("a pupil device can't change the profile", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { yearGroup: "P7" })));
 await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
 
 console.log("Pupils' own progress");

@@ -271,6 +271,49 @@ body {
 .start-pip { display: flex; justify-content: center; margin: -4px 0 2px; }
 .start-pip .pip { width: 72px; }
 
+/* Pip's Sound Quest: the island map, stepping stones, sparkles and stickers */
+.quest-panel { max-width: 900px; }
+.quest-head { display: grid; grid-template-columns: minmax(140px, 220px) minmax(0, 1fr); gap: 12px 28px; align-items: center; margin: 6px 0 8px; }
+.quest-intro { text-align: left; }
+.quest-intro h1 { margin: 0 0 8px; }
+.quest-islands { list-style: none; margin: 18px 0 4px; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; position: relative; }
+.quest-islands::before { content: ""; position: absolute; left: 10%; right: 10%; top: 44px; border-top: 5px dotted #9fd8e8; }
+.island { position: relative; display: flex; justify-content: center; }
+.island-btn { font: inherit; color: var(--ink); background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px; border-radius: 18px; }
+.island-icon {
+  width: 80px; height: 80px; display: grid; place-items: center; font-size: 2.2rem; border-radius: 50%;
+  background: var(--accent); border: 5px solid #fff;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, .12), inset 0 6px 10px rgba(255, 255, 255, .35), 0 6px 0 rgba(0, 0, 0, .12);
+}
+.island.done .island-icon { background: var(--star); }
+.island.next .island-icon { animation: pip-bob 1.8s ease-in-out infinite; box-shadow: 0 0 0 6px rgba(255, 200, 55, .55), 0 6px 0 rgba(0, 0, 0, .12); }
+.island-name { font-weight: 900; font-size: .95rem; line-height: 1.15; text-align: center; color: var(--primary); }
+.island-state { font-size: .8rem; color: var(--muted); }
+.island.done .island-state { color: var(--good); font-weight: 800; }
+.quest-stones { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: 6px 0 4px; }
+.quest-stones span { width: 14px; height: 14px; border-radius: 50%; background: #d6e5f7; }
+.quest-stones span.done { background: var(--accent); }
+.quest-stones span.now { background: var(--star); box-shadow: 0 0 0 3px rgba(255, 200, 55, .35); }
+.quest-pip { display: flex; justify-content: center; }
+.quest-pip .pip { width: 70px; }
+.quest-sparkle { margin: 14px auto 0; width: fit-content; padding: 8px 18px; border-radius: 999px; background: #fff3cf; border: 3px solid var(--star); color: var(--primary); font-weight: 900; font-size: 1.2rem; }
+.read-words .q-option { font-family: var(--reading-font); font-size: 2rem; min-width: 120px; }
+.quest-story { margin-bottom: 12px; }
+.quest-story h3 { margin: 0 0 4px; }
+.island-intro .speech { max-width: 360px; font-size: 1.05rem; }
+.sticker {
+  width: 110px; height: 110px; margin: 6px auto 10px; display: grid; place-items: center; font-size: 3.2rem; border-radius: 50%;
+  background: var(--star); border: 6px solid #fff;
+  box-shadow: 0 0 0 4px var(--accent), 0 10px 20px rgba(11, 46, 107, .2); transform: rotate(-6deg);
+}
+@media (max-width: 720px) {
+  .quest-head { grid-template-columns: 1fr; text-align: center; }
+  .quest-intro { text-align: center; }
+  .quest-islands { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 18px; }
+  .quest-islands::before { display: none; }
+  .island-icon { width: 66px; height: 66px; font-size: 1.8rem; }
+}
+
 /* More to explore */
 .area-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; padding: 4px 2px 8px; }
 .area-tab { flex: none; font: inherit; font-weight: 800; font-size: .95rem; padding: 9px 16px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
@@ -869,6 +912,49 @@ a.me-card:hover { border-color: var(--primary); }
   .t-top .t-class { margin-left: 0; width: 100%; }
   .t-top .t-class select { flex: 1; }
 }
+
+/* New pupil flow (teacher area) */
+.pupil-flow { width: min(96vw, 820px); }
+.flow-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 16px 0; padding: 0; }
+.flow-steps button { font: inherit; font-weight: 800; font-size: .9rem; border: 2px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.flow-steps .now button { background: var(--primary); border-color: var(--primary); color: #fff; }
+.flow-steps .done button { color: var(--good); border-color: var(--good); }
+.flow-steps button:disabled { opacity: .5; cursor: default; }
+.flow-body { margin: 14px 16px 18px; padding: 16px; background: #fff; border-radius: 18px; }
+.flow-body .t-diary-form input, .flow-body .t-diary-form select { font: inherit; padding: 6px 10px; border: 2px solid var(--line); border-radius: 10px; }
+.need-chip { cursor: pointer; border: 0; }
+.flow-quest { display: flex; gap: 14px; align-items: flex-start; }
+.flow-quest p { margin: 0 0 8px; }
+.flow-islands { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.flow-islands li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 2px solid var(--line); border-radius: 14px; }
+.flow-islands li b { margin-left: auto; color: var(--muted); }
+.flow-islands li.done { border-color: var(--good); background: var(--good-soft); }
+.flow-islands li.done b { color: var(--good); }
+.flow-findings { padding-left: 1.2em; margin: 0 0 8px; }
+.flow-findings li { margin-bottom: 8px; }
+
+/* The starting assessment report (screen preview and print) */
+.ar { color: #142a56; }
+.ar-head { display: flex; align-items: center; gap: 14px; border-bottom: 4px solid #ffc837; padding-bottom: 10px; margin-bottom: 12px; }
+.ar-head h1 { margin: 0; font-size: 22pt; color: #0b2e6b; }
+.ar-head > div { flex: 1; }
+.ar-sub { margin: 2px 0 0 !important; color: #526480; }
+.ar h2 { font-size: 13pt; color: #0b2e6b; margin: 16px 0 6px; }
+.ar table { width: 100%; border-collapse: collapse; }
+.ar th, .ar td { border: 1px solid #c9d8ea; padding: 6px 8px; text-align: left; vertical-align: top; font-size: 10.5pt; }
+.ar th { background: #eef5ff; }
+.ar-facts th { width: 18%; }
+.ar-summary { display: flex; gap: 10px; margin: 12px 0 4px; }
+.ar-summary div { flex: 1; border: 2px solid #ffc837; background: #fff8e1; border-radius: 12px; padding: 8px 12px; }
+.ar-summary span { display: block; font-size: 9.5pt; color: #526480; text-transform: uppercase; letter-spacing: .05em; }
+.ar-summary b { font-size: 13pt; color: #0b2e6b; }
+.ar-status { display: inline-block; border-radius: 999px; padding: 1px 8px; font-weight: 700; font-size: 9.5pt; white-space: nowrap; }
+.ar-secure { background: #dcf8f4; color: #087c74; }
+.ar-developing { background: #eaf3ff; color: #0b2e6b; }
+.ar-needs-support { background: #fff0f6; color: #b71e55; }
+.ar ul { margin: 0 0 6px; padding-left: 1.2em; }
+.ar-note { margin-top: 14px; font-size: 9.5pt; color: #526480; border-top: 1px solid #d6e5f7; padding-top: 8px; }
+.ar .ws-comment { height: 90px; border: 1px solid #777; border-radius: 6px; }
 
 /* Work library: one section per group, opened to browse */
 #librarySearch { flex: 1 1 280px; }

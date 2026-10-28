@@ -67,6 +67,18 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
 - **Assignments and plans:** choose lists or activities for each pupil or for *Everyone*. Use **Test online** to play through the pupil view before assigning; teacher previews do not save pupil results or change progress.
+- **🌟 New pupil: profile and assessment** (Pupils tab). A guided flow for a new child, in three steps:
+  1. **About the child:** first name, year group, parent email, things to bear in mind (quick choices such as dyslexia, EAL or anxious about learning) and what they enjoy. Only teachers can see these.
+  2. **Pip's Sound Quest,** a full starting assessment the child plays as a game. One link joins the class on the child's device, signs in as them and opens Pip's map. There are five islands:
+     - 👂 **Listening Lagoon:** rhyme, first sounds and counting sounds, all spoken.
+     - 📖 **Reading Reef:** Pip says a word and the child taps it among near-misses that change one sound (*ship / shop / chip*). It's adaptive through the six phonics stages.
+     - ✏️ **Spelling Sands:** the adaptive spelling check.
+     - 📚 **Story Cove:** a story at the child's reading level from Reading Reef, read alone, with questions.
+     - 🔢 **Number Peak:** the adaptive number check.
+
+     No marks are shown: every answer gets the same friendly sparkle. Each island stops by itself when it gets too hard and ends with a sticker. Islands can be spread across lessons. About 15–25 minutes in all.
+  3. **Report and first lessons:** a professional **starting assessment report** to print or save as a PDF. It gives the CfE level the child is working within for literacy and numeracy; for each area a status (Secure, Developing or Needs support), what was found and a next step; recommended first lists; the child's profile; space for the teacher's comments; and a note that levels are indicative and need teacher judgement. Spelling and Number Peak feed **Next steps** directly. The flow also offers to email the home login.
+  Every pupil card also has an **Assessment and report** button. The quest can be set as work too ("Pip's Sound Quest"), and assessment work is kept out of the CfE overview and progress figures.
 - **Starting checks** (🧭 on the home page, or set one as work): a placement check for a new pupil's first lesson, about 10 minutes, with one try per question and no marks shown.
   - **Spelling** uses new words the pupil hasn't practised. It tries a few lists spread through each stage, and goes through a stage list by list only once a word is missed.
   - **Numbers** asks two questions from each of the core number, money, time and fraction activities, from Early level up.

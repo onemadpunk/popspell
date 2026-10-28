@@ -435,6 +435,7 @@
   function resolveAssigned(entry) {
     const text = String(entry).trim();
     if (LISTS[text]) return { href: `#/list/${encodeURIComponent(text)}`, title: LISTS[text].title, example: LISTS[text].items[0]?.spelling, accent: LISTS[text].accent };
+    if (text === QUEST_ID) return { href: "#/assess", title: "Pip's Sound Quest", example: "🌟", accent: "#F59E0B" };
     const check = checkKind(text);
     if (check) return { href: `#/check/${check}`, title: CHECKS[check].title, example: CHECKS[check].icon, accent: CHECKS[check].accent };
     const act = window.PopActivities && window.PopActivities.get(text);
@@ -745,7 +746,9 @@
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
     // A home login link (#/join/CODE?pupil=Ava) also signs this device in as that pupil
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""));
+    // then=assess (the teacher's New pupil link) goes straight on to Pip's Sound Quest
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), params.get("then") === "assess" ? "#/assess" : "#/");
+    else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "teacher" && window.PopTeacher) window.PopTeacher.show(app, decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
@@ -760,7 +763,7 @@
   }
 
   // A class link (#/join/K7P2QX) or a typed code puts this device in that teacher's class
-  async function joinClass(code, onDone, pupil = "") {
+  async function joinClass(code, onDone, pupil = "", then = "#/") {
     const my = phase;
     if (!onDone) app.innerHTML = `<section class="panel start"><h1>Joining the class…</h1></section>`;
     const api = await window.PopCloudReady;
@@ -775,10 +778,10 @@
     saveClass(info);
     if (pupil) setPupil(pupil); // their progress and homework load on the home page
     justJoined = true;
-    if (!onDone) history.replaceState(null, "", "#/");
+    if (!onDone) history.replaceState(null, "", then);
     if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    showHome();
+    if (then === "#/assess") showQuest(); else showHome();
   }
   let justJoined = false;
 
@@ -1339,10 +1342,12 @@
       const list = session.list;
       const activity = session.activity;
       const check = session.check;
+      const quest = session.quest;
       leaveSession(session); // the words done so far still count
       newScreen();
       session = null;
-      if (check) showCheckStart(check); else if (activity) showActivityStart(activity); else showStart(list);
+      if (quest) showQuest(); // back to Pip's map; the island can be done again later
+      else if (check) showCheckStart(check); else if (activity) showActivityStart(activity); else showStart(list);
     };
   }
 
@@ -2307,6 +2312,9 @@
       blurb: "Answer each question. Some get tricky. That's fine, just have a go!" }
   };
   const checkKind = id => Object.keys(CHECKS).find(k => CHECKS[k].id === id) || null;
+  // Placement work (starting checks and Pip's Sound Quest) deliberately goes past what a pupil
+  // can do yet, so it's kept out of progress figures, stars and the CfE overview
+  const isAssessment = id => !!checkKind(id) || /^assess-/.test(String(id || ""));
 
   const LEVELS = ["Early", "First", "Second"];
   const numberOrder = () => {
@@ -2322,8 +2330,9 @@
     return Object.assign({}, pool[Math.floor(Math.random() * pool.length)], { challenge: false, from: id });
   }
 
-  // Each yields the next question; the answer to it is in results by the time it resumes
-  function* spellingQuestions(results) {
+  // Each yields the next question; the answer to it is in results by the time it resumes.
+  // ask makes the question for a list: a word to spell, or (Pip's Sound Quest) a word to read.
+  function* spellingQuestions(results, ask = checkWord) {
     const lastRight = () => results[results.length - 1].correct;
     let gaps = 0;
     for (const stage of STAGES) {
@@ -2331,13 +2340,13 @@
       const tried = {};
       let missed = false;
       for (const id of spread(ids, CHECK_SCREEN)) {
-        yield checkWord(id);
+        yield ask(id);
         tried[id] = lastRight();
         if (!tried[id]) { missed = true; break; }
       }
       if (!missed) continue;
       for (const id of ids) {
-        if (!(id in tried)) { yield checkWord(id); tried[id] = lastRight(); }
+        if (!(id in tried)) { yield ask(id); tried[id] = lastRight(); }
         if (!tried[id] && ++gaps >= CHECK_GAPS) return;
       }
     }
@@ -2398,7 +2407,7 @@
 
   function nextCheckQuestion() {
     const step = session.questions.next();
-    if (step.done) return showCheckEnd();
+    if (step.done) return session.quest ? showIslandEnd() : showCheckEnd();
     session.items.push(step.value);
     session.i = session.items.length - 1;
     showCheckQuestion();
@@ -2408,18 +2417,22 @@
     newScreen();
     const q = session.items[session.i];
     const spelling = session.check === "spelling";
+    const quest = session.quest;
     app.innerHTML = `
-      <section class="panel practice activity" style="--accent:${esc(session.list.accent)}">
+      <section class="panel practice activity${quest ? " quest-q" : ""}" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
         <div class="progress">
-          <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-          <span>${spelling ? "Word" : "Question"} ${session.i + 1}</span>
+          <a class="stop" href="#/" id="stopLink">✕ ${quest ? "Map" : "Stop"}</a>
+          <span>${quest ? `${quest.icon} ${esc(quest.title)}` : `${spelling ? "Word" : "Question"} ${session.i + 1}`}</span>
           ${helpHTML()}
         </div>
+        ${quest ? `<div class="quest-stones" aria-hidden="true">${session.items.map((_, k) => `<span class="${k < session.i ? "done" : "now"}"></span>`).join("")}</div>
+          <div class="quest-pip">${pipHTML("small", "bob", "", quest.pose)}</div>` : ""}
         <p class="phase q-prompt">${spelling ? "Listen, then spell the word" : esc(q.prompt)}</p>
         ${spelling ? sentenceHTML(q, true) : q.html || ""}
         ${q.kind === "choice"
-          ? `<div class="q-options">${q.options.map((opt, i) => `<div class="q-option-wrap"><button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button></div>`).join("")}</div>`
+          ? `<div class="q-options${q.readWords ? " read-words" : ""}">${q.options.map((opt, i) => `<div class="q-option-wrap"><button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button>
+              ${q.sayOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}</div>`).join("")}</div>`
           : `<form class="spell-form" id="checkForm" autocomplete="off">
               <label for="checkAnswer" class="sr-only">Your answer</label>
               <input id="checkAnswer" class="answer" type="text" inputmode="${q.input === "numeric" || q.input === "decimal" ? q.input : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">
@@ -2445,7 +2458,15 @@
       }
       session.results.push({ item: q, correct, wrong: correct ? [] : [value], stars: 0, missed });
       livePing(session, "word", { word: q.label || q.spelling, ok: correct });
-      nextCheckQuestion();
+      if (!quest) return nextCheckQuestion();
+      // The quest never says right or wrong: every answer gets the same friendly sparkle
+      tones([587, 784], 0.12);
+      app.querySelectorAll(".q-option, .q-hear, #checkForm button, #checkAnswer").forEach(el => { el.disabled = true; });
+      const sparkle = document.createElement("p");
+      sparkle.className = "quest-sparkle pop";
+      sparkle.textContent = `✨ ${pick(CHEERS)}`;
+      app.querySelector(".practice").append(sparkle);
+      later(() => nextCheckQuestion(), 750);
     };
 
     if (spelling) {
@@ -2457,6 +2478,7 @@
       sayQuestion(q);
     }
     if (q.kind === "choice") {
+      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayWord(q.options[Number(b.dataset.hear)]); });
       app.querySelectorAll(".q-option").forEach(b => { b.onclick = () => answer(q.options[Number(b.dataset.opt)]); });
       return;
     }
@@ -2492,6 +2514,203 @@
       if (!note || my !== phase || sent === null) return;
       note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
     });
+  }
+
+  /* ---------- Pip's Sound Quest: a full starting assessment, played as five islands ---------- */
+
+  // A professional placement check that feels like a game. No marks are ever shown: every answer
+  // gets a sparkle. Each island stops by itself once it gets too hard, so a child is never left
+  // struggling, and each is sent to the teacher on its own, so the quest can be split across
+  // lessons. Spelling and numbers use the starting checks' ids, so Next steps uses them as well.
+  const QUEST_ID = "assess";
+  const QUEST = [
+    { key: "listen", id: "assess-listen", title: "Listening Lagoon", icon: "👂", colour: "#12C6B7", pose: "listen",
+      intro: "Pip's friends love sounds! Listen to each word, then tap your answer. Tap 🔊 to hear a word again." },
+    { key: "read", id: "assess-read", title: "Reading Reef", icon: "📖", colour: "#0EB5F2", pose: "think",
+      intro: "Pip will say a word. Find it and tap it! Say the sounds in each word to help you." },
+    { key: "spell", id: "check-spelling", title: "Spelling Sands", icon: "✏️", colour: "#0f766e", pose: "listen",
+      intro: "Pip will say a word, then use it in a sentence. Write it in the sand! Some words get tricky, so just have a go." },
+    { key: "story", id: "assess-story", title: "Story Cove", icon: "📚", colour: "#F59E0B", pose: "think",
+      intro: "Read Pip's story all by yourself, then answer the questions about it." },
+    { key: "numbers", id: "check-numbers", title: "Number Peak", icon: "🔢", colour: "#FF4081", pose: "hop",
+      intro: "Climb Number Peak! Answer each question. Some get tricky, so just have a go." }
+  ];
+  const QUEST_KEY = "popspell-quest-v1";
+  const readQuestAll = () => { try { return JSON.parse(localStorage.getItem(QUEST_KEY)) || {}; } catch { return {}; } };
+  const loadQuest = () => readQuestAll()[pupilKey()] || {};
+  function saveQuest(state) {
+    const all = readQuestAll();
+    all[pupilKey()] = state;
+    try { localStorage.setItem(QUEST_KEY, JSON.stringify(all)); } catch { /* private mode */ }
+  }
+  const CHEERS = ["Nice one!", "Thank you!", "Great trying!", "Keep going!", "Super!", "Brilliant effort!"];
+
+  // Listening Lagoon: three each of rhyme, first sounds and counting sounds (all spoken)
+  function* listenQuestions() {
+    const A = window.PopActivities;
+    for (const id of ["l-rhyme", "l-first-sound", "l-count-sounds"]) {
+      const act = A && A.get(id);
+      if (act) for (const q of act.make().slice(0, 3)) yield Object.assign({ spelling: q.label, tokens: [] }, q, { from: id });
+    }
+  }
+
+  // Sounds back into a spelling, putting a split digraph's e after the next sound: c a_e k → cake
+  const spellOf = toks => {
+    let out = "";
+    let pendingE = false;
+    toks.forEach(t => {
+      const split = /^([aeiou])_e$/.exec(t);
+      if (split) { out += split[1]; pendingE = true; return; }
+      out += t;
+      if (pendingE) { out += "e"; pendingE = false; }
+    });
+    return out + (pendingE ? "e" : "");
+  };
+  // Reading Reef: Pip says a word and the child finds it among near-misses that change one sound,
+  // vowel sounds first, as a misreading would (ship → shop, chip)
+  function readItem(id) {
+    const item = checkWord(id);
+    const target = item.spelling.toLowerCase();
+    const options = new Set([target]);
+    if (!item.whole && window.PopActivities) {
+      const vowelFirst = item.tokens.map((_, i) => i).sort((a, b) => /[aeiou]/.test(item.tokens[b]) - /[aeiou]/.test(item.tokens[a]));
+      for (const i of vowelFirst) {
+        for (const alt of window.PopActivities.alternatives(item.tokens[i])) {
+          if (options.size < 3) options.add(spellOf(item.tokens.map((t, k) => (k === i ? alt : t))));
+        }
+      }
+    }
+    // Too few near-misses (a tricky word): other words from the same list
+    shuffle(LISTS[id].items.map(it => it.spelling.toLowerCase())).forEach(w => { if (options.size < 3) options.add(w); });
+    return { kind: "choice", prompt: "Which word did Pip say?", answer: target, options: shuffle([...options]), readWords: true,
+      say: { word: target }, spelling: target, tokens: item.tokens, label: target, skill: `reading: ${LISTS[id].title}`, from: id };
+  }
+
+  // Story Cove: a story at the child's reading level, the stage below their first Reading Reef gap
+  // (no gaps: a longer Second-level story). Read alone, with no read-aloud, as it checks reading.
+  function questStory() {
+    const read = loadQuest().read;
+    if (read && read.gapStage === -1) {
+      const harder = (window.PASSAGES || []).filter(p => p.level === "Second");
+      if (harder.length) return pick(harder);
+    }
+    const stage = read ? Math.max(1, read.gapStage) : 3;
+    const stories = window.STORIES || [];
+    const atLevel = stories.filter(s => s.stage === stage);
+    return atLevel.length ? pick(atLevel) : stories.filter(s => s.stage <= stage).pop() || stories[0];
+  }
+  function* storyQuestions() {
+    const p = questStory();
+    if (!p) return;
+    const html = `<div class="passage quest-story"><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p></div>`;
+    for (const [i, q] of p.questions.entries()) {
+      yield { kind: "choice", prompt: q.q, answer: q.a, options: shuffle([q.a].concat(q.others)), html,
+        spelling: `${p.title} Q${i + 1}`, tokens: [], label: `${p.title} Q${i + 1}`, skill: q.skill || "comprehension", from: `story:${p.id}` };
+    }
+  }
+  const QUEST_QUESTIONS = {
+    listen: listenQuestions, read: results => spellingQuestions(results, readItem),
+    spell: results => spellingQuestions(results), story: storyQuestions, numbers: results => numberQuestions(results)
+  };
+
+  function showQuest() {
+    document.title = `Pip's Sound Quest · ${SITE.title}`;
+    const state = previewMode ? {} : loadQuest();
+    const next = QUEST.find(isl => !state[isl.key]);
+    const name = getPupil();
+    app.innerHTML = `
+      <section class="panel quest-panel">
+        <a class="back" href="#/">← Home</a>
+        ${previewBanner()}
+        <div class="quest-head">
+          ${pipHTML("big", next ? "bob" : "cheer", next ? (name && !previewMode ? `Hi ${esc(name)}! Will you help me visit my five islands?` : "Hi! Will you help me visit my five islands?") : "We did it! Thank you for helping me!", next ? "hop" : "celebrate")}
+          <div class="quest-intro">
+            <p class="eyebrow">🌟 Pip's Sound Quest</p>
+            <h1>${next ? "Visit Pip's five islands" : "Quest complete!"}</h1>
+            <p class="tip">${next ? "Each island is a short game. There are no wrong answers here: just do your best, and Pip will give you a sticker for every island." : "You've collected all five stickers! Your teacher will use your quest to choose the best work for you."}</p>
+            ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
+          </div>
+        </div>
+        <ol class="quest-islands">${QUEST.map((isl, i) => `
+          <li class="island${state[isl.key] ? " done" : ""}${isl === next ? " next" : ""}" style="--accent:${isl.colour}">
+            <button type="button" class="island-btn" data-island="${isl.key}">
+              <span class="island-icon" aria-hidden="true">${state[isl.key] ? "⭐" : isl.icon}</span>
+              <span class="island-name">${i + 1}. ${esc(isl.title)}</span>
+              <span class="island-state">${state[isl.key] ? "Sticker earned!" : isl === next ? "Next stop" : "Still to visit"}</span>
+            </button></li>`).join("")}</ol>
+        <div class="row center">${next ? `<button class="btn big primary" id="questGo">▶ Go to ${esc(next.title)}</button>` : `<a class="btn big primary" href="#/">Back home</a>`}</div>
+      </section>`;
+    const box = $("#pupilBox");
+    if (box) mountPupil(box, { lead: "Exploring as", onChange: showQuest });
+    const go = isl => { if (box && !takePupilName(box)) return; showIslandIntro(isl); };
+    app.querySelectorAll("[data-island]").forEach(b => { b.onclick = () => go(QUEST.find(x => x.key === b.dataset.island)); });
+    if ($("#questGo")) $("#questGo").onclick = () => go(next);
+  }
+
+  function showIslandIntro(island) {
+    newScreen();
+    document.title = `${island.title} · ${SITE.title}`;
+    app.innerHTML = `
+      <section class="panel start island-intro" style="--accent:${esc(island.colour)}">
+        <a class="back" href="#/assess">← Pip's map</a>
+        ${previewBanner()}
+        ${pipHTML("big", "bob", esc(island.intro), island.pose)}
+        <p class="eyebrow">${island.icon} Pip's Sound Quest</p>
+        <h1>${esc(island.title)}</h1>
+        <p class="hint">It stops by itself when it gets tricky. Take your time!</p>
+        <button class="btn big primary" id="go">▶ Let's go!</button>
+      </section>`;
+    $("#go").onclick = () => startQuestIsland(island);
+    $("#go").focus();
+  }
+
+  function startQuestIsland(island) {
+    const results = [];
+    session = {
+      list: { id: island.id, title: `Pip's Sound Quest: ${island.title}`, accent: island.colour },
+      check: island.key === "spell" ? "spelling" : "quest", quest: island, i: -1, results, items: [],
+      pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode, secureBefore: new Set(),
+      questions: QUEST_QUESTIONS[island.key](results)
+    };
+    livePing(session, "start");
+    nextCheckQuestion();
+  }
+
+  function showIslandEnd() {
+    newScreen();
+    const island = session.quest;
+    const state = loadQuest();
+    const entry = { done: dayKey() };
+    if (island.key === "read") {
+      // Where reading gets tricky: the stage of the first list with a miss (-1: no gaps at all)
+      const gaps = checkGaps(session.results.map(r => ({ from: r.item.from, correct: r.correct })));
+      entry.gapStage = gaps.length ? STAGES.findIndex(st => st.lists.some(l => l.id === gaps[0])) : -1;
+    }
+    if (!session.preview) { state[island.key] = entry; saveQuest(state); }
+    const next = QUEST.find(isl => isl !== island && !state[isl.key]);
+    app.innerHTML = `
+      <section class="panel summary island-end" style="--accent:${esc(island.colour)}">
+        ${previewBanner()}
+        ${pipHTML("big", "cheer", "", "celebrate")}
+        <div class="sticker pop" aria-hidden="true">${island.icon}</div>
+        <h1>${esc(island.title)}: sticker earned!</h1>
+        <p class="tip">${esc(pick(["You were brilliant!", "Pip loved exploring with you!", "What a great explorer you are!"]))}</p>
+        ${REPORTING && !session.preview ? `<p class="sent" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        <div class="row center">
+          ${next ? `<button class="btn big primary" id="nextIsland">▶ On to ${esc(next.title)}</button>` : ""}
+          <a class="btn${next ? "" : " big primary"}" href="#/assess">🗺️ Pip's map</a>
+        </div>
+      </section>`;
+    chimeRight();
+    livePing(session, "end");
+    session.ended = true;
+    const my = phase;
+    sendReport(session, true).then(sent => {
+      const note = $("#sent");
+      if (!note || my !== phase || sent === null) return;
+      note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
+    });
+    if (next) $("#nextIsland").onclick = () => showIslandIntro(next);
   }
 
   /* ---------- Make a list (for the teacher) ---------- */
@@ -2641,7 +2860,7 @@
 
   // What the teacher pages (teacher.js) need from here
   window.PopSpell = {
-    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned, CHECKS, checkKind, checkGaps,
+    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned, CHECKS, checkKind, checkGaps, isAssessment, QUEST,
     get teacher() { return TEACHER; }
   };
 

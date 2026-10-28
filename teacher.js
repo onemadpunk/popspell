@@ -214,7 +214,7 @@
     const gameArea = A && A.AREAS.find(area => area.id === "games");
     if (gameArea) groups.push(`<optgroup label="${gameArea.icon} ${esc(gameArea.title)}">${gameArea.activities
       .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`);
-    groups.push(`<optgroup label="🧭 Starting checks">${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`);
+    groups.push(`<optgroup label="🧭 Starting checks"><option value="assess">🌟 Pip's Sound Quest (full assessment)</option>${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`);
     P().STAGES.forEach(st => groups.push(`<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
     if (A) {
       A.AREAS.filter(area => area.id !== "games").forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
@@ -916,7 +916,7 @@
     const A = window.PopActivities;
     const rows = {};
     // Starting checks deliberately go past what a pupil can do, so they'd drag the status down
-    sessions.filter(s => !P().checkKind(s.listId))
+    sessions.filter(s => !P().isAssessment(s.listId))
       .filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
       const tag = (A && A.tag(s.listId)) || { organiser: "Other work", level: "" };
       const r = rows[tag.organiser] = rows[tag.organiser] || { organiser: tag.organiser, levels: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
@@ -949,6 +949,222 @@
         <td>${r.items}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
         || `<tr><td colspan="7">No work recorded in this period.</td></tr>`}</tbody></table>
       <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
+  }
+
+  /* ---------- New pupil: profile, Pip's Sound Quest, and the starting assessment report ---------- */
+
+  const YEAR_GROUPS = ["Nursery", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "S1", "S2", "S3"];
+  const NEED_CHIPS = ["Dyslexia (or suspected)", "English as an additional language", "ADHD", "Speech and language", "Hearing", "Sight", "Anxious about learning", "Needs short tasks"];
+  // The quest's link: joins the class, signs the device in as the child, and opens the quest
+  const assessLink = name => `${homeLink(name)}&then=assess`;
+  const stageOf = listId => P().STAGES.findIndex(st => st.lists.some(l => l.id === listId));
+  const levelOfStage = i => (i <= 1 ? "Early" : i <= 4 ? "First" : "Second"); // as the lists' CfE labels
+  const LEVEL_ORDER = ["Early", "First", "Second"];
+
+  // The latest go at each island, from the results the teacher already has
+  function questSessions(name, sessions) {
+    const mine = sessions.filter(s => sameName(s.pupil, name)).sort((a, b) => b.at - a.at);
+    return Object.fromEntries(P().QUEST.map(isl => [isl.key, mine.find(s => s.listId === isl.id) || null]));
+  }
+
+  // What each island shows: a CfE level (where it can say), a plain-English finding, and a next step
+  function questFindings(found) {
+    const A = window.PopActivities;
+    const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+    const status = p => (p >= 80 ? "Secure" : p >= 50 ? "Developing" : "Needs support");
+    const out = {};
+    if (found.listen) {
+      const words = found.listen.words || [];
+      const by = {};
+      words.forEach(w => { const k = w.from || "other"; by[k] = by[k] || [0, 0]; by[k][1]++; if (w.correct) by[k][0]++; });
+      const name = { "l-rhyme": "Rhyme", "l-first-sound": "First sounds", "l-count-sounds": "Counting sounds" };
+      const right = words.filter(w => w.correct).length;
+      out.listen = { area: "Listening for sounds (phonological awareness)", level: "Early", status: status(pct(right, words.length)),
+        detail: Object.entries(by).map(([k, [r, n]]) => `${name[k] || k} ${r} of ${n}`).join(" · "),
+        next: pct(right, words.length) >= 80 ? "Secure: no extra sound games needed." : "Short daily sound games: rhyme, first sounds and tapping out sounds." };
+    }
+    // Reading and spelling are placed on the phonics stages: secure up to the stage before the first gap
+    const phonics = (s, area, verb) => {
+      if (!s) return null;
+      const gaps = P().checkGaps(s.words || []);
+      if (!gaps.length) return { area, level: "Second", status: "Secure", gap: null,
+        detail: `${verb} every stage tested, through Stage 6 (endings and tricky words).`, next: "Move on to Second-level spelling rules and longer texts." };
+      const g = stageOf(gaps[0]);
+      const st = P().STAGES[g];
+      return { area, level: levelOfStage(g), status: g === 0 ? "Needs support" : "Developing", gap: gaps[0],
+        detail: `${g ? `Secure up to ${P().STAGES[g - 1].stage}. ` : ""}Starts to find it tricky at ${st.stage}: ${gaps.map(titleOf).slice(0, 3).join(", ")}.`,
+        next: `Start ${verb === "Read" ? "reading" : "spelling"} practice at ${titleOf(gaps[0])}.` };
+    };
+    out.read = phonics(found.read, "Reading: sounding out words (decoding)", "Read");
+    out.spell = phonics(found.spell, "Spelling", "Spelt");
+    if (found.story) {
+      const words = found.story.words || [];
+      const id = String((words.find(w => w.from) || {}).from || "").replace(/^story:/, "");
+      const story = (window.STORIES || []).find(s => s.id === id) || (window.PASSAGES || []).find(p => p.id === id);
+      const level = story ? story.level || levelOfStage((story.stage || 1) - 1) : "";
+      const right = words.filter(w => w.correct).length;
+      out.story = { area: "Reading: understanding a story", level, status: status(pct(right, words.length)),
+        detail: `${story ? `"${story.title}"` : "A story"} read alone: ${right} of ${words.length} questions right.`,
+        next: pct(right, words.length) >= 80 ? "Understanding is secure at this level: build up to longer texts." : "Talk about stories together: who, where, what happened, and why." };
+    }
+    if (found.numbers) {
+      const gaps = P().checkGaps(found.numbers.words || []);
+      const act = gaps.length && A ? A.get(gaps[0]) : null;
+      out.numbers = { area: "Numeracy: number and number processes", level: act ? act.level : "Second", status: act ? (act.level === "Early" ? "Needs support" : "Developing") : "Secure",
+        detail: act ? `Starts to find it tricky at ${act.title} (${act.level} level)${gaps.length > 1 ? `; also ${gaps.slice(1, 3).map(id => (A.get(id) || {}).title || id).join(", ")}` : ""}.` : "Answered every number question tested, through Second level.",
+        next: act ? `Start number practice at ${act.title}.` : "Move on to Second-level measurement, fractions and data." };
+    }
+    return out;
+  }
+
+  function assessmentReport(pupil, sessions) {
+    const found = questSessions(pupil.name, sessions);
+    const f = questFindings(found);
+    const rows = ["listen", "read", "story", "spell", "numbers"].filter(k => f[k]);
+    const dates = Object.values(found).filter(Boolean).map(s => s.at);
+    const lower = (...ls) => ls.filter(Boolean).sort((a, b) => LEVEL_ORDER.indexOf(a) - LEVEL_ORDER.indexOf(b))[0];
+    const literacy = lower(f.read && f.read.level, f.spell && f.spell.level);
+    const badge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/\s+/g, "-")}">${esc(s)}</span>`;
+    const strengths = rows.filter(k => f[k].status === "Secure").map(k => f[k].area);
+    return `<div class="ar">
+      <div class="ar-head"><img src="assets/brand/wordmark.png" alt="PopSpell" width="96">
+        <div><h1>Starting assessment</h1><p class="ar-sub">Pip's Sound Quest · ${esc(current.name)}</p></div>
+        <img src="assets/brand/pip-mascot.png" alt="" width="70"></div>
+      <table class="ar-facts"><tr><th>Pupil</th><td>${esc(pupil.name)}</td><th>Year group</th><td>${esc(pupil.yearGroup || "—")}</td></tr>
+        <tr><th>Assessed</th><td>${dates.length ? esc([...new Set(dates.sort().map(day))].join(", ")) : "—"}</td><th>Teacher</th><td>${esc(current.teacherName || me.name || "")}</td></tr></table>
+      ${literacy || f.numbers ? `<div class="ar-summary">
+        ${literacy ? `<div><span>Literacy</span><b>Working within ${esc(literacy)} level</b></div>` : ""}
+        ${f.numbers ? `<div><span>Numeracy</span><b>Working within ${esc(f.numbers.level)} level</b></div>` : ""}
+      </div>` : ""}
+      <h2>What we found</h2>
+      ${rows.length ? `<table class="ar-table"><thead><tr><th>Area</th><th>CfE level</th><th>Status</th><th>What we found</th><th>Next step</th></tr></thead><tbody>
+        ${rows.map(k => `<tr><td><b>${esc(f[k].area)}</b></td><td>${esc(f[k].level || "—")}</td><td>${badge(f[k].status)}</td><td>${esc(f[k].detail)}</td><td>${esc(f[k].next)}</td></tr>`).join("")}
+      </tbody></table>` : `<p>No islands finished yet.</p>`}
+      ${strengths.length ? `<h2>Strengths</h2><ul>${strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
+      <h2>Recommended starting points</h2><ul>
+        ${f.read && f.read.gap ? `<li>Reading practice: <b>${esc(titleOf(f.read.gap))}</b></li>` : ""}
+        ${f.spell && f.spell.gap ? `<li>Spelling list: <b>${esc(titleOf(f.spell.gap))}</b></li>` : ""}
+        ${f.numbers && f.numbers.status !== "Secure" ? `<li>${esc(f.numbers.next)}</li>` : ""}
+        ${f.listen && f.listen.status !== "Secure" ? `<li>${esc(f.listen.next)}</li>` : ""}
+        <li>These are planned with one click in PopSpell's Next steps.</li></ul>
+      ${pupil.needs || pupil.likes ? `<h2>About ${esc(pupil.name)}</h2>
+        ${pupil.needs ? `<p><b>Things to bear in mind:</b> ${esc(pupil.needs)}</p>` : ""}
+        ${pupil.likes ? `<p><b>Enjoys:</b> ${esc(pupil.likes)}</p>` : ""}` : ""}
+      <h2>Teacher's comments</h2><div class="ws-comment"></div>
+      <p class="ar-note"><b>About this assessment.</b> Pip's Sound Quest is a short, adaptive check played as a game. Each part stops as soon as the work becomes too hard, so the child is never left struggling, and it shows a starting point rather than everything they can do. CfE levels are indicative: they should be confirmed by the teacher's own judgement against the Curriculum for Excellence benchmarks.</p>
+    </div>`;
+  }
+
+  function previewReport(pupil, sessions) {
+    const html = assessmentReport(pupil, sessions);
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Assessment report</h2>
+        <button class="btn small" type="button" data-close>Close</button>
+        <button class="btn small primary" type="button" data-print>🖨️ Print / Save PDF</button></div>
+      <section class="sheet-preview-page ws-report">${html}</section>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); printSheet("ws-report", html); };
+    dialog.showModal();
+  }
+
+  // Three steps: about the child, Pip's Sound Quest, then the report and first lessons.
+  // Opened from the Pupils tab, blank for a new child or at step 2 for one already in the class.
+  function newPupilFlow(pupil, roster, done, startStep = 1) {
+    let r = pupil ? Object.assign({}, pupil) : null;
+    let step = r ? startStep : 1;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview pupil-flow";
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => { dialog.remove(); done(); }, { once: true });
+    const steps = ["About the child", "Pip's Sound Quest", "Report and first lessons"];
+    const frame = inner => {
+      dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🌟 ${r ? esc(r.name) : "New pupil"}</h2>
+          <button class="btn small" type="button" data-close>Close</button></div>
+        <ol class="flow-steps">${steps.map((s, i) => `<li class="${i + 1 === step ? "now" : i + 1 < step ? "done" : ""}"><button type="button" data-step="${i + 1}" ${!r && i ? "disabled" : ""}>${i + 1}. ${s}</button></li>`).join("")}</ol>
+        <div class="flow-body">${inner}</div>`;
+      dialog.querySelector("[data-close]").onclick = () => dialog.close();
+      dialog.querySelectorAll("[data-step]").forEach(b => { b.onclick = () => { step = Number(b.dataset.step); render(); }; });
+    };
+    const render = () => (step === 1 ? drawAbout() : step === 2 ? drawQuest() : drawResults());
+    // Errors show inside the window, where the teacher is looking
+    const fail = err => dialog.querySelector(".flow-body").insertAdjacentHTML("afterbegin", `<div class="t-error">${esc(err.message || err)}</div>`);
+
+    function drawAbout() {
+      frame(`<p class="hint">A few details help PopSpell (and you) plan for this child. Only teachers can see them.</p>
+        <form class="t-diary-form" id="flowAbout">
+          <label>First name, as the child will type it ${r ? `<input type="text" value="${esc(r.name)}" disabled>` : `<input type="text" id="flowName" maxlength="40" required>`}</label>
+          <label>Year group <select id="flowYear"><option value="">Choose…</option>${YEAR_GROUPS.map(y => `<option${r && r.yearGroup === y ? " selected" : ""}>${y}</option>`).join("")}</select></label>
+          <label>Parent email (optional) <input type="email" id="flowEmail" value="${esc(r ? r.parentEmail || "" : "")}" placeholder="parent@example.com"></label>
+          <label>Things to bear in mind <textarea id="flowNeeds" rows="2" maxlength="500" placeholder="e.g. diagnosed dyslexia, gets tired quickly">${esc(r ? r.needs || "" : "")}</textarea></label>
+          <div class="chips">${NEED_CHIPS.map(c => `<button type="button" class="t-chip need-chip" data-need="${esc(c)}">＋ ${esc(c)}</button>`).join("")}</div>
+          <label>What they enjoy (for choosing stories and keeping it fun) <input type="text" id="flowLikes" maxlength="300" value="${esc(r ? r.likes || "" : "")}" placeholder="e.g. football, dinosaurs, drawing"></label>
+          <div class="row end"><button class="btn primary" type="submit">Save and continue →</button></div>
+        </form>`);
+      dialog.querySelectorAll("[data-need]").forEach(b => { b.onclick = () => {
+        const box = dialog.querySelector("#flowNeeds");
+        if (!box.value.includes(b.dataset.need)) box.value = box.value.trim() ? `${box.value.trim()}; ${b.dataset.need}` : b.dataset.need;
+      }; });
+      dialog.querySelector("#flowAbout").onsubmit = async e => {
+        e.preventDefault();
+        const name = r ? r.name : dialog.querySelector("#flowName").value.trim();
+        if (!name) return;
+        if (!r && roster.some(p => sameName(p.name, name))) return fail(new Error("This pupil is already in the class. Use the Assessment and report button on their card."));
+        const details = Object.assign({}, r || {}, { name, yearGroup: dialog.querySelector("#flowYear").value,
+          parentEmail: dialog.querySelector("#flowEmail").value.trim(), needs: dialog.querySelector("#flowNeeds").value, likes: dialog.querySelector("#flowLikes").value });
+        try { await cloud.savePupil(current.id, details); r = details; step = 2; render(); } catch (err) { fail(err); }
+      };
+    }
+
+    async function drawQuest() {
+      frame(`<div class="empty">Loading…</div>`);
+      let sessions = [];
+      try { sessions = await cloud.sessions(current.id, 365); } catch (err) { return fail(err); }
+      const found = questSessions(r.name, sessions);
+      const link = assessLink(r.name);
+      frame(`<div class="flow-quest">
+          <img src="assets/brand/pip-hop-small.webp" alt="" width="80" height="80">
+          <div><p><b>Pip's Sound Quest</b> is a 15–25 minute assessment that ${esc(r.name)} plays as a game: five short islands for listening, reading, a story, spelling and numbers. There are no marks on screen, and each island stops by itself when it gets too hard. Islands can be done across more than one lesson.</p>
+          <p>Open this link on the device ${esc(r.name)} will use. It joins your class, signs in as ${esc(r.name)}, and opens Pip's map.</p></div></div>
+        <div class="add-row"><input type="text" readonly class="t-link" value="${esc(link)}" aria-label="Assessment link">
+          <button class="btn small" type="button" data-copy-assess>📋 Copy</button>
+          <a class="btn small primary" href="${esc(link)}" target="_blank" rel="noopener">▶ Open the quest</a></div>
+        <h3 class="t-h2">Islands</h3>
+        <ul class="flow-islands">${P().QUEST.map(isl => `<li class="${found[isl.key] ? "done" : ""}"><span>${isl.icon}</span> ${esc(isl.title)}
+          <b>${found[isl.key] ? `✓ ${esc(day(found[isl.key].at))}` : "Not yet"}</b></li>`).join("")}</ul>
+        <div class="row"><button class="btn small" type="button" data-refresh>↻ Check again</button>
+          <button class="btn primary" type="button" data-next ${Object.values(found).some(Boolean) ? "" : "disabled"}>See the report →</button></div>`);
+      dialog.querySelector("[data-copy-assess]").onclick = async e => {
+        try { await navigator.clipboard.writeText(link); e.target.textContent = "✓ Copied"; } catch { dialog.querySelector(".t-link").select(); }
+      };
+      dialog.querySelector("[data-refresh]").onclick = () => drawQuest();
+      dialog.querySelector("[data-next]").onclick = () => { step = 3; render(); };
+    }
+
+    async function drawResults() {
+      frame(`<div class="empty">Loading…</div>`);
+      let sessions = [];
+      try { sessions = await cloud.sessions(current.id, 365); } catch (err) { return fail(err); }
+      const f = questFindings(questSessions(r.name, sessions));
+      const keys = Object.keys(f).filter(k => f[k]);
+      frame(`${keys.length ? `<ul class="flow-findings">${keys.map(k => `<li><b>${esc(f[k].area)}</b> · ${f[k].level ? `${esc(f[k].level)} level · ` : ""}${esc(f[k].status)}<br><span class="meta">${esc(f[k].detail)}</span></li>`).join("")}</ul>`
+          : `<div class="empty">No islands finished yet. Go back a step to start the quest.</div>`}
+        <div class="row">
+          <button class="btn primary" type="button" data-report ${keys.length ? "" : "disabled"}>📄 View the assessment report</button>
+          <button class="btn" type="button" data-plan>🧭 Plan the first lessons</button>
+          <button class="btn" type="button" data-email>✉️ Email the home login</button>
+        </div>
+        <p class="hint">Next steps already suggests where to start from the spelling and number islands.</p>`);
+      dialog.querySelector("[data-report]").onclick = () => previewReport(r, sessions);
+      // The teacher area's own draw(): over to Next steps, which suggests where to start
+      dialog.querySelector("[data-plan]").onclick = () => { tab = "next"; dialog.close(); draw(); };
+      dialog.querySelector("[data-email]").onclick = () => previewEmail(r.parentEmail || "", homeLoginEmail(r));
+    }
+
+    render();
+    dialog.showModal();
   }
 
   /* ---------- Branded emails the teacher sends from their own email app ---------- */
@@ -1056,7 +1272,7 @@
     const mine = sessions.filter(s => sameName(s.pupil, name)).sort((a, b) => a.at - b.at);
     const sounds = {};
     // Starting checks deliberately go past what's been taught, so they don't count here
-    mine.filter(s => !P().checkKind(s.listId)).forEach(s => (s.words || []).forEach(w => {
+    mine.filter(s => !P().isAssessment(s.listId)).forEach(s => (s.words || []).forEach(w => {
       const missed = new Set(w.missed || []);
       const d = new Date(s.at).toDateString();
       new Set(String(w.sounds || "").split("·").filter(t => t && t.length <= 3)).forEach(snd => {
@@ -1079,7 +1295,7 @@
       week: { done: thisWeek.length, questions: thisWeek.reduce((t, s) => t + (s.words || []).length, 0) },
       sounds: { secure: soundsAt("secure"), learning: soundsAt("learning"), practise: soundsAt("practise") },
       recent: mine.slice(-8).reverse().map(s => ({ title: s.list, at: s.at, worksheet: s.source === "worksheet",
-        score: P().checkKind(s.listId) ? "" : `${firstTime(s)} of ${(s.words || []).length} right first time` })),
+        score: P().isAssessment(s.listId) ? "" : `${firstTime(s)} of ${(s.words || []).length} right first time` })),
       homework: r && r.homeworkList ? titleOf(r.homeworkList) : "",
       nextLesson: r && r.nextLessonDate >= today ? r.nextLessonDate : "",
       upcoming: (assignment ? assignment.plans : []).filter(p => p.until >= today)
@@ -1117,14 +1333,15 @@
     const pupils = summarise(sessions);
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
-      <h2 class="t-h2">Pupils in ${esc(current.name)}</h2>
+      <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div>
       <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" placeholder="Pupil's name or code" required>
         <input type="email" id="rosterParent" placeholder="Parent email (optional)">
         <button class="btn primary" type="submit">Add pupil</button></form>
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
-        <h3>${esc(r.name)}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
+        <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
+          <button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button></div>
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
@@ -1182,6 +1399,10 @@
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
     body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
+    $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
+    body.querySelectorAll("[data-assess]").forEach(b => {
+      b.onclick = () => newPupilFlow(roster.find(r => r.key === b.dataset.assess), roster, () => drawPupils(body), 2);
+    });
     $("#addPupil").onsubmit = async e => {
       e.preventDefault();
       const name = $("#rosterName").value.trim();

@@ -743,6 +743,8 @@ window.PopActivities = (() => {
 
   return {
     AREAS,
+    // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
+    alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),
     get(id) { return ALL.find(a => a.id === id) || (String(id).startsWith("dictate:") ? dictation(String(id).slice(8)) : null); },
     order() { return ALL.map(a => a.id); },
     all() { return ALL.slice(); },
