@@ -326,11 +326,15 @@
   // Keep in step with PHRASES in tools/make_audio.py
   const PHRASES = {
     allRight: ["all-right", "Fantastic! You spelled every word."],
+    // Games and number work: not every question is a word to spell
+    allDone: ["all-done", "Fantastic! You got every one right."],
     finished: ["finished", "Well done! Have a look at your stars."],
     test: ["test", "Can you spell the word, cake?"]
   };
   const PRAISE = [["well-done", "Well done!"], ["brilliant", "Brilliant!"], ["super", "Super spelling!"],
     ["fantastic", "Fantastic!"], ["great-job", "Great job!"], ["got-it", "You got it!"], ["amazing", "Amazing!"]];
+  // The same, without "Super spelling!", for games and number questions
+  const ACTIVITY_PRAISE = PRAISE.filter(([key]) => key !== "super");
 
   /* ---------- Classes: results go to the pupil's teacher (stored in Firebase, see cloud.js) ---------- */
 
@@ -1835,7 +1839,7 @@
       const fb = $("#feedback");
       fb.className = `feedback ${correct ? "good" : "oops"}`;
       fb.innerHTML = correct
-        ? `${esc(pick(PRAISE)[1])} <span class="stars-inline">${stars(earned)}</span>`
+        ? `${esc(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE)[1])} <span class="stars-inline">${stars(earned)}</span>`
         : q.kind === "dictation"
           ? `The sentence was: <b>${esc(q.answer)}</b>`
           : `The answer is <b>${esc(q.answer)}</b>${/[.!?]$/.test(q.answer) ? "" : "."} ${esc(q.explain || "")}`;
@@ -2491,7 +2495,7 @@
           <a class="btn" href="#/">Choose something else</a>
         </div>
       </section>`;
-    sayPhrase(right === r.length ? PHRASES.allRight : PHRASES.finished);
+    sayPhrase(right === r.length ? PHRASES.allDone : PHRASES.finished);
     livePing(session, "end");
     session.ended = true;
     const my = phase;

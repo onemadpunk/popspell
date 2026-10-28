@@ -243,6 +243,7 @@
 "passages/storm-s5": "[\"pocket-tts\", \"eponine\", 200, \"Carl put on his warm shirt and boots and ran to the barn with a torch.\"]",
 "passages/storm-s6": "[\"pocket-tts\", \"eponine\", 200, \"He shut the door and gave the horses some corn.\"]",
 "passages/storm-s7": "[\"pocket-tts\", \"eponine\", 200, \"By the time the storm was over, the sun was out and the horses were calm.\"]",
+"phrases/all-done": "[\"pocket-tts\", \"eponine\", 200, \"Fantastic! You got every one right.\"]",
 "phrases/all-right": "[\"pocket-tts\", \"eponine\", 200, \"Fantastic! You spelled every word.\"]",
 "phrases/amazing": "[\"pocket-tts\", \"eponine\", 200, \"Amazing!\"]",
 "phrases/brilliant": "[\"pocket-tts\", \"eponine\", 200, \"Brilliant!\"]",
