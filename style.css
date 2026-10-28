@@ -515,5 +515,21 @@ a.me-card:hover { border-color: var(--primary); }
   .worksheet-print .check-box { width: 10%; text-align: center; }
   .worksheet-print .sound-boxes { display: flex; gap: 4px; }
   .worksheet-print .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
+
+  /* Handwriting, sentence and letter-formation sheets: in the reading font, on four-line ruling */
+  body.printing-worksheet .worksheet-print.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
+  .ws-literacy h1 { font-family: var(--font); }
+  .ws-row { display: block; width: 100%; height: auto; margin: 2px 0 10px; break-inside: avoid; }
+  .ws-row text { font-family: var(--reading-font); }
+  .ws-row .ws-model { fill: #111; }
+  .ws-row .ws-grey { fill: #c9c9c9; }
+  .ws-row .ws-dots { fill: url(#wsDots); }
+  .ws-row .ws-top, .ws-row .ws-tail { stroke: #8a8a8a; stroke-width: 1.2; stroke-dasharray: 6 5; }
+  .ws-row .ws-mid { stroke: #3d7bd6; stroke-width: 1.4; stroke-dasharray: 4 4; }
+  .ws-row .ws-base { stroke: #333; stroke-width: 1.6; }
+  .ws-row .ws-sep { stroke: #ddd; stroke-width: 1; }
+  .ws-sentence { break-inside: avoid; margin-bottom: 8px; }
+  .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
+  .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
 }
 

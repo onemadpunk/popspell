@@ -261,9 +261,68 @@
   };
   const catalogueList = id => P().LISTS[id] || null;
 
+  // Puts a sheet on the page just for printing (or saving as PDF), then removes it
+  function printSheet(className, html) {
+    const sheet = document.createElement("section");
+    sheet.className = `worksheet-print ${className}`;
+    sheet.innerHTML = html;
+    document.body.append(sheet);
+    document.body.classList.add("printing-worksheet");
+    const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
+    window.addEventListener("afterprint", clean, { once: true });
+    window.print();
+  }
+
+  // One handwriting row on four-line ruling: model, grey to trace, dotted to trace, then space to write.
+  // Lines follow the letter shapes: top of tall letters, middle (x-height), baseline, and tails.
+  function handwritingRow(text, cells = ["model", "grey", "dots", "blank"]) {
+    const width = 1000 / cells.length;
+    const size = Math.min(62, (width - 26) / (Math.max(text.length, 2) * 0.56));
+    const base = 78, mid = base - size * 0.5, top = base - size * 0.74, tail = base + size * 0.26;
+    const line = (y, style) => `<line x1="0" x2="1000" y1="${y}" y2="${y}" class="${style}"/>`;
+    const word = (x, kind) => kind === "blank" ? "" :
+      `<text x="${x + 12}" y="${base}" font-size="${size}" class="ws-${kind}">${esc(text)}</text>`;
+    return `<svg class="ws-row" viewBox="0 0 1000 108" role="img" aria-label="${esc(text)}">
+      ${line(top, "ws-top")}${line(mid, "ws-mid")}${line(base, "ws-base")}${line(tail, "ws-tail")}
+      ${cells.map((kind, i) => (i ? `<line x1="${i * width}" x2="${i * width}" y1="${top - 6}" y2="${tail + 4}" class="ws-sep"/>` : "") + word(i * width, kind)).join("")}
+    </svg>`;
+  }
+  const dotPattern = `<svg width="0" height="0" style="position:absolute"><defs>
+    <pattern id="wsDots" width="3.2" height="3.2" patternUnits="userSpaceOnUse"><circle cx="1.6" cy="1.6" r="0.95" fill="#555"/></pattern></defs></svg>`;
+  const sheetHead = (title, who, extra = "") => `<h1>PopSpell · ${esc(title)}</h1>
+    <p><b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}</p>`;
+
+  function printHandwriting(who, list) {
+    printSheet("ws-literacy", `${dotPattern}${sheetHead(`${list.title} · handwriting`, who)}
+      <p>Look at the word and say its sounds. Trace the grey word, then the dotted word, then write it on your own.</p>
+      ${list.items.map(item => handwritingRow(item.spelling)).join("")}`);
+  }
+
+  function printSentences(who, list) {
+    const sentences = window.SENTENCES || {};
+    const rows = list.items.filter(item => sentences[item.spelling.toLowerCase()]).map((item, i) => {
+      const sentence = sentences[item.spelling.toLowerCase()];
+      const blanked = esc(sentence).replace(new RegExp(`\\b${item.spelling}\\b`, "i"), `<span class="ws-blank"></span>`);
+      return `<div class="ws-sentence"><p><b>${i + 1}.</b> ${blanked}</p>${handwritingRow("", ["blank"])}</div>`;
+    });
+    printSheet("ws-literacy", `${sheetHead(`${list.title} · sentences`, who)}
+      <p>Words to use: <b>${list.items.map(i => esc(i.spelling)).join(", ")}</b></p>
+      <p>Fill in the missing word. Then write the whole sentence on the lines, with a capital letter and a full stop.</p>
+      ${rows.join("")}`);
+  }
+
+  function printLetters() {
+    const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+    printSheet("ws-literacy", `${dotPattern}${sheetHead("Letter formation", "")}
+      <p>Form each letter the way you've been shown, starting in the right place. Trace the grey letters, then the dotted ones, then write your own.</p>
+      ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`);
+  }
+
   function printWorksheet(who, plan, mode) {
     const list = catalogueList(plan.list);
     if (!list) return showError(new Error("Choose a built-in spelling list to print."));
+    if (mode === "handwriting") return printHandwriting(who, list);
+    if (mode === "sentences") return printSentences(who, list);
     const lines = list.items.map((item, i) => mode === "key"
       ? `<tr><td>${i + 1}</td><td>${esc(item.spelling)}</td><td>${esc(item.tokens.join(" · "))}</td></tr>`
       : mode === "dictation"
@@ -322,7 +381,8 @@
     if (tab !== "plans") return;
     const plans = rows.flatMap((row, rowIndex) => row.plans.map((plan, planIndex) =>
       ({ row, rowIndex, plan, planIndex })));
-    body.innerHTML = `<p class="hint">Schedule a spelling list for a pupil. It appears online only between the chosen dates, inclusive. Print a sound-mapping sheet or a dictation sheet, then record the child's worksheet results here.</p>
+    body.innerHTML = `<p class="hint">Schedule a spelling list for a pupil. It appears online only between the chosen dates, inclusive. Print a sound-mapping, dictation, handwriting or sentence sheet, then record the child's worksheet results here.</p>
+      <div class="row"><button class="btn small" id="printLetters" type="button">Print letter formation (a–z)</button></div>
       <form class="add-row" id="planForm">
         <input type="text" id="planWho" placeholder="Pupil's name (or Everyone)" maxlength="40" required>
         <select id="planList" required>${catalogueOptions()}</select>
@@ -339,6 +399,8 @@
           <div class="row"><button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
             <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
             <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print teacher key</button>
+            <button class="btn small" data-print-handwriting="${rowIndex}-${planIndex}">Print handwriting</button>
+            <button class="btn small" data-print-sentences="${rowIndex}-${planIndex}">Print sentences</button>
             ${row.who.toLowerCase() === "everyone" ? "" : `<button class="btn small" data-mark-plan="${rowIndex}-${planIndex}">Mark worksheet</button>`}
             <button class="btn small" data-remove-plan="${rowIndex}-${planIndex}">Remove</button></div>
         </article>`).join("")}</div>` : `<div class="empty">No plans yet — schedule one above.</div>`}`;
@@ -369,7 +431,8 @@
       try { await cloud.savePlans(current.id, row.who, row.plans.filter((_, i) => i !== index));
         drawPlans(body); } catch (err) { showError(err); }
     }; });
-    ["mapping", "dictation", "key"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
+    $("#printLetters").onclick = printLetters;
+    ["mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
       b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
         printWorksheet(row.who, plan, mode); };
     }));
