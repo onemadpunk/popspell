@@ -2,7 +2,8 @@ rules_version = '2';
 
 // PopSpell — who can read and write what.
 //
-//  • Owners (listed below) invite teachers and can see every class.
+//  • The owner (listed below) grants site admin access.
+//  • Site admins can manage every class and invite teachers.
 //  • Invited teachers sign in with Google and see only their own classes.
 //  • Pupils' devices sign in anonymously. Knowing a class code lets a device add results,
 //    live progress and help requests to that class, and look up its own assigned lists.
@@ -24,33 +25,41 @@ service cloud.firestore {
     }
     function email() { return request.auth.token.email.lower(); }
     function teacherDoc() { return /databases/$(database)/documents/teachers/$(email()); }
-    function isOwner() {
-      return google() && (email() in owners()
-        || (exists(teacherDoc()) && get(teacherDoc()).data.role == 'owner'));
+    function isOwner() { return google() && email() in owners(); }
+    function isAdmin() {
+      return google() && (isOwner()
+        || (exists(teacherDoc()) && get(teacherDoc()).data.role == 'admin'));
     }
-    function isTeacher() { return google() && (isOwner() || exists(teacherDoc())); }
+    function isTeacher() { return google() && (isAdmin() || exists(teacherDoc())); }
     function classDoc(c) { return get(/databases/$(database)/documents/classes/$(c)); }
     function teaches(c) { return isTeacher() && classDoc(c).data.teacher == request.auth.uid; }
-    function canSee(c) { return isOwner() || teaches(c); }
+    function canSee(c) { return isAdmin() || teaches(c); }
     function shortText(v, n) { return v is string && v.size() <= n; }
 
     // Invited teachers, keyed by their Google email in lower case
     match /teachers/{em} {
-      allow get: if isOwner() || (google() && email() == em);
-      allow list: if isOwner();
-      // An owner's own record may be created on their first sign-in
-      allow create: if isOwner()
+      allow get: if isAdmin() || (google() && email() == em);
+      allow list: if isAdmin();
+      // Only the owner may grant site admin access. Admins may invite teachers.
+      allow create: if isAdmin()
         && request.resource.data.keys().hasOnly(['name', 'role', 'invitedBy', 'invitedAt'])
-        && request.resource.data.role in ['teacher', 'owner']
-        && (request.resource.data.role == 'teacher' || email() in owners());
-      allow update: if isOwner() && request.resource.data.role in ['teacher', 'owner'];
-      allow delete: if isOwner() && em != email();
+        && (request.resource.data.role == 'teacher'
+          || (isOwner() && request.resource.data.role == 'admin')
+          || (isOwner() && em == email() && request.resource.data.role == 'owner'));
+      allow update: if isAdmin()
+        && resource.data.role != 'owner'
+        && (resource.data.role != 'admin' || isOwner())
+        && (request.resource.data.role == 'teacher'
+          || (isOwner() && request.resource.data.role == 'admin'));
+      allow delete: if isAdmin() && em != email()
+        && resource.data.role != 'owner'
+        && (resource.data.role != 'admin' || isOwner());
     }
 
     // A class; its id is the join code pupils type
     match /classes/{c} {
       allow get: if signedIn();
-      allow list: if isOwner() || (isTeacher() && resource.data.teacher == request.auth.uid);
+      allow list: if isAdmin() || (isTeacher() && resource.data.teacher == request.auth.uid);
       allow create: if isTeacher()
         && request.resource.data.teacher == request.auth.uid
         && shortText(request.resource.data.name, 60)
@@ -73,9 +82,13 @@ service cloud.firestore {
       match /sessions/{s} {
         allow read, delete: if canSee(c);
         allow create: if signedIn() && exists(/databases/$(database)/documents/classes/$(c))
-          && request.resource.data.keys().hasOnly(['pupil', 'list', 'listId', 'finished', 'words', 'at'])
           && shortText(request.resource.data.pupil, 40)
-          && request.resource.data.words is list && request.resource.data.words.size() <= 60;
+          && request.resource.data.words is list && request.resource.data.words.size() <= 60
+          && (request.resource.data.keys().hasOnly(['pupil', 'list', 'listId', 'finished', 'words', 'at'])
+            || (canSee(c) && request.resource.data.keys().hasOnly([
+                'pupil', 'list', 'listId', 'finished', 'words', 'at', 'source', 'markedBy'])
+              && request.resource.data.source == 'worksheet'
+              && request.resource.data.markedBy == email()));
       }
 
       // Lists set for each pupil, keyed by a fingerprint of their name (or "everyone").
@@ -84,6 +97,42 @@ service cloud.firestore {
         allow get: if signedIn();
         allow list, write: if canSee(c);
       }
+
+      // Lesson notes are private to the class teacher and site admins.
+      match /diary/{entry} {
+        allow read: if canSee(c);
+        allow create: if canSee(c)
+          && request.resource.data.keys().hasOnly([
+            'pupil', 'lessonDate', 'lastWork', 'nextLesson', 'nextList', 'nextDate', 'by', 'at'])
+          && shortText(request.resource.data.pupil, 40)
+          && shortText(request.resource.data.lessonDate, 10)
+          && shortText(request.resource.data.lastWork, 2000)
+          && shortText(request.resource.data.nextLesson, 2000)
+          && shortText(request.resource.data.nextList, 100)
+          && shortText(request.resource.data.nextDate, 10)
+          && request.resource.data.by == email();
+      }
+
+      // Pupil roster and parent contact details are never readable by pupil devices.
+      match /pupils/{p} {
+        allow read: if canSee(c);
+        function validPupil() {
+          return canSee(c)
+          && request.resource.data.keys().hasOnly([
+            'name', 'parentEmail', 'reminderOptIn', 'nextLessonDate',
+            'lessonTime', 'homeworkList', 'updated'])
+          && shortText(request.resource.data.name, 40)
+          && shortText(request.resource.data.parentEmail, 254)
+          && request.resource.data.reminderOptIn is bool
+          && shortText(request.resource.data.nextLessonDate, 10)
+          && shortText(request.resource.data.lessonTime, 5)
+          && shortText(request.resource.data.homeworkList, 100);
+        }
+        allow create: if validPupil();
+        allow update: if validPupil()
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['name']);
+      }
     }
   }
 }
+
