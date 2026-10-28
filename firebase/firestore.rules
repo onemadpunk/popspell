@@ -68,7 +68,8 @@ service cloud.firestore {
       allow update: if canSee(c)
         && request.resource.data.teacher == resource.data.teacher
         && shortText(request.resource.data.name, 60)
-        && (!('assignedOnly' in request.resource.data) || request.resource.data.assignedOnly is bool);
+        && (!('assignedOnly' in request.resource.data) || request.resource.data.assignedOnly is bool)
+        && (!('accent' in request.resource.data) || request.resource.data.accent in ['scottish', 'english']);
       allow delete: if canSee(c);
 
       // Where each pupil is up to right now (one document per pupil)

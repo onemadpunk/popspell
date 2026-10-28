@@ -14,10 +14,14 @@
   /* ---------- Phonics: splitting words into graphemes ---------- */
 
   // Scottish accents sound the r, so "car" is c·a·r and "hair" is h·ai·r. In most English accents
-  // the r is silent and "ar" is one sound: c·ar. Chosen in Settings (read here, before the lists are split).
-  const R_SOUNDED = (() => {
-    try { return (JSON.parse(localStorage.getItem("spelling-settings-v2")) || {}).accent !== "english"; } catch { return true; }
+  // the r is silent and "ar" is one sound: c·ar. The class's teacher sets it for every device in the
+  // class; a device that isn't in one uses Settings. Read here, before the lists are split.
+  const accentOf = (cls, set) => (cls && cls.accent) || (set && set.accent) || "scottish";
+  const ACCENT = (() => {
+    const read = key => { try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; } };
+    return accentOf(read("popspell-class-v1"), read("spelling-settings-v2"));
   })();
+  const R_SOUNDED = ACCENT !== "english";
   const R_GRAPHEMES = ["air", "are", "ear", "eer", "ere", "ar", "or", "er", "ir", "ur"];
   const keepR = g => !(R_SOUNDED && R_GRAPHEMES.includes(g));
   // The part a pupil has to choose when the r is sounded: er, ir or ur is the vowel before the r
@@ -344,6 +348,10 @@
     try { if (c) localStorage.setItem(CLASS_KEY, JSON.stringify(c)); else localStorage.removeItem(CLASS_KEY); } catch { /* not remembered */ }
     updateReporting();
   }
+  // Joining or leaving a class (or the teacher changing it) can change the accent; the lists are
+  // split into sounds when the page loads, so it takes a fresh start. Never mid-practice.
+  const accentChanged = () => accentOf(CLASS, settings) !== ACCENT;
+  const reloadForAccent = () => { if (accentChanged() && !session) { location.reload(); return true; } return false; };
 
   // Resolves true once the teacher has it, false if it's still waiting (it's kept on the
   // device and sent when the connection is back), null if there's nothing to send
@@ -706,8 +714,9 @@
     }
     saveClass(info);
     justJoined = true;
+    if (!onDone) history.replaceState(null, "", "#/");
+    if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    history.replaceState(null, "", "#/");
     showHome();
   }
   let justJoined = false;
@@ -1504,11 +1513,12 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
-        ${act.area === "games" ? `<label class="field hopper-accent">How do you say r sounds?
-          <select id="hopperAccent">
+        ${act.area === "games" && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
+          <select id="hopperAccent"${CLASS && CLASS.accent ? " disabled" : ""}>
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
             <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
-          </select></label>` : ""}
+          </select></label>
+          ${CLASS && CLASS.accent ? `<p class="hint">Set for ${esc(CLASS.name)} in Teacher → Classes.</p>` : ""}` : ""}
         ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
         <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
       </section>`;
@@ -1699,6 +1709,7 @@
   // teacher report, help button, personal best and class progress flow.
   let hopperAudio = null;
   function hopperTone(pitch) {
+    if (!settings.sounds) return; // Settings: "Play sounds for right and wrong answers"
     try {
       const Audio = window.AudioContext || window.webkitAudioContext;
       if (!Audio) return;
@@ -2234,12 +2245,16 @@
     $("#setSpell").checked = settings.spellOut;
     $("#setSounds").checked = settings.sounds;
     $("#setAccent").value = R_SOUNDED ? "scottish" : "english";
+    $("#setAccent").disabled = !!(CLASS && CLASS.accent);
+    $("#accentHint").textContent = CLASS && CLASS.accent
+      ? `Set for ${CLASS.name} by its teacher, in Teacher → Classes.`
+      : "Changes the sound buttons, sound boxes, worksheets and My sounds on this device.";
     const line = $("#classLine");
     line.hidden = !CLOUD_CONFIGURED;
     line.innerHTML = CLASS
       ? `This device is in <b>${esc(CLASS.name)}</b> (code ${esc(CLASS.id)}). <button type="button" class="linklike" id="leaveClass">Leave this class</button>`
       : "This device isn't in a class yet. Open a class link, or type the code on the home page.";
-    if ($("#leaveClass")) $("#leaveClass").onclick = () => { saveClass(null); dlg.close(); };
+    if ($("#leaveClass")) $("#leaveClass").onclick = () => { saveClass(null); dlg.close(); reloadForAccent(); };
     if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   }
 
@@ -2289,13 +2304,15 @@
       if (!info) return;
       const changed = info.assignedOnly !== !!CLASS.assignedOnly || info.name !== CLASS.name;
       saveClass(info);
+      if (reloadForAccent()) return;
       if (changed && !session && (location.hash === "" || location.hash === "#/")) route();
     }).catch(() => { /* offline: keep what we have */ });
     api.onTeacher(profile => {
       TEACHER = profile;
       applyTeacherMode();
       const h = location.hash;
-      if (!session && (h === "" || h === "#/" || h === "#/make" || h.startsWith("#/teacher"))) route(); // show the right tools
+      // show the right tools (a game's start page has a teacher-only accent choice)
+      if (!session && (h === "" || h === "#/" || h === "#/make" || h.startsWith("#/teacher") || h.startsWith("#/activity/g-"))) route();
     });
     if (!session && (location.hash === "" || location.hash === "#/")) route();
   });

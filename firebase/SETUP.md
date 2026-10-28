@@ -96,7 +96,7 @@ PopSpell stays on the no-cost **Spark** plan with no billing account. The Firest
 
 ## If the rules are ever changed
 
-[`rules.test.mjs`](rules.test.mjs) checks 95 situations on Firebase's local emulator. Examples: "a teacher can't read another teacher's pupils", "a pupil's device can't read results" and "nobody can list parent pages". Run it after any change to `firestore.rules` (instructions are at the top of the file).
+[`rules.test.mjs`](rules.test.mjs) checks 100 situations on Firebase's local emulator. Examples: "a teacher can't read another teacher's pupils", "a pupil's device can't read results" and "nobody can list parent pages". Run it after any change to `firestore.rules` (instructions are at the top of the file).
 
 When `firestore.rules` changes on GitHub, paste the new version into **Firestore Database → Rules** again and publish. Keep your own email in `owners()`. Parent pages need the version from October 2026 or later: until then, parent links show "This link isn't working".
 

@@ -39,7 +39,7 @@ Every list and activity is labelled with a **Curriculum for Excellence level** (
 
 **Game plan:** Sound Hopper is the first game mode. It uses a character, a musical river, beat tapping, a tile bridge, and a crossing payoff. The six rounds have large touch targets and no timer or public leaderboard. The score rewards accurate mapping; speed does not affect progress. A teacher can assign a level like any other activity. Try it with pupils before expanding to modes such as an endless music run or a word-building sandbox, and check whether they can explain the sounds they hear.
 
-Before starting a game, the pupil or teacher can choose **Scottish** (default: *car* is `c · a · r`, *her* is `h · e · r`) or **English** (*car* is `c · ar`). This uses the same accent setting as the spelling lessons and changes the sound count, tiles and bridge pieces after a reload.
+Games follow the class's accent: **Scottish** (the default: *car* is `c · a · r`, *her* is `h · e · r`) or **English** (*car* is `c · ar`). It changes the sound count, tiles and bridge pieces. Pupils can't change it. On a device that isn't in a class, a signed-in teacher can switch it on the game's start page to compare.
 
 The stories and their questions are in [`passages.js`](passages.js) and can be edited there. New or changed stories are recorded in Eponine's voice automatically.
 
@@ -73,6 +73,7 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **Plans & worksheets** has three paths. **Online work** can be tested and scheduled by date. **Paper worksheets** can be previewed, printed or saved as a PDF, then marked on the site after the child completes them; marks and missed graphemes appear alongside online results. **Quick game** lets a teacher test a game and assign it to a pupil for today only, useful when they finish early.
 - Paper options include a sound-mapping worksheet with one box per phoneme, dictation, a teacher key, a **handwriting** sheet (model, grey trace, dotted trace, own go on four-line ruling), a **sentence** sheet (fill the blank, then copy the sentence), and **letter formation**. Handwriting sheets use the reading font (Sassoon or Andika).
 - **"Pupils only see the work I set":** a per-class setting (in Classes) that hides the rest of the library from that class's devices.
+- **Accent for sounds:** a per-class setting (in Classes). Choose Scottish (the r is sounded: c·a·r) for pupils in Scotland, or English (c·ar) for pupils in England.
 - **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.
 - **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email draft and save the homework worksheet as a PDF to attach manually.
 - **👪 Parent pages:** for any pupil in the roster, **Make a parent link** creates a private page (`parent.html#…`) for the family.
@@ -120,7 +121,7 @@ Open `words.js` on GitHub, click the ✏️ pencil icon, make your changes and p
 
 ### Sounds (graphemes)
 
-**Scottish or English accent** (⚙️ Settings, Scottish by default). In a Scottish accent the r is sounded, so the site splits *car* as `c · a · r`, *her* as `h · e · r`, *hair* as `h · ai · r` and *care* as `c · a–e · r`. The English setting treats ar, er, ir, or, ur, air, are, ear and eer as one sound each (`c · ar`). This setting changes the sound buttons, sound boxes, worksheets, My sounds and which stories are ready. The r-vowel lists get their own tips for each accent (`tipScottish` in `words.js`). It's set on each device.
+**Scottish or English accent** (⚙️ Settings, Scottish by default). In a Scottish accent the r is sounded, so the site splits *car* as `c · a · r`, *her* as `h · e · r`, *hair* as `h · ai · r` and *care* as `c · a–e · r`. The English setting treats ar, er, ir, or, ur, air, are, ear and eer as one sound each (`c · ar`). This setting changes the sound buttons, sound boxes, worksheets, My sounds and which stories are ready. The r-vowel lists get their own tips for each accent (`tipScottish` in `words.js`). **The teacher sets it for each class** in Teacher → Classes, and every pupil device in the class follows it from the next time PopSpell opens. Pupils can't change it. A device that isn't in a class uses ⚙️ Settings.
 
 The site splits words into sounds by itself, and gets the common patterns right. Open a list and click **Words in this list** to check the sound buttons. If a word is split wrongly (usually tricky words), write its sounds with dashes, and a split digraph as `a_e`, `i_e`, `o_e`, `u_e` or `e_e`:
 

@@ -106,7 +106,8 @@ async function start() {
       if (!/^[A-Z0-9]{4,12}$/.test(id)) return null;
       const snap = await getDoc(doc(store, "classes", id));
       return snap.exists() ? { id, name: snap.data().name, teacherName: snap.data().teacherName || "",
-        assignedOnly: !!snap.data().assignedOnly } : null;
+        assignedOnly: !!snap.data().assignedOnly,
+        accent: ["scottish", "english"].includes(snap.data().accent) ? snap.data().accent : "" } : null;
     },
 
     async live(classId, pupil, fields) {
@@ -188,6 +189,8 @@ async function start() {
     renameClass: (id, name) => updateDoc(doc(store, "classes", id), { name: String(name).trim().slice(0, 60) }),
     // On: pupils in this class see only the work set for them, not the whole library
     setAssignedOnly: (id, on) => updateDoc(doc(store, "classes", id), { assignedOnly: !!on }),
+    // Scottish (the r is sounded: c·a·r) or English (c·ar), for every pupil device in the class
+    setAccent: (id, accent) => updateDoc(doc(store, "classes", id), { accent: accent === "english" ? "english" : "scottish" }),
 
     watchLive(classId, fn) {
       return onSnapshot(collection(store, "classes", classId, "live"),

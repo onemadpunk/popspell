@@ -87,6 +87,11 @@ await check("site admin renames any class", assertSucceeds(updateDoc(doc(admin, 
 await check("a teacher sets 'assigned work only' on their class", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234"), { assignedOnly: true })));
 await check("'assigned work only' must be on or off", assertFails(updateDoc(doc(tutor, "classes/ABC234"), { assignedOnly: "yes" })));
 await check("a pupil's device can't change class settings", assertFails(updateDoc(doc(pupil, "classes/ABC234"), { assignedOnly: false })));
+await check("a teacher sets their class to English", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234"), { accent: "english" })));
+await check("a teacher sets their class to Scottish", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234"), { accent: "scottish" })));
+await check("the accent must be Scottish or English", assertFails(updateDoc(doc(tutor, "classes/ABC234"), { accent: "welsh" })));
+await check("a pupil's device can't change the accent", assertFails(updateDoc(doc(pupil, "classes/ABC234"), { accent: "english" })));
+await check("another teacher can't change the accent", assertFails(updateDoc(doc(other, "classes/ABC234"), { accent: "english" })));
 await check("a pupil's device sees the class setting", assertSucceeds(getDoc(doc(pupil, "classes/ABC234"))));
 
 console.log("Live class");

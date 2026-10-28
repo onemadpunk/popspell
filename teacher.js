@@ -1136,7 +1136,13 @@
         ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" data-rename-input="${esc(c.id)}">
           <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>
           <label class="check"><input type="checkbox" data-assigned-only="${esc(c.id)}"${c.assignedOnly ? " checked" : ""}>
-            Pupils only see the work I set (hide the rest of the library)</label>` : ""}
+            Pupils only see the work I set (hide the rest of the library)</label>
+          <label class="field">Accent for sounds
+            <select data-class-accent="${esc(c.id)}">
+              <option value="scottish"${c.accent !== "english" ? " selected" : ""}>Scottish: the r is its own sound (c·a·r, h·e·r)</option>
+              <option value="english"${c.accent === "english" ? " selected" : ""}>English: ar, er, ir, or, ur are one sound (c·ar, h·er)</option>
+            </select></label>
+          <p class="hint">Every pupil device in this class uses it, from the next time PopSpell opens. Pupils can't change it.</p>` : ""}
       </article>`;
     body.innerHTML = `
       <form class="add-row" id="newClass">
@@ -1168,6 +1174,12 @@
       box.onchange = async () => {
         try { await cloud.setAssignedOnly(box.dataset.assignedOnly, box.checked); classes = await cloud.classes(); }
         catch (err) { box.checked = !box.checked; showError(err); }
+      };
+    });
+    body.querySelectorAll("[data-class-accent]").forEach(select => {
+      select.onchange = async () => {
+        try { await cloud.setAccent(select.dataset.classAccent, select.value); classes = await cloud.classes(); }
+        catch (err) { showError(err); drawClasses(body); }
       };
     });
     body.querySelectorAll("[data-rename]").forEach(b => {

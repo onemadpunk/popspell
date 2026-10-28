@@ -628,9 +628,18 @@ window.PopActivities = (() => {
     b: ["d", "p"], d: ["b", "t"], p: ["b", "t"],
     f: ["v", "th"], v: ["f", "w"], m: ["n", "w"], n: ["m", "ng"],
     s: ["z", "sh"], t: ["d", "th"], g: ["j", "k"], h: ["ch", "sh"],
-    l: ["r", "n"], r: ["l", "w"], w: ["v", "r"], y: ["i", "ee"]
+    l: ["r", "n"], r: ["l", "w"], w: ["v", "r"], y: ["i", "ee"],
+    // Look-alike spellings for the rest, so no answer is given away by two vowel choices
+    j: ["g", "dge"], x: ["ks", "cks"], z: ["s", "zz"], qu: ["kw", "cw"], ng: ["nk", "n"], nk: ["ng", "nc"],
+    ll: ["l", "le"], ss: ["s", "ce"], ff: ["f", "ph"], zz: ["z", "s"], tch: ["ch", "sh"], wh: ["w", "v"],
+    ph: ["f", "ff"], kn: ["n", "gn"], wr: ["r", "w"],
+    oa: ["ow", "o_e"], ow: ["oa", "ou"], o_e: ["oa", "ow"], igh: ["i_e", "ie"], i_e: ["igh", "ie"],
+    oo: ["ew", "ue"], ew: ["ue", "oo"], ue: ["ew", "oo"], u_e: ["ew", "oo"], ou: ["ow", "oo"],
+    oi: ["oy", "o"], oy: ["oi", "y"], aw: ["au", "or"], au: ["aw", "or"],
+    air: ["are", "ear"], are: ["air", "ear"], ear: ["eer", "air"], eer: ["ear", "ere"]
   };
-  const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || ["a", "e"])]
+  const fallbackOptions = token => (/[aeiouy]/.test(token) ? ["a", "e"] : ["s", "t"]);
+  const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || fallbackOptions(token))]
     .filter((v, i, a) => a.indexOf(v) === i)).slice(0, 3);
   const trailWords = ids => {
     const lists = (window.PopSpell || {}).LISTS || {};
