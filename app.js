@@ -1645,6 +1645,9 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
+        ${/^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
+          <span>Catch lights ✦ · Cross rivers 🌉 · Find hidden friends 🍃 · Choose the path ↗</span>
+          <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>` : ""}
         ${/^g-(hopper|switch)-/.test(act.id) && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
           <select id="hopperAccent"${CLASS && CLASS.accent ? " disabled" : ""}>
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
@@ -2275,25 +2278,29 @@
     let keepFlash = false;
     let flashTimer = null;
     let revealFlash = () => {};
-    let left = 0, right = 0, firstWay = null;
+    let left = 0;
     const instructions = {
-      flash: "Look at the fireflies. How many did you see? You can look again.",
-      make: `Help Pip make ${q.total}. Put fireflies in both nests, then find another way.`,
-      hide: `There are ${q.total} fireflies. I can see ${q.visible}. How many are hiding?`,
-      compare: "Look at both trees. Which has more fireflies, or are they the same?"
+      flash: "The fireflies light Pip's path. How many flashed? Look again whenever you like.",
+      make: `Pip needs one bridge of ${q.total} fireflies. Pick a group for each side so they make ${q.total} altogether.`,
+      hide: `Some fireflies are behind the leaves. There are ${q.total} altogether and ${q.visible} are showing. How many are hidden?`,
+      compare: "Pip has reached a fork. Which tree has more fireflies, or are they the same?"
     };
-    const headings = { flash: "Firefly flash", make: "Build Pip's bridge", hide: "Who is hiding?", compare: "Balance the branches" };
+    const headings = { flash: "Light the path", make: "Cross the river", hide: "Find the hidden fireflies", compare: "Choose Pip's path" };
+    const sceneNames = { flash: "Firefly meadow", make: "River crossing", hide: "Leafy hideout", compare: "The forest fork" };
+    const sceneIcons = { flash: "🏮", make: "🌉", hide: "🍃", compare: "🪧" };
     app.innerHTML = `
       <section class="panel practice activity counting-canopy" style="--accent:${esc(act.colour)}">
         ${progressHTML()}
-        <div class="game-trail" aria-label="Forest clearings">${session.items.map((_, i) =>
-          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Clearing ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>
-        <div class="canopy-scene" id="canopyScene" role="img" aria-label="Pip exploring the counting forest">
+        <div class="game-trail" aria-label="Forest clearings">${session.items.map((round, i) =>
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Clearing ${i + 1}: ${sceneNames[round.mode]}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : ({ flash: "✦", make: "🌉", hide: "🍃", compare: "↗" })[round.mode]}</span>`).join("")}</div>
+        <div class="canopy-scene ${q.mode}" id="canopyScene" role="img" aria-label="Pip at the ${sceneNames[q.mode].toLowerCase()}">
           <span class="canopy-sun" aria-hidden="true"></span><span class="canopy-tree one" aria-hidden="true"></span>
           <span class="canopy-tree two" aria-hidden="true"></span><span class="canopy-stream" aria-hidden="true"></span>
-          <span class="canopy-bridge" aria-hidden="true">${session.items.map((_, i) => `<i class="${i < session.i ? "built" : ""}"></i>`).join("")}</span>
+          <span class="canopy-bridge" aria-hidden="true">${Array.from({ length: 8 }, () => "<i></i>").join("")}</span>
           <img class="canopy-pip" id="canopyPip" src="assets/brand/pip-listen-small.webp" alt="" width="100" height="100">
-          <span class="canopy-owl" aria-hidden="true">🦉</span>
+          <span class="canopy-obstacle" aria-hidden="true">${sceneIcons[q.mode]}</span>
+          <span class="canopy-goal" aria-hidden="true">${session.i === session.items.length - 1 ? "🦉" : "⭐"}</span>
+          <span class="canopy-scene-name">${sceneNames[q.mode]}</span>
         </div>
         <div class="canopy-head"><h1>${headings[q.mode]}</h1>
           <button type="button" class="btn small" id="canopyHear">🔊 Hear Pip</button></div>
@@ -2327,27 +2334,30 @@
       if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: !wrong.length });
       scene.classList.add("solved");
-      scene.querySelector(`.canopy-bridge i:nth-child(${session.i + 1})`)?.classList.add("built");
       $("#canopyPip").src = "assets/brand/pip-celebrate-small.webp";
-      const result = q.mode === "make" ? methods.join(" and ") + ` both make ${q.total}`
+      const result = q.mode === "make" ? `${methods[0]} makes ${q.total}. The whole bridge is ready!`
         : q.mode === "hide" ? `${q.visible} and ${q.answer} make ${q.total}`
         : q.mode === "compare" ? `${q.left} and ${q.right}: ${q.answer === "same" ? "the same amount" : `${q.answer} has more`}`
         : `${q.total} fireflies`;
+      const payoff = { flash: "The path lights up!", make: "Pip crosses the river!", hide: "The fireflies come out!", compare: "Pip found the way!" }[q.mode];
       feedback.className = "feedback good";
-      feedback.innerHTML = `Pip made it! <b>${esc(result)}</b> <span class="stars-inline">${stars(earned)}</span>`;
+      feedback.innerHTML = `${payoff} <b>${esc(result)}</b> <span class="stars-inline">${stars(earned)}</span>`;
       chimeRight();
       app.querySelectorAll("#canopyWork button, #canopyHint").forEach(button => { button.disabled = true; });
       const next = document.createElement("div");
       next.className = "row center";
       const last = session.i === session.items.length - 1;
-      next.innerHTML = `<button class="btn big primary" id="nextQ">${last ? "See my stars 🏆" : "Next clearing →"}</button>`;
+      next.innerHTML = `<button class="btn big primary" id="nextQ" disabled>${last ? "See the forest celebration 🏆" : "Keep exploring →"}</button>`;
       feedback.after(next);
-      $("#nextQ").focus();
-      $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
+      const nextButton = $("#nextQ");
+      nextButton.onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
+      setTimeout(() => { if (app.contains(nextButton)) { nextButton.disabled = false; nextButton.focus(); } },
+        matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1900);
     }
-    function choices(options, labelFor, wrongMessage) {
+    function choices(options, labelFor, wrongMessage, visual = false) {
       const box = $("#canopyChoices");
-      box.innerHTML = options.map((value, i) => `<button type="button" class="canopy-choice" data-choice="${i}" ${rejected.has(String(value)) ? "disabled" : ""}>${esc(labelFor(value))}</button>`).join("");
+      box.innerHTML = options.map((value, i) => `<button type="button" class="canopy-choice${visual ? " visual" : ""}" data-choice="${i}" ${rejected.has(String(value)) ? "disabled" : ""}>
+        ${visual ? `<span class="canopy-choice-stars" aria-hidden="true">${"✦".repeat(Number(value))}</span><b>${esc(labelFor(value))}</b>` : esc(labelFor(value))}</button>`).join("");
       box.querySelectorAll("[data-choice]").forEach(button => {
         const value = String(options[Number(button.dataset.choice)]);
         button.onclick = () => {
@@ -2362,39 +2372,39 @@
         };
       });
     }
-    function renderMake(focus = "") {
-      const placed = left + right;
-      const nest = (side, n, name) => `<div class="canopy-nest" aria-label="${name}: ${n} fireflies">
-        <h2>${name}</h2><div class="canopy-pile" aria-hidden="true">${"✦".repeat(n) || "·"}</div>
-        <div class="canopy-controls"><button type="button" data-nest="${side}" data-change="-1" aria-label="Take one firefly from ${name}" ${n ? "" : "disabled"}>−</button>
-          <strong aria-live="polite">${n}</strong><button type="button" data-nest="${side}" data-change="1" aria-label="Add one firefly to ${name}" ${placed < q.total ? "" : "disabled"}>＋</button></div></div>`;
-      work.innerHTML = `<p class="canopy-target">Make <b>${q.total}</b> fireflies in two nests</p>
-        ${firstWay ? `<p class="canopy-first">First bridge: ${firstWay[0]} + ${firstWay[1]} = ${q.total}. Make a different split!</p>` : ""}
-        <div class="canopy-nests">${nest("left", left, "Owl's nest")}${nest("right", right, "Fox's nest")}</div>
-        <p class="canopy-remaining">${q.total - placed} still to place</p>
-        <button type="button" class="btn big primary" id="canopyCheck">${firstWay ? "Check second bridge" : "Check first bridge"}</button>`;
-      work.querySelectorAll("[data-nest]").forEach(button => {
+    function renderMake() {
+      const group = (n, side) => `<button type="button" class="canopy-group-card" data-side="${side}" data-count="${n}"
+        aria-label="Choose ${n} fireflies for ${side === "left" ? "the first" : "the second"} side">
+        <span class="canopy-group-stars" aria-hidden="true">${"✦".repeat(n)}</span><strong>${n}</strong></button>`;
+      const firstOptions = [1, 2, 3, 4].filter(n => n < q.total);
+      const needed = q.total - left;
+      const secondOptions = left ? shuffle([needed, ...[needed - 2, needed - 1, needed + 1, needed + 2]
+        .filter(n => n > 0 && n < q.total).slice(0, 2)]) : [];
+      work.innerHTML = `<p class="canopy-target">Light the bridge with <b>${q.total}</b> fireflies</p>
+        <div class="canopy-bridge-builder"><div class="canopy-selected"><span>First side</span>
+          <b>${left ? `${"✦".repeat(left)} <small>${left}</small>` : "?"}</b></div>
+          <span class="canopy-plus">+</span><div class="canopy-selected"><span>Second side</span><b>?</b></div></div>
+        <p class="canopy-pick">${left ? `Choose a second group to make ${q.total} altogether.` : "Choose a first group of fireflies."}</p>
+        <div class="canopy-group-options" role="group" aria-label="${left ? "Choose the second firefly group" : "Choose the first firefly group"}">
+          ${(left ? secondOptions : firstOptions).map(n => group(n, left ? "right" : "left")).join("")}</div>
+        ${left ? `<button type="button" class="btn small canopy-change" id="canopyChange">↩ Change first group</button>` : ""}`;
+      work.querySelectorAll("[data-count]").forEach(button => {
         button.onclick = () => {
-          const side = button.dataset.nest, delta = Number(button.dataset.change);
-          if (side === "left") left += delta; else right += delta;
-          renderMake(`${side}:${delta}`);
+          const n = Number(button.dataset.count);
+          if (button.dataset.side === "left") {
+            left = n;
+            feedback.textContent = "";
+            hopperTone(390);
+            renderMake();
+            work.querySelector("[data-side=right]")?.focus();
+          } else if (left + n === q.total) finish([`${left} + ${n}`]);
+          else {
+            mistake(`${left} + ${n}`, `${left} and ${n} make ${left + n}. Pip needs ${q.total}. Try another group.`);
+            button.disabled = true;
+          }
         };
       });
-      $("#canopyCheck").onclick = () => {
-        if (left + right !== q.total) return mistake(`${left}+${right}`, `Count the fireflies still to place. Pip needs ${q.total} altogether.`);
-        if (!left || !right) return mistake(`${left}+${right}`, "Put at least one firefly in each nest.");
-        const same = firstWay && [left, right].sort((a, b) => a - b).join("+") === firstWay.slice().sort((a, b) => a - b).join("+");
-        if (same) return mistake(`${left}+${right} again`, "That is the same split with the nests swapped. Find another way.");
-        if (firstWay) return finish([`${firstWay[0]} + ${firstWay[1]}`, `${left} + ${right}`]);
-        firstWay = [left, right];
-        feedback.className = "feedback good";
-        feedback.textContent = `${left} and ${right} make ${q.total}. Now make it another way!`;
-        hopperTone(520);
-        left = 0; right = 0;
-        renderMake();
-      };
-      if (focus) (work.querySelector(`[data-nest="${focus.split(":")[0]}"][data-change="${focus.split(":")[1]}"]:not(:disabled)`)
-        || $("#canopyCheck")).focus();
+      if (left) $("#canopyChange").onclick = () => { left = 0; renderMake(); };
     }
     if (q.mode === "make") renderMake();
     else if (q.mode === "flash") {
@@ -2409,14 +2419,14 @@
         if (!keepFlash) flashTimer = setTimeout(() => { if (!finished && app.contains(flash)) flash.classList.add("covered"); }, 1800);
       };
       $("#canopyAgain").onclick = revealFlash;
-      choices(q.options, n => String(n), "Look again at the fireflies. You can replay them as often as you like.");
+      choices(q.options, n => String(n), "Look again at the fireflies. You can replay them as often as you like.", true);
       revealFlash();
     } else if (q.mode === "hide") {
       work.innerHTML = `<p class="canopy-target"><b>${q.total}</b> fireflies in all</p>
         <div class="canopy-groups"><div><h2>I can see ${q.visible}</h2>${canopyFrame(q.visible, q.total > 10 ? 20 : 10)}</div>
           <div class="canopy-hidden"><span aria-hidden="true">🍃</span><b>How many are hiding?</b></div></div>
         <div class="canopy-choices" id="canopyChoices" role="group" aria-label="How many are hiding?"></div>`;
-      choices(q.options, n => String(n), `Count on from ${q.visible} to ${q.total}. How many more?`);
+      choices(q.options, n => String(n), `Count on from ${q.visible} to ${q.total}. How many more?`, true);
     } else {
       work.innerHTML = `<div class="canopy-groups compare"><div><h2>Owl's tree</h2>${canopyFrame(q.left)}</div>
         <div><h2>Fox's tree</h2>${canopyFrame(q.right)}</div></div>
@@ -2432,9 +2442,8 @@
         keepFlash = true; revealFlash();
         feedback.textContent = "The fireflies will stay visible. Look for groups you know.";
       } else if (q.mode === "make") {
-        const hint = [[1, q.total - 1], [2, q.total - 2], [3, q.total - 3]]
-          .find(pair => !firstWay || pair.slice().sort((a, b) => a - b).join("+") !== firstWay.slice().sort((a, b) => a - b).join("+"));
-        feedback.textContent = `Try ${hint[0]} in one nest and ${hint[1]} in the other.`;
+        feedback.textContent = left ? `Start with ${left}. Count on until ${q.total}. How many more fireflies do you need?`
+          : `Choose a first group. Then count how many more you need to make ${q.total}.`;
       } else if (q.mode === "hide") {
         feedback.textContent = `Count on: ${Array.from({ length: q.total - q.visible + 1 }, (_, i) => q.visible + i).join(", ")}. How many hops?`;
       } else {
@@ -2459,6 +2468,9 @@
         ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        ${String(act.id || "").startsWith("g-canopy-") ? `<div class="canopy-victory" role="status">
+          <span aria-hidden="true">✨ 🦉 ✨</span><h2>Forest Explorer!</h2>
+          <p>Pip reached the owl and opened ${r.length} forest clearings. The whole path is glowing!</p></div>` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${bestsHTML(bestNotes)}
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])

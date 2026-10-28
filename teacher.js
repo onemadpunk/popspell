@@ -1091,7 +1091,7 @@
 
   function downloadCSV(sessions) {
     const cell = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
-    const lines = [["Date", "Time", "Pupil", "List", "Source", "Word", "Sounds", "Result", "Wrong tries", "Skills missed", "Seconds", "Ways made"].map(cell).join(",")];
+    const lines = [["Date", "Time", "Pupil", "List", "Source", "Word", "Sounds", "Result", "Wrong tries", "Skills missed", "Seconds", "Number groups"].map(cell).join(",")];
     sessions.slice().reverse().forEach(s => (s.words || []).forEach(w => {
       const d = new Date(s.at);
       const result = (w.challenge ? "New word: " : "") + (w.correct ? (w.triesUsed === 1 ? "Right first time" : `Right on try ${w.triesUsed}`) : "Missed");
@@ -1891,7 +1891,7 @@
              <p class="hint">Time shows thinking time only; it never changes the score.</p>
              <ul>${p.lastCanopy.words.map(w => `<li><b>${esc(w.word)}</b> · ${w.triesUsed === 1 ? "first go" : "with support"}
                ${Number.isFinite(w.seconds) ? ` · ${w.seconds}s` : ""}
-               ${(w.methods || []).length ? `<br><span class="meta">Ways made: ${esc(w.methods.join(" and "))}</span>` : ""}
+               ${(w.methods || []).length ? `<br><span class="meta">Firefly groups: ${esc(w.methods.join(" and "))}</span>` : ""}
                ${(w.wrong || []).length ? `<br><span class="meta">Tried: ${esc(w.wrong.join(", "))}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
         </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}
       ${pupils.length ? (() => {

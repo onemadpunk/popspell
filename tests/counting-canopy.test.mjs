@@ -25,8 +25,7 @@ test("all Counting Canopy levels are assignable games with playable number puzzl
         assert.equal(q.answer, String(q.total));
       } else if (q.mode === "make") {
         assert.ok(q.total >= 5 && q.total <= 10);
-        const splits = Array.from({ length: q.total - 1 }, (_, i) => [i + 1, q.total - i - 1]);
-        assert.ok(new Set(splits.map(pair => pair.slice().sort((a, b) => a - b).join("+"))).size >= 2);
+        assert.equal(q.answer, `make ${q.total}`);
       } else if (q.mode === "hide") {
         assert.ok(q.visible > 0 && q.visible < q.total && q.total <= 20);
         assert.equal(Number(q.answer) + q.visible, q.total);
@@ -40,6 +39,7 @@ test("all Counting Canopy levels are assignable games with playable number puzzl
         assert.ok(q.options.map(String).includes(q.answer));
       }
     }
+    if (id === "g-canopy-run") assert.equal(new Set(rounds.map(q => q.mode)).size, 4);
   }
 });
 

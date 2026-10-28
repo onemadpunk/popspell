@@ -738,8 +738,8 @@ window.PopActivities = (() => {
       q.skill = "recognising small groups at a glance";
       q.options = canopyChoices(total, 8);
     } else if (mode === "make") {
-      q.answer = `two ways to make ${total}`;
-      q.label = `two ways to make ${total}`;
+      q.answer = `make ${total}`;
+      q.label = `make ${total} to cross the river`;
       q.skill = "making and splitting numbers";
     } else if (mode === "hide") {
       q.answer = String(total - q.visible);
@@ -760,7 +760,7 @@ window.PopActivities = (() => {
       blurb: "Look at a small group of fireflies, then tell Pip how many you saw. Replay as often as you like.",
       make: () => shuffle(range(1, 6)).map(n => canopyRound("flash", n)) },
     { id: "g-canopy-make", title: "Counting Canopy: build a bridge", level: "Early", organiser: NUM,
-      blurb: "Move fireflies into two nests. Find two different ways to make each number and build Pip's bridge.",
+      blurb: "Choose two firefly groups that make the target number. One good bridge lets Pip cross the river.",
       make: () => shuffle(range(5, 10)).map(n => canopyRound("make", n)) },
     { id: "g-canopy-hidden", title: "Counting Canopy: hidden fireflies", level: "Early", organiser: NUM,
       blurb: "Some fireflies hide under a leaf. Use the whole and the visible part to find the hidden part.",
