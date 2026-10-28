@@ -39,7 +39,12 @@ test("all Counting Canopy levels are assignable games with playable number puzzl
         assert.ok(q.options.map(String).includes(q.answer));
       }
     }
-    if (id === "g-canopy-run") assert.equal(new Set(rounds.map(q => q.mode)).size, 4);
+    if (id === "g-canopy-run") {
+      assert.deepEqual(Array.from(rounds, q => q.mode),
+        ["flash", "make", "hide", "compare", "flash", "make", "hide", "compare"]);
+      assert.ok(rounds[4].total > rounds[0].total);
+      assert.ok(rounds[5].total > rounds[1].total);
+    }
   }
 });
 

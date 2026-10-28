@@ -730,6 +730,7 @@ window.PopActivities = (() => {
   // partition without a clock. The teacher receives the specific number skill practised.
   const canopyChoices = (answer, max) => shuffle(shuffle([answer - 2, answer - 1, answer + 1, answer + 2]
     .filter(n => n >= 0 && n <= max)).slice(0, 2).concat(answer));
+  const canopyPick = values => shuffle(values)[0];
   function canopyRound(mode, total, extra = {}) {
     const q = { kind: "canopy", mode, total, tokens: [], ...extra };
     if (mode === "flash") {
@@ -775,13 +776,19 @@ window.PopActivities = (() => {
       make: () => shuffle([[11, 7], [12, 8], [13, 9], [15, 10], [17, 12], [20, 14]])
         .map(([total, visible]) => canopyRound("hide", total, { visible })) },
     { id: "g-canopy-run", title: "Counting Canopy: forest run", level: "Early", organiser: NUM,
-      blurb: "A replayable forest adventure mixing quick looks, number bridges, hidden parts and comparisons.",
-      make: () => shuffle([
-        canopyRound("flash", 4), canopyRound("make", 7), canopyRound("hide", 9, { visible: 5 }),
-        canopyRound("compare", 8, { left: 6, right: 8 }), canopyRound("flash", 6),
-        canopyRound("make", 8), canopyRound("hide", 10, { visible: 6 }),
-        canopyRound("compare", 9, { left: 9, right: 9 })
-      ]) }
+      blurb: "Guide Pip through eight different forest obstacles. Each answer opens the path to the owl.",
+      make: () => {
+        const [h1, v1] = canopyPick([[7, 3], [8, 5]]);
+        const [h2, v2] = canopyPick([[9, 5], [10, 6]]);
+        const [c1, d1] = canopyPick([[5, 7], [6, 8]]);
+        const [c2, d2] = canopyPick([[9, 9], [10, 8]]);
+        return [
+          canopyRound("flash", canopyPick([3, 4])), canopyRound("make", canopyPick([6, 7])),
+          canopyRound("hide", h1, { visible: v1 }), canopyRound("compare", Math.max(c1, d1), { left: c1, right: d1 }),
+          canopyRound("flash", canopyPick([5, 6])), canopyRound("make", canopyPick([8, 9])),
+          canopyRound("hide", h2, { visible: v2 }), canopyRound("compare", Math.max(c2, d2), { left: c2, right: d2 })
+        ];
+      } }
   ];
 
   /* ---------- The catalogue ---------- */

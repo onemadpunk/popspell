@@ -1645,9 +1645,11 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
-        ${/^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
+        ${act.id === "g-canopy-run" ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
           <span>Catch lights ✦ · Cross rivers 🌉 · Find hidden friends 🍃 · Choose the path ↗</span>
-          <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>` : ""}
+          <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
+          : /^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌟 Focused number practice with Pip</strong>
+          <small>Six quick challenges for one skill. Replay or use a clue whenever you need one.</small></div>` : ""}
         ${/^g-(hopper|switch)-/.test(act.id) && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
           <select id="hopperAccent"${CLASS && CLASS.accent ? " disabled" : ""}>
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
@@ -2286,8 +2288,8 @@
       compare: "Pip has reached a fork. Which tree has more fireflies, or are they the same?"
     };
     const headings = { flash: "Light the path", make: "Cross the river", hide: "Find the hidden fireflies", compare: "Choose Pip's path" };
-    const sceneNames = { flash: "Firefly meadow", make: "River crossing", hide: "Leafy hideout", compare: "The forest fork" };
-    const sceneIcons = { flash: "🏮", make: "🌉", hide: "🍃", compare: "🪧" };
+    const sceneNames = { flash: "Firefly meadow", make: "River crossing", hide: "Leafy hideout", compare: "Forest fork" };
+    const sceneIcons = { flash: "✦", make: "", hide: "🍃", compare: "↗" };
     app.innerHTML = `
       <section class="panel practice activity counting-canopy" style="--accent:${esc(act.colour)}">
         ${progressHTML()}
@@ -2374,7 +2376,7 @@
     }
     function renderMake() {
       const group = (n, side) => `<button type="button" class="canopy-group-card" data-side="${side}" data-count="${n}"
-        aria-label="Choose ${n} fireflies for ${side === "left" ? "the first" : "the second"} side">
+        aria-label="Choose ${n} ${n === 1 ? "firefly" : "fireflies"} for ${side === "left" ? "the first" : "the second"} side">
         <span class="canopy-group-stars" aria-hidden="true">${"✦".repeat(n)}</span><strong>${n}</strong></button>`;
       const firstOptions = [1, 2, 3, 4].filter(n => n < q.total);
       const needed = q.total - left;
@@ -2397,7 +2399,10 @@
             hopperTone(390);
             renderMake();
             work.querySelector("[data-side=right]")?.focus();
-          } else if (left + n === q.total) finish([`${left} + ${n}`]);
+          } else if (left + n === q.total) {
+            work.querySelectorAll(".canopy-selected b")[1].innerHTML = `${"✦".repeat(n)} <small>${n}</small>`;
+            finish([`${left} + ${n}`]);
+          }
           else {
             mistake(`${left} + ${n}`, `${left} and ${n} make ${left + n}. Pip needs ${q.total}. Try another group.`);
             button.disabled = true;
