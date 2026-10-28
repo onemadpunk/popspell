@@ -300,6 +300,8 @@ async function start() {
         ...(pupil.yearGroup !== undefined ? { yearGroup: String(pupil.yearGroup).slice(0, 10) } : {}),
         ...(pupil.needs !== undefined ? { needs: String(pupil.needs).trim().slice(0, 500) } : {}),
         ...(pupil.likes !== undefined ? { likes: String(pupil.likes).trim().slice(0, 300) } : {}),
+        // When each parents' night report was printed, so the next one can say what's changed
+        ...(pupil.reports !== undefined ? { reports: pupil.reports.map(Number).filter(Number.isFinite).slice(-12) } : {}),
         updated: serverTimestamp()
       }, { merge: true });
     },
@@ -337,6 +339,12 @@ async function start() {
     async sessions(classId, days = 30) {
       const since = Timestamp.fromMillis(Date.now() - days * 86400000);
       const snap = await getDocs(query(collection(store, "classes", classId, "sessions"), where("at", ">=", since), orderBy("at", "desc")));
+      return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
+    },
+
+    // Every starting-assessment result, however old, so a report can compare the start with now
+    async assessments(classId, listIds) {
+      const snap = await getDocs(query(collection(store, "classes", classId, "sessions"), where("listId", "in", listIds.slice(0, 30))));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
     },
 

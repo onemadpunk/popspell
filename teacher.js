@@ -1070,6 +1070,295 @@
     dialog.showModal();
   }
 
+  /* ---------- Parents' night: a year of progress, trends, and what's changed since the last report ---------- */
+
+  const DAY_MS = 864e5;
+  const longDay = ms => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  // Scottish school years start in August
+  const schoolYearStart = (now = new Date()) => new Date(now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1, 7, 1).getTime();
+  const REPORT_PERIODS = [["year", "This school year (since 1 August)"], ["last", "Since the last parents' night report"],
+    ["12m", "The last 12 months"], ["date", "Since a date I choose"]];
+  let reportPeriod = "year", reportDate = "";
+  const lastReportOf = r => Math.max(0, ...((r && r.reports) || []));
+  function reportFrom(r) {
+    if (reportPeriod === "12m") return Date.now() - 365 * DAY_MS;
+    if (reportPeriod === "date" && reportDate) return new Date(`${reportDate}T00:00:00`).getTime();
+    if (reportPeriod === "last" && lastReportOf(r)) return lastReportOf(r);
+    return schoolYearStart();
+  }
+  const firstTimePct = ws => (ws.length ? Math.round((ws.filter(w => w.correct && w.triesUsed === 1).length / ws.length) * 100) : null);
+  const weekOf = ms => { const d = new Date(ms); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7).getTime(); };
+  const wordsOf = list => list.flatMap(s => s.words || []);
+  // The first half of an area's questions against the second half: ▲ up, ▼ down, or steady
+  function trendOf(ws) {
+    if (ws.length < 10) return null;
+    const half = Math.floor(ws.length / 2);
+    const before = firstTimePct(ws.slice(0, half)), after = firstTimePct(ws.slice(half));
+    return { before, after, key: after - before >= 8 ? "up" : before - after >= 8 ? "down" : "steady" };
+  }
+  // How often each sound came up in literacy work, and how often it was missed
+  function soundTally(list) {
+    const A = window.PopActivities;
+    const t = {};
+    const at = x => (t[x] = t[x] || { seen: 0, missed: 0 });
+    wordsOf(list.filter(s => String(((A && A.tag(s.listId)) || {}).organiser || "").startsWith("Literacy"))).forEach(w => {
+      String(w.sounds || "").split("·").map(x => x.trim()).filter(Boolean).forEach(x => { at(x).seen++; });
+      (w.missed || []).forEach(x => { at(x).missed++; });
+    });
+    return t;
+  }
+  // Missed at least twice before, then met three or more times since without a slip
+  const securedSounds = (before, after) => {
+    const a = soundTally(before), b = soundTally(after);
+    return Object.keys(a).filter(x => a[x].missed >= 2 && b[x] && b[x].seen >= 3 && !b[x].missed);
+  };
+  // Which CfE organisers each part of the starting assessment belongs to
+  const QUEST_ORGANISER = {
+    listen: o => o.startsWith("Literacy · Listening"), read: o => o.startsWith("Literacy · Reading"),
+    story: o => o.startsWith("Literacy · Reading"), spell: o => o.includes("(spelling)"),
+    numbers: o => o === "Numeracy · Number and number processes"
+  };
+
+  // Everything the report says, worked out from the pupil's results. "Now" means the last 8 weeks.
+  function yearProgress(name, sessions, from, to, lastReport) {
+    const A = window.PopActivities;
+    const all = sessions.filter(s => sameName(s.pupil, name) && !P().isAssessment(s.listId)).sort((a, b) => a.at - b.at);
+    const mine = all.filter(s => s.at >= from && s.at <= to);
+    const recentCut = Math.max(from, to - 56 * DAY_MS);
+    const recent = mine.filter(s => s.at > recentCut);
+    const organiserOf = s => ((A && A.tag(s.listId)) || { organiser: "Other work" }).organiser;
+
+    const months = [];
+    const first = new Date(from);
+    for (let d = new Date(first.getFullYear(), first.getMonth(), 1); d.getTime() <= to; d.setMonth(d.getMonth() + 1)) {
+      const start = d.getTime(), end = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+      const these = mine.filter(s => s.at >= start && s.at < end);
+      const ws = wordsOf(these);
+      months.push({ start, sessions: these.length, items: ws.length, pct: ws.length >= 5 ? firstTimePct(ws) : null });
+    }
+    const long = months.length > 12;
+    months.forEach(m => { m.label = new Date(m.start).toLocaleDateString("en-GB", long ? { month: "short", year: "2-digit" } : { month: "short" }); });
+
+    const weeks = new Set(mine.map(s => weekOf(s.at)));
+    let run = 0, bestRun = 0, totalWeeks = 0;
+    for (let w = weekOf(from); w <= to; w = weekOf(w + 8 * DAY_MS)) { totalWeeks++; run = weeks.has(w) ? run + 1 : 0; bestRun = Math.max(bestRun, run); }
+
+    const nowRows = cfeRows(recent, name);
+    const areas = cfeRows(mine, name).map(row => {
+      const now = nowRows.find(x => x.organiser === row.organiser);
+      const ws = wordsOf(mine.filter(s => organiserOf(s) === row.organiser));
+      const useNow = now && now.status.key !== "none";
+      return Object.assign({}, row, { now: useNow ? now : null, statusNow: useNow ? now.status : row.status,
+        trend: trendOf(ws), focus: (useNow ? now : row).topSkills });
+    });
+
+    // Since the last parents' night: the year before it against the time since
+    let since = null;
+    if (lastReport && lastReport < to) {
+      const before = all.filter(s => s.at <= lastReport && s.at > lastReport - 365 * DAY_MS);
+      const after = all.filter(s => s.at > lastReport && s.at <= to);
+      since = { at: lastReport, sessions: after.length, before: firstTimePct(wordsOf(before)), after: firstTimePct(wordsOf(after)),
+        sounds: securedSounds(before, after),
+        areas: [...new Set(after.map(organiserOf))].map(o => ({ organiser: o,
+          before: firstTimePct(wordsOf(before.filter(s => organiserOf(s) === o))),
+          after: firstTimePct(wordsOf(after.filter(s => organiserOf(s) === o))),
+          items: wordsOf(after.filter(s => organiserOf(s) === o)).length })).filter(a => a.items >= 5) };
+    }
+
+    const tally = soundTally(recent.length ? recent : mine);
+    const focusSounds = Object.entries(tally).filter(([, v]) => v.missed).sort((a, b) => b[1].missed - a[1].missed).slice(0, 6).map(([x]) => x);
+    const phonicsNow = (recent.length ? recent : mine).map(s => stageOf(s.listId)).filter(i => i >= 0);
+    const pcts = months.filter(m => m.pct != null);
+    return { mine, months, weeks: weeks.size, totalWeeks, bestRun, areas, since, focusSounds,
+      secured: securedSounds(mine.filter(s => s.at <= recentCut), recent),
+      stageNow: phonicsNow.length ? Math.max(...phonicsNow) : -1,
+      pct: firstTimePct(wordsOf(mine)), startPct: pcts.length > 1 ? pcts[0] : null, endPct: pcts.length > 1 ? pcts[pcts.length - 1] : null,
+      quiet: !mine.some(s => s.at > to - 28 * DAY_MS) };
+  }
+
+  // Two small charts rather than one with two scales: how much was practised, and how much was right first time
+  function monthChart(months, kind) {
+    const W = 340, H = 150, L = 34, R = 10, T = 14, B = 24;
+    const pw = (W - L - R) / Math.max(months.length, 1);
+    const base = H - B, h = base - T;
+    const x = i => L + pw * i + pw / 2;
+    const every = months.length > 8 ? 2 : 1;
+    const labels = months.map((m, i) => (i % every ? "" : `<text x="${x(i)}" y="${H - 7}" class="pn-tick" text-anchor="middle">${esc(m.label)}</text>`)).join("");
+    if (kind === "practice") {
+      const top = Math.max(10, ...months.map(m => m.items));
+      const max = Math.ceil(top / 10) * 10;
+      const bw = Math.min(26, pw - 6);
+      const bars = months.map((m, i) => {
+        if (!m.items) return "";
+        const bh = Math.max(2, (m.items / max) * h), bx = x(i) - bw / 2, by = base - bh, r = Math.min(4, bh);
+        return `<path class="pn-bar" d="M${bx},${base} V${by + r} Q${bx},${by} ${bx + r},${by} H${bx + bw - r} Q${bx + bw},${by} ${bx + bw},${by + r} V${base} Z"><title>${esc(m.label)}: ${m.items} questions in ${m.sessions} session${m.sessions === 1 ? "" : "s"}</title></path>`;
+      }).join("");
+      return `<svg class="pn-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Questions answered each month">
+        ${[0, max / 2, max].map(v => `<line x1="${L}" x2="${W - R}" y1="${base - (v / max) * h}" y2="${base - (v / max) * h}" class="pn-grid"/>
+          <text x="${L - 6}" y="${base - (v / max) * h + 4}" class="pn-tick" text-anchor="end">${v}</text>`).join("")}
+        ${bars}${labels}</svg>`;
+    }
+    const y = p => base - (p / 100) * h;
+    const segs = [];
+    let seg = [];
+    months.forEach((m, i) => { if (m.pct == null) { if (seg.length) segs.push(seg); seg = []; } else seg.push([x(i), y(m.pct)]); });
+    if (seg.length) segs.push(seg);
+    const lastI = months.map(m => m.pct != null).lastIndexOf(true);
+    return `<svg class="pn-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Right first time each month">
+      ${[0, 50, 100].map(v => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="pn-grid"/>
+        <text x="${L - 6}" y="${y(v) + 4}" class="pn-tick" text-anchor="end">${v}%</text>`).join("")}
+      <line x1="${L}" x2="${W - R}" y1="${y(85)}" y2="${y(85)}" class="pn-ref"/>
+      <text x="${L + 4}" y="${y(85) - 4}" class="pn-tick">Secure 85%</text>
+      ${segs.map(s => `<polyline class="pn-line" points="${s.map(p => p.join(",")).join(" ")}"/>`).join("")}
+      ${months.map((m, i) => (m.pct == null ? "" : `<circle class="pn-dot" cx="${x(i)}" cy="${y(m.pct)}" r="4.5"><title>${esc(m.label)}: ${m.pct}% right first time (${m.items} questions)</title></circle>`)).join("")}
+      ${lastI >= 0 ? `<text x="${x(lastI)}" y="${y(months[lastI].pct) - 9}" class="pn-value" text-anchor="middle">${months[lastI].pct}%</text>` : ""}
+      ${labels}</svg>`;
+  }
+
+  const ARROW = { up: ["▲", "Improving"], down: ["▼", "Slipping"], steady: ["▶", "Steady"] };
+  const shortArea = o => o.replace(/^(Literacy|Numeracy) · /, "").replace(/ · Tools for (reading|writing|listening and talking)/, "");
+  const statusBadge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/\s+/g, "-")}">${esc(s)}</span>`;
+
+  function parentsNightReport(pupil, sessions, assessments, { from, to, comment }) {
+    const last = lastReportOf(pupil);
+    const y = yearProgress(pupil.name, sessions, from, to, last);
+    const start = questFindings(questSessions(pupil.name, assessments));
+    const startAt = Math.min(...Object.values(questSessions(pupil.name, assessments)).filter(Boolean).map(s => s.at));
+    const name = esc(pupil.name);
+    const change = (a, b) => (a == null || b == null ? "" : b > a ? `up from ${a}%` : b < a ? `down from ${a}%` : `same as ${a}%`);
+    const trendCell = t => (t ? `<span class="pn-trend pn-${t.key}">${ARROW[t.key][0]} ${ARROW[t.key][1]}</span><br><span class="meta">${t.before}% → ${t.after}%</span>` : `<span class="meta">Not enough yet</span>`);
+
+    const strengths = [
+      ...y.areas.filter(a => a.statusNow.key === "secure").map(a => `${shortArea(a.organiser)} is secure (${(a.now || a).pct}% right first time).`),
+      ...y.areas.filter(a => a.trend && a.trend.key === "up" && a.statusNow.key !== "secure").map(a => `${shortArea(a.organiser)} is improving: ${a.trend.before}% to ${a.trend.after}%.`),
+      ...(y.secured.length ? [`Sounds now secure: ${y.secured.slice(0, 8).join(", ")}.`] : []),
+      ...(y.bestRun >= 3 ? [`Practised ${y.bestRun} weeks in a row.`] : [])
+    ];
+    const support = [
+      ...y.areas.filter(a => a.statusNow.key === "support").map(a => `<b>${esc(shortArea(a.organiser))}</b>: ${(a.now || a).pct}% right first time${a.focus.length ? `, especially ${esc(a.focus.slice(0, 4).join(", "))}` : ""}.`),
+      ...y.areas.filter(a => a.trend && a.trend.key === "down" && a.statusNow.key !== "support").map(a => `<b>${esc(shortArea(a.organiser))}</b> has slipped from ${a.trend.before}% to ${a.trend.after}%: worth a closer look.`),
+      ...(y.focusSounds.length ? [`Sounds still being missed: <b>${esc(y.focusSounds.join(", "))}</b>.`] : []),
+      ...(y.mine.length && y.quiet ? ["Little or no practice in the last four weeks."] : [])
+    ];
+    const next = [
+      ...(y.focusSounds.length ? [`Practise ${esc(y.focusSounds.slice(0, 3).join(", "))} for a few minutes most days: reading words with them aloud, then spelling them.`] : []),
+      ...y.areas.filter(a => a.statusNow.key === "support").slice(0, 2).map(a => `Short, regular practice in ${esc(shortArea(a.organiser).toLowerCase())}, at a level where most answers are right.`),
+      ...(y.stageNow >= 0 && y.stageNow < P().STAGES.length - 1 && y.areas.some(a => a.organiser.includes("(spelling)") && a.statusNow.key === "secure")
+        ? [`Move on to ${esc(P().STAGES[y.stageNow + 1].stage)} in spelling.`] : []),
+      ...(y.totalWeeks && y.weeks / y.totalWeeks < 0.5 ? ["Little and often works best: aim for two or three short PopSpell sessions a week."] : []),
+      ...(!y.mine.length ? ["Start with a few short PopSpell sessions so progress can be tracked."] : [])
+    ];
+    const startRows = ["listen", "read", "story", "spell", "numbers"].filter(k => start[k]).map(k => {
+      const now = y.areas.filter(a => QUEST_ORGANISER[k](a.organiser)).sort((a, b) => b.items - a.items)[0];
+      const stage = (k === "spell" || k === "read") && y.stageNow >= 0 ? `Now practising ${P().STAGES[y.stageNow].stage}. ` : "";
+      return `<tr><td><b>${esc(start[k].area)}</b></td><td>${statusBadge(start[k].status)} <span class="meta">${esc(start[k].level || "")}</span><br>${esc(start[k].detail)}</td>
+        <td>${now ? `${statusBadge(now.statusNow.text)} ${(now.now || now).pct}% right first time<br>` : ""}${esc(stage)}${!now && !stage ? `<span class="meta">No practice in this area yet</span>` : ""}</td></tr>`;
+    });
+
+    return `<div class="ar pn">
+      <div class="ar-head"><img src="assets/brand/wordmark.png" alt="PopSpell" width="96">
+        <div><h1>Parents' night report</h1><p class="ar-sub">${esc(current.name)} · ${esc(longDay(from))} to ${esc(longDay(to))}</p></div>
+        <img src="assets/brand/pip-celebrate.png" alt="" width="70"></div>
+      <table class="ar-facts"><tr><th>Pupil</th><td>${name}</td><th>Year group</th><td>${esc(pupil.yearGroup || "—")}</td></tr>
+        <tr><th>Teacher</th><td>${esc(current.teacherName || me.name || "")}</td><th>Last report</th><td>${last ? esc(longDay(last)) : "This is the first"}</td></tr></table>
+      <div class="ar-summary pn-tiles">
+        <div><span>Right first time</span><b>${y.pct == null ? "—" : `${y.pct}%`}</b>${y.startPct ? `<small>${esc(y.startPct.label)} ${y.startPct.pct}% → ${esc(y.endPct.label)} ${y.endPct.pct}%</small>` : ""}</div>
+        <div><span>Practice</span><b>${y.mine.length} session${y.mine.length === 1 ? "" : "s"}</b><small>in ${y.weeks} of ${y.totalWeeks} weeks</small></div>
+        <div><span>Sounds now secure</span><b>${y.secured.length}</b><small>${y.focusSounds.length} still to work on</small></div>
+        <div><span>Best run</span><b>${y.bestRun} week${y.bestRun === 1 ? "" : "s"}</b><small>in a row</small></div>
+      </div>
+      ${y.mine.length ? `<h2>Progress through the year</h2>
+        <div class="pn-charts"><figure><figcaption>Questions answered each month</figcaption>${monthChart(y.months, "practice")}</figure>
+          <figure><figcaption>Right first time each month</figcaption>${monthChart(y.months, "score")}</figure></div>
+        <table class="pn-months"><tr><th>Month</th>${y.months.map(m => `<th>${esc(m.label)}</th>`).join("")}</tr>
+          <tr><th>Sessions</th>${y.months.map(m => `<td>${m.sessions || "–"}</td>`).join("")}</tr>
+          <tr><th>Right first time</th>${y.months.map(m => `<td>${m.pct == null ? "–" : `${m.pct}%`}</td>`).join("")}</tr></table>` : `<p>No PopSpell work recorded in this period.</p>`}
+      ${y.since ? `<h2>Since the last report (${esc(longDay(y.since.at))})</h2><ul>
+        <li>${y.since.sessions} session${y.since.sessions === 1 ? "" : "s"} done.${y.since.after != null ? ` Right first time: ${y.since.after}%${y.since.before != null ? `, ${change(y.since.before, y.since.after)} before then` : ""}.` : ""}</li>
+        ${y.since.sounds.length ? `<li>Sounds now secure: ${esc(y.since.sounds.join(", "))}.</li>` : ""}
+        ${y.since.areas.filter(a => a.before != null).map(a => `<li>${esc(shortArea(a.organiser))}: ${a.after}%, ${change(a.before, a.after)}.</li>`).join("")}
+        ${y.since.areas.filter(a => a.before == null).map(a => `<li>New since then: ${esc(shortArea(a.organiser))} (${a.after}% right first time).</li>`).join("")}</ul>` : ""}
+      ${startRows.length ? `<h2>Starting point and now</h2>
+        <table class="ar-table"><thead><tr><th>Area</th><th>At the start (${esc(longDay(startAt))})</th><th>Now</th></tr></thead><tbody>${startRows.join("")}</tbody></table>` : ""}
+      ${y.areas.length ? `<h2>How each area is going</h2>
+        <table class="ar-table"><thead><tr><th>Area</th><th>CfE level</th><th>Questions</th><th>Trend over the period</th><th>Now</th><th>To work on</th></tr></thead><tbody>
+        ${y.areas.map(a => `<tr class="${a.statusNow.key === "support" || (a.trend && a.trend.key === "down") ? "pn-flag" : ""}"><td><b>${esc(shortArea(a.organiser))}</b></td><td>${esc(a.levelText || "—")}</td>
+          <td>${a.items}</td><td>${trendCell(a.trend)}</td><td>${statusBadge(a.statusNow.text)}${a.now ? `<br><span class="meta">${a.now.pct}%, last 8 weeks</span>` : ""}</td>
+          <td>${esc(a.focus.slice(0, 5).join(", ") || "—")}</td></tr>`).join("")}</tbody></table>` : ""}
+      <div class="pn-boxes">
+        <div class="pn-box pn-good"><h2>Strengths</h2>${strengths.length ? `<ul>${strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : `<p class="meta">Building up: more practice will show strengths here.</p>`}</div>
+        <div class="pn-box pn-support"><h2>Needs further support</h2>${support.length ? `<ul>${support.map(s => `<li>${s}</li>`).join("")}</ul>` : `<p>Nothing stands out: keep going!</p>`}</div>
+      </div>
+      <h2>Next steps</h2>${next.length ? `<ul>${next.map(s => `<li>${s}</li>`).join("")}</ul>` : `<p>Keep up the good work, and keep stretching with new lists.</p>`}
+      <h2>Teacher's comment</h2>${comment ? `<p class="pn-comment">${esc(comment).replace(/\n/g, "<br>")}</p>` : `<div class="ws-comment"></div>`}
+      <p class="ar-note"><b>About this report.</b> It is worked out from ${name}'s PopSpell results. “Right first time” counts questions answered correctly without help.
+        Secure means 85% or more right first time, on at least 10 questions over two or more days; “Now” uses the last 8 weeks. Trends compare the first half of the period's questions in an area with the second half.
+        CfE levels are indicative and should be confirmed by the teacher's own judgement against the benchmarks.</p>
+    </div>`;
+  }
+
+  // One pupil, or the whole class one per page. Loads enough history for the period, the
+  // comparison with each pupil's last report, and the starting assessment however long ago it was.
+  function parentsNight(pupils) {
+    const single = pupils.length === 1;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview pn-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Parents' night report${single ? `: ${esc(pupils[0].name)}` : `s · ${pupils.length} pupils`}</h2>
+        <button class="btn small" type="button" data-close>Close</button>
+        <button class="btn small primary" type="button" data-print disabled>🖨️ Print / Save PDF</button></div>
+      <div class="pn-controls">
+        <label>Covering <select data-period>${REPORT_PERIODS.map(([k, t]) => `<option value="${k}"${k === reportPeriod ? " selected" : ""}>${t}</option>`).join("")}</select></label>
+        <label data-date-wrap ${reportPeriod === "date" ? "" : "hidden"}>From <input type="date" data-date value="${esc(reportDate)}"></label>
+        ${single ? `<label class="pn-comment-box">Teacher's comment, printed on the report (leave blank to write by hand)
+          <textarea data-comment rows="3" maxlength="1500"></textarea></label>` : ""}
+        <label class="check"><input type="checkbox" data-mark checked> When printing, save today as ${single ? `${esc(pupils[0].name)}'s` : "each pupil's"} latest report, so the next one shows what's changed</label>
+      </div>
+      <div data-pages><div class="empty">Loading a year of results…</div></div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.showModal();
+
+    let loaded = null, loadedFrom = Infinity, html = "";
+    const pages = dialog.querySelector("[data-pages]");
+    const earliest = () => Math.min(...pupils.map(r => Math.min(reportFrom(r), lastReportOf(r) ? lastReportOf(r) - 365 * DAY_MS : Infinity)));
+    async function render() {
+      const need = earliest();
+      try {
+        if (!loaded || need < loadedFrom) {
+          pages.innerHTML = `<div class="empty">Loading a year of results…</div>`;
+          const days = Math.min(3650, Math.ceil((Date.now() - need) / DAY_MS) + 1);
+          const [sessions, assessments] = await Promise.all([cloud.sessions(current.id, days), cloud.assessments(current.id, P().QUEST.map(q => q.id))]);
+          loaded = { sessions, assessments };
+          loadedFrom = need;
+        }
+      } catch (err) { pages.innerHTML = `<div class="empty">${esc(err.message || "Couldn't load the results.")}</div>`; return; }
+      const comment = single ? dialog.querySelector("[data-comment]").value.trim() : "";
+      const reports = pupils.map(r => parentsNightReport(r, loaded.sessions, loaded.assessments, { from: reportFrom(r), to: Date.now(), comment }));
+      html = reports.map(h => `<section class="pn-page">${h}</section>`).join("");
+      pages.innerHTML = reports.map(h => `<section class="sheet-preview-page ws-report">${h}</section>`).join("");
+      dialog.querySelector("[data-print]").disabled = false;
+    }
+    dialog.querySelector("[data-period]").onchange = e => {
+      reportPeriod = e.target.value;
+      dialog.querySelector("[data-date-wrap]").hidden = reportPeriod !== "date";
+      render();
+    };
+    dialog.querySelector("[data-date]").onchange = e => { reportDate = e.target.value; render(); };
+    if (single) dialog.querySelector("[data-comment]").oninput = () => { if (loaded) render(); };
+    dialog.querySelector("[data-print]").onclick = async () => {
+      const mark = dialog.querySelector("[data-mark]").checked;
+      dialog.close();
+      if (mark) {
+        const now = Date.now();
+        await Promise.all(pupils.filter(r => r.key).map(r => cloud.savePupil(current.id, Object.assign({}, r, { reports: [...(r.reports || []), now].slice(-12) }))
+          .then(() => { r.reports = [...(r.reports || []), now].slice(-12); }))).catch(showError);
+      }
+      printSheet("ws-report", html);
+    };
+    render();
+  }
+
   // Three steps: about the child, Pip's Sound Quest, then the report and first lessons.
   // Opened from the Pupils tab, blank for a new child or at step 2 for one already in the class.
   function newPupilFlow(pupil, roster, done, startStep = 1) {
@@ -1333,7 +1622,9 @@
     const pupils = summarise(sessions);
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
-      <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div>
+      <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><div class="row">
+        <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
+        <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
       <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" placeholder="Pupil's name or code" required>
@@ -1341,7 +1632,8 @@
         <button class="btn primary" type="submit">Add pupil</button></form>
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
-          <button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button></div>
+          <div class="row"><button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
+            <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button></div></div>
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
@@ -1377,7 +1669,8 @@
         ${sessions.length ? `<button class="btn" id="csv">⬇ Download every word (spreadsheet)</button>` : ""}</div>
       ${pupils.length ? `<div class="pupil-grid">${pupils.map(p => `
         <article class="pcard">
-          <div class="next-head"><h3>${esc(p.pupil)}</h3><button class="btn small" data-report="${esc(p.pupil)}">📄 Progress report</button></div>
+          <div class="next-head"><h3>${esc(p.pupil)}</h3><div class="row"><button class="btn small" data-report="${esc(p.pupil)}">📄 Progress report</button>
+            <button class="btn small" data-pn="${esc(p.pupil)}">📅 Parents' night</button></div></div>
            <p class="meta">${p.lists} lists (${p.worksheets} worksheets) · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
           ${p.topSounds.length ? `<div><b>Sounds to work on</b><br>${p.topSounds.map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</div>` : `<div>No missed sounds 🎉</div>`}
            <ul class="recent">${p.recent.map(r => `<li>${day(r.at)} · ${esc(r.source)} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
@@ -1400,6 +1693,15 @@
     body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
     $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
+    // Roster pupils, plus anyone with results who isn't on the roster yet
+    const reportPupil = name => roster.find(r => sameName(r.name, name)) || { name };
+    body.querySelectorAll("[data-pn]").forEach(b => { b.onclick = () => parentsNight([reportPupil(b.dataset.pn)]); });
+    $("#pnAll").onclick = () => {
+      const everyone = [...roster, ...pupils.filter(p => !roster.some(r => sameName(r.name, p.pupil))).map(p => ({ name: p.pupil }))]
+        .sort((a, b) => a.name.localeCompare(b.name));
+      if (!everyone.length) return showError(new Error("Add pupils first: each one gets a page."));
+      parentsNight(everyone);
+    };
     body.querySelectorAll("[data-assess]").forEach(b => {
       b.onclick = () => newPupilFlow(roster.find(r => r.key === b.dataset.assess), roster, () => drawPupils(body), 2);
     });

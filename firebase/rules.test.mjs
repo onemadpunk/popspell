@@ -151,6 +151,11 @@ await check("teacher saves a parent link and note", assertSucceeds(updateDoc(doc
 await check("teacher saves a pupil's profile", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { yearGroup: "P3", needs: "Dyslexia; likes short tasks", likes: "Dinosaurs" })));
 await check("a profile note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { needs: "x".repeat(501) })));
 await check("a pupil device can't change the profile", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { yearGroup: "P7" })));
+await check("teacher saves parents' night report dates", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { reports: [Date.now() - 2e10, Date.now()] })));
+await check("report dates are kept to twelve", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { reports: Array(13).fill(1) })));
+await check("a pupil device can't change report dates", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { reports: [] })));
+await check("teacher loads every starting assessment", assertSucceeds(getDocs(query(collection(tutor, "classes/ABC234/sessions"), where("listId", "in", ["assess-read", "check-spelling"])))));
+await check("a pupil device can't load the class's assessments", assertFails(getDocs(query(collection(pupil, "classes/ABC234/sessions"), where("listId", "in", ["assess-read"])))));
 await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
 
 console.log("Pupils' own progress");
