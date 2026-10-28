@@ -368,6 +368,67 @@ body.playing-game .wrap { padding-top: 8px; padding-bottom: 8px; }
   .hopper .hopper-title { display: none; }
   .beat-pad { width: 92px; height: 92px; }
 }
+
+/* Sound Switch: Pip explores doors using the same character as Sound Hopper. */
+.sound-switch { background: linear-gradient(160deg, #fffaf1, #eef8ff); }
+.sound-switch.panel { padding-top: 12px; padding-bottom: 14px; }
+.sound-switch .bar { display: none; }
+.sound-switch .game-trail { margin: 6px 0 10px; gap: 6px; }
+.sound-switch .trail-stone { width: 32px; height: 32px; border-width: 2px; font-size: .9rem; }
+.sound-switch .feedback { margin: 8px 0 0; min-height: 0; }
+.sound-switch .feedback + .row { margin-top: 8px; }
+.sound-switch h1 { margin: 18px 0 5px; }
+.switch-instruction { font-size: 1.2rem; font-weight: 700; margin: 0 0 12px; }
+.switch-scene { position: relative; height: 220px; overflow: hidden; border-radius: 25px;
+  background: radial-gradient(circle at 80% 12%, #fff2a3 0 7%, transparent 8%),
+    linear-gradient(145deg, #b5e9ff, #e8f7ff 60%, #b9e8b0); }
+.switch-cloud { position: absolute; width: 110px; height: 34px; top: 32px; left: 18%; border-radius: 99px;
+  background: #fff; box-shadow: 25px -12px 0 2px #fff, -18px -5px 0 #fff; opacity: .88; }
+.switch-cloud.two { top: 63px; left: 55%; transform: scale(.7); }
+.switch-floor { position: absolute; inset: auto 0 0; height: 44px; background: repeating-linear-gradient(95deg, #b38961 0 52px, #a7794d 52px 56px);
+  border-top: 8px solid #76b45b; }
+.switch-scene .hopper-creature { left: 15%; bottom: 42px; }
+.switch-door-frame { position: absolute; right: 10%; bottom: 40px; height: 150px; width: 115px; border: 8px solid #733f47;
+  border-radius: 60px 60px 8px 8px; background: #292651; box-shadow: 0 7px 0 #794e43; perspective: 500px; }
+.switch-door { position: absolute; inset: 0; border-radius: 50px 50px 2px 2px; border: 5px solid #71482f;
+  background: repeating-linear-gradient(90deg, #bd8054 0 30px, #a96540 30px 35px); transform-origin: left center;
+  transition: transform .9s ease; display: grid; place-items: center; }
+.switch-lock { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
+  background: #ffe895; border: 3px solid #6b462a; font-size: 1.4rem; }
+.switch-spark { position: absolute; right: 4%; top: 22px; color: #ffe75c; font-size: 2rem; opacity: 0; }
+.switch-scene.open .switch-door { transform: rotateY(-72deg); }
+.switch-scene.open .switch-lock { opacity: 0; }
+.switch-scene.open .switch-spark { opacity: 1; animation: switch-spark .7s ease-in-out 2 alternate; }
+.switch-scene.open .hopper-creature { animation: switch-walk 1.5s ease-in-out forwards; }
+@keyframes switch-walk { 0% { left: 15%; } 45% { left: 48%; transform: translateY(-22px); } 100% { left: 76%; transform: scale(.72); } }
+@keyframes switch-spark { to { transform: scale(1.3) rotate(15deg); } }
+.switch-work { max-width: 680px; margin: 15px auto; padding: 16px; border: 2px solid #cbe5ef; border-radius: 22px; background: #fff; }
+.switch-work .hint { margin: 0 0 15px; }
+.switch-blocks, .switch-choices { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 7px; }
+.switch-blocks { flex-wrap: nowrap; justify-content: safe center; overflow-x: auto; padding: 6px 4px 9px; }
+.switch-block, .switch-gap, .switch-choice { min-width: 61px; min-height: 66px; padding: 8px 12px; border: 3px solid #154c75;
+  border-radius: 15px; background: #ffe38a; color: var(--ink); font: 900 1.7rem var(--reading-font); box-shadow: 0 5px 0 #bb9856; }
+button.switch-block, .switch-gap, .switch-choice { cursor: pointer; }
+.switch-gap { min-width: 48px; background: #e8f8ff; border-style: dashed; box-shadow: none; color: #146196; }
+.switch-block.selected, .switch-gap.selected { background: #ffacc8; border-color: #a32961; }
+.switch-block.hinted, .switch-gap.hinted { box-shadow: 0 0 0 6px #ffe95c; }
+.switch-choices { min-height: 76px; margin-top: 17px; }
+.switch-choice { background: #c9f2e6; min-width: 72px; }
+.switch-choice:disabled { opacity: .45; cursor: default; }
+.switch-block:focus-visible, .switch-gap:focus-visible, .switch-choice:focus-visible { outline: 4px solid #ff4081; outline-offset: 4px; }
+@media (max-width: 540px) {
+  .switch-door-frame { right: 7%; transform: scale(.86); transform-origin: bottom right; }
+  .switch-scene .hopper-creature { left: 9%; }
+  .switch-block, .switch-gap, .switch-choice { min-width: 48px; min-height: 56px; font-size: 1.4rem; padding: 5px 8px; }
+  .switch-gap { min-width: 34px; }
+}
+@media (max-height: 760px) {
+  .switch-scene { height: 150px; }
+  .sound-switch h1 { font-size: 1.45rem; margin: 9px 0 2px; }
+  .switch-work { margin: 8px auto; padding: 10px; }
+  .switch-door-frame { transform: scale(.76); transform-origin: bottom right; }
+  .switch-scene .hopper-creature { bottom: 42px; }
+}
 .tip-inline { display: block; margin-top: 6px; font-weight: 400; color: var(--ink); }
 
 .timer { height: 12px; background: #efebe1; border-radius: 999px; overflow: hidden; margin: 16px auto 0; max-width: 420px; }
@@ -762,6 +823,8 @@ a.me-card:hover { border-color: var(--primary); }
   *, *::before, *::after { animation: none !important; }
   .btn, .list-card, .bar span { transition: none; }
   .hopper-scene.crossed .hopper-creature { left: calc(100% - 80px); }
+  .switch-scene.open .switch-door { transform: rotateY(-72deg); }
+  .switch-scene.open .hopper-creature { left: 76%; transform: scale(.72); }
 }
 
 /* ---------- Print (results sheet or a child's worksheet) ---------- */

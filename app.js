@@ -375,9 +375,10 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? (r.item.kind === "map" ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
+        triesUsed: r.correct ? (["map", "switch"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
+        ...(Number.isFinite(r.seconds) ? { seconds: r.seconds } : {}),
         // Starting checks: the list or activity each word was testing
         ...(r.item.from ? { from: r.item.from } : {})
       }))
@@ -974,6 +975,7 @@
       <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
       <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>
       ${locked ? "" : `<a class="me-card" href="#/activity/g-hopper-short"><span class="me-icon" aria-hidden="true">🎮</span><span><b>Play Sound Hopper</b> · tap beats and build bridges</span></a>`}
+      ${locked ? "" : `<a class="me-card" href="#/activity/g-switch-first"><span class="me-icon" aria-hidden="true">🔑</span><span><b>Play Sound Switch</b> · change a sound to open Pip's doors</span></a>`}
       ${storyActivities().length && !locked ? `<a class="me-card" href="#/stories"><span class="me-icon" aria-hidden="true">📚</span><span><b>My stories</b> · ${readyStories(prog).length} ready to read</span></a>` : ""}`;
 
     // Lists the teacher has set for this pupil, if the sheet is connected
@@ -1259,7 +1261,7 @@
       ${previewBanner()}
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
+        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
         ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -1719,6 +1721,7 @@
     const act = session.activity;
     const q = session.items[session.i];
     if (q.kind === "map") return showSoundHopper(q);
+    if (q.kind === "switch") return showSoundSwitch(q);
     const wrong = [];
     let missed = [];
     const passage = act.passage;
@@ -2036,6 +2039,157 @@
         session.i++;
         showQuestion();
       };
+    }
+  }
+
+  // Pip keeps the same face as Sound Hopper, but each puzzle changes a spoken word
+  // rather than counting beats. The target spelling is only shown after a solution or hint.
+  function showSoundSwitch(q) {
+    document.body.classList.add("playing-game");
+    const act = session.activity;
+    const wrong = [];
+    const missed = new Set();
+    const rejected = new Set();
+    const startedAt = Date.now();
+    let selected = -1;
+    let finished = false;
+    const step = q.action === "swap" ? "Change one sound" : q.action === "add" ? "Add one sound" : "Take away one sound";
+    const blocks = q.action === "add"
+      ? Array.from({ length: q.before.length + 1 }, (_, i) =>
+          `<button type="button" class="switch-gap" data-place="${i}" aria-label="Add a sound ${i === 0 ? "at the start" : i === q.before.length ? "at the end" : `after sound ${i}`}">＋</button>`
+          + (i < q.before.length ? `<span class="switch-block">${esc(label(q.before[i]))}</span>` : "")).join("")
+      : q.before.map((sound, i) => `<button type="button" class="switch-block" data-place="${i}" aria-label="Sound ${i + 1}: ${esc(label(sound))}">${esc(label(sound))}</button>`).join("");
+    app.innerHTML = `
+      <section class="panel practice activity sound-switch" style="--accent:${esc(act.colour)}">
+        ${progressHTML()}
+        <div class="game-trail" aria-label="Workshop doors">${session.items.map((_, i) =>
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Door ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>
+        <div class="switch-scene" id="switchScene" role="img" aria-label="Pip beside a locked workshop door">
+          <div class="switch-cloud one"></div><div class="switch-cloud two"></div>
+          <div class="switch-floor"></div>
+          <div class="hopper-creature" aria-hidden="true"><span class="hopper-ear one"></span><span class="hopper-ear two"></span>
+            <span class="hopper-eye one"></span><span class="hopper-eye two"></span><span class="hopper-cheek"></span>
+            <span class="hopper-foot one"></span><span class="hopper-foot two"></span></div>
+          <div class="switch-door-frame"><div class="switch-door"><span class="switch-lock">🔒</span></div></div>
+          <span class="switch-spark" aria-hidden="true">✦ ✧ ✦</span>
+        </div>
+        <h1>Help Pip open the door!</h1>
+        <p class="switch-instruction">${step} in <b>${esc(q.source)}</b> to make the word you hear.</p>
+        <div class="row center"><button type="button" class="btn" id="hearSwitch">🔊 Hear the new word</button>
+          <button type="button" class="btn" id="hintSwitch">👀 Show the word</button></div>
+        <div class="switch-work" aria-label="Change the sound blocks">
+          <p class="hint">${q.action === "add" ? "Tap a + where the new sound belongs, then choose its tile." : q.action === "remove" ? "Tap the sound block to take away." : "Tap the sound block that changes, then choose its new tile."}</p>
+          <div class="switch-blocks" role="group" aria-label="${esc(q.source)} sound blocks">${blocks}</div>
+          <div class="switch-choices" id="switchChoices" role="group" aria-label="New sound tiles" hidden></div>
+        </div>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+      </section>`;
+    wireStop();
+    const scene = $("#switchScene");
+    const feedback = $("#feedback");
+    const positions = [...app.querySelectorAll("[data-place]")];
+    const hear = async () => {
+      const here = phase;
+      await speak(`${step}. Listen to the first word.`);
+      if (here !== phase || finished) return;
+      await sayWord(q.source);
+      if (here !== phase || finished) return;
+      await speak("Make this word.");
+      if (here === phase && !finished) sayWord(q.answer);
+    };
+    $("#hearSwitch").onclick = hear;
+    hear();
+
+    const markMistake = (text, skill, message) => {
+      if (wrong.length < 8) wrong.push(text);
+      missed.add(skill);
+      hopperTone(190);
+      feedback.className = "feedback oops";
+      feedback.textContent = message || (wrong.length >= 2 ? "Listen again. The glowing place is the sound to change." : "Listen again and try another sound.");
+      if (wrong.length >= 2) positions[q.index].classList.add("hinted");
+    };
+    const chooseSound = sound => {
+      if (finished || selected !== q.index || rejected.has(sound) || !q.choices.includes(sound)) return;
+      if (sound !== q.answerSound) {
+        rejected.add(sound);
+        markMistake(`tried ${label(sound)} for ${label(q.answerSound)}`, q.answerSound,
+          "That tile does not make the word you heard. Listen and try another tile.");
+        renderChoices();
+        return;
+      }
+      finish();
+    };
+    const renderChoices = () => {
+      const box = $("#switchChoices");
+      if (selected < 0 || finished || q.action === "remove") { box.hidden = true; return; }
+      box.hidden = false;
+      box.innerHTML = q.choices.map((sound, i) => `<button type="button" class="switch-choice" data-choice="${i}" draggable="true" ${rejected.has(sound) ? "disabled" : ""}>${esc(label(sound))}</button>`).join("");
+      box.querySelectorAll("[data-choice]").forEach(button => {
+        const sound = q.choices[Number(button.dataset.choice)];
+        button.onclick = () => chooseSound(sound);
+        button.ondragstart = event => event.dataTransfer.setData("text/plain", sound);
+      });
+    };
+    positions.forEach(button => {
+      button.onclick = () => {
+        if (finished) return;
+        const index = Number(button.dataset.place);
+        if (index !== q.index) {
+          markMistake(`picked place ${index + 1}`, q.skill);
+          return;
+        }
+        if (q.action === "remove") return finish();
+        selected = index;
+        positions.forEach(p => p.classList.toggle("selected", p === button));
+        feedback.className = "feedback good";
+        feedback.textContent = "You found the sound! Choose its new tile.";
+        renderChoices();
+        $("#switchChoices button:not(:disabled)")?.focus();
+      };
+      button.ondragover = event => { if (!finished && q.action !== "remove") event.preventDefault(); };
+      button.ondrop = event => {
+        event.preventDefault();
+        if (finished || q.action === "remove") return;
+        if (Number(button.dataset.place) !== q.index) { button.click(); return; }
+        button.click();
+        chooseSound(event.dataTransfer.getData("text/plain"));
+      };
+    });
+    $("#hintSwitch").onclick = () => {
+      if (finished) return;
+      if (!wrong.includes("used written word hint")) wrong.push("used written word hint");
+      missed.add("needed a written word hint");
+      feedback.className = "feedback good";
+      feedback.innerHTML = `The new word is <b>${esc(q.answer)}</b>. Say it, then find the sound that changes.`;
+      positions[q.index].classList.add("hinted");
+    };
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      const earned = wrong.length ? 1 : 2;
+      session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned, missed: [...missed],
+        seconds: Math.min(3600, Math.max(1, Math.round((Date.now() - startedAt) / 1000))) });
+      if (!session.preview) countGo();
+      livePing(session, "word", { word: q.label, ok: !wrong.length });
+      positions.forEach(p => { p.disabled = true; });
+      $("#switchChoices").hidden = true;
+      $("#hintSwitch").disabled = true;
+      scene.classList.add("open");
+      scene.setAttribute("aria-label", "The door opens and Pip walks through");
+      hopperTone(660);
+      chimeRight();
+      feedback.className = "feedback good";
+      feedback.innerHTML = `Door open! <b>${esc(q.source)} → ${esc(q.answer)}</b><br>Read the new word: ${q.after.map(sound => `<span class="chip">${esc(label(sound))}</span>`).join("")} <span class="stars-inline">${stars(earned)}</span>`;
+      sayWord(q.answer);
+      const next = document.createElement("div");
+      next.className = "row center";
+      const last = session.i === session.items.length - 1;
+      next.innerHTML = `<button class="btn" id="hearResult">🔊 Hear ${esc(q.answer)}</button><button class="btn big primary" id="nextQ">${last ? "See my stars 🏆" : "Next door →"}</button>`;
+      feedback.after(next);
+      $("#hearResult").onclick = () => sayWord(q.answer);
+      $("#nextQ").focus();
+      $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
     }
   }
 
