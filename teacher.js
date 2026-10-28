@@ -381,6 +381,126 @@
   };
   const catalogueList = id => P().LISTS[id] || null;
 
+  /* ---------- Calendar: lessons into Google, Outlook or Apple calendars, with no sign-in ---------- */
+
+  const LESSON_LENGTHS = [30, 45, 60, 90];
+  function calendarPrefs() {
+    try { return Object.assign({ length: 45, repeat: "once" }, JSON.parse(localStorage.getItem("popspell-calendar") || "{}")); }
+    catch { return { length: 45, repeat: "once" }; }
+  }
+  const saveCalendarPrefs = p => { try { localStorage.setItem("popspell-calendar", JSON.stringify(p)); } catch { /* fine */ } };
+  const pad2 = n => String(n).padStart(2, "0");
+  // Weekly lessons run until the summer holidays: 30 June of this school year
+  const summerEnd = date => { const d = new Date(`${date}T12:00:00Z`); return `${d.getUTCMonth() >= 7 ? d.getUTCFullYear() + 1 : d.getUTCFullYear()}0630`; };
+
+  // A lesson in UK time (so it stays right through the clock changes). Without a time it's an all-day event.
+  function lessonEvent(r, { length, repeat }, forParent = false) {
+    const date = r.nextLessonDate;
+    const timed = /^\d\d:\d\d$/.test(r.lessonTime || "");
+    const ymd = date.replace(/-/g, "");
+    let start = ymd, end;
+    if (timed) {
+      const [h, m] = r.lessonTime.split(":").map(Number);
+      const finish = new Date(Date.UTC(2000, 0, 1, h, m + Number(length)));
+      start = `${ymd}T${pad2(h)}${pad2(m)}00`;
+      end = `${ymd}T${pad2(finish.getUTCHours())}${pad2(finish.getUTCMinutes())}00`;
+    } else {
+      const next = new Date(`${date}T12:00:00Z`);
+      next.setUTCDate(next.getUTCDate() + 1);
+      end = next.toISOString().slice(0, 10).replace(/-/g, "");
+    }
+    const list = catalogueList(r.homeworkList);
+    const details = forParent
+      ? [`${r.name}'s PopSpell lesson${current.teacherName ? ` with ${shortName(current.teacherName)}` : ""}.`, `Practise at home: ${homeLink(r.name)}`]
+      : [list ? `Homework: ${list.title}` : "", `Class: ${current.name}`, `Teacher area: ${SITE_ROOT}#/teacher`].filter(Boolean);
+    return { uid: `popspell-${current.id}-${(r.key || "").slice(0, 16) || r.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`, timed, start, end,
+      title: forParent ? `PopSpell lesson for ${r.name}` : `PopSpell: ${r.name}`, details: details.join("\n"),
+      // A timed lesson's end date is in UTC, an all-day one's is just the date
+      rrule: repeat === "weekly" ? `FREQ=WEEKLY;UNTIL=${summerEnd(date)}${timed ? "T235959Z" : ""}` : "" };
+  }
+
+  // Google's "add event" page: opens filled in, ready to save
+  function googleCalendarLink(e) {
+    const q = new URLSearchParams({ action: "TEMPLATE", text: e.title, dates: `${e.start}/${e.end}`, details: e.details });
+    if (e.timed) q.set("ctz", "Europe/London");
+    if (e.rrule) q.set("recur", `RRULE:${e.rrule}`);
+    return `https://calendar.google.com/calendar/render?${q}`;
+  }
+
+  // An .ics file for Outlook, Apple Calendar or Google's Import. Each pupil keeps the same event id,
+  // so importing again after the date changes moves the lesson instead of adding a second one.
+  function icsFile(events) {
+    const text = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+    const fold = line => {
+      const out = [];
+      let cur = "";
+      for (const ch of line) {
+        if (new TextEncoder().encode(cur + ch).length > (out.length ? 74 : 75)) { out.push(cur); cur = ""; }
+        cur += ch;
+      }
+      return [...out, cur].join("\r\n ");
+    };
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+    const seq = Math.floor(Date.now() / 1000);
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//PopSpell//Lessons//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VTIMEZONE", "TZID:Europe/London",
+      "BEGIN:DAYLIGHT", "TZOFFSETFROM:+0000", "TZOFFSETTO:+0100", "TZNAME:BST", "DTSTART:19700329T010000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU", "END:DAYLIGHT",
+      "BEGIN:STANDARD", "TZOFFSETFROM:+0100", "TZOFFSETTO:+0000", "TZNAME:GMT", "DTSTART:19701025T020000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD",
+      "END:VTIMEZONE",
+      ...events.flatMap(e => ["BEGIN:VEVENT", `UID:${e.uid}@popspell.com`, `DTSTAMP:${stamp}`, `SEQUENCE:${seq}`,
+        e.timed ? `DTSTART;TZID=Europe/London:${e.start}` : `DTSTART;VALUE=DATE:${e.start}`,
+        e.timed ? `DTEND;TZID=Europe/London:${e.end}` : `DTEND;VALUE=DATE:${e.end}`,
+        ...(e.rrule ? [`RRULE:${e.rrule}`] : []),
+        `SUMMARY:${text(e.title)}`, `DESCRIPTION:${text(e.details)}`, "END:VEVENT"]),
+      "END:VCALENDAR"];
+    return lines.map(fold).join("\r\n") + "\r\n";
+  }
+
+  function downloadICS(events, name) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([icsFile(events)], { type: "text/calendar;charset=utf-8" }));
+    a.download = `${name.replace(/[^\w]+/g, "-").toLowerCase()}.ics`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }
+
+  // Length and repeat, then Google (one lesson) or a file (one or many). Remembers the choices.
+  function calendarDialog(pupils) {
+    const single = pupils.length === 1;
+    const prefs = calendarPrefs();
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog";
+    const when = r => `${new Date(`${r.nextLessonDate}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}${r.lessonTime ? ` at ${r.lessonTime}` : " (all day: no time set)"}`;
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📅 Add ${single ? `${esc(pupils[0].name)}'s lesson` : `${pupils.length} lessons`} to a calendar</h2>
+        <button class="btn small" type="button" data-close>Close</button></div>
+      <ul class="cal-list">${pupils.map(r => `<li><b>${esc(r.name)}</b> · ${esc(when(r))}</li>`).join("")}</ul>
+      <div class="cal-options">
+        <label>Lesson length <select data-length>${LESSON_LENGTHS.map(n => `<option value="${n}"${n === Number(prefs.length) ? " selected" : ""}>${n} minutes</option>`).join("")}</select></label>
+        <label>Repeat <select data-repeat><option value="once">Just this lesson</option>
+          <option value="weekly"${prefs.repeat === "weekly" ? " selected" : ""}>Every week until the summer holidays</option></select></label>
+      </div>
+      <div class="row cal-actions">
+        ${single ? `<a class="btn primary" data-google target="_blank" rel="noopener">Google Calendar</a>` : ""}
+        <button class="btn${single ? "" : " primary"}" type="button" data-ics>⬇ ${single ? "Outlook or Apple Calendar (.ics)" : "Download all lessons (.ics)"}</button>
+      </div>
+      <p class="hint">${single ? "Google opens the event ready to save. The .ics file opens in Outlook or Apple Calendar." :
+        "Open the file to add every lesson to Outlook or Apple Calendar. In Google Calendar, use Settings → Import and choose the file."}
+        If a lesson date changes, add it again: the calendar moves the lesson instead of adding a second one.</p>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    const opts = () => ({ length: Number(dialog.querySelector("[data-length]").value), repeat: dialog.querySelector("[data-repeat]").value });
+    const refresh = () => {
+      saveCalendarPrefs(opts());
+      if (single) dialog.querySelector("[data-google]").href = googleCalendarLink(lessonEvent(pupils[0], opts()));
+    };
+    dialog.querySelectorAll("select").forEach(s => { s.onchange = refresh; });
+    dialog.querySelector("[data-ics]").onclick = () =>
+      downloadICS(pupils.map(r => lessonEvent(r, opts())), single ? `popspell-lesson-${pupils[0].name}` : `popspell-lessons-${current.name}`);
+    refresh();
+    dialog.showModal();
+  }
+
   // Puts a sheet on the page just for printing (or saving as PDF), then removes it
   function printSheet(className, html) {
     const sheet = document.createElement("section");
@@ -1623,6 +1743,7 @@
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
       <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><div class="row">
+        <button class="btn" id="calAll">🗓️ Lessons to my calendar</button>
         <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
       <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
@@ -1637,7 +1758,8 @@
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
-          <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label></div>
+          <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label>
+          <button class="btn small" type="button" data-calendar="${esc(r.key)}">🗓️ Add to calendar</button></div>
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
         <div class="parent-box">
           <p><b>🏠 Home login</b></p>
@@ -1732,6 +1854,21 @@
         drawPupils(body);
       } catch (err) { showError(err); }
     }; });
+    // Uses what's on the card now, saved or not
+    body.querySelectorAll("[data-calendar]").forEach(b => { b.onclick = () => {
+      const card = b.closest(".roster-card");
+      const pupil = Object.assign({}, roster.find(r => r.key === b.dataset.calendar), {
+        nextLessonDate: card.querySelector("[data-lesson-date]").value, lessonTime: card.querySelector("[data-lesson-time]").value,
+        homeworkList: card.querySelector("[data-homework]").value });
+      if (!pupil.nextLessonDate) return showError(new Error(`Set ${pupil.name}'s next lesson date first.`));
+      calendarDialog([pupil]);
+    }; });
+    $("#calAll").onclick = () => {
+      const due = roster.filter(r => r.nextLessonDate && r.nextLessonDate >= todayKey())
+        .sort((a, b) => (a.nextLessonDate + (a.lessonTime || "")).localeCompare(b.nextLessonDate + (b.lessonTime || "")));
+      if (!due.length) return showError(new Error("No upcoming lessons yet. Set a next lesson date on a pupil's card and save it."));
+      calendarDialog(due);
+    };
     body.querySelectorAll("[data-home-copy]").forEach(b => { b.onclick = async () => {
       const pupil = roster.find(r => r.key === b.dataset.homeCopy);
       try { await navigator.clipboard.writeText(homeLink(pupil.name)); b.textContent = "✓ Copied"; }
@@ -1778,7 +1915,9 @@
       const name = esc(pupil.name);
       const when = `${date}${pupil.lessonTime ? ` at ${pupil.lessonTime}` : ""}`;
       const subject = `PopSpell lesson tomorrow for ${pupil.name}`;
-      const boxes = list ? [`📌 <b>Homework: ${esc(list.title)}</b><br>The sound-mapping worksheet is attached. Please say each word aloud, then ask ${name} to say its sounds and write the matching letters in the boxes.`] : [];
+      const calendar = googleCalendarLink(lessonEvent(pupil, Object.assign(calendarPrefs(), { repeat: "once" }), true));
+      const boxes = [...(list ? [`📌 <b>Homework: ${esc(list.title)}</b><br>The sound-mapping worksheet is attached. Please say each word aloud, then ask ${name} to say its sounds and write the matching letters in the boxes.`] : []),
+        `📅 <a href="${esc(calendar)}">Add this lesson to Google Calendar</a>`];
       const html = brandedEmail({
         title: `${name}'s lesson is tomorrow`,
         paragraphs: ["Hello,", `A reminder that ${name} has a PopSpell lesson tomorrow, <b>${esc(when)}</b>.`],
@@ -1787,7 +1926,7 @@
       });
       const text = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson tomorrow, ${when}.\n\n`
         + (list ? `Homework: ${list.title}. The sound-mapping worksheet is attached.\n\n` : "")
-        + `Practise on PopSpell: ${homeLink(pupil.name)}\n\nBest wishes,\n${shortName(me.name)}`;
+        + `Practise on PopSpell: ${homeLink(pupil.name)}\n\nAdd this lesson to Google Calendar: ${calendar}\n\nBest wishes,\n${shortName(me.name)}`;
       previewEmail(pupil.parentEmail, { subject, html, text });
     }; });
   }

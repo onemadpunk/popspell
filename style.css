@@ -1192,3 +1192,15 @@ a.me-card:hover { border-color: var(--primary); }
   .ar tr.pn-flag td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
+
+/* Add lessons to a calendar */
+.worksheet-preview.cal-dialog { width: min(560px, calc(100vw - 32px)); }
+.cal-list { margin: 0 0 12px; padding-left: 1.2em; max-height: 220px; overflow: auto; }
+.cal-options { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-bottom: 12px; }
+.cal-options label { display: grid; gap: 4px; font-weight: 700; }
+.cal-actions { gap: 8px; flex-wrap: wrap; }
+.pn-dialog .pn-controls { padding: 0 18px; }
+.pn-dialog [data-pages] { padding: 0 18px 18px; }
+.cal-dialog > :not(.worksheet-preview-actions) { margin-left: 18px; margin-right: 18px; }
+.cal-dialog > :last-child { margin-bottom: 18px; }
+.cal-dialog { background: var(--surface); color: var(--ink); }
