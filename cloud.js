@@ -105,7 +105,8 @@ async function start() {
       const id = String(code || "").trim().toUpperCase();
       if (!/^[A-Z0-9]{4,12}$/.test(id)) return null;
       const snap = await getDoc(doc(store, "classes", id));
-      return snap.exists() ? { id, name: snap.data().name, teacherName: snap.data().teacherName || "" } : null;
+      return snap.exists() ? { id, name: snap.data().name, teacherName: snap.data().teacherName || "",
+        assignedOnly: !!snap.data().assignedOnly } : null;
     },
 
     async live(classId, pupil, fields) {
@@ -185,6 +186,8 @@ async function start() {
       throw new Error("Couldn't make a class code — please try again.");
     },
     renameClass: (id, name) => updateDoc(doc(store, "classes", id), { name: String(name).trim().slice(0, 60) }),
+    // On: pupils in this class see only the work set for them, not the whole library
+    setAssignedOnly: (id, on) => updateDoc(doc(store, "classes", id), { assignedOnly: !!on }),
 
     watchLive(classId, fn) {
       return onSnapshot(collection(store, "classes", classId, "live"),

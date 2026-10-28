@@ -461,7 +461,18 @@ a.me-card:hover { border-color: var(--primary); }
 .roster-card .check { text-align: left; }
 .worksheet-print { display: none; }
 
-.credits { max-width: 760px; margin: -32px auto 32px; padding: 0 16px; text-align: center; font-size: .8rem; color: var(--muted); }
+/* Next steps board */
+.next-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; margin-top: 12px; }
+.next-card p { margin: 4px 0; }
+.next-card.unplanned { border: 2px solid var(--oops); }
+.next-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.next-head h3 { margin: 0; }
+.next-suggest { background: var(--primary-soft); border-radius: 12px; padding: 8px 12px; margin-top: 8px; font-weight: 700; }
+.locked-note { text-align: center; margin: 24px auto; max-width: 560px; }
+
+.site-footer { max-width: 760px; margin: -32px auto 32px; padding: 0 16px; text-align: center; font-size: .85rem; color: var(--muted); }
+.site-footer p { margin: 4px 0; }
+.credits { font-size: .8rem; }
 
 /* ---------- Small screens ---------- */
 

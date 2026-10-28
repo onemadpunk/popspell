@@ -71,6 +71,12 @@ In **Plans & worksheets**, choose a pupil, a list and the dates when the work sh
 
 The **Lesson diary** shows recent recorded work beside teacher-only notes for the last lesson and the next one. Choosing a next list and date also schedules that list online. The **Pupils** tab holds the class roster, parent email (if provided), the next lesson date and optional homework list. Pupil devices cannot read parent contact details or diary notes.
 
+## Next steps and "assigned work only"
+
+**Next steps** (👩‍🏫 Teacher → Next steps) shows one card per pupil: their next lesson date, the work planned for it, how they did last time, the sounds to work on, and a suggestion that follows the teaching order. It suggests moving on after 80% or more right first time, practising again at 50–79%, and re-teaching below that. **Plan it** puts the chosen list on the pupil's schedule for that date and sets it as their homework list. Pupils with nothing planned are outlined in orange.
+
+In **Classes**, tick **Pupils only see the work I set** to hide the rest of the library from that class's devices. Pupils then see only *"📌 Your lists today"*, their review words and My sounds. Teachers signed in on the device still see everything.
+
 ## Manual parent reminders (no paid service)
 
 If a parent requests reminders, save their email and tick **Parent requested reminders** on the pupil's roster card. The **Pupils** tab highlights lessons due tomorrow. **Prepare reminder email** opens a draft in the computer's mail app; the teacher checks and sends it. If there is homework, use **Print homework / Save PDF** first and attach the saved PDF to the draft. PopSpell does not send email automatically, so no paid email provider or Firebase billing upgrade is needed.

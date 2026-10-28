@@ -687,6 +687,8 @@
 
   function showHome() {
     document.title = SITE.title;
+    // A class can be set so its pupils see only the work set for them (teachers still see everything)
+    const locked = !!(CLASS && CLASS.assignedOnly) && !teacherUnlocked();
     app.innerHTML = `
       <section class="hero">
         <div class="hero-copy">
@@ -715,7 +717,7 @@
         <div class="pupil" id="homePupil"></div>
         <div class="me-cards" id="meCards"></div>
       </section>
-      ${STAGES.map(stage => `
+      ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${getPupil() ? "Looking for today's work…" : "Type your name to see it."}</p>` : STAGES.map(stage => `
         <section class="stage" style="--accent:${esc(stage.colour)}">
           <h2>${esc(stage.stage)}</h2>
           <div class="grid">
@@ -764,7 +766,13 @@
     const my = phase;
     fetchAssigned(getPupil()).then(entries => {
       const lists = entries.map(resolveAssigned).filter(Boolean);
-      if (my !== phase || !lists.length || !$("#homePupil")) return;
+      if (my !== phase || !$("#homePupil")) return;
+      if ($("#lockedNote")) {
+        $("#lockedNote").textContent = lists.length
+          ? "Your teacher chooses your work — it's all above."
+          : "There's no new work set for you today. Practise your review words, or ask your teacher.";
+      }
+      if (!lists.length) return;
       const section = document.createElement("div");
       section.className = "assigned";
       section.innerHTML = `
@@ -1339,6 +1347,13 @@
     cloud = api;
     updateReporting();
     if (!api) return;
+    // The class's settings may have changed since this device joined (e.g. "assigned work only")
+    if (CLASS) api.classInfo(CLASS.id).then(info => {
+      if (!info) return;
+      const changed = info.assignedOnly !== !!CLASS.assignedOnly || info.name !== CLASS.name;
+      saveClass(info);
+      if (changed && !session && (location.hash === "" || location.hash === "#/")) route();
+    }).catch(() => { /* offline: keep what we have */ });
     api.onTeacher(profile => {
       TEACHER = profile;
       applyTeacherMode();

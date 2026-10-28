@@ -22,6 +22,7 @@
 
   const P = () => window.PopSpell;
   const esc = s => P().esc(s == null ? "" : s);
+  const plural = (n, one, many) => P().plural(n, one, many);
   const $ = sel => root.querySelector(sel);
   const ago = ms => { const m = Math.round(ms / 60000); return m < 1 ? "just now" : m === 1 ? "1 min ago" : m < 60 ? `${m} mins ago` : `${Math.round(m / 60)} h ago`; };
   const day = ms => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
@@ -95,7 +96,7 @@
 
   function draw() {
     stopWatching();
-    const tabs = [["live", "Live class"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
+    const tabs = [["live", "Live class"], ["next", "Next steps"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
       ["diary", "Lesson diary"], ["pupils", "Pupils"], ["classes", "Classes"]];
     if (canAdmin()) tabs.push(["teachers", "Teachers"]);
     root.innerHTML = `
@@ -123,12 +124,12 @@
       draw();
     };
     const body = $("#tBody");
-    const needsClass = ["live", "assign", "plans", "diary", "pupils"].includes(tab);
+    const needsClass = ["live", "next", "assign", "plans", "diary", "pupils"].includes(tab);
     if (needsClass && !current) {
       body.innerHTML = `<div class="empty">Make a class first, in the <b>Classes</b> tab.</div>`;
       return;
     }
-    ({ live: drawLive, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ live: drawLive, next: drawNext, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -379,6 +380,97 @@
     }; });
   }
 
+  /* ---------- Next steps: each pupil's next lesson, what's planned, and a suggestion ---------- */
+
+  // The teaching order: spelling lists stage by stage, then any other activities in their order
+  const teachingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id))
+    .concat((window.PopActivities ? window.PopActivities.order() : []));
+  const titleOf = id => listTitle(id);
+
+  // What to do next, from the pupil's latest result on the planned sequence
+  function suggestFor(latest, summary) {
+    const order = teachingOrder();
+    if (!latest || !order.includes(latest.listId)) {
+      return { kind: "start", list: order[0], text: `Nothing recorded yet — start with ${titleOf(order[0])}` };
+    }
+    const words = latest.words || [];
+    const first = words.filter(w => w.correct && w.triesUsed === 1).length;
+    const pct = words.length ? Math.round((first / words.length) * 100) : 0;
+    const top = summary && summary.topSounds && summary.topSounds[0] ? summary.topSounds[0][0] : "";
+    const next = order[order.indexOf(latest.listId) + 1];
+    if (pct >= 80) {
+      return next
+        ? { kind: "next", list: next, text: `Move on to ${titleOf(next)} — ${pct}% right first time on ${latest.list}` }
+        : { kind: "done", list: latest.listId, text: `${pct}% on the last list in the sequence — revise tricky words` };
+    }
+    if (pct >= 50) return { kind: "again", list: latest.listId, text: `Practise ${latest.list} again — ${pct}% right first time` };
+    return { kind: "reteach", list: latest.listId,
+      text: `Re-teach ${latest.list} — only ${pct}% right first time${top ? `; ${top} missed most` : ""}` };
+  }
+
+  async function drawNext(body) {
+    body.innerHTML = `<div class="empty">Loading…</div>`;
+    let sessions, roster, assignments;
+    try { [sessions, roster, assignments] = await Promise.all([
+      cloud.sessions(current.id, 120), cloud.pupils(current.id), cloud.assignments(current.id)]); }
+    catch (err) { return showError(err); }
+    if (tab !== "next") return;
+    const today = todayKey();
+    const key = n => String(n || "").trim().toLowerCase();
+    const names = new Map();
+    roster.forEach(r => names.set(key(r.name), r.name));
+    assignments.forEach(a => { if (key(a.who) !== "everyone") names.set(key(a.who), names.get(key(a.who)) || a.who); });
+    sessions.forEach(s => { if (s.pupil && !names.has(key(s.pupil))) names.set(key(s.pupil), s.pupil); });
+    const summaries = summarise(sessions);
+    const rows = [...names.entries()].map(([k, name]) => {
+      const r = roster.find(x => key(x.name) === k) || null;
+      const a = assignments.find(x => key(x.who) === k) || null;
+      const upcoming = (a ? a.plans : []).filter(p => p.until >= today).sort((x, y) => x.from.localeCompare(y.from))[0] || null;
+      const latest = sessions.find(s => key(s.pupil) === k) || null; // newest first
+      const summary = summaries.find(x => key(x.pupil) === k) || null;
+      const lessonDate = r && r.nextLessonDate >= today ? r.nextLessonDate : "";
+      return { k, name, r, a, upcoming, latest, summary, lessonDate, suggestion: suggestFor(latest, summary) };
+    }).sort((x, y) => (x.lessonDate || "9999").localeCompare(y.lessonDate || "9999") || x.name.localeCompare(y.name));
+    const when = d => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "";
+    const unplanned = rows.filter(x => !x.upcoming).length;
+    body.innerHTML = `
+      <p class="hint">Each pupil's next lesson, what's planned for it, how they did last time, and a suggestion that follows the teaching order.
+        <b>Plan it</b> puts the suggestion on the pupil's schedule for that date (and as their homework list), or choose something else.</p>
+      ${rows.length ? `<p class="pill${unplanned ? " stuck" : ""}">${unplanned ? `⚠ ${plural(unplanned, "pupil has", "pupils have")} nothing planned` : "✓ Every pupil has work planned"}</p>
+      <div class="next-list">${rows.map((x, i) => `
+        <article class="pcard next-card${x.upcoming ? "" : " unplanned"}">
+          <div class="next-head"><h3>${esc(x.name)}</h3>
+            <span class="meta">${x.lessonDate ? `Next lesson ${esc(when(x.lessonDate))}${x.r && x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : "No lesson date set"}</span></div>
+          <p><b>Planned:</b> ${x.upcoming ? `${esc(titleOf(x.upcoming.list))} · ${esc(when(x.upcoming.from))}${x.upcoming.until !== x.upcoming.from ? `–${esc(when(x.upcoming.until))}` : ""}` : `<span class="miss">Nothing planned</span>`}</p>
+          <p><b>Last time:</b> ${x.latest ? `${esc(x.latest.list)} · ${(x.latest.words || []).filter(w => w.correct && w.triesUsed === 1).length}/${(x.latest.words || []).length} first time · ${esc(day(x.latest.at))}${x.latest.source === "worksheet" ? " (worksheet)" : ""}` : "—"}</p>
+          ${x.summary && x.summary.topSounds.length ? `<p><b>To work on:</b> ${x.summary.topSounds.slice(0, 3).map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</p>` : ""}
+          <div class="next-suggest"><span>💡 ${esc(x.suggestion.text)}</span></div>
+          <form class="add-row" data-plan-row="${i}">
+            <select data-plan-list>${catalogueOptions()}</select>
+            <input type="date" data-plan-date value="${esc(x.lessonDate || today)}" min="${today}" required>
+            <button class="btn primary small" type="submit">Plan it</button>
+          </form>
+        </article>`).join("")}</div>`
+      : `<div class="empty">No pupils yet. Add them in the <b>Pupils</b> tab, or they appear here after their first list.</div>`}`;
+    body.querySelectorAll("[data-plan-row]").forEach(form => {
+      const x = rows[Number(form.dataset.planRow)];
+      form.querySelector("[data-plan-list]").value = x.suggestion.list || "";
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const list = form.querySelector("[data-plan-list]").value;
+        const date = form.querySelector("[data-plan-date]").value;
+        if (!list) return form.querySelector("[data-plan-list]").focus();
+        const plans = x.a ? x.a.plans : [];
+        if (plans.length >= 30) return showError(new Error("This pupil has the maximum of 30 plans — remove old ones in Plans & worksheets."));
+        try {
+          await cloud.savePlans(current.id, x.a ? x.a.who : x.name, plans.concat({ list, from: date, until: date }));
+          if (x.r) await cloud.savePupil(current.id, Object.assign({}, x.r, { homeworkList: list, nextLessonDate: date }));
+          drawNext(body);
+        } catch (err) { showError(err); }
+      };
+    });
+  }
+
   /* ---------- Private lesson diary ---------- */
 
   async function drawDiary(body) {
@@ -583,7 +675,9 @@
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link">
           <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button></div>
         ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" data-rename-input="${esc(c.id)}">
-          <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>` : ""}
+          <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>
+          <label class="check"><input type="checkbox" data-assigned-only="${esc(c.id)}"${c.assignedOnly ? " checked" : ""}>
+            Pupils only see the work I set (hide the rest of the library)</label>` : ""}
       </article>`;
     body.innerHTML = `
       <form class="add-row" id="newClass">
@@ -609,6 +703,12 @@
       b.onclick = async () => {
         const link = joinLink(b.dataset.copy);
         try { await navigator.clipboard.writeText(link); b.textContent = "✓ Copied"; } catch { prompt("Copy this link:", link); }
+      };
+    });
+    body.querySelectorAll("[data-assigned-only]").forEach(box => {
+      box.onchange = async () => {
+        try { await cloud.setAssignedOnly(box.dataset.assignedOnly, box.checked); classes = await cloud.classes(); }
+        catch (err) { box.checked = !box.checked; showError(err); }
       };
     });
     body.querySelectorAll("[data-rename]").forEach(b => {

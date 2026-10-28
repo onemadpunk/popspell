@@ -66,7 +66,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['name', 'teacher', 'teacherName', 'teacherEmail', 'createdAt']);
       allow update: if canSee(c)
         && request.resource.data.teacher == resource.data.teacher
-        && shortText(request.resource.data.name, 60);
+        && shortText(request.resource.data.name, 60)
+        && (!('assignedOnly' in request.resource.data) || request.resource.data.assignedOnly is bool);
       allow delete: if canSee(c);
 
       // Where each pupil is up to right now (one document per pupil)

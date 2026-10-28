@@ -84,6 +84,10 @@ await check("a teacher can't rename another's class", assertFails(updateDoc(doc(
 await check("a teacher can't hand a class to someone else", assertFails(updateDoc(doc(tutor, "classes/ABC234"), { teacher: "uid-other" })));
 await check("owner renames any class", assertSucceeds(updateDoc(doc(owner, "classes/XYZ789"), { name: "Renamed by owner" })));
 await check("site admin renames any class", assertSucceeds(updateDoc(doc(admin, "classes/XYZ789"), { name: "Renamed by admin" })));
+await check("a teacher sets 'assigned work only' on their class", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234"), { assignedOnly: true })));
+await check("'assigned work only' must be on or off", assertFails(updateDoc(doc(tutor, "classes/ABC234"), { assignedOnly: "yes" })));
+await check("a pupil's device can't change class settings", assertFails(updateDoc(doc(pupil, "classes/ABC234"), { assignedOnly: false })));
+await check("a pupil's device sees the class setting", assertSucceeds(getDoc(doc(pupil, "classes/ABC234"))));
 
 console.log("Live class");
 await check("a pupil's device updates its live progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/ava"), live, { merge: true })));
