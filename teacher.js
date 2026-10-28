@@ -98,13 +98,15 @@
 
   function draw() {
     stopWatching();
-    const tabs = [["library", "Work library"], ["live", "Live class"], ["next", "Next steps"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
-      ["diary", "Lesson diary"], ["pupils", "Pupils"], ["classes", "Classes"]];
-    if (canAdmin()) tabs.push(["teachers", "Teachers"]);
+    // Short names with icons, so every tab fits on one row (it scrolls sideways on a phone)
+    const tabs = [["library", "📚", "Library"], ["live", "🟢", "Live"], ["next", "🧭", "Next steps"], ["assign", "📌", "Assign"],
+      ["plans", "🗓️", "Plans & sheets"], ["diary", "📝", "Diary"], ["pupils", "👧", "Pupils"], ["classes", "🏫", "Classes"]];
+    if (canAdmin()) tabs.push(["teachers", "👩‍🏫", "Teachers"]);
     root.innerHTML = `
       <section class="t-wrap">
         <div class="t-top">
-          <div>
+          <img class="t-pip" src="assets/brand/pip-mascot-small.webp" alt="" width="64" height="64">
+          <div class="t-hello">
             <h1>Hello, ${esc(shortName(me.name))}${canAdmin() ? ` <span class="t-role">${roleLabel(me.role)}</span>` : ""}</h1>
             <p class="meta">${esc(me.email)} · <button class="linklike" id="signOut">Sign out</button></p>
           </div>
@@ -113,12 +115,15 @@
               <select id="classPick">${classes.map(c => `<option value="${esc(c.id)}"${current && c.id === current.id ? " selected" : ""}>${esc(c.name)}${c.teacher !== me.uid ? ` — ${esc(c.teacherName)}` : ""}</option>`).join("")}</select>
             </label>` : ""}
         </div>
-        <nav class="t-tabs" role="tablist">${tabs.map(([k, t]) => `<button class="t-tab" role="tab" data-tab="${k}" aria-selected="${k === tab}">${t}</button>`).join("")}</nav>
+        <nav class="t-tabs" role="tablist">${tabs.map(([k, icon, t]) => `<button class="t-tab" role="tab" data-tab="${k}" aria-selected="${k === tab}"><span aria-hidden="true">${icon}</span> ${t}</button>`).join("")}</nav>
         <div class="t-error" id="tError" hidden></div>
-        <div id="tBody"></div>
+        <div id="tBody" class="t-body"></div>
       </section>`;
     $("#signOut").onclick = async () => { stopWatching(); await cloud.signOut(); location.hash = "#/"; };
     root.querySelectorAll(".t-tab").forEach(b => { b.onclick = () => { tab = b.dataset.tab; draw(); }; });
+    // On a phone the tab row scrolls sideways: keep the chosen tab in view
+    const chosen = root.querySelector('.t-tab[aria-selected="true"]');
+    if (chosen) chosen.parentElement.scrollLeft = chosen.offsetLeft - 24;
     const pick = $("#classPick");
     if (pick) pick.onchange = () => {
       current = classes.find(c => c.id === pick.value);
@@ -226,6 +231,13 @@
     return work.href + (work.href.includes("?") ? "&" : "?") + "preview=1";
   };
 
+  // Entries in the order they come, one section per group name
+  const groupsOf = entries => entries.reduce((groups, e) => {
+    const g = groups.find(x => x.name === e.group) || (groups.push({ name: e.group, items: [] }), groups[groups.length - 1]);
+    g.items.push(e);
+    return groups;
+  }, []);
+
   function drawLibrary(body) {
     const spelling = P().STAGES.flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
@@ -235,7 +247,7 @@
     const checks = Object.values(P().CHECKS).filter(c => c.id === "check-spelling" || window.PopActivities)
       .map(c => ({ id: c.id, title: c.title, group: "Starting checks", kind: "check", detail: c.blurb }));
     const activities = (window.PopActivities?.AREAS || []).flatMap(area => area.activities.map(act => ({
-      id: act.id, title: act.title, group: `${area.icon} ${area.title} · ${act.level}`,
+      id: act.id, title: act.title, group: `${area.icon} ${area.title}`, level: act.level,
       kind: area.id === "games" ? "game" : "online", detail: act.blurb || act.organiser
     })));
     const dictation = spelling.map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`,
@@ -252,24 +264,34 @@
           <option value="game">Games</option><option value="online">Other online work</option>
           <option value="dictation">Sentence dictation</option><option value="paper">Paper practice</option></select></div>
       <p class="hint" id="libraryCount"></p></div>
-      <div class="library-grid">${entries.map(entry => `<article class="pcard library-card"
-        data-kind="${entry.kind}" data-search="${esc(`${entry.title} ${entry.group} ${entry.detail}`.toLowerCase())}">
-        <p class="meta">${esc(entry.group)}</p><h3>${esc(entry.title)}</h3>
+      ${groupsOf(entries).map(g => `<details class="lib-group">
+        <summary><span>${esc(g.name)}</span><span class="lib-count" data-count>${g.items.length}</span></summary>
+        <div class="library-grid">${g.items.map(entry => `<article class="pcard library-card"
+        data-kind="${entry.kind}" data-search="${esc(`${entry.title} ${entry.group} ${entry.level || ""} ${entry.detail}`.toLowerCase())}">
+        <p class="meta">${esc(entry.level ? `${entry.level} level` : entry.group)}</p><h3>${esc(entry.title)}</h3>
         <p>${esc(entry.detail)}</p>
         ${entry.list ? `<details><summary>See ${entry.list.items.length} words and their sound maps</summary>
           <ul class="wordlist">${entry.list.items.map(item => `<li class="mini-word">${P().wordHTML(item)}</li>`).join("")}</ul></details>` : ""}
         <div class="row">${entry.kind === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(entry.id))}" target="_blank" rel="noopener">▶ Test online</a>`}
           ${entry.list || entry.kind === "paper" ? `<button class="btn small" type="button" data-library-sheet="${esc(entry.id)}">👀 Preview paper sheet</button>` : ""}</div>
-      </article>`).join("")}</div>`;
+      </article>`).join("")}</div></details>`).join("")}`;
+    // Sections start closed; a search or a type of work opens every section with a match
     const filter = () => {
       const query = $("#librarySearch").value.trim().toLowerCase();
       const kind = $("#libraryKind").value;
       let shown = 0;
-      body.querySelectorAll(".library-card").forEach(card => {
-        card.hidden = !!((kind && card.dataset.kind !== kind) || (query && !card.dataset.search.includes(query)));
-        if (!card.hidden) shown++;
+      body.querySelectorAll(".lib-group").forEach(group => {
+        let inGroup = 0;
+        group.querySelectorAll(".library-card").forEach(card => {
+          card.hidden = !!((kind && card.dataset.kind !== kind) || (query && !card.dataset.search.includes(query)));
+          if (!card.hidden) inGroup++;
+        });
+        shown += inGroup;
+        group.hidden = inGroup === 0;
+        group.querySelector("[data-count]").textContent = inGroup;
+        if (query || kind) group.open = true;
       });
-      $("#libraryCount").textContent = `${shown} of ${entries.length} activities shown`;
+      $("#libraryCount").textContent = query || kind ? `${shown} of ${entries.length} shown` : `${entries.length} pieces of work in ${body.querySelectorAll(".lib-group").length} sections. Open a section, or search.`;
     };
     $("#librarySearch").oninput = filter;
     $("#libraryKind").onchange = filter;

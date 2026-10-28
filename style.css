@@ -149,6 +149,13 @@ body {
   background-attachment: fixed;
 }
 .topbar { background: rgba(255, 255, 255, .94); box-shadow: 0 6px 18px rgba(11, 46, 107, .06); }
+/* A teacher's top bar has four links: on a phone they shrink so they all fit */
+@media (max-width: 520px) {
+  .topbar { gap: 4px; }
+  .brand img { width: 64px; height: 52px; }
+  .topnav { gap: 2px 0; min-width: 0; flex-shrink: 1; flex-wrap: wrap; justify-content: flex-end; }
+  .navlink { padding: 6px 7px; font-size: .82rem; white-space: nowrap; }
+}
 
 /* Pip */
 .pip-wrap { display: flex; flex-direction: column; align-items: center; }
@@ -818,13 +825,73 @@ a.me-card:hover { border-color: var(--primary); }
 .t-diary-form label { display: grid; gap: 4px; font-weight: 700; }
 .t-diary-form textarea { font: inherit; padding: 8px 10px; border: 2px solid var(--line); border-radius: 10px; width: 100%; resize: vertical; }
 .t-diary-form .empty { text-align: left; }
+
+/* ---------- Teacher area: Pip's header, one row of tabs, and a panel for each tab ---------- */
+.t-top { align-items: center; justify-content: flex-start; }
+.t-pip { width: 60px; height: 60px; flex: none; filter: drop-shadow(0 6px 6px rgba(11, 46, 107, .16)); }
+.t-hello { flex: 1; min-width: 200px; }
+.t-top .t-class { margin-left: auto; }
+.t-tabs {
+  flex-wrap: nowrap; overflow-x: auto; gap: 6px; margin: 14px 0 14px; padding: 6px; border: 0;
+  background: rgba(255, 255, 255, .85); border-radius: 999px; box-shadow: var(--shadow); scrollbar-width: none;
+}
+.t-tabs::-webkit-scrollbar { display: none; }
+.t-tab { flex: none; white-space: nowrap; padding: 8px 14px; font-size: .95rem; color: var(--ink); }
+.t-tab:hover { background: var(--primary-soft); }
+.t-tab[aria-selected="true"] { background: var(--primary); color: #fff; box-shadow: 0 3px 0 var(--star); }
+/* Narrower than a wide laptop: icon above a small label, so all nine tabs still fit on one row */
+@media (max-width: 1100px) {
+  .t-tabs { border-radius: 22px; }
+  .t-tab { flex: 1 1 0; min-width: 64px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; font-size: .78rem; border-radius: 16px; }
+  .t-tab > span { font-size: 1.25rem; line-height: 1; }
+}
+.t-body { background: rgba(255, 255, 255, .8); border-radius: 26px; padding: clamp(14px, 2.5vw, 24px); box-shadow: var(--shadow); }
+.t-body > .hint:first-child { margin-top: 0; }
+.t-body .t-h2:first-child { margin-top: 0; }
+/* Empty and loading screens get a thinking Pip */
+.t-body .empty { grid-column: 1 / -1; border: 2px dashed var(--line); border-radius: 20px; padding: 18px 20px; background: #fff; }
+.t-body .empty::before {
+  content: ""; display: block; width: 64px; height: 64px; margin: 0 auto 8px;
+  background: url("assets/brand/pip-think-small.webp") center / contain no-repeat;
+}
+.t-diary-form .empty::before { display: none; }
+.t-body .pcard { border-radius: 20px; }
+.t-body .t-table { border: 2px solid var(--line); border-radius: 16px; overflow: hidden; }
+.t-body .t-table tr:last-child td { border-bottom: 0; }
+.t-body .t-table tbody tr:hover { background: #f8fbff; }
+.t-body .work-flow:first-child { margin-top: 0; }
+@media (max-width: 640px) {
+  .t-top { padding: 14px 16px; }
+  .t-top h1 { font-size: 1.5rem; }
+  .t-pip { width: 48px; height: 48px; }
+  .t-top .t-class { margin-left: 0; width: 100%; }
+  .t-top .t-class select { flex: 1; }
+}
+
+/* Work library: one section per group, opened to browse */
+#librarySearch { flex: 1 1 280px; }
+.lib-group { margin: 0 0 10px; border: 2px solid var(--line); border-radius: 18px; background: #fff; }
+.lib-group[hidden] { display: none; }
+.lib-group > summary {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; list-style: none;
+  font-weight: 800; color: var(--primary); font-size: 1.05rem;
+}
+.lib-group > summary::-webkit-details-marker { display: none; }
+.lib-group > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; }
+.lib-group[open] > summary::before { transform: rotate(90deg); }
+.lib-count { margin-left: auto; font-size: .85rem; font-weight: 700; color: var(--muted); background: var(--primary-soft); border-radius: 999px; padding: 2px 10px; }
+.lib-group .library-grid { margin: 0; padding: 0 14px 14px; }
 .diary-entry p { white-space: pre-wrap; }
 .sound-choices { display: flex; flex-wrap: wrap; gap: 4px 10px; }
 .sound-choices label { white-space: nowrap; }
 .roster-grid { margin: 12px 0 24px; }
 .roster-card { display: grid; gap: 8px; }
 .roster-card label:not(.check) { display: grid; gap: 2px; font-size: .85rem; color: var(--muted); }
-.roster-card .check { text-align: left; }
+.roster-card .check { text-align: left; font-size: .95rem; margin-top: 4px; }
+.roster-card .check input { width: 20px; height: 20px; }
+/* Fields fill the card and never poke out of it */
+.roster-card > * { min-width: 0; }
+.roster-card label:not(.check) > input:not([type="checkbox"]), .roster-card label:not(.check) > select { width: 100%; }
 .worksheet-print { display: none; }
 .work-flow { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 18px 20px; margin: 16px 0; box-shadow: var(--shadow); }
 .work-flow h2 { margin: 0 0 4px; font-size: 1.35rem; }
