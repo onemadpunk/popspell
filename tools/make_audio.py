@@ -110,6 +110,13 @@ def list_passages(passages_js):
     return out
 
 
+def split_sentences(text):
+    """The sentences the website reads one at a time. Keep in step with sentencesOf in app.js:
+    a sentence ends at . ! or ? (and a closing quote) before a capital letter, or at the end."""
+    parts = re.findall(r'.+?[.!?]+["”]?(?=\s+["“]?[A-Z]|\s*$)', text, flags=re.S)
+    return [p.strip() for p in parts if p.strip()] or [text.strip()]
+
+
 def plan():
     """Every recording the site needs: {"words/cake": text}."""
     jobs = {}
@@ -123,6 +130,9 @@ def plan():
         jobs[f"phrases/{key}"] = text
     for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
         jobs[f"passages/{pid}"] = story
+        # Read-along: each sentence on its own, so pupils can follow at their own speed
+        for n, sentence in enumerate(split_sentences(story), 1):
+            jobs[f"passages/{pid}-s{n}"] = sentence
         for n, q in enumerate(questions, 1):
             jobs[f"passages/{pid}-q{n}"] = q
     return jobs

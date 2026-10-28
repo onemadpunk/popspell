@@ -249,15 +249,22 @@
     player.pause();
   }
 
-  function playClip(url, token) {
+  // speed: 1 is the Settings speed; reading aloud can go slower (see readSpeed)
+  function playClip(url, token, speed = 1) {
     return new Promise(resolve => {
       let done = false;
       const finish = ok => { if (!done) { done = true; clearTimeout(guard); resolve(ok); } };
-      const guard = setTimeout(() => finish(true), 8000);
+      // A safety net in case "ended" never fires, stretched to the clip's length once it's known
+      let guard = setTimeout(() => finish(true), 8000);
+      player.onloadedmetadata = () => {
+        if (!isFinite(player.duration)) return;
+        clearTimeout(guard);
+        guard = setTimeout(() => finish(true), (player.duration / player.playbackRate) * 1000 + 1500);
+      };
       player.onended = () => finish(true);
       player.onerror = () => finish(false);
       player.src = url;
-      player.defaultPlaybackRate = player.playbackRate = settings.rate / DEFAULTS.rate;
+      player.defaultPlaybackRate = player.playbackRate = (settings.rate / DEFAULTS.rate) * speed;
       if (token !== playToken) return finish(null);
       player.play().catch(() => finish(false));
     });
@@ -265,18 +272,18 @@
 
   // Steps are clip addresses or pauses in ms. Resolves true when done, false if a clip
   // couldn't play (so the device voice can take over), null if something else interrupted it.
-  async function playSteps(steps) {
+  async function playSteps(steps, speed = 1) {
     if (synth) synth.cancel();
     const token = ++playToken;
     for (const step of steps) {
       if (token !== playToken) return null;
       if (typeof step === "number") { await new Promise(r => setTimeout(r, step)); continue; }
-      const ok = await playClip(step, token);
+      const ok = await playClip(step, token, speed);
       if (ok !== true) return token === playToken ? ok : null;
     }
     return token === playToken ? true : null;
   }
-  const orSpeak = (steps, text, rate) => playSteps(steps).then(ok => (ok === false ? speak(text, rate) : ok));
+  const orSpeak = (steps, text, rate, speed = 1) => playSteps(steps, speed).then(ok => (ok === false ? speak(text, rate) : ok));
 
   const wordClip = w => `audio/words/${encodeURIComponent(w.toLowerCase())}.mp3`;
   const hasWordClip = w => useRecorded() && recWords.has(w.toLowerCase());
@@ -1251,9 +1258,11 @@
     app.innerHTML = `
       <section class="panel practice" style="--accent:${esc(session.list.accent)}">
         ${progressHTML()}
-        <p class="phase"><span class="dot look"></span>Listen and segment</p>
-        <div class="sound-intro" aria-hidden="true"><img src="assets/brand/play.svg" alt=""></div>
-        ${item.whole ? `<p class="prompt">Listen carefully. This word has a spelling you will explore after your try.</p>` : `
+        <p class="phase"><span class="dot look"></span>Look, listen and segment</p>
+        <!-- The word is on screen while it's spoken, and hidden again when it's time to spell it -->
+        <div class="look-word" id="lookWord">${wordHTML(item)}</div>
+        <p class="hint look-hint">Look at the word while you hear it. It will hide when you spell it.</p>
+        ${item.whole ? `<p class="prompt">Listen carefully. This word has a tricky part, so look closely at it.</p>` : `
           <p class="sound-count">${plural(item.tokens.length, "sound", "sounds")}</p>
           <div class="boxes segment-boxes" aria-label="${plural(item.tokens.length, "sound box", "sound boxes")}">${boxesHTML(item)}</div>
           <p class="prompt">Say the word slowly. Tap one box for each sound you hear.</p>`}
@@ -1263,6 +1272,7 @@
         </div>
       </section>`;
     wireStop();
+    wireSoundButtons($("#lookWord"), item);
     $("#hear").onclick = () => sayWordInSentence(item);
     $("#ready").onclick = () => showWrite();
     app.querySelectorAll(".segment-boxes button.box").forEach(b => {
@@ -1560,8 +1570,73 @@
     if (q.say.clip) return orSpeak([q.say.clip], q.say.text || "");
     return speak(q.say.text);
   }
-  const passageClip = p => `audio/passages/${encodeURIComponent(p.id)}.mp3`;
-  const sayPassage = p => orSpeak([passageClip(p)], p.text);
+  /* ---------- Reading aloud: one sentence at a time, at the pupil's own speed ---------- */
+
+  // Pupils choose the speed themselves, so they can read along rather than be read to.
+  // It's remembered on the device.
+  const READ_SPEEDS = [["slow", 0.65, "🐢 Slow"], ["steady", 0.8, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
+  const READ_KEY = "popspell-read-speed";
+  const readSpeed = () => {
+    let key = "";
+    try { key = localStorage.getItem(READ_KEY) || ""; } catch { /* private mode */ }
+    return READ_SPEEDS.find(s => s[0] === key) || READ_SPEEDS[1];
+  };
+  // Sentences end at . ! or ? (and a closing quote) before a capital letter, so speech stays
+  // with its speaker: "Get the cat!" said Mum. Keep in step with split_sentences in tools/make_audio.py
+  const sentencesOf = text => (text.match(/[\s\S]+?[.!?]+["”]?(?=\s+["“]?[A-Z]|\s*$)/g) || [text]).map(s => s.trim()).filter(Boolean);
+  const sentenceClipOf = (p, n) => `audio/passages/${encodeURIComponent(p.id)}-s${n + 1}.mp3`;
+  const readAlongHTML = p => sentencesOf(p.text).map((s, n) => `<span class="ra-s" data-s="${n}">${esc(s)}</span>`).join(" ");
+
+  let readRun = 0; // each reading gets a number, so a newer one (or Stop) ends the old one
+  async function readAlong(p, box, from = 0) {
+    const run = ++readRun;
+    const my = phase; // moving to another screen ends the reading too
+    const [, speed] = readSpeed();
+    const parts = sentencesOf(p.text);
+    const mark = n => box && box.querySelectorAll(".ra-s").forEach(el => el.classList.toggle("reading", Number(el.dataset.s) === n));
+    for (let n = from; n < parts.length; n++) {
+      if (run !== readRun || my !== phase) return;
+      mark(n);
+      const ok = await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, speed);
+      if (run !== readRun || my !== phase || ok === null) return;
+      await new Promise(r => setTimeout(r, 350 / speed)); // a breath between sentences
+    }
+    if (run === readRun) mark(-1);
+  }
+  const stopReading = () => { readRun++; stopRecorded(); if (synth) synth.cancel(); };
+
+  const readControlsHTML = label => `
+    <div class="read-controls">
+      <button type="button" class="btn small" data-read="go">${label}</button>
+      <button type="button" class="btn small" data-read="stop" hidden>⏹ Stop</button>
+      <span class="read-speed" role="group" aria-label="Reading speed">${READ_SPEEDS.map(([key, , text]) =>
+        `<button type="button" class="speed-btn" data-speed="${key}" aria-pressed="${readSpeed()[0] === key}">${text}</button>`).join("")}</span>
+    </div>`;
+  // Read it / Stop, the speed buttons, and tapping a sentence to hear it from there
+  function wireReadAlong(box, p) {
+    const go = box.querySelector('[data-read="go"]');
+    const stop = box.querySelector('[data-read="stop"]');
+    const reading = on => { go.hidden = on; stop.hidden = !on; };
+    const start = from => {
+      reading(true);
+      const done = readAlong(p, box, from);
+      const mine = readRun;
+      return done.then(() => { if (mine === readRun) reading(false); });
+    };
+    go.onclick = () => start(0);
+    stop.onclick = () => { stopReading(); reading(false); box.querySelectorAll(".ra-s").forEach(el => el.classList.remove("reading")); };
+    box.querySelectorAll(".ra-s").forEach(el => { el.onclick = () => start(Number(el.dataset.s)); });
+    box.querySelectorAll("[data-speed]").forEach(b => {
+      b.onclick = () => {
+        try { localStorage.setItem(READ_KEY, b.dataset.speed); } catch { /* private mode */ }
+        box.querySelectorAll("[data-speed]").forEach(x => x.setAttribute("aria-pressed", x === b));
+        // Already reading? Carry on from the same sentence at the new speed
+        const now = box.querySelector(".ra-s.reading");
+        if (!stop.hidden) start(now ? Number(now.dataset.s) : 0);
+      };
+    });
+    return { start };
+  }
 
   // Dictation: every word spelled right (in any order), a capital letter at the start, an end mark
   function markDictation(attempt, answer) {
@@ -1590,9 +1665,9 @@
     let missed = [];
     const passage = act.passage;
     const passageBox = passage ? (act.listen
-      ? `<div class="passage listen"><button class="btn" id="playStory">🔊 Play the story again</button></div>`
-      : `<details class="passage"${session.i === 0 ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
-          <p>${esc(passage.text)}</p><button class="btn small" type="button" id="playStory">🔊 Read it to me</button></details>`) : "";
+      ? `<div class="passage listen" id="passageBox">${readControlsHTML("🔊 Play the story again")}</div>`
+      : `<details class="passage" id="passageBox"${session.i === 0 ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
+          <p class="read-along">${readAlongHTML(passage)}</p>${readControlsHTML("🔊 Read it to me")}</details>`) : "";
     const optionHTML = (opt, i) => `
       <div class="q-option-wrap">
         <button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button>
@@ -1617,9 +1692,9 @@
       </section>`;
     wireStop();
     if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);
-    if ($("#playStory")) $("#playStory").onclick = () => sayPassage(passage);
+    const reader = $("#passageBox") ? wireReadAlong($("#passageBox"), passage) : null;
     // Listening activities start with the story (first question) or the question's own sound
-    if (act.listen && session.i === 0) sayPassage(passage).then(() => my === phase && sayQuestion(q));
+    if (act.listen && session.i === 0) reader.start(0).then(() => my === phase && sayQuestion(q));
     else sayQuestion(q);
 
     const finish = correct => {
