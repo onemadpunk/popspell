@@ -233,14 +233,16 @@ body {
 .journey-map { position: relative; list-style: none; margin: 14px 0 6px; padding: 40px 0 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
 .journey-map::before { content: ""; position: absolute; left: 8%; right: 8%; top: 71px; border-top: 5px dashed #bcd6f3; }
 .stop { position: relative; display: flex; flex-direction: column; align-items: center; }
-.stop-btn { font: inherit; color: var(--ink); background: none; border: 0; padding: 4px; border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.stop-btn { font: inherit; color: var(--ink); background: none; border: 0; padding: 4px; border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .stop-btn:focus-visible { outline: 4px solid var(--star); }
 .stop-num {
   width: 60px; height: 60px; display: grid; place-items: center; border-radius: 50%;
   background: var(--accent); color: #fff; border: 4px solid #fff; font-size: 1.5rem; font-weight: 900;
   box-shadow: 0 5px 0 rgba(0, 0, 0, .12); transition: transform .15s ease;
 }
-.stop.open .stop-num { transform: scale(1.14); box-shadow: 0 0 0 5px rgba(11, 46, 107, .14), 0 5px 0 rgba(0, 0, 0, .12); }
+/* The chosen stop gets a ring, inside the gap below it, so it never covers the stop's name */
+.stop.open .stop-num { box-shadow: 0 0 0 5px rgba(11, 46, 107, .16), 0 5px 0 rgba(0, 0, 0, .12); }
+.stop-name { margin-top: 2px; }
 .stop.finished .stop-num { background: var(--star); color: var(--primary); }
 .stop-name { font-weight: 800; font-size: .9rem; line-height: 1.15; text-align: center; }
 .stop-count { font-size: .78rem; color: var(--muted); }
