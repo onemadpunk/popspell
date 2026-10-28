@@ -616,9 +616,50 @@ window.PopActivities = (() => {
     passage: s, decodable: true, stage: s.stage, make: storyQuestions(s, false)
   }));
 
+  /* ---------- Sound Trail: hear a word and map one grapheme to each sound ---------- */
+
+  const MAP_ALTERNATIVES = {
+    a: ["e", "o"], e: ["i", "a"], i: ["e", "u"], o: ["a", "u"], u: ["o", "i"],
+    sh: ["ch", "th"], ch: ["sh", "tch"], th: ["sh", "ch"],
+    ai: ["ay", "a_e"], ay: ["ai", "a_e"], a_e: ["ai", "ay"],
+    ee: ["ea", "e_e"], ea: ["ee", "e_e"], e_e: ["ee", "ea"],
+    c: ["k", "ck"], k: ["c", "ck"], ck: ["c", "k"],
+    b: ["d", "p"], d: ["b", "t"], p: ["b", "t"],
+    f: ["v", "th"], v: ["f", "w"], m: ["n", "w"], n: ["m", "ng"],
+    s: ["z", "sh"], t: ["d", "th"], g: ["j", "k"], h: ["ch", "sh"],
+    l: ["r", "n"], r: ["l", "w"], w: ["v", "r"], y: ["i", "ee"]
+  };
+  const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || ["a", "e"])]
+    .filter((v, i, a) => a.indexOf(v) === i)).slice(0, 3);
+  const gradeMap = (chosen, tokens) => tokens.map((token, i) => chosen[i] === token ? -1 : i).filter(i => i >= 0);
+  const trailWords = ids => {
+    const lists = (window.PopSpell || {}).LISTS || {};
+    return shuffle(ids.flatMap(id => (lists[id] || {}).items || [])
+      .filter(it => !it.whole && it.tokens.length >= 3 && it.tokens.length <= 5))
+      .slice(0, 6).map(it => ({
+        kind: "map", prompt: "Listen. Say each sound. Build the word, one sound at a time.",
+        answer: it.spelling, spelling: it.spelling, tokens: it.tokens,
+        optionsBySlot: it.tokens.map(mapOptions),
+        say: { word: it.spelling.toLowerCase() },
+        label: it.spelling, skill: "sound mapping"
+      }));
+  };
+  const trailGames = [
+    { id: "g-trail-short", title: "Sound Trail: short vowels", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Cross six stepping stones. Hear each word, say its sounds, then choose the letters for each sound box.",
+      make: () => trailWords(["short-a", "short-e", "short-i", "short-o", "short-u"]) },
+    { id: "g-trail-digraphs", title: "Sound Trail: two-letter sounds", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Listen for sounds like sh, ch and th. Two letters can make one sound.",
+      make: () => trailWords(["sh", "ch", "th"]) },
+    { id: "g-trail-long-a", title: "Sound Trail: long a", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Choose between ai, ay and a–e as you build each word sound by sound.",
+      make: () => trailWords(["ai", "ay", "a-e"]) }
+  ];
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
+    { id: "games", title: "Sound-mapping games", colour: "#0F766E", icon: "🎮", activities: trailGames },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
@@ -638,6 +679,7 @@ window.PopActivities = (() => {
     order() { return ALL.map(a => a.id); },
     all() { return ALL.slice(); },
     dictation,
+    gradeMap,
     // Level and organiser for anything a pupil can do: an activity id, a dictation, or a spelling list
     tag(id) {
       const a = this.get(id);

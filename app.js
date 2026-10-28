@@ -814,6 +814,16 @@
         <div class="pupil" id="homePupil"></div>
         <div class="me-cards" id="meCards"></div>
       </section>
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id === "games").map(area => `
+        <section class="stage" style="--accent:${esc(area.colour)}">
+          <h2>${area.icon} ${esc(area.title)}</h2>
+          <div class="grid">${area.activities.map(a => `
+            <a class="list-card" href="#/activity/${encodeURIComponent(a.id)}">
+              <span class="lc-example" aria-hidden="true">${a.icon}</span>
+              <span class="lc-title">${esc(a.title)}</span>
+              <span class="lc-count">${esc(a.level)} level · 6 words</span>
+            </a>`).join("")}</div>
+        </section>`).join("")}
       ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${getPupil() ? "Looking for today's work…" : "Type your name to see it."}</p>` : STAGES.map(stage => `
         <section class="stage" style="--accent:${esc(stage.colour)}">
           <h2>${esc(stage.stage)}</h2>
@@ -826,7 +836,7 @@
               </a>`).join("")}
           </div>
         </section>`).join("")}
-      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories").map(area => `
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories" && area.id !== "games").map(area => `
         <section class="stage" style="--accent:${esc(area.colour)}">
           <h2>${area.icon} ${esc(area.title)}</h2>
           <div class="grid">
@@ -885,6 +895,7 @@
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
       <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
       <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>
+      ${locked ? "" : `<a class="me-card" href="#/activity/g-trail-short"><span class="me-icon" aria-hidden="true">🎮</span><span><b>Play Sound Trail</b> · hear and map six words</span></a>`}
       ${storyActivities().length && !locked ? `<a class="me-card" href="#/stories"><span class="me-icon" aria-hidden="true">📚</span><span><b>My stories</b> · ${readyStories(prog).length} ready to read</span></a>` : ""}`;
 
     // Lists the teacher has set for this pupil, if the sheet is connected
@@ -1558,12 +1569,20 @@
     app.innerHTML = `
       <section class="panel practice activity" style="--accent:${esc(act.colour)}">
         ${progressHTML()}
+        ${q.kind === "map" ? `<div class="game-trail" aria-label="Sound Trail progress">${session.items.map((_, i) =>
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Step ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>` : ""}
         ${passageBox}
         <p class="phase q-prompt">${esc(q.prompt)}</p>
         ${q.html || ""}
         ${q.say ? `<div class="row center"><button class="btn" id="hearQ">🔊 Hear it${q.say.word ? "" : " again"}</button></div>` : ""}
         ${q.kind === "choice"
           ? `<div class="q-options">${q.options.map(optionHTML).join("")}</div>`
+          : q.kind === "map"
+            ? `<div class="map-game"><p class="hint">Tap a sound box, then choose the letters that write that sound.</p>
+                <div class="map-slots" role="group" aria-label="Sound boxes">${q.tokens.map((_, i) =>
+                  `<button type="button" class="map-slot" data-slot="${i}" aria-label="Sound ${i + 1}, empty"><span class="map-number">${i + 1}</span><span class="map-value">?</span></button>`).join("")}</div>
+                <div class="map-choices" id="mapChoices" role="group" aria-label="Letters to choose"></div>
+                <button type="button" class="btn primary big" id="mapCheck" disabled>Check my map ✓</button></div>`
           : `<form class="spell-form" id="qForm" autocomplete="off">
               <label for="qAnswer" class="sr-only">Your answer</label>
               ${q.kind === "dictation"
@@ -1592,9 +1611,11 @@
         ? `${esc(pick(PRAISE)[1])} <span class="stars-inline">${stars(earned)}</span>`
         : q.kind === "dictation"
           ? `The sentence was: <b>${esc(q.answer)}</b>`
+          : q.kind === "map"
+            ? `The word is <b>${esc(q.answer)}</b>: ${q.tokens.map(token => `<span class="chip">${esc(label(token))}</span>`).join("")}`
           : `The answer is <b>${esc(q.answer)}</b>${/[.!?]$/.test(q.answer) ? "" : "."} ${esc(q.explain || "")}`;
       if (correct) chimeRight(); else chimeWrong();
-      app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
+      app.querySelectorAll(".q-option, #qForm button, #qAnswer, .map-slot, .map-choice, #mapCheck").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
       next.className = "row center";
       next.innerHTML = `<button class="btn big primary" id="nextQ">${isLast ? "See my stars 🏆" : "Next →"}</button>`;
@@ -1611,6 +1632,53 @@
       $("#feedback").className = "feedback oops";
       $("#feedback").textContent = text;
     };
+
+    if (q.kind === "map") {
+      const selected = q.tokens.map(() => null);
+      const locked = new Set();
+      let active = 0;
+      const slots = [...app.querySelectorAll(".map-slot")];
+      const renderMap = () => {
+        slots.forEach((slot, i) => {
+          slot.classList.toggle("active", i === active);
+          slot.classList.toggle("ok", locked.has(i));
+          slot.querySelector(".map-value").textContent = selected[i] ? label(selected[i]) : "?";
+          slot.setAttribute("aria-label", `Sound ${i + 1}, ${selected[i] ? label(selected[i]) : "empty"}${locked.has(i) ? ", correct" : ""}`);
+          slot.disabled = locked.has(i);
+        });
+        const choices = q.optionsBySlot[active] || [];
+        $("#mapChoices").innerHTML = choices.map((token, i) =>
+          `<button type="button" class="map-choice${selected[active] === token ? " chosen" : ""}" data-choice="${i}">${esc(label(token))}</button>`).join("");
+        app.querySelectorAll(".map-choice").forEach(button => {
+          button.onclick = () => {
+            selected[active] = choices[Number(button.dataset.choice)];
+            const next = selected.findIndex((v, i) => v === null && !locked.has(i));
+            if (next >= 0) active = next;
+            renderMap();
+          };
+        });
+        $("#mapCheck").disabled = selected.some(v => v === null);
+      };
+      slots.forEach((slot, i) => { slot.onclick = () => { active = i; renderMap(); }; });
+      $("#mapCheck").onclick = () => {
+        const wrongSlots = window.PopActivities.gradeMap(selected, q.tokens);
+        if (!wrongSlots.length) return finish(true);
+        wrong.push(selected.map(label).join(" · "));
+        missed = [...new Set(missed.concat(wrongSlots.map(i => q.tokens[i])))];
+        if (wrong.length >= ACTIVITY_TRIES) return finish(false);
+        q.tokens.forEach((tok, i) => {
+          if (selected[i] === tok) locked.add(i);
+          else selected[i] = null;
+        });
+        active = wrongSlots[0];
+        renderMap();
+        const positions = wrongSlots.map(i => i + 1).join(" and ");
+        tryAgain(`${wrongSlots.length === 1 ? "Sound" : "Sounds"} ${positions} ${wrongSlots.length === 1 ? "needs" : "need"} a different spelling. Listen and try again.`);
+      };
+      renderMap();
+      slots[0].focus();
+      return;
+    }
 
     if (q.kind === "choice") {
       app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayWord(q.options[Number(b.dataset.hear)]); });
