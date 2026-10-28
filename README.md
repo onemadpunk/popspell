@@ -61,6 +61,7 @@ Stories can also be set as work from the teacher area.
 
 Teachers sign in **on the site** with their Google account (👩‍🏫 **Teacher**, top right). The owner invites each teacher by email. Once signed in, a teacher has:
 
+- **Work library:** search and filter all spelling lists, starting checks, games, dictation, other online work and letter formation without selecting a class or pupil. See the word sound maps, test any online activity as a pupil, and preview every paper sheet type.
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
 - **Assignments and plans:** choose lists or activities for each pupil or for *Everyone*. Use **Test online** to play through the pupil view before assigning; teacher previews do not save pupil results or change progress.

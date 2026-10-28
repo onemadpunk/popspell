@@ -63,7 +63,7 @@
     classes = await cloud.classes();
     const saved = (() => { try { return localStorage.getItem(CLASS_KEY); } catch { return null; } })();
     current = classes.find(c => c.id === saved) || classes.find(c => c.teacher === me.uid) || classes[0] || null;
-    if (!classes.length && tab !== "teachers") tab = "classes";
+    if (!classes.length && tab !== "teachers") tab = "library";
     draw();
   }
 
@@ -96,7 +96,7 @@
 
   function draw() {
     stopWatching();
-    const tabs = [["live", "Live class"], ["next", "Next steps"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
+    const tabs = [["library", "Work library"], ["live", "Live class"], ["next", "Next steps"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
       ["diary", "Lesson diary"], ["pupils", "Pupils"], ["classes", "Classes"]];
     if (canAdmin()) tabs.push(["teachers", "Teachers"]);
     root.innerHTML = `
@@ -129,7 +129,7 @@
       body.innerHTML = `<div class="empty">Make a class first, in the <b>Classes</b> tab.</div>`;
       return;
     }
-    ({ live: drawLive, next: drawNext, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ library: drawLibrary, live: drawLive, next: drawNext, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -223,6 +223,59 @@
     if (!work) return "";
     return work.href + (work.href.includes("?") ? "&" : "?") + "preview=1";
   };
+
+  function drawLibrary(body) {
+    const spelling = P().STAGES.flatMap(stage => stage.lists.map(item => {
+      const list = catalogueList(item.id);
+      return { id: item.id, title: list.title, group: stage.stage, kind: "spelling",
+        detail: list.tip || `${list.items.length} words to hear, segment and spell`, list };
+    }));
+    const checks = Object.values(P().CHECKS).filter(c => c.id === "check-spelling" || window.PopActivities)
+      .map(c => ({ id: c.id, title: c.title, group: "Starting checks", kind: "check", detail: c.blurb }));
+    const activities = (window.PopActivities?.AREAS || []).flatMap(area => area.activities.map(act => ({
+      id: act.id, title: act.title, group: `${area.icon} ${area.title} · ${act.level}`,
+      kind: area.id === "games" ? "game" : "online", detail: act.blurb || act.organiser
+    })));
+    const dictation = spelling.map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`,
+      group: "Sentence dictation", kind: "dictation", detail: "Listen to the sentence, then write it." }));
+    const entries = checks.concat(spelling, activities, dictation, [{ id: "letter-formation",
+      title: "Letter formation (a–z)", group: "Paper practice", kind: "paper",
+      detail: "Trace and write every lower-case letter on four-line ruling." }]);
+    body.innerHTML = `<div class="work-flow">
+      <h2>Explore all work</h2>
+      <p class="hint">Browse and test lessons before choosing a class or pupil. Test runs do not save pupil results.</p>
+      <div class="add-row"><input id="librarySearch" type="search" placeholder="Search words, sounds or skills" aria-label="Search work">
+        <select id="libraryKind" aria-label="Type of work"><option value="">All work</option>
+          <option value="spelling">Spelling lists</option><option value="check">Starting checks</option>
+          <option value="game">Games</option><option value="online">Other online work</option>
+          <option value="dictation">Sentence dictation</option><option value="paper">Paper practice</option></select></div>
+      <p class="hint" id="libraryCount"></p></div>
+      <div class="library-grid">${entries.map(entry => `<article class="pcard library-card"
+        data-kind="${entry.kind}" data-search="${esc(`${entry.title} ${entry.group} ${entry.detail}`.toLowerCase())}">
+        <p class="meta">${esc(entry.group)}</p><h3>${esc(entry.title)}</h3>
+        <p>${esc(entry.detail)}</p>
+        ${entry.list ? `<details><summary>See ${entry.list.items.length} words and their sound maps</summary>
+          <ul class="wordlist">${entry.list.items.map(item => `<li class="mini-word">${P().wordHTML(item)}</li>`).join("")}</ul></details>` : ""}
+        <div class="row">${entry.kind === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(entry.id))}" target="_blank" rel="noopener">▶ Test online</a>`}
+          ${entry.list || entry.kind === "paper" ? `<button class="btn small" type="button" data-library-sheet="${esc(entry.id)}">👀 Preview paper sheet</button>` : ""}</div>
+      </article>`).join("")}</div>`;
+    const filter = () => {
+      const query = $("#librarySearch").value.trim().toLowerCase();
+      const kind = $("#libraryKind").value;
+      let shown = 0;
+      body.querySelectorAll(".library-card").forEach(card => {
+        card.hidden = !!((kind && card.dataset.kind !== kind) || (query && !card.dataset.search.includes(query)));
+        if (!card.hidden) shown++;
+      });
+      $("#libraryCount").textContent = `${shown} of ${entries.length} activities shown`;
+    };
+    $("#librarySearch").oninput = filter;
+    $("#libraryKind").onchange = filter;
+    body.querySelectorAll("[data-library-sheet]").forEach(button => {
+      button.onclick = () => previewWorksheet("", { list: button.dataset.librarySheet, from: todayKey() }, "mapping");
+    });
+    filter();
+  }
 
   async function drawAssign(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
@@ -354,14 +407,19 @@
       ${rows.join("")}`;
   }
 
-  function printLetters() {
+  function letterFormationHTML(who) {
     const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-    printSheet("ws-literacy", `${dotPattern}${sheetHead("Letter formation", "")}
+    return `${dotPattern}${sheetHead("Letter formation", who)}
       <p>Form each letter the way you've been shown, starting in the right place. Trace the grey letters, then the dotted ones, then write your own.</p>
-      ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`);
+      ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`;
+  }
+
+  function printLetters() {
+    printSheet("ws-literacy", letterFormationHTML(""));
   }
 
   function worksheetSpec(who, plan, mode) {
+    if (plan.list === "letter-formation") return { className: "ws-literacy", html: letterFormationHTML(who) };
     const list = catalogueList(plan.list);
     if (!list) return null;
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
@@ -373,8 +431,8 @@
         : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
           <td class="check-box">□</td></tr>`).join("");
     const html = `<h1>PopSpell · ${esc(list.title)}${mode === "key" ? " · teacher key" : ""}</h1>
-      <p><b>Pupil:</b> ${esc(who === "Everyone" ? "____________________" : who)}
-        &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Date:</b> ${esc(plan.from)}</p>
+      <p><b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
+        ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}</p>
       <p>${mode === "key" ? "Read each word aloud. One box represents one sound; the letters shown are the matching grapheme." :
         mode === "dictation" ? "Listen, say the sounds, then write the word your teacher or adult says." :
         "Listen to the word. Say it, stretch it, tap one box for each sound, then write the letters for each sound in its box."}</p>
@@ -391,18 +449,32 @@
   }
 
   function previewWorksheet(who, plan, mode) {
-    const sheet = worksheetSpec(who, plan, mode);
-    if (!sheet) return showError(new Error("Worksheets are available for built-in spelling lists. Test this activity online instead."));
+    if (!worksheetSpec(who, plan, mode)) return showError(new Error("Worksheets are available for built-in spelling lists. Test this activity online instead."));
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
+      ${plan.list === "letter-formation" ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+        <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Teacher key</option></select></label>`}
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
-      <section class="sheet-preview-page ${sheet.className}">${sheet.html}</section>`;
+      <section class="sheet-preview-page"></section>`;
     document.body.append(dialog);
+    const picker = dialog.querySelector("[data-mode]");
+    if (picker) picker.value = mode;
+    const render = () => {
+      const sheet = worksheetSpec(who, plan, picker ? picker.value : mode);
+      const page = dialog.querySelector(".sheet-preview-page");
+      page.className = `sheet-preview-page ${sheet.className}`;
+      page.innerHTML = sheet.html;
+    };
+    if (picker) picker.onchange = render;
+    render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); printSheet(sheet.className, sheet.html); };
+    dialog.querySelector("[data-print]").onclick = () => {
+      const sheet = worksheetSpec(who, plan, picker ? picker.value : mode);
+      dialog.close(); printSheet(sheet.className, sheet.html);
+    };
     dialog.showModal();
   }
 
