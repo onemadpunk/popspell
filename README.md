@@ -1,13 +1,13 @@
-# Spelling Practice
+# PopSpell
 
 A free, sounds-first spelling website for pupils, built on **systematic synthetic phonics** and **orthographic mapping**: children link each sound (phoneme) to the letters that write it (grapheme), rather than memorising the shape of a whole word.
 
 ## How a word works
 
-1. **Listen and look** — the word is read aloud in a British voice and shown with **sound buttons**: a dot under one-letter sounds, a line under digraphs and trigraphs (sh, ai, igh), and an arc joining a split digraph (a–e in *cake*). The pupil says the word, then touches each sound button and says the sound (touching one reads out its letters).
-2. **The word hides.** Sound boxes appear, one per sound. The pupil says each sound and taps a box (segmenting), then types the word, saying each sound as they write it.
+1. **Hear and segment.** The word is read aloud without showing its spelling. A blank box represents each sound. The pupil says the word slowly and taps a box for every sound heard.
+2. **Map and spell.** The sound boxes stay visible while the pupil types the graphemes, saying each sound as they write it. New-word challenges use the same approach.
 3. **Feedback that teaches.** After a wrong try, the boxes show what they wrote, sound by sound: green for right, orange for the sound to fix — e.g. *rane* for *rain* shows `r ✓ | a…e ✗ | n ✓`. If the mistake is in the sound the list is practising, the list's tip is shown. They get **3 tries**.
-4. **If all tries are missed**, the word is shown with the missed sounds in orange and spelled out sound by sound (Simultaneous Oral Spelling): *"rain. R. A I. N. rain."*
+4. **If all tries are missed**, the word is shown with the missed sounds in orange and spelled out sound by sound (Simultaneous Oral Spelling): *"rain. R. A I. N. rain."* Sound markers show one-letter sounds, digraphs and split digraphs.
 5. **Results** — stars for each word, every wrong try, and a **"Sounds to practise"** panel listing which graphemes went wrong on the first try and in which words (e.g. `a–e: cake, snake`). It can be printed, and there's a button to practise only the tricky words again.
 
 ### Sentences, new words and review
@@ -27,12 +27,18 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
-- **Assignments:** choose lists for each pupil, or for *Everyone*. They appear on that pupil's home page as "📌 Your lists today".
+- **Assignments and plans:** choose lists for each pupil or for *Everyone*, and schedule lists between dates.
+- **Plans & worksheets:** print a sound-mapping worksheet with one box per phoneme, a dictation worksheet, and a teacher key. Mark printed work by word and missed grapheme; worksheet results appear alongside online results.
+- **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.
+- **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email draft and save the homework worksheet as a PDF to attach manually.
 - **Pupils:** each pupil's results over the last week, month, term or year, the sounds they miss most, and a **spreadsheet download** of every word (opens in Google Sheets or Excel).
 - **Settings** and **Make a list**, which only appear while a teacher is signed in.
-- **For the owner:** a **Teachers** tab to invite and remove teachers, and access to every class.
+- **Site admin:** manages every class and can invite teachers. Only the owner can grant or revoke Site admin access.
+- **For the owner:** a **Teachers** tab to invite teachers and Site admins and access every class.
 
 Accounts and results are stored in Firebase (Google's cloud database, in London). Setup is a one-off job for the site owner: see [firebase/SETUP.md](firebase/SETUP.md). Without it, the spelling lists still work, but nothing is saved for teachers.
+
+The site uses GitHub Pages and Firebase Spark. Reminder emails are drafted for a teacher to send manually; no paid scheduler or email service is required. Parent contact details and lesson notes are readable only by the class teacher and Site admins.
 
 ---
 
@@ -87,7 +93,7 @@ fontFile: "fonts/SassoonPrimary.woff2"
 
 ## Settings
 
-**⚙️ Settings** lets you choose the voice, speech speed, how long the word stays on screen (or until the pupil presses "I'm ready"), the number of tries, shuffling, sound boxes, spelling-out, and sounds. Settings are saved on that device only.
+**⚙️ Settings** lets a teacher choose the voice, speech speed, number of tries, shuffling, spelling-out, and sounds. Sound boxes are part of the lesson flow. Settings are saved on that device only.
 
 ## Voices
 
@@ -119,3 +125,4 @@ Speech voices can't reliably say isolated phonemes, so the site reads whole word
 ## Trying it on your own computer
 
 Double-click `index.html` to open it in a browser.
+

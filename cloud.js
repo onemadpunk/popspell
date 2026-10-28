@@ -28,7 +28,7 @@ async function start() {
   const {
     initializeFirestore, persistentLocalCache, connectFirestoreEmulator, doc, getDoc, getDocFromServer, setDoc,
     updateDoc, addDoc, deleteDoc, collection, query, where, orderBy, limit, getDocs, getDocsFromServer,
-    onSnapshot, serverTimestamp, Timestamp
+    onSnapshot, serverTimestamp, Timestamp, writeBatch
   } = db;
 
   const app = initializeApp(config);
@@ -42,6 +42,9 @@ async function start() {
   }
 
   const lower = s => String(s || "").trim().toLowerCase();
+  const todayKey = () => new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit"
+  }).format(new Date());
   const pupilKey = name => lower(name).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "pupil";
   async function fingerprint(name) {
     const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(lower(name)));
@@ -120,7 +123,14 @@ async function start() {
     async assigned(classId, pupil) {
       await pupilAuth();
       const read = async key => {
-        try { const s = await getDoc(doc(store, "classes", classId, "assign", key)); return s.exists() ? s.data().lists || [] : []; }
+        try {
+          const s = await getDoc(doc(store, "classes", classId, "assign", key));
+          if (!s.exists()) return [];
+          const data = s.data();
+          const today = todayKey();
+          return (data.lists || []).concat((data.plans || [])
+            .filter(p => p.from <= today && today <= p.until).map(p => p.list));
+        }
         catch { return []; }
       };
       const [mine, everyone] = await Promise.all([read(await fingerprint(pupil)), read("everyone")]);
@@ -158,7 +168,7 @@ async function start() {
       const p = await api.me();
       if (!p || !p.role) return [];
       const ref = collection(store, "classes");
-      const snap = await getDocs(p.role === "owner" ? ref : query(ref, where("teacher", "==", p.uid)));
+      const snap = await getDocs(["owner", "admin"].includes(p.role) ? ref : query(ref, where("teacher", "==", p.uid)));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
         .sort((a, b) => (a.teacherName || "").localeCompare(b.teacherName || "") || a.name.localeCompare(b.name));
     },
@@ -188,14 +198,85 @@ async function start() {
 
     async assignments(classId) {
       const snap = await getDocs(collection(store, "classes", classId, "assign"));
-      return snap.docs.map(d => ({ key: d.id, who: d.data().who || d.id, lists: d.data().lists || [] }))
+      return snap.docs.map(d => ({ key: d.id, who: d.data().who || d.id,
+        lists: d.data().lists || [], plans: d.data().plans || [] }))
         .sort((a, b) => (a.key === "everyone" ? -1 : b.key === "everyone" ? 1 : a.who.localeCompare(b.who)));
     },
     async saveAssignment(classId, who, lists) {
       const key = lower(who) === "everyone" ? "everyone" : await fingerprint(who);
       const ref = doc(store, "classes", classId, "assign", key);
-      if (!lists.length) await deleteDoc(ref);
-      else await setDoc(ref, { who: String(who).trim().slice(0, 40), lists: lists.slice(0, 20), updated: serverTimestamp() });
+      await setDoc(ref, { who: String(who).trim().slice(0, 40), lists: lists.slice(0, 20),
+        updated: serverTimestamp() }, { merge: true });
+    },
+    async savePlans(classId, who, plans) {
+      const key = lower(who) === "everyone" ? "everyone" : await fingerprint(who);
+      await setDoc(doc(store, "classes", classId, "assign", key), {
+        who: String(who).trim().slice(0, 40),
+        plans: plans.slice(0, 30).map(p => ({ list: String(p.list).slice(0, 400),
+          from: p.from, until: p.until })), updated: serverTimestamp()
+      }, { merge: true });
+    },
+    async recordWorksheet(classId, pupil, listId, listName, words) {
+      const p = await api.me();
+      if (!p || !p.role) throw new Error("Sign in as a teacher first.");
+      await addDoc(collection(store, "classes", classId, "sessions"), {
+        pupil: String(pupil).trim().slice(0, 40), list: String(listName).slice(0, 100),
+        listId: String(listId).slice(0, 100), finished: true, words,
+        source: "worksheet", markedBy: p.email, at: serverTimestamp()
+      });
+    },
+
+    async diary(classId) {
+      const snap = await getDocs(query(collection(store, "classes", classId, "diary"),
+        orderBy("at", "desc"), limit(100)));
+      return snap.docs.map(d => ({ id: d.id, ...d.data(),
+        at: d.data().at ? d.data().at.toMillis() : Date.now() }));
+    },
+    async saveDiary(classId, entry) {
+      const p = await api.me();
+      if (!p || !p.role) throw new Error("Sign in as a teacher first.");
+      const pupil = String(entry.pupil || "").trim().slice(0, 40);
+      const nextList = String(entry.nextList || "").slice(0, 100);
+      const nextDate = String(entry.nextDate || "");
+      const batch = writeBatch(store);
+      const ref = doc(collection(store, "classes", classId, "diary"));
+      batch.set(ref, { pupil, lessonDate: entry.lessonDate,
+        lastWork: String(entry.lastWork || "").trim().slice(0, 2000),
+        nextLesson: String(entry.nextLesson || "").trim().slice(0, 2000),
+        nextList, nextDate, by: p.email, at: serverTimestamp() });
+      if (nextList && nextDate) {
+        const key = await fingerprint(pupil);
+        const assignRef = doc(store, "classes", classId, "assign", key);
+        const current = await getDoc(assignRef);
+        const plans = current.exists() ? current.data().plans || [] : [];
+        if (plans.length >= 30) throw new Error("This pupil already has 30 plans.");
+        batch.set(assignRef, { who: pupil, plans: plans.concat({ list: nextList,
+          from: nextDate, until: nextDate }), updated: serverTimestamp() }, { merge: true });
+        const pupilRef = doc(store, "classes", classId, "pupils", key);
+        if ((await getDoc(pupilRef)).exists())
+          batch.update(pupilRef, { nextLessonDate: nextDate, homeworkList: nextList,
+            updated: serverTimestamp() });
+      }
+      await batch.commit();
+    },
+
+    async pupils(classId) {
+      const snap = await getDocs(collection(store, "classes", classId, "pupils"));
+      return snap.docs.map(d => ({ key: d.id, ...d.data() }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    },
+    async savePupil(classId, pupil) {
+      const name = String(pupil.name || "").trim().slice(0, 40);
+      if (!name) throw new Error("Enter the pupil's name or code.");
+      const key = await fingerprint(name);
+      await setDoc(doc(store, "classes", classId, "pupils", key), {
+        name, parentEmail: lower(pupil.parentEmail).slice(0, 254),
+        reminderOptIn: !!pupil.reminderOptIn,
+        nextLessonDate: String(pupil.nextLessonDate || "").slice(0, 10),
+        lessonTime: String(pupil.lessonTime || "").slice(0, 5),
+        homeworkList: String(pupil.homeworkList || "").slice(0, 100),
+        updated: serverTimestamp()
+      }, { merge: true });
     },
 
     async sessions(classId, days = 30) {
@@ -222,3 +303,4 @@ async function start() {
   window.PopCloud = api;
   window.__popCloudResolve(api);
 }
+

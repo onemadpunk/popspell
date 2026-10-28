@@ -4,7 +4,7 @@
 (() => {
   "use strict";
 
-  const SITE = Object.assign({ title: "Spelling Practice", subtitle: "Listen · Say the sounds · Spell it" }, window.SITE);
+  const SITE = Object.assign({ title: "PopSpell", subtitle: "Hear it. Map it. Spell it." }, window.SITE);
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
   const app = document.getElementById("app");
@@ -161,7 +161,7 @@
 
   /* ---------- Settings (kept in this browser only) ---------- */
 
-  const DEFAULTS = { lookSeconds: 8, rate: 0.85, voice: "", tries: 3, shuffle: true, spellOut: true, sounds: true, boxes: true,
+  const DEFAULTS = { rate: 0.85, voice: "", tries: 3, shuffle: true, spellOut: true, sounds: true,
     sentences: true, checks: true };
   const STORE_KEY = "spelling-settings-v2";
   const settings = (() => {
@@ -689,8 +689,13 @@
     document.title = SITE.title;
     app.innerHTML = `
       <section class="hero">
-        <h1>${esc(SITE.title)}</h1>
-        <p class="lead">${esc(SITE.subtitle)}</p>
+        <div class="hero-copy">
+          <p class="hero-kicker">Sounds become spellings</p>
+          <h1>${esc(SITE.subtitle)}</h1>
+          <p class="lead">Listen to each word, find its sounds, and choose the letters that spell them.</p>
+        </div>
+        <img class="hero-children" src="assets/brand/children.png" alt="Two children listening to sounds and building a word" width="516" height="516">
+        <div class="hero-actions">
         ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
         ${CLOUD_CONFIGURED && !CLASS ? `
           <form class="join-box" id="joinForm">
@@ -699,11 +704,12 @@
             <span class="hint" id="joinHint"></span>
           </form>` : ""}
         <ol class="steps">
-          <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Listen</b> to the word</span></li>
+          <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Hear</b> the word</span></li>
           <li><span class="step-icon" aria-hidden="true">🗣️</span><span><b>Say</b> each sound</span></li>
-          <li><span class="step-icon" aria-hidden="true">🔤</span><span><b>See</b> how each sound is written</span></li>
-          <li><span class="step-icon" aria-hidden="true">✏️</span><span><b>Spell</b> it sound by sound</span></li>
+          <li><span class="step-icon" aria-hidden="true">🟦</span><span><b>Map</b> sounds to letters</span></li>
+          <li><span class="step-icon" aria-hidden="true">✏️</span><span><b>Spell</b> and check</span></li>
         </ol>
+        </div>
       </section>
       <section class="me">
         <div class="pupil" id="homePupil"></div>
@@ -930,47 +936,33 @@
     });
   }
 
-  // 1. LISTEN, SAY & SEE: the word with its sound buttons, read aloud, then it hides
+  // 1. LISTEN & SEGMENT: hear the word and count its phonemes before any graphemes appear.
   function showLook() {
     const item = session.items[session.i];
-    if (item.challenge) return showWrite(); // new words are heard, never seen first
-    const my = newScreen();
-    const timed = settings.lookSeconds > 0;
-    const sounds = item.whole ? "" : `<p class="sound-count">${plural(item.tokens.length, "sound", "sounds")}</p>`;
+    newScreen();
+    if (item.challenge) return showWrite();
     app.innerHTML = `
       <section class="panel practice" style="--accent:${esc(session.list.accent)}">
         ${progressHTML()}
-        <p class="phase"><span class="dot look"></span>Listen and look</p>
-        <div class="word-box"><span class="word sounds" lang="en-GB">${wordHTML(item)}</span></div>
-        ${sounds}
-        ${sentenceHTML(item, false)}
-        <p class="prompt">${item.whole ? "This is a tricky word. Say it, then look closely at the letters." : "Say the word. Then touch each sound button and say the sound."}</p>
-        ${timed ? `<div class="timer" aria-hidden="true"><span id="timerFill"></span></div>` : ""}
+        <p class="phase"><span class="dot look"></span>Listen and segment</p>
+        <div class="sound-intro" aria-hidden="true"><img src="assets/brand/play.svg" alt=""></div>
+        ${item.whole ? `<p class="prompt">Listen carefully. This word has a spelling you will explore after your try.</p>` : `
+          <p class="sound-count">${plural(item.tokens.length, "sound", "sounds")}</p>
+          <div class="boxes segment-boxes" aria-label="${plural(item.tokens.length, "sound box", "sound boxes")}">${boxesHTML(item)}</div>
+          <p class="prompt">Say the word slowly. Tap one box for each sound you hear.</p>`}
         <div class="row center">
           <button class="btn" id="hear">🔊 Hear it again</button>
-          <button class="btn primary" id="ready">I'm ready ✏️</button>
+          <button class="btn primary" id="ready">Map the sounds →</button>
         </div>
       </section>`;
     wireStop();
-
-    const runTimer = () => {
-      if (my !== phase || !timed) return;
-      timers.forEach(clearTimeout);
-      timers = [];
-      const fill = $("#timerFill");
-      fill.style.transition = "none";
-      fill.style.width = "100%";
-      void fill.offsetWidth;
-      fill.style.transition = `width ${settings.lookSeconds}s linear`;
-      fill.style.width = "0%";
-      later(() => my === phase && showWrite(), settings.lookSeconds * 1000);
-    };
-    const say = () => sayWordInSentence(item).then(runTimer);
-    $("#hear").onclick = say;
+    $("#hear").onclick = () => sayWordInSentence(item);
     $("#ready").onclick = () => showWrite();
-    wireSoundButtons($(".word"), item, runTimer); // touching the sounds gives them more time
+    app.querySelectorAll(".segment-boxes button.box").forEach(b => {
+      b.onclick = () => b.classList.toggle("lit");
+    });
     $("#ready").focus();
-    say();
+    sayWordInSentence(item);
   }
 
   // Sound boxes: one per sound. Empty to start with; after a try they show what was written
@@ -986,7 +978,7 @@
   function showWrite() {
     newScreen();
     const item = session.items[session.i];
-    const showBoxes = settings.boxes && !item.whole;
+    const showBoxes = !item.whole;
     const wrong = [];
     const firstMissed = [];
     app.innerHTML = `
@@ -995,12 +987,12 @@
         ${item.challenge
           ? `<p class="phase challenge"><span aria-hidden="true">🔍</span> New word! You haven't seen this one</p>
              <p class="prompt">Listen carefully, say the sounds, and use what you've learned.</p>`
-          : `<p class="phase"><span class="dot write"></span>Now spell it</p>`}
+          : `<p class="phase"><span class="dot write"></span>Map and spell it</p>`}
         ${sentenceHTML(item, true)}
         ${showBoxes
           ? `<div class="boxes" id="boxes">${boxesHTML(item)}</div>
              <p class="prompt" id="prompt">Say each sound and tap a box. Then write it, saying each sound as you type.</p>`
-          : `<div class="word-box covered" aria-hidden="true"><span>🙈</span></div>`}
+          : `<p class="prompt">Listen again, then write the sounds you hear.</p>`}
         <form class="spell-form" id="spellForm" autocomplete="off">
           <label for="answer" class="sr-only">Type the word</label>
           <input id="answer" class="answer" type="text" autocomplete="off" autocorrect="off"
@@ -1034,7 +1026,7 @@
 
     $("#hear").onclick = () => { sayWord(item.spelling); input.focus(); };
     if ($("#hearSentence")) $("#hearSentence").onclick = () => { saySentence(item); input.focus(); };
-    if (item.challenge) sayWordInSentence(item);
+    sayWordInSentence(item);
 
     $("#spellForm").onsubmit = e => {
       e.preventDefault();
@@ -1293,10 +1285,8 @@
     if (!teacherUnlocked()) return;
     fillVoiceSelect();
     $("#setRate").value = settings.rate;
-    $("#setLook").value = String(settings.lookSeconds);
     $("#setTries").value = String(settings.tries);
     $("#setShuffle").checked = settings.shuffle;
-    $("#setBoxes").checked = settings.boxes;
     $("#setSentences").checked = settings.sentences;
     $("#setChecks").checked = settings.checks;
     $("#setSpell").checked = settings.spellOut;
@@ -1313,10 +1303,8 @@
   $("#settingsBtn").onclick = openSettings;
   $("#setVoice").onchange = e => { settings.voice = e.target.value; saveSettings(); sayWord("cake"); };
   $("#setRate").onchange = e => { settings.rate = Number(e.target.value); saveSettings(); };
-  $("#setLook").onchange = e => { settings.lookSeconds = Number(e.target.value); saveSettings(); };
   $("#setTries").onchange = e => { settings.tries = Number(e.target.value); saveSettings(); };
   $("#setShuffle").onchange = e => { settings.shuffle = e.target.checked; saveSettings(); };
-  $("#setBoxes").onchange = e => { settings.boxes = e.target.checked; saveSettings(); };
   $("#setSentences").onchange = e => { settings.sentences = e.target.checked; saveSettings(); };
   $("#setChecks").onchange = e => { settings.checks = e.target.checked; saveSettings(); };
   $("#setSpell").onchange = e => { settings.spellOut = e.target.checked; saveSettings(); };
@@ -1361,3 +1349,4 @@
   });
   route();
 })();
+

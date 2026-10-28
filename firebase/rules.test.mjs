@@ -15,6 +15,7 @@ const google = (uid, email, verified = true) => env.authenticatedContext(uid, {
   email, email_verified: verified, firebase: { sign_in_provider: "google.com" }
 }).firestore();
 const owner = google("uid-owner", "owner@example.com");
+const admin = google("uid-admin", "admin@example.com");
 const tutor = google("uid-tutor", "tutor@example.com");
 const other = google("uid-other", "other@example.com");
 const stranger = google("uid-x", "stranger@example.com");
@@ -25,6 +26,7 @@ const nobody = env.unauthenticatedContext().firestore();
 await env.withSecurityRulesDisabled(async ctx => {
   const db = ctx.firestore();
   await setDoc(doc(db, "teachers/tutor@example.com"), { name: "Mr Smith", role: "teacher" });
+  await setDoc(doc(db, "teachers/admin@example.com"), { name: "Site admin", role: "admin" });
   await setDoc(doc(db, "teachers/other@example.com"), { name: "Ms Other", role: "teacher" });
   await setDoc(doc(db, "classes/ABC234"), { name: "Tuesday", teacher: "uid-tutor", teacherName: "Mr Smith", teacherEmail: "tutor@example.com" });
   await setDoc(doc(db, "classes/XYZ789"), { name: "Other's class", teacher: "uid-other", teacherName: "Ms Other", teacherEmail: "other@example.com" });
@@ -41,6 +43,7 @@ async function check(label, promise) {
 }
 const live = { pupil: "Ava", list: "ai", status: "working", done: 1, total: 18, right: 1, missedRow: 0, notFirstRow: 0, lastWord: "rain ✓", seen: serverTimestamp() };
 const session = { pupil: "Ava", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp() };
+const worksheet = { ...session, source: "worksheet", markedBy: "tutor@example.com" };
 
 console.log("Teachers");
 await check("owner creates their own owner record", assertSucceeds(setDoc(doc(owner, "teachers/owner@example.com"), { name: "Sara", role: "owner", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
@@ -48,10 +51,17 @@ await check("a stranger can't make themselves an owner", assertFails(setDoc(doc(
 await check("a stranger can't make themselves a teacher", assertFails(setDoc(doc(stranger, "teachers/stranger@example.com"), { name: "X", role: "teacher", invitedBy: "x", invitedAt: serverTimestamp() })));
 await check("a teacher can't invite others", assertFails(setDoc(doc(tutor, "teachers/new@example.com"), { name: "N", role: "teacher", invitedBy: "t", invitedAt: serverTimestamp() })));
 await check("owner invites a teacher", assertSucceeds(setDoc(doc(owner, "teachers/new@example.com"), { name: "New", role: "teacher", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
+await check("owner grants site admin", assertSucceeds(setDoc(doc(owner, "teachers/wife@example.com"), { name: "Wife", role: "admin", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
+await check("site admin invites a teacher", assertSucceeds(setDoc(doc(admin, "teachers/admin-invite@example.com"), { name: "New", role: "teacher", invitedBy: "admin@example.com", invitedAt: serverTimestamp() })));
+await check("site admin can't grant site admin", assertFails(setDoc(doc(admin, "teachers/rogue@example.com"), { name: "Rogue", role: "admin", invitedBy: "admin@example.com", invitedAt: serverTimestamp() })));
+await check("site admin can't promote a teacher", assertFails(updateDoc(doc(admin, "teachers/tutor@example.com"), { role: "admin" })));
+await check("site admin can't demote another admin", assertFails(updateDoc(doc(admin, "teachers/wife@example.com"), { role: "teacher" })));
+await check("site admin can't remove the owner", assertFails(deleteDoc(doc(admin, "teachers/owner@example.com"))));
 await check("a teacher reads their own record", assertSucceeds(getDoc(doc(tutor, "teachers/tutor@example.com"))));
 await check("a teacher can't read another teacher's record", assertFails(getDoc(doc(tutor, "teachers/other@example.com"))));
 await check("a teacher can't list teachers", assertFails(getDocs(collection(tutor, "teachers"))));
 await check("owner lists teachers", assertSucceeds(getDocs(collection(owner, "teachers"))));
+await check("site admin lists teachers", assertSucceeds(getDocs(collection(admin, "teachers"))));
 await check("a teacher can't promote themselves to owner", assertFails(updateDoc(doc(tutor, "teachers/tutor@example.com"), { role: "owner" })));
 await check("owner can't remove themselves", assertFails(deleteDoc(doc(owner, "teachers/owner@example.com"))));
 await check("owner removes a teacher", assertSucceeds(deleteDoc(doc(owner, "teachers/new@example.com"))));
@@ -63,6 +73,7 @@ await check("a pupil's device can't list classes", assertFails(getDocs(collectio
 await check("a teacher lists their own classes", assertSucceeds(getDocs(query(collection(tutor, "classes"), where("teacher", "==", "uid-tutor")))));
 await check("a teacher can't list every class", assertFails(getDocs(collection(tutor, "classes"))));
 await check("owner lists every class", assertSucceeds(getDocs(collection(owner, "classes"))));
+await check("site admin lists every class", assertSucceeds(getDocs(collection(admin, "classes"))));
 await check("a teacher makes a class", assertSucceeds(setDoc(doc(tutor, "classes/NEW111"), { name: "Friday", teacher: "uid-tutor", teacherName: "Mr Smith", teacherEmail: "tutor@example.com", createdAt: serverTimestamp() })));
 await check("a teacher can't make a class for someone else", assertFails(setDoc(doc(tutor, "classes/NEW222"), { name: "Fake", teacher: "uid-other", teacherName: "x", teacherEmail: "x", createdAt: serverTimestamp() })));
 await check("a stranger can't make a class", assertFails(setDoc(doc(stranger, "classes/NEW333"), { name: "Fake", teacher: "uid-x", teacherName: "x", teacherEmail: "x", createdAt: serverTimestamp() })));
@@ -72,6 +83,7 @@ await check("a teacher renames their class", assertSucceeds(updateDoc(doc(tutor,
 await check("a teacher can't rename another's class", assertFails(updateDoc(doc(tutor, "classes/XYZ789"), { name: "Mine now" })));
 await check("a teacher can't hand a class to someone else", assertFails(updateDoc(doc(tutor, "classes/ABC234"), { teacher: "uid-other" })));
 await check("owner renames any class", assertSucceeds(updateDoc(doc(owner, "classes/XYZ789"), { name: "Renamed by owner" })));
+await check("site admin renames any class", assertSucceeds(updateDoc(doc(admin, "classes/XYZ789"), { name: "Renamed by admin" })));
 
 console.log("Live class");
 await check("a pupil's device updates its live progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/ava"), live, { merge: true })));
@@ -92,6 +104,10 @@ await check("a pupil's device can't send a huge result", assertFails(addDoc(coll
 await check("a teacher reads their class's results", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/sessions"))));
 await check("a teacher can't read another class's results", assertFails(getDocs(collection(other, "classes/ABC234/sessions"))));
 await check("owner reads any class's results", assertSucceeds(getDocs(collection(owner, "classes/ABC234/sessions"))));
+await check("teacher records a worksheet for their class", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/sessions"), worksheet)));
+await check("pupil can't forge teacher worksheet marks", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), worksheet)));
+await check("other teacher can't mark this class", assertFails(addDoc(collection(other, "classes/ABC234/sessions"), { ...worksheet, markedBy: "other@example.com" })));
+await check("site admin marks any class", assertSucceeds(addDoc(collection(admin, "classes/ABC234/sessions"), { ...worksheet, markedBy: "admin@example.com" })));
 
 console.log("Assignments");
 await check("a pupil's device fetches its lists", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/assign/everyone"))));
@@ -100,6 +116,29 @@ await check("a pupil's device can't set lists", assertFails(setDoc(doc(pupil, "c
 await check("a teacher sets lists", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/assign/everyone"), { who: "Everyone", lists: ["ai"] })));
 await check("a teacher can't set lists in another's class", assertFails(setDoc(doc(tutor, "classes/XYZ789/assign/everyone"), { who: "Everyone", lists: ["ai"] })));
 
+console.log("Lesson diary");
+const note = { pupil: "Ava", lessonDate: "2026-10-28", lastWork: "Practised ai",
+  nextLesson: "Revisit ai", nextList: "ai", nextDate: "2026-10-29",
+  by: "tutor@example.com", at: serverTimestamp() };
+await check("teacher records their pupil's lesson", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/diary"), note)));
+await check("pupil can't read teacher diary", assertFails(getDocs(collection(pupil, "classes/ABC234/diary"))));
+await check("other teacher can't read diary", assertFails(getDocs(collection(other, "classes/ABC234/diary"))));
+await check("site admin reads diary", assertSucceeds(getDocs(collection(admin, "classes/ABC234/diary"))));
+await check("teacher can't write diary in another class", assertFails(addDoc(collection(tutor, "classes/XYZ789/diary"), note)));
+await check("teacher can't forge another author's note", assertFails(addDoc(collection(tutor, "classes/ABC234/diary"), { ...note, by: "other@example.com" })));
+
+console.log("Pupil roster");
+const roster = { name: "Ava", parentEmail: "parent@example.com", reminderOptIn: true,
+  nextLessonDate: "2026-10-29", lessonTime: "16:00", homeworkList: "ai", updated: serverTimestamp() };
+await check("teacher adds a pupil and parent contact", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/pupils/ava"), roster)));
+await check("pupil device can't read parent contact", assertFails(getDoc(doc(pupil, "classes/ABC234/pupils/ava"))));
+await check("other teacher can't read parent contact", assertFails(getDoc(doc(other, "classes/ABC234/pupils/ava"))));
+await check("site admin reads pupil roster", assertSucceeds(getDocs(collection(admin, "classes/ABC234/pupils"))));
+await check("pupil device can't add roster data", assertFails(setDoc(doc(pupil, "classes/ABC234/pupils/fake"), roster)));
+await check("teacher changes next lesson", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { nextLessonDate: "2026-10-30" })));
+await check("teacher can't rename a roster identity", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { name: "Someone else" })));
+
 console.log(`\n${passed} passed, ${failed} failed`);
 await env.cleanup();
 process.exit(failed ? 1 : 0);
+

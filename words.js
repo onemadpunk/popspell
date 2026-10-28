@@ -39,15 +39,15 @@
 */
 
 window.SITE = {
-  title: "Spelling Practice",
-  subtitle: "Listen · Say the sounds · Spell it",
+  title: "PopSpell",
+  subtitle: "Hear it. Map it. Spell it.",
   fontFile: "",
   firebase: {
     // Paste the "firebaseConfig" values from Firebase console → Project settings → Your apps
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    appId: ""
+    apiKey: "AIzaSyCV8Ns4_b2W-GBilgKzOF29u8VKeXgdNX0",
+    authDomain: "popspell-a0b8d.firebaseapp.com",
+    projectId: "popspell-a0b8d",
+    appId: "1:849176075050:web:b9294dec4a975ec3161c53"
   }
 };
 
@@ -232,3 +232,4 @@ window.SPELLING_LISTS = [
     ]
   }
 ];
+
