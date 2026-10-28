@@ -396,10 +396,12 @@
     try { return await cloud.assigned(CLASS.id, name); } catch { return []; }
   }
 
-  // An assigned entry can be a list id, a list title, or a "Make a list" link
+  // An assigned entry can be a list id, an activity id (activities.js), a list title, or a "Make a list" link
   function resolveAssigned(entry) {
     const text = String(entry).trim();
     if (LISTS[text]) return { href: `#/list/${encodeURIComponent(text)}`, title: LISTS[text].title, example: LISTS[text].items[0]?.spelling, accent: LISTS[text].accent };
+    const act = window.PopActivities && window.PopActivities.get(text);
+    if (act) return { href: `#/activity/${encodeURIComponent(act.id)}`, title: act.title, example: act.icon, accent: act.colour };
     const byTitle = Object.values(LISTS).find(l => l.title.toLowerCase() === text.toLowerCase());
     if (byTitle) return { href: `#/list/${encodeURIComponent(byTitle.id)}`, title: byTitle.title, example: byTitle.items[0]?.spelling, accent: byTitle.accent };
     const at = text.indexOf("#/custom?");
@@ -572,7 +574,9 @@
     const parts = path.split("/").filter(Boolean);
     const params = new URLSearchParams(query);
 
+    const activity = parts[0] === "activity" && window.PopActivities ? window.PopActivities.get(decodeURIComponent(parts[1] || "")) : null;
     if (parts[0] === "list" && LISTS[parts[1]]) showStart(LISTS[parts[1]]);
+    else if (activity) showActivityStart(activity);
     else if (parts[0] === "custom" && parseWords(params.get("words") || "").length) {
       showStart(prepare({
         title: params.get("title") || "My spelling list",
@@ -728,6 +732,18 @@
                 <span class="lc-count">${l.words.length} words</span>
               </a>`).join("")}
           </div>
+        </section>`).join("")}
+      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.map(area => `
+        <section class="stage" style="--accent:${esc(area.colour)}">
+          <h2>${area.icon} ${esc(area.title)}</h2>
+          <div class="grid">
+            ${area.activities.map(a => `
+              <a class="list-card" href="#/activity/${encodeURIComponent(a.id)}">
+                <span class="lc-example" aria-hidden="true">${a.icon}</span>
+                <span class="lc-title">${esc(a.title)}</span>
+                <span class="lc-count">${esc(a.level)} level</span>
+              </a>`).join("")}
+          </div>
         </section>`).join("")}`;
 
     const joinForm = $("#joinForm");
@@ -851,6 +867,8 @@
         <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>
         <div class="pupil" id="pupilBox"></div>
         <button class="btn big primary" id="go">▶ Start</button>
+        ${LISTS[list.id] && list.items.some(it => it.sentence) && window.PopActivities
+          ? `<p><a class="btn" href="#/activity/${encodeURIComponent(`dictate:${list.id}`)}">✍️ Sentence dictation with these words</a></p>` : ""}
         ${synth ? "" : `<p class="warn">This browser can't read words aloud. Please try Chrome, Edge or Safari.</p>`}
         <details class="teacher">
           <summary>Words in this list</summary>
@@ -898,7 +916,7 @@
     return `
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>Word ${session.i + 1} of ${n}</span>
+        <span>${session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
         ${help}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -921,10 +939,11 @@
     $("#stopLink").onclick = e => {
       e.preventDefault();
       const list = session.list;
+      const activity = session.activity;
       leaveSession(session); // the words done so far still count
       newScreen();
       session = null;
-      showStart(list);
+      if (activity) showActivityStart(activity); else showStart(list);
     };
   }
 
@@ -1196,6 +1215,236 @@
     if (tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
     $("#again-all").onclick = () => startPractice(list, list.items, checksFor(list));
     $("#print").onclick = () => window.print();
+  }
+
+  /* ---------- Activities: writing, reading, listening and numeracy (content in activities.js) ---------- */
+
+  const ACTIVITY_TRIES = 2;
+  const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
+
+  function showActivityStart(act) {
+    document.title = `${act.title} · ${SITE.title}`;
+    app.innerHTML = `
+      <section class="panel start" style="--accent:${esc(act.colour)}">
+        <a class="back" href="#/">← All activities</a>
+        <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
+        <h1>${esc(act.title)}</h1>
+        <p class="tip">${esc(act.blurb)}</p>
+        <div class="pupil" id="pupilBox"></div>
+        <button class="btn big primary" id="go">▶ Start</button>
+      </section>`;
+    const go = $("#go");
+    const box = $("#pupilBox");
+    mountPupil(box, { onEnter: () => go.click() });
+    (getPupil() ? go : box.querySelector(".pupil-name")).focus();
+    go.onclick = () => { if (takePupilName(box)) startActivity(act); };
+  }
+
+  function startActivity(act) {
+    const questions = act.make();
+    if (!questions.length) { app.innerHTML = `<section class="panel start"><h1>Nothing to practise here yet</h1><a class="btn primary" href="#/">Back</a></section>`; return; }
+    session = {
+      list: { id: act.id, title: act.title, accent: act.colour }, activity: act, i: 0, results: [],
+      pupil: getPupil(), sent: false, secureBefore: new Set(),
+      items: questions.map(q => Object.assign({ spelling: q.label, tokens: [] }, q))
+    };
+    livePing(session, "start");
+    showQuestion();
+  }
+
+  // Plays a question's sound: a recorded word, a recording (with the device voice as back-up), or text
+  function sayQuestion(q) {
+    if (!q.say) return Promise.resolve();
+    if (q.say.word) {
+      // e.g. "Which word rhymes with this word?" (recorded), then the word itself
+      const intro = q.say.intro && recPhrases.has(q.say.intro) ? [`audio/phrases/${q.say.intro}.mp3`, 350] : [];
+      return hasWordClip(q.say.word) ? orSpeak(intro.concat(wordClip(q.say.word)), q.say.word) : sayWord(q.say.word);
+    }
+    if (q.say.clip) return orSpeak([q.say.clip], q.say.text || "");
+    return speak(q.say.text);
+  }
+  const passageClip = p => `audio/passages/${encodeURIComponent(p.id)}.mp3`;
+  const sayPassage = p => orSpeak([passageClip(p)], p.text);
+
+  // Dictation: every word spelled right (in any order), a capital letter at the start, an end mark
+  function markDictation(attempt, answer) {
+    const clean = w => w.toLowerCase().replace(/[^a-z']/g, "");
+    const pool = attempt.split(/\s+/).map(clean).filter(Boolean);
+    const wrongWords = [];
+    answer.split(/\s+/).forEach(w => {
+      const c = clean(w);
+      if (!c) return;
+      const at = pool.indexOf(c);
+      if (at >= 0) pool.splice(at, 1); else wrongWords.push(w.replace(/[^A-Za-z']/g, ""));
+    });
+    const capital = /^[A-Z]/.test(attempt.trim());
+    const endMark = /[.!?]["”]?$/.test(attempt.trim());
+    const problems = wrongWords.map(w => `spelling: ${w.toLowerCase()}`)
+      .concat(capital ? [] : ["capital letters"]).concat(endMark ? [] : ["full stops"]);
+    return { right: !problems.length, wrongWords, capital, endMark, problems };
+  }
+
+  function showQuestion() {
+    const my = newScreen();
+    const act = session.activity;
+    const q = session.items[session.i];
+    const wrong = [];
+    let missed = [];
+    const passage = act.passage;
+    const passageBox = passage ? (act.listen
+      ? `<div class="passage listen"><button class="btn" id="playStory">🔊 Play the story again</button></div>`
+      : `<details class="passage"${session.i === 0 ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
+          <p>${esc(passage.text)}</p><button class="btn small" type="button" id="playStory">🔊 Read it to me</button></details>`) : "";
+    const optionHTML = (opt, i) => `
+      <div class="q-option-wrap">
+        <button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button>
+        ${q.sayOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}
+      </div>`;
+    app.innerHTML = `
+      <section class="panel practice activity" style="--accent:${esc(act.colour)}">
+        ${progressHTML()}
+        ${passageBox}
+        <p class="phase q-prompt">${esc(q.prompt)}</p>
+        ${q.html || ""}
+        ${q.say ? `<div class="row center"><button class="btn" id="hearQ">🔊 Hear it${q.say.word ? "" : " again"}</button></div>` : ""}
+        ${q.kind === "choice"
+          ? `<div class="q-options">${q.options.map(optionHTML).join("")}</div>`
+          : `<form class="spell-form" id="qForm" autocomplete="off">
+              <label for="qAnswer" class="sr-only">Your answer</label>
+              ${q.kind === "dictation"
+                ? `<textarea id="qAnswer" class="answer dictation" rows="2" autocapitalize="sentences" spellcheck="false"></textarea>`
+                : `<input id="qAnswer" class="answer" type="text" inputmode="${q.input === "numeric" ? "numeric" : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">`}
+              <button class="btn primary" type="submit">Check ✓</button></form>`}
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+      </section>`;
+    wireStop();
+    if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);
+    if ($("#playStory")) $("#playStory").onclick = () => sayPassage(passage);
+    // Listening activities start with the story (first question) or the question's own sound
+    if (act.listen && session.i === 0) sayPassage(passage).then(() => my === phase && sayQuestion(q));
+    else sayQuestion(q);
+
+    const finish = correct => {
+      const earned = correct ? ACTIVITY_TRIES - wrong.length : 0;
+      session.results.push({ item: q, correct, wrong: wrong.slice(), stars: earned,
+        missed: correct && !wrong.length ? [] : (missed.length ? missed : [q.skill]) });
+      livePing(session, "word", { word: q.label, ok: correct && !wrong.length });
+      const isLast = session.i === session.items.length - 1;
+      const fb = $("#feedback");
+      fb.className = `feedback ${correct ? "good" : "oops"}`;
+      fb.innerHTML = correct
+        ? `${esc(pick(PRAISE)[1])} <span class="stars-inline">${stars(earned)}</span>`
+        : q.kind === "dictation"
+          ? `The sentence was: <b>${esc(q.answer)}</b>`
+          : `The answer is <b>${esc(q.answer)}</b>${/[.!?]$/.test(q.answer) ? "" : "."} ${esc(q.explain || "")}`;
+      if (correct) chimeRight(); else chimeWrong();
+      app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
+      const next = document.createElement("div");
+      next.className = "row center";
+      next.innerHTML = `<button class="btn big primary" id="nextQ">${isLast ? "See my stars 🏆" : "Next →"}</button>`;
+      fb.after(next);
+      $("#nextQ").focus();
+      $("#nextQ").onclick = () => {
+        if (isLast) return showActivitySummary();
+        session.i++;
+        showQuestion();
+      };
+    };
+    const tryAgain = text => {
+      chimeWrong();
+      $("#feedback").className = "feedback oops";
+      $("#feedback").textContent = text;
+    };
+
+    if (q.kind === "choice") {
+      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayWord(q.options[Number(b.dataset.hear)]); });
+      app.querySelectorAll(".q-option").forEach(b => {
+        b.onclick = () => {
+          const value = q.options[Number(b.dataset.opt)];
+          if (norm(value) === norm(q.answer)) { b.classList.add("right"); return finish(true); }
+          wrong.push(value);
+          b.classList.add("wrong");
+          b.disabled = true;
+          if (wrong.length >= ACTIVITY_TRIES) return finish(false);
+          tryAgain("Not quite — have another look.");
+        };
+      });
+      return;
+    }
+
+    const input = $("#qAnswer");
+    input.focus();
+    $("#qForm").onsubmit = e => {
+      e.preventDefault();
+      const value = input.value.trim();
+      if (!value) return input.focus();
+      let right;
+      if (q.kind === "dictation") {
+        const m = markDictation(value, q.answer);
+        right = m.right;
+        missed = m.problems;
+        if (!right && wrong.length + 1 < ACTIVITY_TRIES) {
+          wrong.push(value);
+          const tips = [];
+          if (m.wrongWords.length) tips.push(`check the spelling of ${m.wrongWords.length === 1 ? "one word" : `${m.wrongWords.length} words`}`);
+          if (!m.capital) tips.push("start with a capital letter");
+          if (!m.endMark) tips.push("end with a full stop");
+          tryAgain(`Nearly — ${tips.join(", ")}. Listen again and try once more.`);
+          later(() => sayQuestion(q), 400);
+          return;
+        }
+      } else {
+        right = [q.answer].concat(q.accept || []).some(a => norm(a) === norm(value));
+        if (!right && wrong.length + 1 < ACTIVITY_TRIES) {
+          wrong.push(value);
+          input.value = "";
+          input.focus();
+          return tryAgain("Not quite — have another go.");
+        }
+      }
+      if (!right) wrong.push(value);
+      finish(right);
+    };
+  }
+
+  function showActivitySummary() {
+    newScreen();
+    const r = session.results;
+    const right = r.filter(x => x.correct).length;
+    const firstGo = r.filter(x => x.correct && !x.wrong.length).length;
+    const earned = r.reduce((t, x) => t + x.stars, 0);
+    const skills = {};
+    r.forEach(x => x.missed.forEach(s => { skills[s] = (skills[s] || 0) + 1; }));
+    const act = session.activity;
+    app.innerHTML = `
+      <section class="panel summary" style="--accent:${esc(act.colour)}">
+        <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
+        <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
+        <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        ${REPORTING ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
+        ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
+          .map(([s, n]) => `<li><span class="chip">${esc(s)}</span> ×${n}</li>`).join("")}</ul></div>` : ""}
+        <table class="results">
+          <thead><tr><th>Question</th><th>Result</th><th>Your answers</th></tr></thead>
+          <tbody>${r.map(x => `<tr class="${x.correct ? "" : "missed"}"><td class="rw">${esc(x.item.label)}</td>
+            <td>${x.correct ? `<span class="star-cell">${stars(x.stars)}</span>` : `<span class="miss">Answer: ${esc(x.item.answer)}</span>`}</td>
+            <td class="tries-cell">${x.wrong.length ? x.wrong.map(w => `<s>${esc(w)}</s>`).join(" ") : "—"}</td></tr>`).join("")}</tbody>
+        </table>
+        <div class="row center no-print">
+          <button class="btn primary" id="againAct">Have another go</button>
+          <a class="btn" href="#/">Choose something else</a>
+        </div>
+      </section>`;
+    sayPhrase(right === r.length ? PHRASES.allRight : PHRASES.finished);
+    livePing(session, "end");
+    session.ended = true;
+    const my = phase;
+    sendReport(session, true).then(sent => {
+      const note = $("#sent");
+      if (!note || my !== phase || sent === null) return;
+      note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
+    });
+    $("#againAct").onclick = () => startActivity(act);
   }
 
   /* ---------- Make a list (for the teacher) ---------- */

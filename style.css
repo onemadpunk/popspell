@@ -461,6 +461,36 @@ a.me-card:hover { border-color: var(--primary); }
 .roster-card .check { text-align: left; }
 .worksheet-print { display: none; }
 
+/* Activities: questions, options and passages */
+.q-prompt { font-size: clamp(1.3rem, 4vw, 1.8rem); font-family: var(--reading-font); }
+.q-pic { display: block; margin: 8px auto 12px; max-width: 100%; height: auto; }
+.q-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 12px; }
+.q-option-wrap { display: flex; align-items: stretch; gap: 4px; }
+.q-option {
+  font: inherit; font-family: var(--reading-font); font-size: 1.4rem; font-weight: 700; min-width: 5em; min-height: 64px;
+  padding: 8px 20px; border-radius: 18px; border: 3px solid var(--line); background: #fff; color: var(--ink); cursor: pointer;
+}
+.q-option:hover:not(:disabled) { border-color: var(--accent); }
+.q-option.right { border-color: var(--good); background: var(--good-soft); color: var(--good); }
+.q-option.wrong { border-color: var(--oops); background: var(--oops-soft); color: var(--oops); text-decoration: line-through; }
+.q-hear { font: inherit; border: 2px solid var(--line); background: #fff; border-radius: 14px; padding: 0 10px; cursor: pointer; }
+.answer.dictation { font-size: 1.4rem; text-align: left; min-height: 3.2em; resize: vertical; font-family: var(--reading-font); }
+.feedback.good { color: var(--good); font-weight: 700; }
+.stars-inline { color: var(--star); letter-spacing: .1em; }
+.passage { text-align: left; background: #fffdf7; border: 2px solid var(--line); border-radius: 16px; padding: 10px 16px; margin: 0 0 14px; }
+.passage summary { cursor: pointer; font-weight: 700; }
+.passage p { font-family: var(--reading-font); font-size: 1.25rem; line-height: 1.7; }
+.passage.listen { text-align: center; }
+
+/* CfE overview */
+.t-scroll { overflow-x: auto; }
+.cfe-table th { font-size: .78rem; min-width: 110px; }
+.cfe { display: inline-block; font-weight: 700; font-size: .85rem; border-radius: 999px; padding: 1px 9px; }
+.cfe.secure { background: var(--good-soft); color: var(--good); }
+.cfe.developing { background: var(--primary-soft); color: var(--primary); }
+.cfe.support { background: var(--oops-soft); color: var(--oops); }
+.cfe.none { background: #eef0f3; color: var(--muted); }
+
 /* Next steps board */
 .next-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; margin-top: 12px; }
 .next-card p { margin: 4px 0; }
@@ -531,5 +561,7 @@ a.me-card:hover { border-color: var(--primary); }
   .ws-sentence { break-inside: avoid; margin-bottom: 8px; }
   .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
   .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
+  .ws-report td, .ws-report th { font-size: 10.5pt; height: auto; }
+  .ws-comment { height: 90px; border: 1px solid #777; }
 }
 

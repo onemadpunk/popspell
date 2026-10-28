@@ -47,6 +47,10 @@ PHRASES = {
     "all-right": "Fantastic! You spelled every word.",
     "finished": "Well done! Have a look at your stars.",
     "test": "Can you spell the word, cake?",
+    # Spoken questions for the early-level listening games (activities.js)
+    "q-rhyme": "Which word rhymes with this word? Listen.",
+    "q-first": "Which word starts with the same sound as this word? Listen.",
+    "q-count": "How many sounds can you hear in this word? Listen.",
 }
 
 
@@ -88,6 +92,24 @@ def list_sentences(sentences_js):
     return {w.lower(): s for w, s in re.findall(r'^\s*([A-Za-z]+):\s*"([^"]*)"', text, flags=re.M)}
 
 
+JS_STRING = r'"((?:[^"\\]|\\.)*)"'
+
+
+def list_passages(passages_js):
+    """[(id, story, [questions])] from passages.js: each story and its questions get recorded."""
+    if not passages_js.exists():
+        return []
+    text = re.sub(r"/\*.*?\*/", "", passages_js.read_text(encoding="utf-8"), flags=re.S)
+    unescape = lambda s: s.replace('\\"', '"').replace("\\'", "'")
+    out = []
+    for block in re.split(r"\n\s*\{\s*\n\s*id:", text)[1:]:
+        pid = re.match(r'\s*' + JS_STRING, block).group(1)
+        story = re.search(r"\btext:\s*" + JS_STRING, block).group(1)
+        questions = re.findall(r"\bq:\s*" + JS_STRING, block)
+        out.append((pid, unescape(story), [unescape(q) for q in questions]))
+    return out
+
+
 def plan():
     """Every recording the site needs: {"words/cake": text}."""
     jobs = {}
@@ -99,6 +121,10 @@ def plan():
         jobs[f"letters/{c}"] = text
     for key, text in PHRASES.items():
         jobs[f"phrases/{key}"] = text
+    for pid, story, questions in list_passages(ROOT / "passages.js"):
+        jobs[f"passages/{pid}"] = story
+        for n, q in enumerate(questions, 1):
+            jobs[f"passages/{pid}-q{n}"] = q
     return jobs
 
 

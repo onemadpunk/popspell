@@ -21,6 +21,21 @@ Pupils type their first name before starting, so each child on a shared device h
 
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
+## Beyond spelling: writing, reading, listening and numeracy
+
+Alongside the spelling lists, [`activities.js`](activities.js) adds 33 activities that make fresh questions each time, all using the same stars, Help button, live class and teacher results:
+
+| Area | Activities |
+|---|---|
+| ✍️ **Writing** | Capital letters and full stops · full stop, question or exclamation mark · joining words (and, but, because, so) · past tense -ed · **sentence dictation** for any spelling list (hear it, write it all: spellings, capital letter and full stop are each checked) |
+| 📖 **Reading** | Tricky-word sentences · six short stories matched to the phonics stages (short vowels → digraphs → silent e → vowel teams → r-vowels → a longer Second-level story), with questions on finding information, inference and vocabulary. Every story can be read aloud. |
+| 👂 **Listening and sounds** (Early level) | Rhyming words · first sounds · counting sounds · two "listen to the story" activities. The questions are spoken, and every answer has a 🔊 button, so non-readers can do them on their own. |
+| 🔢 **Numeracy** | Adding and taking away within 10 and 20 · number bonds to 10 and 20 · doubles and halves · times tables (2/5/10, 3/4, 6–9) · division facts · tens and ones · hundreds, tens and ones · bigger or smaller · money (adding coins, change) · telling the time (with a clock face) · halves, quarters and thirds (with shaded shapes) |
+
+Every list and activity is labelled with a **Curriculum for Excellence level** (Early, First or Second) and **organiser** (e.g. *Literacy · Writing · Tools for writing*, *Numeracy · Money*). Teachers' reports are grouped by these. They're a starting guide; teachers should check them against their own planning.
+
+The stories and their questions are in [`passages.js`](passages.js) and can be edited there. New or changed stories are recorded in Eponine's voice automatically.
+
 ## Teachers
 
 Teachers sign in **on the site** with their Google account (👩‍🏫 **Teacher**, top right). The owner invites each teacher by email. Once signed in, a teacher has:
@@ -28,10 +43,12 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
 - **Assignments and plans:** choose lists for each pupil or for *Everyone*, and schedule lists between dates.
-- **Plans & worksheets:** print a sound-mapping worksheet with one box per phoneme, a dictation worksheet, and a teacher key. Mark printed work by word and missed grapheme; worksheet results appear alongside online results.
+- **Next steps:** one card per pupil showing their next lesson, what's planned, how they did last time, what to work on, and a suggestion that follows the teaching order. **Plan it** schedules it in one click. Pupils with nothing planned stand out.
+- **Plans & worksheets:** print a sound-mapping worksheet with one box per phoneme, a dictation worksheet, a teacher key, a **handwriting** sheet (model, grey trace, dotted trace, own go on four-line ruling), a **sentence** sheet (fill the blank, then copy the sentence), and a **letter formation** sheet. Handwriting sheets use the reading font (Sassoon or Andika). Mark printed work by word and missed grapheme; worksheet results appear alongside online results.
+- **"Pupils only see the work I set":** a per-class setting (in Classes) that hides the rest of the library from that class's devices.
 - **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.
 - **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email draft and save the homework worksheet as a PDF to attach manually.
-- **Pupils:** each pupil's results over the last week, month, term or year, the sounds they miss most, and a **spreadsheet download** of every word (opens in Google Sheets or Excel).
+- **Pupils:** each pupil's results over the last week, month, term or year, the sounds they miss most, a **spreadsheet download** of every word (opens in Google Sheets or Excel), a **Curriculum for Excellence overview** (each pupil's status per organiser: *Secure* = 85%+ right first time on 10+ questions over 2+ days, *Developing* = 60%+, otherwise *Needs support*), and a printable **📄 Progress report** per pupil with space for a teacher's comment.
 - **Settings** and **Make a list**, which only appear while a teacher is signed in.
 - **Site admin:** manages every class and can invite teachers. Only the owner can grant or revoke Site admin access.
 - **For the owner:** a **Teachers** tab to invite teachers and Site admins and access every class.

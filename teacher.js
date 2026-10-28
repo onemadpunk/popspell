@@ -198,9 +198,18 @@
 
   /* ---------- Assignments ---------- */
 
+  // Everything a teacher can set: spelling lists by stage, then writing, reading, listening and
+  // numeracy activities (activities.js), then sentence dictation for any spelling list
   function catalogueOptions() {
     const groups = P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`);
-    return `<option value="">Choose a list…</option>${groups.join("")}`;
+    const A = window.PopActivities;
+    if (A) {
+      A.AREAS.forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
+        .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`));
+      groups.push(`<optgroup label="✍️ Sentence dictation">${P().STAGES.flatMap(st => st.lists)
+        .map(l => `<option value="dictate:${esc(l.id)}">Dictation: ${esc(l.title)}</option>`).join("")}</optgroup>`);
+    }
+    return `<option value="">Choose work…</option>${groups.join("")}`;
   }
   const listTitle = entry => { const r = P().resolveAssigned(entry); return r ? r.title : entry; };
 
@@ -490,9 +499,12 @@
       const a = assignments.find(x => key(x.who) === k) || null;
       const upcoming = (a ? a.plans : []).filter(p => p.until >= today).sort((x, y) => x.from.localeCompare(y.from))[0] || null;
       const latest = sessions.find(s => key(s.pupil) === k) || null; // newest first
+      // Suggestions follow the teaching order, so they ignore extras like dictation or teachers' own lists
+      const order = teachingOrder();
+      const latestInOrder = sessions.find(s => key(s.pupil) === k && order.includes(s.listId)) || null;
       const summary = summaries.find(x => key(x.pupil) === k) || null;
       const lessonDate = r && r.nextLessonDate >= today ? r.nextLessonDate : "";
-      return { k, name, r, a, upcoming, latest, summary, lessonDate, suggestion: suggestFor(latest, summary) };
+      return { k, name, r, a, upcoming, latest, summary, lessonDate, suggestion: suggestFor(latestInOrder, summary) };
     }).sort((x, y) => (x.lessonDate || "9999").localeCompare(y.lessonDate || "9999") || x.name.localeCompare(y.name));
     const when = d => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "";
     const unplanned = rows.filter(x => !x.upcoming).length;
@@ -642,6 +654,54 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
 
+  /* ---------- Curriculum for Excellence: progress by organiser ---------- */
+
+  // Secure: 85%+ right first time on 10+ questions over 2+ days. Developing: 60%+. Below that: needs support.
+  function cfeStatus(row) {
+    if (row.items < 5) return { key: "none", text: "Not enough yet" };
+    const pct = row.first / row.items;
+    if (pct >= 0.85 && row.items >= 10 && row.days.size >= 2) return { key: "secure", text: "Secure" };
+    if (pct >= 0.6) return { key: "developing", text: "Developing" };
+    return { key: "support", text: "Needs support" };
+  }
+
+  function cfeRows(sessions, pupilName) {
+    const A = window.PopActivities;
+    const rows = {};
+    sessions.filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
+      const tag = (A && A.tag(s.listId)) || { organiser: "Other work", level: "" };
+      const r = rows[tag.organiser] = rows[tag.organiser] || { organiser: tag.organiser, levels: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
+      if (tag.level) r.levels.add(tag.level);
+      r.work.add(s.list);
+      r.days.add(new Date(s.at).toDateString());
+      (s.words || []).forEach(w => {
+        r.items++;
+        if (w.correct && w.triesUsed === 1) r.first++;
+        (w.missed || []).forEach(m => { r.skills[m] = (r.skills[m] || 0) + 1; });
+      });
+    });
+    const levelOrder = ["Early", "First", "Second"];
+    return Object.values(rows).map(r => Object.assign(r, {
+      status: cfeStatus(r), pct: r.items ? Math.round((r.first / r.items) * 100) : 0,
+      levelText: levelOrder.filter(l => r.levels.has(l)).join(", "),
+      topSkills: Object.entries(r.skills).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([s]) => s)
+    })).sort((a, b) => a.organiser.localeCompare(b.organiser));
+  }
+
+  function printReport(pupilName, sessions) {
+    const rows = cfeRows(sessions, pupilName);
+    const period = (PERIODS.find(([d]) => d === days) || [0, ""])[1];
+    printSheet("ws-report", `<h1>PopSpell progress report</h1>
+      <p><b>Pupil:</b> ${esc(pupilName)} &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Period:</b> ${esc(period)} &nbsp; <b>Printed:</b> ${esc(new Date().toLocaleDateString("en-GB"))}</p>
+      <p>Grouped by Curriculum for Excellence organiser. “Right first time” counts questions answered correctly without help.
+        Secure means 85% or more right first time, on at least 10 questions over two or more days.</p>
+      <table><thead><tr><th>Organiser</th><th>Level</th><th>Work done</th><th>Questions</th><th>Right first time</th><th>Status</th><th>To work on</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.organiser)}</td><td>${esc(r.levelText)}</td><td>${esc([...r.work].slice(0, 6).join(", "))}${r.work.size > 6 ? "…" : ""}</td>
+        <td>${r.items}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
+        || `<tr><td colspan="7">No work recorded in this period.</td></tr>`}</tbody></table>
+      <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
+  }
+
   let days = 30;
   const PERIODS = [[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
 
@@ -677,12 +737,22 @@
         ${sessions.length ? `<button class="btn" id="csv">⬇ Download every word (spreadsheet)</button>` : ""}</div>
       ${pupils.length ? `<div class="pupil-grid">${pupils.map(p => `
         <article class="pcard">
-          <h3>${esc(p.pupil)}</h3>
+          <div class="next-head"><h3>${esc(p.pupil)}</h3><button class="btn small" data-report="${esc(p.pupil)}">📄 Progress report</button></div>
            <p class="meta">${p.lists} lists (${p.worksheets} worksheets) · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
           ${p.topSounds.length ? `<div><b>Sounds to work on</b><br>${p.topSounds.map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</div>` : `<div>No missed sounds 🎉</div>`}
            <ul class="recent">${p.recent.map(r => `<li>${day(r.at)} · ${esc(r.source)} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
-        </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}`;
+        </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}
+      ${pupils.length ? (() => {
+        const organisers = [...new Set(cfeRows(sessions).map(r => r.organiser))];
+        return `<h2 class="t-h2">Curriculum for Excellence overview</h2>
+          <p class="hint">Each pupil's status for each organiser in this period. Secure = 85%+ right first time on 10+ questions over 2+ days; Developing = 60%+.</p>
+          <div class="t-scroll"><table class="t-table cfe-table"><thead><tr><th>Pupil</th>${organisers.map(o => `<th>${esc(o.replace(/^(Literacy|Numeracy) · /, ""))}</th>`).join("")}</tr></thead>
+          <tbody>${pupils.map(p => { const rows = cfeRows(sessions, p.pupil);
+            return `<tr><td class="who">${esc(p.pupil)}</td>${organisers.map(o => { const r = rows.find(x => x.organiser === o);
+              return `<td>${r ? `<span class="cfe ${r.status.key}">${esc(r.status.text)}</span><br><span class="meta">${r.pct}% · ${r.items} q</span>` : "—"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>`;
+      })() : ""}`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
+    body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
     $("#addPupil").onsubmit = async e => {
       e.preventDefault();
