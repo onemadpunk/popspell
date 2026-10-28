@@ -142,6 +142,28 @@ await check("pupil device can't add roster data", assertFails(setDoc(doc(pupil, 
 await check("teacher changes next lesson", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { nextLessonDate: "2026-10-30" })));
 await check("teacher can't rename a roster identity", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { name: "Someone else" })));
 
+await check("teacher saves a parent link and note", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLink: "abcdefghijklmnopqrstuvwxyz012345", parentAt: Date.now(), parentNote: "Well done!" })));
+await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
+
+console.log("Parent pages");
+const LINK = "abcdefghijklmnopqrstuvwxyz012345";
+const parentDoc = { classId: "ABC234", pupil: "Ava", summary: { sounds: { secure: ["ai"] } }, note: "Well done!", updated: serverTimestamp(), by: "tutor@example.com" };
+await check("teacher publishes their pupil's parent page", assertSucceeds(setDoc(doc(tutor, `parents/${LINK}`), parentDoc)));
+await check("anyone with the link can open it, signed in or not", assertSucceeds(getDoc(doc(nobody, `parents/${LINK}`))));
+await check("a pupil device can open it too", assertSucceeds(getDoc(doc(pupil, `parents/${LINK}`))));
+await check("nobody can list parent pages", assertFails(getDocs(collection(nobody, "parents"))));
+await check("a pupil device can't list parent pages", assertFails(getDocs(collection(pupil, "parents"))));
+await check("a short, guessable link is refused", assertFails(setDoc(doc(tutor, "parents/abc"), parentDoc)));
+await check("a pupil device can't write a parent page", assertFails(setDoc(doc(pupil, "parents/zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"), parentDoc)));
+await check("a parent can't change the page", assertFails(updateDoc(doc(nobody, `parents/${LINK}`), { note: "changed" })));
+await check("another teacher can't write a page for this class", assertFails(setDoc(doc(other, "parents/yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"), { ...parentDoc, by: "other@example.com" })));
+await check("another teacher can't overwrite this page", assertFails(setDoc(doc(other, `parents/${LINK}`), { ...parentDoc, classId: "XYZ789", by: "other@example.com" })));
+await check("teacher can't move a page to another class", assertFails(setDoc(doc(tutor, `parents/${LINK}`), { ...parentDoc, classId: "XYZ789" })));
+await check("teacher can't sign a page as someone else", assertFails(setDoc(doc(tutor, `parents/${LINK}`), { ...parentDoc, by: "other@example.com" })));
+await check("site admin updates the page", assertSucceeds(setDoc(doc(admin, `parents/${LINK}`), { ...parentDoc, by: "admin@example.com" })));
+await check("another teacher can't turn the page off", assertFails(deleteDoc(doc(other, `parents/${LINK}`))));
+await check("teacher turns the page off", assertSucceeds(deleteDoc(doc(tutor, `parents/${LINK}`))));
+
 console.log(`\n${passed} passed, ${failed} failed`);
 await env.cleanup();
 process.exit(failed ? 1 : 0);

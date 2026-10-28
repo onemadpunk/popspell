@@ -8,6 +8,7 @@ rules_version = '2';
 //  • Pupils' devices sign in anonymously. Knowing a class code lets a device add results,
 //    live progress and help requests to that class, and look up its own assigned lists.
 //    Pupils can never read other pupils' results or the class list.
+//  • A parent link opens one pupil's progress summary, which the teacher writes. Nothing else.
 //
 // Paste this whole file into Firebase console → Firestore Database → Rules, and publish.
 
@@ -121,18 +122,39 @@ service cloud.firestore {
           return canSee(c)
           && request.resource.data.keys().hasOnly([
             'name', 'parentEmail', 'reminderOptIn', 'nextLessonDate',
-            'lessonTime', 'homeworkList', 'updated'])
+            'lessonTime', 'homeworkList', 'updated', 'parentLink', 'parentAt', 'parentNote'])
           && shortText(request.resource.data.name, 40)
           && shortText(request.resource.data.parentEmail, 254)
           && request.resource.data.reminderOptIn is bool
           && shortText(request.resource.data.nextLessonDate, 10)
           && shortText(request.resource.data.lessonTime, 5)
-          && shortText(request.resource.data.homeworkList, 100);
+          && shortText(request.resource.data.homeworkList, 100)
+          && (!('parentLink' in request.resource.data) || shortText(request.resource.data.parentLink, 64))
+          && (!('parentAt' in request.resource.data) || request.resource.data.parentAt is number)
+          && (!('parentNote' in request.resource.data) || shortText(request.resource.data.parentNote, 1000));
         }
         allow create: if validPupil();
         allow update: if validPupil()
           && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['name']);
       }
+    }
+
+    // Parent pages: one progress summary per pupil, kept under a long random link. Anyone with
+    // the link can open that one summary, but nobody can list them. Only the class's teacher or
+    // a site admin can write one, and a summary can't be moved to another class.
+    match /parents/{t} {
+      allow get: if t.size() >= 24;
+      function validParent() {
+        return t.size() >= 24 && canSee(request.resource.data.classId)
+          && request.resource.data.keys().hasOnly(['classId', 'pupil', 'summary', 'note', 'updated', 'by'])
+          && shortText(request.resource.data.pupil, 40)
+          && shortText(request.resource.data.note, 1000)
+          && request.resource.data.summary is map
+          && request.resource.data.by == email();
+      }
+      allow create: if validParent();
+      allow update: if validParent() && request.resource.data.classId == resource.data.classId;
+      allow delete: if canSee(resource.data.classId);
     }
   }
 }

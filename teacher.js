@@ -526,6 +526,7 @@
         ? checkResult(newestCheck) : suggestFor(latestInOrder, summary);
       return { k, name, r, a, upcoming, latest, summary, lessonDate, checks, suggestion };
     }).sort((x, y) => (x.lessonDate || "9999").localeCompare(y.lessonDate || "9999") || x.name.localeCompare(y.name));
+    refreshParents(roster, sessions, assignments);
     const when = d => d ? new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }) : "";
     const unplanned = rows.filter(x => !x.upcoming).length;
     body.innerHTML = `
@@ -561,6 +562,11 @@
         try {
           await cloud.savePlans(current.id, x.a ? x.a.who : x.name, plans.concat({ list, from: date, until: date }));
           if (x.r) await cloud.savePupil(current.id, Object.assign({}, x.r, { homeworkList: list, nextLessonDate: date }));
+          // The parent page shows what's coming next, so it changes with the plan
+          if (x.r && x.r.parentLink) {
+            const [s, a] = await parentData();
+            await publishParent(Object.assign({}, x.r, { homeworkList: list, nextLessonDate: date }), s, a);
+          }
           drawNext(body);
         } catch (err) { showError(err); }
       };
@@ -725,8 +731,69 @@
       <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
   }
 
+  /* ---------- Parent pages: a private progress link for each pupil's family (parent.html) ---------- */
+
+  const PARENT_DAYS = 120; // the parent page covers about the last four months
+  const parentURL = link => `${location.origin}${location.pathname.replace(/[^/]*$/, "")}parent.html#${link}`;
+  const sameName = (a, b) => String(a || "").trim().toLowerCase() === String(b || "").trim().toLowerCase();
+
+  // What the parent page shows, worked out from the results that reach the teacher. Stars are kept
+  // on the pupil's own device, so sounds are counted here with the same rule as My sounds.
+  function parentSummary(name, sessions, assignment, r) {
+    const mine = sessions.filter(s => sameName(s.pupil, name)).sort((a, b) => a.at - b.at);
+    const sounds = {};
+    // Starting checks deliberately go past what's been taught, so they don't count here
+    mine.filter(s => !P().checkKind(s.listId)).forEach(s => (s.words || []).forEach(w => {
+      const missed = new Set(w.missed || []);
+      const d = new Date(s.at).toDateString();
+      new Set(String(w.sounds || "").split("·").filter(t => t && t.length <= 3)).forEach(snd => {
+        const x = sounds[snd] = sounds[snd] || { right: 0, days: new Set(), recent: [] };
+        const ok = !missed.has(snd);
+        if (ok) { x.right++; x.days.add(d); }
+        x.recent.push(ok);
+      });
+    }));
+    const level = x => (x.right >= 4 && x.days.size >= 2 && x.recent.length >= 3 && x.recent.slice(-3).every(Boolean)) ? "secure"
+      : x.recent.slice(-2).includes(false) ? "practise" : "learning";
+    const soundsAt = lv => Object.keys(sounds).filter(s => level(sounds[s]) === lv).slice(0, 60);
+    const weekAgo = Date.now() - 7 * 86400000;
+    const thisWeek = mine.filter(s => s.at >= weekAgo);
+    const firstTime = s => (s.words || []).filter(w => w.correct && w.triesUsed === 1).length;
+    const today = todayKey();
+    return {
+      teacher: shortName(current.teacherName || (me && me.name) || ""),
+      days: PARENT_DAYS,
+      week: { done: thisWeek.length, questions: thisWeek.reduce((t, s) => t + (s.words || []).length, 0) },
+      sounds: { secure: soundsAt("secure"), learning: soundsAt("learning"), practise: soundsAt("practise") },
+      recent: mine.slice(-8).reverse().map(s => ({ title: s.list, at: s.at, worksheet: s.source === "worksheet",
+        score: P().checkKind(s.listId) ? "" : `${firstTime(s)} of ${(s.words || []).length} right first time` })),
+      homework: r && r.homeworkList ? titleOf(r.homeworkList) : "",
+      nextLesson: r && r.nextLessonDate >= today ? r.nextLessonDate : "",
+      upcoming: (assignment ? assignment.plans : []).filter(p => p.until >= today)
+        .sort((a, b) => a.from.localeCompare(b.from)).slice(0, 3).map(p => ({ title: titleOf(p.list), from: p.from })),
+      cfe: cfeRows(sessions, name).filter(x => x.status.key !== "none")
+        .map(x => ({ organiser: x.organiser, level: x.levelText, status: x.status.text }))
+    };
+  }
+
+  async function publishParent(r, sessions, assignments, link = r.parentLink || cloud.newParentLink()) {
+    const a = assignments.find(x => sameName(x.who, r.name)) || null;
+    await cloud.publishParent(current.id, r.name, link, parentSummary(r.name, sessions, a, r), r.parentNote || "");
+    return link;
+  }
+
+  // Whenever the teacher area loads results, any parent page with newer work behind it is updated
+  function refreshParents(roster, sessions, assignments) {
+    roster.filter(r => r.parentLink).forEach(r => {
+      const latest = Math.max(0, ...sessions.filter(s => sameName(s.pupil, r.name)).map(s => s.at));
+      if (latest > (r.parentAt || 0)) publishParent(r, sessions, assignments).catch(err => console.warn("PopSpell: parent page not updated", err));
+    });
+  }
+  // The Pupils tab shows any period, but a parent page always covers the same months
+  const parentData = () => Promise.all([cloud.sessions(current.id, PARENT_DAYS), cloud.assignments(current.id)]);
+
   let days = 30;
-  const PERIODS = [[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
+  const PERIODS =[[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
 
   async function drawPupils(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
@@ -750,6 +817,19 @@
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
           <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label></div>
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
+        <div class="parent-box">
+          <p><b>👪 Parent page</b>${r.parentLink ? ` <span class="meta">· updated ${r.parentAt ? esc(day(r.parentAt)) : "—"}</span>` : ""}</p>
+          <label>Note for home, shown on the parent page
+            <textarea data-parent-note rows="2" maxlength="1000" placeholder="e.g. Great effort this week! Practise the ai words at bedtime.">${esc(r.parentNote || "")}</textarea></label>
+          ${r.parentLink ? `
+            <div class="add-row"><input type="text" readonly class="t-link" value="${esc(parentURL(r.parentLink))}" aria-label="Parent link">
+              <button class="btn small" data-parent-copy="${esc(r.key)}">📋 Copy</button>
+              <a class="btn small" href="${esc(parentURL(r.parentLink))}" target="_blank" rel="noopener">Open</a></div>
+            <div class="row"><button class="btn small" data-parent="update" data-key="${esc(r.key)}">Update now</button>
+              <button class="btn small" data-parent="new" data-key="${esc(r.key)}">Make a new link</button>
+              <button class="btn small" data-parent="off" data-key="${esc(r.key)}">Turn off</button></div>`
+          : `<button class="btn small" data-parent="make" data-key="${esc(r.key)}">Make a parent link</button>`}
+        </div>
         <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
           ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}
           ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}</div>
@@ -793,11 +873,40 @@
       const parentEmail = card.querySelector("[data-parent]").value.trim();
       const reminderOptIn = card.querySelector("[data-optin]").checked;
       if (reminderOptIn && !parentEmail) return showError(new Error("Add a parent email before enabling reminders."));
-      try { await cloud.savePupil(current.id, { name: pupil.name, parentEmail, reminderOptIn,
+      const details = { name: pupil.name, parentEmail, reminderOptIn,
         nextLessonDate: card.querySelector("[data-lesson-date]").value,
         lessonTime: card.querySelector("[data-lesson-time]").value,
-        homeworkList: card.querySelector("[data-homework]").value });
-        drawPupils(body); } catch (err) { showError(err); }
+        homeworkList: card.querySelector("[data-homework]").value,
+        parentNote: card.querySelector("[data-parent-note]").value };
+      try {
+        await cloud.savePupil(current.id, details);
+        if (pupil.parentLink) { const [s, a] = await parentData(); await publishParent(Object.assign({}, pupil, details), s, a); }
+        drawPupils(body);
+      } catch (err) { showError(err); }
+    }; });
+    body.querySelectorAll("[data-parent-copy]").forEach(b => { b.onclick = async () => {
+      const pupil = roster.find(r => r.key === b.dataset.parentCopy);
+      try { await navigator.clipboard.writeText(parentURL(pupil.parentLink)); b.textContent = "✓ Copied"; }
+      catch { b.closest(".add-row").querySelector("input").select(); }
+    }; });
+    // Make, update, replace or turn off a pupil's parent page. The note is saved with it.
+    body.querySelectorAll("[data-parent]").forEach(b => { b.onclick = async () => {
+      const pupil = roster.find(r => r.key === b.dataset.key);
+      const action = b.dataset.parent;
+      const parentNote = b.closest(".roster-card").querySelector("[data-parent-note]").value;
+      if (action === "off" && !confirm(`Turn off ${pupil.name}'s parent page? The link will stop working.`)) return;
+      if (action === "new" && !confirm(`Make a new link for ${pupil.name}? The old link will stop working.`)) return;
+      b.disabled = true;
+      try {
+        if (action !== "make" && action !== "update") await cloud.stopParent(current.id, pupil.name, pupil.parentLink);
+        if (action !== "off") {
+          const withNote = Object.assign({}, pupil, { parentNote }, action === "new" ? { parentLink: "" } : {});
+          await cloud.savePupil(current.id, withNote);
+          const [s, a] = await parentData();
+          await publishParent(withNote, s, a);
+        }
+        drawPupils(body);
+      } catch (err) { b.disabled = false; showError(err); }
     }; });
     body.querySelectorAll("[data-print-homework]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.printHomework);

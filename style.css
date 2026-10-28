@@ -372,6 +372,22 @@ a.me-card:hover { border-color: var(--primary); }
 .new-stars p { margin: 0 0 8px; font-weight: 700; font-size: 1.15rem; }
 .star-badge { display: inline-block; font-size: 1.4rem; font-weight: 700; margin: 0 8px 6px; }
 
+/* Parent page (parent.html) */
+.parent-page h2 { font-size: 1.2rem; margin: 22px 0 8px; }
+.parent-page .chip { margin: 0 4px 6px 0; font-size: 1.15rem; }
+.parent-page .chip.practise { border-color: #f59e0b; color: #92400e; background: #fff6df; }
+.parent-page .chip.learn { border-color: var(--primary); color: var(--primary); }
+.parent-page .chip.good { border-color: var(--good); color: var(--good); background: var(--good-soft); }
+.parent-note { background: #fff3cf; border: 2px solid var(--star); border-radius: 16px; padding: 10px 16px; margin: 12px 0; }
+.parent-note p { margin: 6px 0 0; white-space: pre-line; }
+.parent-list { padding-left: 1.2em; margin: 0; }
+.parent-list li { margin-bottom: 6px; }
+
+/* Parent page controls (teacher area) */
+.parent-box { border-top: 2px dashed var(--line); margin-top: 10px; padding-top: 8px; }
+.parent-box p { margin: 0 0 6px; }
+.parent-box textarea { width: 100%; font: inherit; border: 2px solid var(--line); border-radius: 10px; padding: 6px 8px; }
+
 /* Decodable stories */
 .story-title { margin: 6px 0 4px; }
 .story-text { text-align: left; font-size: 1.7rem; line-height: 2.3; background: #fffdf7; border: 2px solid var(--line); border-radius: 16px; padding: 14px 20px; margin: 10px 0; }

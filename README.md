@@ -68,6 +68,13 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **"Pupils only see the work I set":** a per-class setting (in Classes) that hides the rest of the library from that class's devices.
 - **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.
 - **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email draft and save the homework worksheet as a PDF to attach manually.
+- **👪 Parent pages:** for any pupil in the roster, **Make a parent link** creates a private page (`parent.html#…`) for the family.
+  - **Sharing:** copy the link and send it by WhatsApp, text or email. Parents need no account or password.
+  - **What's on it:** the pupil's first name, a note for home, what's coming up, sounds to practise, sounds getting there and sounds known well, recent work, Curriculum for Excellence progress, and tips for helping at home. The private lesson diary, parent email and other pupils' results are never on it.
+  - **Sounds:** these are worked out from the results that reach the teacher, using the same rule as My sounds, and cover about the last four months. Starting checks are left out.
+  - **Staying up to date:** the page updates itself whenever the teacher area loads newer work (Next steps), when **Plan it** changes what's coming up, or with **Update now**.
+  - **Turning it off:** **Make a new link** replaces it and **Turn off** stops it. Either way, the old link stops working at once.
+  - **Cost:** each parent visit is one read on the free Firebase plan.
 - **Pupils:** each pupil's results over the last week, month, term or year, the sounds they miss most, a **spreadsheet download** of every word (opens in Google Sheets or Excel), a **Curriculum for Excellence overview** (each pupil's status per organiser: *Secure* = 85%+ right first time on 10+ questions over 2+ days, *Developing* = 60%+, otherwise *Needs support*), and a printable **📄 Progress report** per pupil with space for a teacher's comment.
 - **Settings** and **Make a list**, which only appear while a teacher is signed in.
 - **Site admin:** manages every class and can invite teachers. Only the owner can grant or revoke Site admin access.

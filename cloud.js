@@ -278,8 +278,39 @@ async function start() {
         nextLessonDate: String(pupil.nextLessonDate || "").slice(0, 10),
         lessonTime: String(pupil.lessonTime || "").slice(0, 5),
         homeworkList: String(pupil.homeworkList || "").slice(0, 100),
+        ...(pupil.parentNote !== undefined ? { parentNote: String(pupil.parentNote).trim().slice(0, 1000) } : {}),
         updated: serverTimestamp()
       }, { merge: true });
+    },
+
+    /* ---------- Parent pages (parent.html) ---------- */
+
+    // 24 random bytes: a link nobody can guess. It goes after a # so it's never sent to a server.
+    newParentLink: () => btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(24))))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""),
+    // Writes the summary the link shows, and remembers the link (and when) on the pupil's record
+    async publishParent(classId, pupilName, link, summary, note) {
+      const p = await api.me();
+      if (!p || !p.role) throw new Error("Sign in as a teacher first.");
+      const batch = writeBatch(store);
+      batch.set(doc(store, "parents", link), { classId, pupil: String(pupilName).trim().slice(0, 40),
+        summary, note: String(note || "").trim().slice(0, 1000), updated: serverTimestamp(), by: p.email });
+      batch.update(doc(store, "classes", classId, "pupils", await fingerprint(pupilName)),
+        { parentLink: link, parentAt: Date.now(), updated: serverTimestamp() });
+      await batch.commit();
+    },
+    async stopParent(classId, pupilName, link) {
+      const batch = writeBatch(store);
+      batch.delete(doc(store, "parents", link));
+      batch.update(doc(store, "classes", classId, "pupils", await fingerprint(pupilName)),
+        { parentLink: "", parentAt: 0, updated: serverTimestamp() });
+      await batch.commit();
+    },
+    // For the parent page: no sign-in, just the link
+    async parentPage(link) {
+      if (!/^[A-Za-z0-9_-]{24,64}$/.test(String(link || ""))) return null;
+      const snap = await getDocFromServer(doc(store, "parents", link));
+      return snap.exists() ? Object.assign({}, snap.data(), { updated: snap.data().updated ? snap.data().updated.toMillis() : Date.now() }) : null;
     },
 
     async sessions(classId, days = 30) {
