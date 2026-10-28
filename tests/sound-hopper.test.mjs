@@ -23,8 +23,8 @@ const browser = { window: { PopSpell: { LISTS }, PASSAGES: [], STORIES: [] } };
 runInNewContext(readFileSync(new URL("../activities.js", import.meta.url), "utf8"), browser);
 const catalogue = browser.window.PopActivities;
 
-test("each Sound Trail has six heard words with a valid choice for every sound", () => {
-  for (const id of ["g-trail-short", "g-trail-digraphs", "g-trail-long-a"]) {
+test("each Sound Hopper level has six heard words with a valid choice for every sound", () => {
+  for (const id of ["g-hopper-short", "g-hopper-digraphs", "g-hopper-long-a"]) {
     const game = catalogue.get(id);
     assert.ok(game, id);
     assert.equal(catalogue.tag(id).area, "games");
@@ -40,7 +40,14 @@ test("each Sound Trail has six heard words with a valid choice for every sound",
   }
 });
 
-test("a wrong grapheme identifies only its sound box", () => {
-  assert.deepEqual(Array.from(catalogue.gradeMap(["r", "a_e", "n"], ["r", "ai", "n"])), [1]);
-  assert.deepEqual(Array.from(catalogue.gradeMap(["c", "a_e", "k"], ["c", "a_e", "k"])), []);
+test("digraph and split-digraph rounds offer meaningful alternatives", () => {
+  const questions = catalogue.get("g-hopper-long-a").make();
+  const vowelChoices = questions.flatMap(q => q.tokens.map((token, i) => ({ token, choices: q.optionsBySlot[i] })))
+    .filter(({ token }) => ["ai", "ay", "a_e"].includes(token));
+  assert.ok(vowelChoices.length > 0);
+  for (const { token, choices } of vowelChoices) {
+    assert.equal(choices.length, 3);
+    assert.ok(choices.includes(token));
+    assert.ok(choices.some(choice => choice !== token));
+  }
 });
