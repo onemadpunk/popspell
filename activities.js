@@ -724,10 +724,70 @@ window.PopActivities = (() => {
       ].map(switchRound) }
   ];
 
+  /* ---------- Counting Canopy: visual number sense with Pip ---------- */
+
+  // These questions are games, not timed tests. A pupil can replay the dots or try another
+  // partition without a clock. The teacher receives the specific number skill practised.
+  const canopyChoices = (answer, max) => shuffle(shuffle([answer - 2, answer - 1, answer + 1, answer + 2]
+    .filter(n => n >= 0 && n <= max)).slice(0, 2).concat(answer));
+  function canopyRound(mode, total, extra = {}) {
+    const q = { kind: "canopy", mode, total, tokens: [], ...extra };
+    if (mode === "flash") {
+      q.answer = String(total);
+      q.label = `${total} fireflies at a glance`;
+      q.skill = "recognising small groups at a glance";
+      q.options = canopyChoices(total, 8);
+    } else if (mode === "make") {
+      q.answer = `two ways to make ${total}`;
+      q.label = `two ways to make ${total}`;
+      q.skill = "making and splitting numbers";
+    } else if (mode === "hide") {
+      q.answer = String(total - q.visible);
+      q.label = `${q.visible} and ? make ${total}`;
+      q.skill = total > 10 ? "missing parts within 20" : "missing parts within 10";
+      q.options = canopyChoices(total - q.visible, total);
+    } else if (mode === "compare") {
+      q.answer = q.left === q.right ? "same" : q.left > q.right ? "left" : "right";
+      q.label = `compare ${q.left} and ${q.right}`;
+      q.skill = "comparing quantities";
+      q.options = ["left", "same", "right"];
+    } else throw new Error(`Unknown Counting Canopy mode: ${mode}`);
+    q.spelling = q.label;
+    return q;
+  }
+  const canopyGames = [
+    { id: "g-canopy-flash", title: "Counting Canopy: firefly flash", level: "Early", organiser: NUM,
+      blurb: "Look at a small group of fireflies, then tell Pip how many you saw. Replay as often as you like.",
+      make: () => shuffle(range(1, 6)).map(n => canopyRound("flash", n)) },
+    { id: "g-canopy-make", title: "Counting Canopy: build a bridge", level: "Early", organiser: NUM,
+      blurb: "Move fireflies into two nests. Find two different ways to make each number and build Pip's bridge.",
+      make: () => shuffle(range(5, 10)).map(n => canopyRound("make", n)) },
+    { id: "g-canopy-hidden", title: "Counting Canopy: hidden fireflies", level: "Early", organiser: NUM,
+      blurb: "Some fireflies hide under a leaf. Use the whole and the visible part to find the hidden part.",
+      make: () => shuffle([[5, 2], [6, 4], [7, 3], [8, 5], [9, 6], [10, 7]])
+        .map(([total, visible]) => canopyRound("hide", total, { visible })) },
+    { id: "g-canopy-compare", title: "Counting Canopy: balance the branches", level: "Early", organiser: NUM,
+      blurb: "Help Pip compare two groups of fireflies. Which tree has more, or are they the same?",
+      make: () => shuffle([[3, 5], [6, 4], [5, 5], [8, 7], [9, 9], [10, 8]])
+        .map(([left, right]) => canopyRound("compare", Math.max(left, right), { left, right })) },
+    { id: "g-canopy-twenty", title: "Counting Canopy: hidden to 20", level: "First", organiser: NUM,
+      blurb: "Find a missing part when the whole is bigger than ten, using a twenty-frame to help.",
+      make: () => shuffle([[11, 7], [12, 8], [13, 9], [15, 10], [17, 12], [20, 14]])
+        .map(([total, visible]) => canopyRound("hide", total, { visible })) },
+    { id: "g-canopy-run", title: "Counting Canopy: forest run", level: "Early", organiser: NUM,
+      blurb: "A replayable forest adventure mixing quick looks, number bridges, hidden parts and comparisons.",
+      make: () => shuffle([
+        canopyRound("flash", 4), canopyRound("make", 7), canopyRound("hide", 9, { visible: 5 }),
+        canopyRound("compare", 8, { left: 6, right: 8 }), canopyRound("flash", 6),
+        canopyRound("make", 8), canopyRound("hide", 10, { visible: 6 }),
+        canopyRound("compare", 9, { left: 9, right: 9 })
+      ]) }
+  ];
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
-    { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames) },
+    { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames) },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
