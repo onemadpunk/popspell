@@ -178,7 +178,27 @@ async function start() {
         throw err;
       }
     },
-    signOut: () => signOut(auth),
+    signOut: () => { sessionStorage.removeItem("popspell-calendar-token"); return signOut(auth); },
+
+    // Asked for only when a teacher syncs lessons, never at sign-in, so signing in is unchanged.
+    // Google's permission lasts about an hour; it's kept for this tab only.
+    calendarToken(ask = false) {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem("popspell-calendar-token") || "null");
+        if (saved && saved.uid === (auth.currentUser || {}).uid && saved.expires > Date.now()) return Promise.resolve(saved.token);
+      } catch { /* ask again */ }
+      if (!ask) return Promise.resolve(null);
+      const provider = new GoogleAuthProvider();
+      provider.addScope("https://www.googleapis.com/auth/calendar.events");
+      provider.setCustomParameters({ login_hint: (auth.currentUser || {}).email || "" });
+      // The popup has to open straight from the click, so nothing is awaited before it
+      return authLib.reauthenticateWithPopup(auth.currentUser, provider).then(result => {
+        const token = GoogleAuthProvider.credentialFromResult(result).accessToken;
+        sessionStorage.setItem("popspell-calendar-token", JSON.stringify({ token, uid: auth.currentUser.uid, expires: Date.now() + 55 * 60000 }));
+        return token;
+      });
+    },
+    forgetCalendarToken: () => sessionStorage.removeItem("popspell-calendar-token"),
 
     async classes() {
       const p = await api.me();

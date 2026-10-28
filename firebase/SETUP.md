@@ -83,6 +83,33 @@ If a parent requests reminders, save their email and tick **Parent requested rem
 
 **Settings** and **Make a list** only appear while a teacher is signed in on that device. If a teacher signs in on a pupil's device to change settings, they should **sign out** afterwards (👩‍🏫 → Sign out).
 
+## Google Calendar sync (free)
+
+**🗓️ Lessons to my calendar → Sync to my Google Calendar** puts lessons straight into the Google Calendar of the account the teacher signed in with. Google asks the teacher's permission the first time; signing in to PopSpell itself is unchanged, because calendar access is only asked for when a teacher presses Sync. PopSpell only adds, moves and removes its own lesson events (one per pupil) and never reads the rest of the calendar. Google's permission lasts about an hour; after that, saving a lesson date shows a message instead of updating, and pressing Sync again brings the calendar up to date. There is no charge for the Calendar API at this size.
+
+### One-off setup (about 10 minutes)
+
+Everything is at [console.cloud.google.com](https://console.cloud.google.com), signed in as the account that owns the Firebase project. Choose the PopSpell project in the project picker at the top.
+
+1. **Turn on the Calendar API:** **APIs & Services → Library**, search **Google Calendar API**, then **Enable**.
+2. **Add the calendar permission:** **Google Auth Platform → Data access → Add or remove scopes**. Tick `.../auth/calendar.events` (not the plain `.../auth/calendar`, which is wider than PopSpell needs), then **Update** and **Save**.
+3. **Check the publishing status:** **Google Auth Platform → Audience**.
+   - **In production:** leave it. Teachers see a *"Google hasn't verified this app"* screen the first time they sync: **Advanced → Go to PopSpell (unsafe)** carries on. Up to 100 teachers can use it before verification.
+   - **Testing:** add each teacher's Gmail address under **Test users** (up to 100). Don't switch to Testing if it says In production: in Testing, only test users can sign in to PopSpell at all.
+4. Sara signs in to the teacher area, opens **Pupils → 🗓️ Lessons to my calendar** and presses **Sync**.
+
+### Verification: any teacher, no warning screen
+
+Google checks apps that ask for calendar access once. It's free and usually takes a few days to a few weeks. Have these ready, then go to **Google Auth Platform → Verification Centre**:
+
+- **Branding** (**Google Auth Platform → Branding**): the app name *PopSpell*, a support email, the logo, the home page `https://popspell.com`, a **privacy policy** link and **authorised domain** `popspell.com`. The name and logo must match the website.
+- **A privacy policy page on popspell.com** that says what calendar access is used for: adding, moving and removing the teacher's own PopSpell lesson events, nothing else, not shared, and the permission can be removed at any time from the Google Account's *Security → Third-party connections*.
+- **Proof you own popspell.com:** add it as a *Domain* property in [Google Search Console](https://search.google.com/search-console) using the same Google account. Search Console gives a DNS TXT record to add at the domain registrar.
+- **Why the scope is needed** (a sentence for the form): *"Teachers press Sync to add their pupils' lesson times to their own Google Calendar; PopSpell creates, updates and removes only these lesson events. `calendar.events` is the narrowest scope that allows creating events in the teacher's existing calendar."*
+- **A short screen recording** (unlisted YouTube): sign in to the teacher area, press Sync, show Google's permission screen with the URL bar visible (so the app's client ID shows), then show the lesson appearing in Google Calendar and moving after its date is changed in PopSpell.
+
+Google emails the project owner with any questions. Until it's approved, everything keeps working with the warning screen.
+
 ## Looking after pupils' data
 
 - Use first names plus an initial, or pupil codes (e.g. *Owl 3*), rather than full names.

@@ -1204,3 +1204,6 @@ a.me-card:hover { border-color: var(--primary); }
 .cal-dialog > :not(.worksheet-preview-actions) { margin-left: 18px; margin-right: 18px; }
 .cal-dialog > :last-child { margin-bottom: 18px; }
 .cal-dialog { background: var(--surface); color: var(--ink); }
+.cal-sync { background: var(--primary-soft); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; }
+.cal-sync .hint { margin: 8px 0 0; }
+.cal-or { margin: 4px 0 8px; }

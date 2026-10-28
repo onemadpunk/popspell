@@ -140,6 +140,14 @@
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
+  // A plain message in the same place as errors, for things the teacher should know about
+  function notice(text) {
+    const box = $("#tError");
+    if (!box) return;
+    box.hidden = false;
+    box.textContent = text;
+  }
+
   function showError(err) {
     const box = $("#tError");
     if (!box) return;
@@ -464,14 +472,79 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   }
 
-  // Length and repeat, then Google (one lesson) or a file (one or many). Remembers the choices.
-  function calendarDialog(pupils) {
+  /* Google Calendar sync: straight into the signed-in teacher's own calendar, with their permission */
+
+  const GCAL = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
+  const hexOf = t => [...new TextEncoder().encode(t)].map(b => b.toString(16).padStart(2, "0")).join("");
+  // Google event ids use only 0-9 and a-v, and the same pupil always gets the same event
+  const gcalId = r => `popspell${hexOf(current.id.toLowerCase())}${String(r.key || hexOf(r.name.toLowerCase())).slice(0, 32)}`;
+  function gcalBody(r, opts) {
+    const e = lessonEvent(r, opts);
+    const iso = v => `${v.slice(0, 4)}-${v.slice(4, 6)}-${v.slice(6, 8)}${v.length > 8 ? `T${v.slice(9, 11)}:${v.slice(11, 13)}:00` : ""}`;
+    const when = v => (e.timed ? { dateTime: iso(v), timeZone: "Europe/London" } : { date: iso(v) });
+    return { id: gcalId(r), summary: e.title, description: e.details, start: when(e.start), end: when(e.end),
+      recurrence: e.rrule ? [`RRULE:${e.rrule}`] : [], status: "confirmed", extendedProperties: { private: { popspell: current.id } } };
+  }
+  async function gcalCall(token, method, url, body) {
+    const res = await fetch(url, { method, headers: Object.assign({ Authorization: `Bearer ${token}` }, body ? { "Content-Type": "application/json" } : {}),
+      body: body ? JSON.stringify(body) : undefined });
+    if (res.ok) return res.status === 204 ? null : res.json();
+    const info = (await res.json().catch(() => ({}))).error || {};
+    const err = new Error(info.message || `Google Calendar said ${res.status}.`);
+    err.status = res.status;
+    err.reason = ((info.errors || [])[0] || {}).reason || info.status || "";
+    throw err;
+  }
+  // Update the pupil's event, or add it if it isn't there yet (an update also brings back a deleted one)
+  async function gcalPut(token, r, opts) {
+    const body = gcalBody(r, opts);
+    try { await gcalCall(token, "PUT", `${GCAL}/${body.id}`, body); }
+    catch (err) { if (err.status !== 404) throw err; await gcalCall(token, "POST", GCAL, body); }
+  }
+  async function gcalRemove(token, r) {
+    try { await gcalCall(token, "DELETE", `${GCAL}/${gcalId(r)}`); }
+    catch (err) { if (![404, 410].includes(err.status)) throw err; }
+  }
+  function calendarError(err) {
+    if (err.status === 401) { cloud.forgetCalendarToken(); return new Error("Google's permission has run out. Press Sync again."); }
+    if (/accessNotConfigured|SERVICE_DISABLED/i.test(err.reason || "") || /has not been used|is disabled/i.test(err.message || ""))
+      return new Error("The Google Calendar API isn't turned on for PopSpell yet. The site owner turns it on once in Google Cloud (see firebase/SETUP.md).");
+    if (/insufficient|SCOPE/i.test(err.reason || "")) { cloud.forgetCalendarToken(); return new Error("Google didn't give PopSpell calendar permission. Press Sync again and tick the calendar box."); }
+    if (/popup-blocked/.test(err.code || "")) return new Error("Your browser blocked Google's window. Allow pop-ups for PopSpell, then press Sync again.");
+    if (/popup-closed|cancelled-popup/.test(err.code || "")) return new Error("Google's window was closed before you allowed calendar access.");
+    return err;
+  }
+  // Lessons from today on go in or move; a pupil with no lesson date has their event taken out.
+  // Past lessons are left alone.
+  async function gcalSync(token, pupils, opts) {
+    let n = 0;
+    for (const r of pupils) {
+      if (!r.nextLessonDate) await gcalRemove(token, r);
+      else if (r.nextLessonDate >= todayKey()) { await gcalPut(token, r, opts); n++; }
+    }
+    saveCalendarPrefs(Object.assign(calendarPrefs(), { google: true, syncedAt: Date.now() }));
+    return n;
+  }
+  // After a lesson date is saved: keeps Google Calendar up to date once the teacher has synced,
+  // while Google's permission lasts. When it has run out, says so rather than opening a window.
+  async function calendarAfterSave(r) {
+    if (!calendarPrefs().google) return;
+    const token = await cloud.calendarToken();
+    if (!token) return notice("🗓️ Saved. Your Google Calendar wasn't updated: press Lessons to my calendar, then Sync.");
+    try { await gcalSync(token, [r], calendarPrefs()); }
+    catch (err) { showError(calendarError(err)); }
+  }
+
+  // Length and repeat, then sync to Google Calendar, or a file for any calendar. Remembers the choices.
+  // From the class button, everyone on the roster is passed so lessons that were taken off come out too.
+  function calendarDialog(pupils, roster = pupils) {
     const single = pupils.length === 1;
     const prefs = calendarPrefs();
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog";
     const when = r => `${new Date(`${r.nextLessonDate}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}${r.lessonTime ? ` at ${r.lessonTime}` : " (all day: no time set)"}`;
-    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📅 Add ${single ? `${esc(pupils[0].name)}'s lesson` : `${pupils.length} lessons`} to a calendar</h2>
+    const synced = at => `Last synced ${new Date(at).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}.`;
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🗓️ ${single ? `${esc(pupils[0].name)}'s lesson` : `${pupils.length} lessons`} to my calendar</h2>
         <button class="btn small" type="button" data-close>Close</button></div>
       <ul class="cal-list">${pupils.map(r => `<li><b>${esc(r.name)}</b> · ${esc(when(r))}</li>`).join("")}</ul>
       <div class="cal-options">
@@ -479,25 +552,35 @@
         <label>Repeat <select data-repeat><option value="once">Just this lesson</option>
           <option value="weekly"${prefs.repeat === "weekly" ? " selected" : ""}>Every week until the summer holidays</option></select></label>
       </div>
-      <div class="row cal-actions">
-        ${single ? `<a class="btn primary" data-google target="_blank" rel="noopener">Google Calendar</a>` : ""}
-        <button class="btn${single ? "" : " primary"}" type="button" data-ics>⬇ ${single ? "Outlook or Apple Calendar (.ics)" : "Download all lessons (.ics)"}</button>
+      <div class="cal-sync">
+        <button class="btn primary" type="button" data-sync>🔄 Sync to my Google Calendar</button>
+        <p class="hint" data-sync-status>${prefs.syncedAt ? `${esc(synced(prefs.syncedAt))} ` : ""}Goes into the Google Calendar of ${esc(me.email || "the account you signed in with")}.
+          The first time, Google asks you to allow it. After that, saving a lesson date on a pupil's card updates your calendar too.</p>
       </div>
-      <p class="hint">${single ? "Google opens the event ready to save. The .ics file opens in Outlook or Apple Calendar." :
-        "Open the file to add every lesson to Outlook or Apple Calendar. In Google Calendar, use Settings → Import and choose the file."}
-        If a lesson date changes, add it again: the calendar moves the lesson instead of adding a second one.</p>`;
+      <p class="cal-or"><b>Or, for Outlook or Apple Calendar:</b></p>
+      <div class="row cal-actions">
+        <button class="btn" type="button" data-ics>⬇ ${single ? "Download the lesson (.ics)" : "Download all lessons (.ics)"}</button>
+      </div>
+      <p class="hint">Open the file to add ${single ? "the lesson" : "every lesson"}. If a lesson date changes, add it again: the calendar moves the lesson instead of adding a second one.</p>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     const opts = () => ({ length: Number(dialog.querySelector("[data-length]").value), repeat: dialog.querySelector("[data-repeat]").value });
-    const refresh = () => {
-      saveCalendarPrefs(opts());
-      if (single) dialog.querySelector("[data-google]").href = googleCalendarLink(lessonEvent(pupils[0], opts()));
-    };
-    dialog.querySelectorAll("select").forEach(s => { s.onchange = refresh; });
+    dialog.querySelectorAll("select").forEach(el => { el.onchange = () => saveCalendarPrefs(Object.assign(calendarPrefs(), opts())); });
     dialog.querySelector("[data-ics]").onclick = () =>
       downloadICS(pupils.map(r => lessonEvent(r, opts())), single ? `popspell-lesson-${pupils[0].name}` : `popspell-lessons-${current.name}`);
-    refresh();
+    const status = dialog.querySelector("[data-sync-status]");
+    dialog.querySelector("[data-sync]").onclick = e => {
+      const b = e.currentTarget;
+      b.disabled = true;
+      status.textContent = "Asking Google…";
+      // Straight from the click, so Google's window isn't blocked
+      cloud.calendarToken(true)
+        .then(token => { status.textContent = "Adding lessons…"; return gcalSync(token, single ? pupils : roster, opts()); })
+        .then(n => { status.textContent = `✓ ${n} lesson${n === 1 ? "" : "s"} in your Google Calendar. ${synced(Date.now())} Saving a lesson date now updates it too.`; })
+        .catch(err => { status.textContent = calendarError(err).message; })
+        .finally(() => { b.disabled = false; });
+    };
     dialog.showModal();
   }
 
@@ -905,6 +988,7 @@
             const [s, a] = await parentData();
             await publishParent(Object.assign({}, x.r, { homeworkList: list, nextLessonDate: date }), s, a);
           }
+          if (x.r && date !== x.r.nextLessonDate) await calendarAfterSave(Object.assign({}, x.r, { homeworkList: list, nextLessonDate: date }));
           drawNext(body);
         } catch (err) { showError(err); }
       };
@@ -1851,6 +1935,8 @@
       try {
         await cloud.savePupil(current.id, details);
         if (pupil.parentLink) { const [s, a] = await parentData(); await publishParent(Object.assign({}, pupil, details), s, a); }
+        if (details.nextLessonDate !== (pupil.nextLessonDate || "") || details.lessonTime !== (pupil.lessonTime || "") || details.homeworkList !== (pupil.homeworkList || ""))
+          await calendarAfterSave(Object.assign({}, pupil, details));
         drawPupils(body);
       } catch (err) { showError(err); }
     }; });
@@ -1867,7 +1953,7 @@
       const due = roster.filter(r => r.nextLessonDate && r.nextLessonDate >= todayKey())
         .sort((a, b) => (a.nextLessonDate + (a.lessonTime || "")).localeCompare(b.nextLessonDate + (b.lessonTime || "")));
       if (!due.length) return showError(new Error("No upcoming lessons yet. Set a next lesson date on a pupil's card and save it."));
-      calendarDialog(due);
+      calendarDialog(due, roster);
     };
     body.querySelectorAll("[data-home-copy]").forEach(b => { b.onclick = async () => {
       const pupil = roster.find(r => r.key === b.dataset.homeCopy);
