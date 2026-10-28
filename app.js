@@ -819,8 +819,9 @@
   // "What's your name?" or "Spelling as Ava · Not Ava?" — the name is remembered on this device
   function mountPupil(box, { onChange, onEnter, lead = "Spelling as" } = {}) {
     const name = getPupil();
+    // lead "" (the home page, which already greets them by name) leaves just "Not Ava?"
     box.innerHTML = name
-      ? `<p>${esc(lead)} <b>${esc(name)}</b> · <button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>`
+      ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>`
       : `<label class="field pupil-field">What's your name?
            <input class="pupil-name" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
          </label>
@@ -856,85 +857,127 @@
 
   /* ---------- Home ---------- */
 
+  /* ---------- Home: Pip's welcome, today's work, the sound journey and more to explore ---------- */
+
+  // Pip, the PopSpell mascot (art in assets/brand); mood is an animation: bob, hop or cheer
+  const pipHTML = (size, mood = "bob", says = "") => `
+    <div class="pip-wrap pip-${size}">
+      <img class="pip ${mood}" src="assets/brand/${size === "small" ? "pip-small" : "pip"}.webp" alt="Pip" width="${size === "small" ? 80 : 180}" height="${size === "small" ? 80 : 180}">
+      ${says ? `<p class="speech" aria-live="polite">${says}</p>` : ""}
+    </div>`;
+
+  let homeStage = null; // the journey stop being looked at (this visit)
+  let homeArea = "games"; // the "More to explore" tab
+  const stageDone = (stage, b) => stage.lists.filter(l => b.lists[l.id]).length;
+  // The child's current stop: the first stage they haven't finished every list of
+  const currentStage = b => Math.max(0, STAGES.findIndex(st => stageDone(st, b) < st.lists.length));
+
+  function exploreAreas() {
+    const A = window.PopActivities;
+    // Short tab names, so the tabs fit on a phone
+    const SHORT = { games: "Games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
+    const areas = A ? A.AREAS.filter(a => a.id !== "stories").map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
+    areas.push({ id: "checks", icon: "🧭", title: "Checks", colour: "#0f766e",
+      items: Object.entries(CHECKS).filter(([k]) => k === "spelling" || A).map(([k, c]) => ({ id: `check:${k}`, href: `#/check/${k}`, title: c.title.replace("Starting check: ", ""), icon: c.icon, level: "About 10 minutes", colour: c.accent })) });
+    return areas;
+  }
+  const activityCard = (a, colour) => `
+    <a class="list-card tile-card" href="${a.href || `#/activity/${encodeURIComponent(a.id)}`}" style="--accent:${esc(a.colour || colour)}">
+      <span class="lc-icon" aria-hidden="true">${a.icon}</span>
+      <span class="lc-title">${esc(a.title)}</span>
+      <span class="lc-count">${esc(a.level)}${a.level && !/level|minutes/i.test(a.level) ? " level" : ""}</span>
+    </a>`;
+  // Big areas (numbers has dozens) are shown in groups by curriculum organiser
+  function exploreGrid(area) {
+    if (area.items.length <= 12) return `<div class="grid">${area.items.map(a => activityCard(a, area.colour)).join("")}</div>`;
+    const groups = {};
+    area.items.forEach(a => { const g = (a.organiser || "More").replace(/^(Numeracy|Mathematics|Literacy) · /, ""); (groups[g] = groups[g] || []).push(a); });
+    return Object.entries(groups).map(([g, items]) => `<h3 class="explore-group">${esc(g)}</h3>
+      <div class="grid">${items.map(a => activityCard(a, area.colour)).join("")}</div>`).join("");
+  }
+
+  function drawJourney(b) {
+    const box = $("#journey");
+    if (!box) return;
+    const here = currentStage(b);
+    if (homeStage === null) homeStage = here;
+    box.innerHTML = `
+      <ol class="journey-map">${STAGES.map((st, i) => {
+        const done = stageDone(st, b);
+        return `<li class="stop${i === homeStage ? " open" : ""}${done === st.lists.length ? " finished" : ""}" style="--accent:${esc(st.colour)}">
+          ${i === here ? `<img class="stop-pip hop" src="assets/brand/pip-small.webp" alt="" width="44" height="44">` : ""}
+          <button type="button" class="stop-btn" data-stage="${i}" aria-expanded="${i === homeStage}">
+            <span class="stop-num">${done === st.lists.length ? "★" : i + 1}</span>
+            <span class="stop-name">${esc(st.stage.replace(/^Stage \d+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
+            <span class="stop-count">${done} of ${st.lists.length} done</span>
+          </button></li>`;
+      }).join("")}</ol>
+      <div class="stop-lists" style="--accent:${esc(STAGES[homeStage].colour)}">
+        <h3>${esc(STAGES[homeStage].stage)}</h3>
+        <div class="grid">${STAGES[homeStage].lists.map(l => `
+          <a class="list-card${b.lists[l.id] ? " done" : ""}" href="#/list/${encodeURIComponent(l.id)}">
+            <span class="lc-example">${esc(LISTS[l.id].items[0]?.spelling || "")}</span>
+            <span class="lc-title">${esc(l.title)}</span>
+            <span class="lc-count">${b.lists[l.id] ? `✓ Best: ${b.lists[l.id].best} of ${b.lists[l.id].of}` : `${l.words.length} words`}</span>
+          </a>`).join("")}</div>
+      </div>`;
+    box.querySelectorAll("[data-stage]").forEach(btn => { btn.onclick = () => { homeStage = Number(btn.dataset.stage); drawJourney(b); }; });
+  }
+
+  function drawExplore() {
+    const box = $("#explore");
+    if (!box) return;
+    const areas = exploreAreas();
+    const area = areas.find(a => a.id === homeArea) || areas[0];
+    box.innerHTML = `
+      <div class="area-tabs" role="tablist">${areas.map(a => `<button type="button" role="tab" class="area-tab" data-area="${a.id}" aria-selected="${a.id === area.id}" style="--accent:${esc(a.colour)}">${a.icon} ${esc(a.title)}</button>`).join("")}</div>
+      <div class="area-body" style="--accent:${esc(area.colour)}">
+        ${area.id === "checks" ? `<p class="hint">For a new pupil's first lesson. The results go to the teacher's Next steps.</p>` : ""}
+        ${exploreGrid(area)}
+      </div>`;
+    box.querySelectorAll("[data-area]").forEach(btn => { btn.onclick = () => { homeArea = btn.dataset.area; drawExplore(); }; });
+  }
+
   function showHome() {
     document.title = SITE.title;
     // A class can be set so its pupils see only the work set for them (teachers still see everything)
     const locked = !!(CLASS && CLASS.assignedOnly) && !teacherUnlocked();
+    const name = getPupil();
     app.innerHTML = `
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="hero-kicker">Sounds become spellings</p>
-          <h1>${esc(SITE.subtitle)}</h1>
-          <p class="lead">Listen to each word, find its sounds, and choose the letters that spell them.</p>
+      <section class="welcome">
+        ${pipHTML("big", "bob", name ? "" : "Hi! I'm Pip. What's your name?")}
+        <div class="welcome-main">
+          <p class="hero-kicker">${name ? "Sounds become spellings" : esc(SITE.subtitle)}</p>
+          <h1>${name ? `Hi, ${esc(name)}!` : "Let's pop some sounds!"}</h1>
+          ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
+          <div class="pupil" id="homePupil"></div>
+          <div class="me-cards" id="meCards"></div>
+          ${CLOUD_CONFIGURED && !CLASS ? `
+            <form class="join-box" id="joinForm">
+              <label>Got a class code? <input id="joinCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. K7P2QX"></label>
+              <button class="btn" type="submit">Join</button>
+              <span class="hint" id="joinHint"></span>
+            </form>` : ""}
         </div>
-        <img class="hero-children" src="assets/brand/children.png" alt="Two children listening to sounds and building a word" width="516" height="516">
-        <div class="hero-actions">
-        ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
-        ${CLOUD_CONFIGURED && !CLASS ? `
-          <form class="join-box" id="joinForm">
-            <label>Got a class code? <input id="joinCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. K7P2QX"></label>
-            <button class="btn" type="submit">Join</button>
-            <span class="hint" id="joinHint"></span>
-          </form>` : ""}
+      </section>
+      ${name ? "" : `
         <ol class="steps">
           <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Hear</b> the word</span></li>
           <li><span class="step-icon" aria-hidden="true">🗣️</span><span><b>Say</b> each sound</span></li>
           <li><span class="step-icon" aria-hidden="true">🟦</span><span><b>Map</b> sounds to letters</span></li>
           <li><span class="step-icon" aria-hidden="true">✏️</span><span><b>Spell</b> and check</span></li>
-        </ol>
-        </div>
-      </section>
-      <section class="me">
-        <div class="pupil" id="homePupil"></div>
-        <div class="me-cards" id="meCards"></div>
-      </section>
-      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id === "games").map(area => `
-        <section class="stage" style="--accent:${esc(area.colour)}">
-          <h2>${area.icon} ${esc(area.title)}</h2>
-          <div class="grid">${area.activities.map(a => `
-            <a class="list-card" href="#/activity/${encodeURIComponent(a.id)}">
-              <span class="lc-example" aria-hidden="true">${a.icon}</span>
-              <span class="lc-title">${esc(a.title)}</span>
-              <span class="lc-count">${esc(a.level)} level · 6 words</span>
-            </a>`).join("")}</div>
-        </section>`).join("")}
-      ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${getPupil() ? "Looking for today's work…" : "Type your name to see it."}</p>` : STAGES.map(stage => `
-        <section class="stage" style="--accent:${esc(stage.colour)}">
-          <h2>${esc(stage.stage)}</h2>
-          <div class="grid">
-            ${stage.lists.map(l => `
-              <a class="list-card" href="#/list/${encodeURIComponent(l.id)}">
-                <span class="lc-example">${esc(LISTS[l.id].items[0]?.spelling || "")}</span>
-                <span class="lc-title">${esc(l.title)}</span>
-                <span class="lc-count">${l.words.length} words</span>
-              </a>`).join("")}
-          </div>
-        </section>`).join("")}
-      ${locked || !window.PopActivities ? "" : window.PopActivities.AREAS.filter(area => area.id !== "stories" && area.id !== "games").map(area => `
-        <section class="stage" style="--accent:${esc(area.colour)}">
-          <h2>${area.icon} ${esc(area.title)}</h2>
-          <div class="grid">
-            ${area.activities.map(a => `
-              <a class="list-card" href="#/activity/${encodeURIComponent(a.id)}">
-                <span class="lc-example" aria-hidden="true">${a.icon}</span>
-                <span class="lc-title">${esc(a.title)}</span>
-                <span class="lc-count">${esc(a.level)} level</span>
-              </a>`).join("")}
-          </div>
-        </section>`).join("")}
-      ${locked ? "" : `
-        <section class="stage" style="--accent:#0f766e">
-          <h2>🧭 Starting checks</h2>
-          <p class="hint">For a new pupil's first lesson: about 10 minutes, and the results go to the teacher's Next steps.</p>
-          <div class="grid">
-            ${Object.entries(CHECKS).filter(([k]) => k === "spelling" || window.PopActivities).map(([k, c]) => `
-              <a class="list-card" href="#/check/${k}" style="--accent:${esc(c.accent)}">
-                <span class="lc-example" aria-hidden="true">${c.icon}</span>
-                <span class="lc-title">${esc(c.title.replace("Starting check: ", ""))}</span>
-                <span class="lc-count">Starting check</span>
-              </a>`).join("")}
-          </div>
+        </ol>`}
+      ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${name ? "Looking for today's work…" : "Type your name to see it."}</p>` : `
+        <section class="home-section journey-section">
+          <h2>🗺️ Pip's sound journey</h2>
+          <p class="hint">Six stops, from short vowels to tricky endings. Tap a stop to see its lists.</p>
+          <div id="journey"></div>
+        </section>
+        <section class="home-section">
+          <h2>✨ More to explore</h2>
+          <div id="explore"></div>
         </section>`}`;
+    if (!locked) { drawJourney(loadBests()); drawExplore(); }
 
     const joinForm = $("#joinForm");
     if (joinForm) {
@@ -953,9 +996,9 @@
     // The pupil's own corner: review words due today and their sound collection
     const box = $("#homePupil");
     const save = () => { if (takePupilName(box)) showHome(); };
-    mountPupil(box, { lead: "Hello,", onChange: showHome, onEnter: save });
+    mountPupil(box, { lead: "", onChange: showHome, onEnter: save });
     if (!getPupil()) {
-      $("#meCards").innerHTML = `<button class="btn primary" id="saveName">Save my name</button>`;
+      $("#meCards").innerHTML = `<button class="btn primary big" id="saveName">Save my name</button>`;
       $("#saveName").onclick = save;
       return;
     }
@@ -968,15 +1011,21 @@
     const due = dueItems(prog).length;
     const secure = secureSounds(prog).size;
     const week = weekStats(loadBests(prog));
+    const tile = (href, icon, title, detail, extra = "") => `<a class="me-card${extra}" href="${href}">
+      <span class="me-icon" aria-hidden="true">${icon}</span><span class="me-text"><b>${title}</b><span>${detail}</span></span></a>`;
     $("#meCards").innerHTML = `
-      ${due
-        ? `<a class="me-card review" href="#/review"><span class="me-icon" aria-hidden="true">🔁</span><span><b>${plural(due, "word", "words")}</b> to practise again today</span></a>`
-        : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span>No review words today</span></div>`}
-      <a class="me-card" href="#/sounds"><span class="me-icon" aria-hidden="true">⭐</span><span><b>My sounds</b> · ${plural(secure, "star", "stars")}</span></a>
-      <a class="me-card" href="#/bests"><span class="me-icon" aria-hidden="true">🏅</span><span><b>My bests</b> · ${plural(week.thisWeek, "go", "goes")} this week</span></a>
-      ${locked ? "" : `<a class="me-card" href="#/activity/g-hopper-short"><span class="me-icon" aria-hidden="true">🎮</span><span><b>Play Sound Hopper</b> · tap beats and build bridges</span></a>`}
-      ${locked ? "" : `<a class="me-card" href="#/activity/g-switch-first"><span class="me-icon" aria-hidden="true">🔑</span><span><b>Play Sound Switch</b> · change a sound to open Pip's doors</span></a>`}
-      ${storyActivities().length && !locked ? `<a class="me-card" href="#/stories"><span class="me-icon" aria-hidden="true">📚</span><span><b>My stories</b> · ${readyStories(prog).length} ready to read</span></a>` : ""}`;
+      ${due ? tile("#/review", "🔁", "Practise again", `${plural(due, "word", "words")} waiting`, " review")
+        : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span class="me-text"><b>All caught up</b><span>No review words today</span></span></div>`}
+      ${tile("#/sounds", "⭐", "My sounds", plural(secure, "star", "stars"))}
+      ${tile("#/bests", "🏅", "My bests", `${plural(week.thisWeek, "go", "goes")} this week`)}
+      ${storyActivities().length && !locked ? tile("#/stories", "📚", "My stories", `${readyStories(prog).length} ready to read`) : ""}
+      ${locked ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
+      ${locked ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}`;
+    // Pip says what's most useful right now (and changes if the teacher has set work)
+    const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
+      const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
+      app.querySelector(".welcome .pip-wrap").append(p); return p; })(); bubble.textContent = text; };
+    say(due ? `You've got ${plural(due, "word", "words")} to practise again. Let's go!` : "Pick a stop on our journey. I'll hop along with you!");
 
     // Lists the teacher has set for this pupil, if the sheet is connected
     const my = phase;
@@ -989,16 +1038,17 @@
           : "There's no new work set for you today. Practise your review words, or ask your teacher.";
       }
       if (!lists.length) return;
-      const section = document.createElement("div");
-      section.className = "assigned";
+      say(`Your teacher has set you ${plural(lists.length, "thing", "things")} for today. ${lists.length === 1 ? "It's" : "They're"} just below!`);
+      const section = document.createElement("section");
+      section.className = "assigned home-section";
       section.innerHTML = `
-        <h2>📌 Your lists today</h2>
+        <h2>📌 Your work today</h2>
         <div class="grid">${lists.map(l => `
           <a class="list-card" href="${esc(l.href)}" style="--accent:${esc(l.accent)}">
             <span class="lc-example">${esc(l.example || "")}</span>
             <span class="lc-title">${esc(l.title)}</span>
           </a>`).join("")}</div>`;
-      $("#meCards").after(section);
+      app.querySelector(".welcome").after(section);
     });
   }
 
@@ -1029,7 +1079,7 @@
     app.innerHTML = `
       <section class="panel sounds-page">
         <a class="back" href="#/">← All lists</a>
-        <h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1>
+        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1></div>
         <p class="meta">⭐ ${count("secure")} secure · 🌱 ${count("learning")} learning · 🔶 ${count("tricky")} to practise</p>
         <p class="hint">Spell a sound right first time on two different days to win its star. Tap a sound to hear it and practise it.</p>
         <div class="sound-detail" id="soundDetail" hidden></div>
@@ -1106,7 +1156,7 @@
     app.innerHTML = `
       <section class="panel sounds-page stories-page">
         <a class="back" href="#/">← All lists</a>
-        <h1>${name ? `${esc(name)}'s stories` : "My stories"}</h1>
+        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s stories` : "My stories"}</h1></div>
         <p class="hint">Stories that only use sounds you've practised, so you can read them all by yourself. ⭐ means every sound in it is one of your star sounds.</p>
         <h2>Ready to read</h2>
         ${ready.length ? `<div class="grid">${ready.map(card).join("")}</div>`
@@ -1174,7 +1224,7 @@
     app.innerHTML = `
       <section class="panel sounds-page bests-page">
         <a class="back" href="#/">← All lists</a>
-        <h1>${name ? `${esc(name)}'s bests` : "My bests"}</h1>
+        <div class="page-head">${pipHTML("small", "hop")}<h1>${name ? `${esc(name)}'s bests` : "My bests"}</h1></div>
         <p class="hint">Every word and question you try is a go, right or wrong. Beat your own best. Nobody else's counts!</p>
         <div class="bests-stats">
           <div><b>${w.thisWeek}</b><span>${w.thisWeek === 1 ? "go" : "goes"} this week</span></div>
@@ -1514,7 +1564,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
-        <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
+        ${pipHTML("big", "cheer")}
         <h1>${esc(headline)}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
@@ -2206,7 +2256,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
         ${previewBanner()}
-        <p class="trophy" aria-hidden="true">${right === r.length ? "🏆" : "🌟"}</p>
+        ${pipHTML("big", "cheer")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
@@ -2421,7 +2471,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
-        <p class="trophy" aria-hidden="true">🌟</p>
+        ${pipHTML("big", "cheer")}
         <h1>All done, thank you!</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ${plural(n, session.check === "spelling" ? "word" : "question", session.check === "spelling" ? "words" : "questions")}</p>
         <p class="tip">You worked really hard. Your teacher will use this to choose the right work for you.</p>

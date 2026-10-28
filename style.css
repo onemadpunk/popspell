@@ -137,6 +137,137 @@ h1, h2, h3 { color: var(--primary); font-weight: 900; }
 .lc-title { font-weight: 700; }
 .lc-count { font-size: .9rem; color: var(--muted); }
 
+/* ---------- The PopSpell look: soft shapes behind, Pip, the welcome card and the journey ---------- */
+
+body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle at 6% 10%, rgba(255, 200, 55, .22) 0 130px, transparent 131px),
+    radial-gradient(circle at 94% 26%, rgba(14, 181, 242, .13) 0 190px, transparent 191px),
+    radial-gradient(circle at 12% 78%, rgba(255, 64, 129, .06) 0 170px, transparent 171px),
+    radial-gradient(circle at 88% 92%, rgba(18, 198, 183, .09) 0 150px, transparent 151px);
+  background-attachment: fixed;
+}
+.topbar { background: rgba(255, 255, 255, .94); box-shadow: 0 6px 18px rgba(11, 46, 107, .06); }
+
+/* Pip */
+.pip-wrap { display: flex; flex-direction: column; align-items: center; }
+.pip { display: block; height: auto; filter: drop-shadow(0 10px 10px rgba(11, 46, 107, .16)); }
+.pip-big .pip { width: min(190px, 100%); }
+.pip-small .pip { width: 80px; }
+.pip.bob { animation: pip-bob 2.6s ease-in-out infinite; }
+.pip.hop, .stop-pip.hop { animation: pip-hop 1.4s ease-in-out infinite; }
+.pip.cheer { animation: pip-cheer .9s ease-in-out 3; }
+@keyframes pip-bob { 50% { transform: translateY(-8px); } }
+@keyframes pip-hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px) rotate(-5deg); } 60% { transform: translateY(-10px) rotate(5deg); } }
+@keyframes pip-cheer { 30% { transform: translateY(-18px) scale(1.06) rotate(-6deg); } 60% { transform: translateY(0) rotate(6deg); } }
+.speech {
+  position: relative; margin: 12px 0 0; max-width: 250px; padding: 8px 14px;
+  background: #fff; border: 3px solid var(--primary); border-radius: 18px; box-shadow: 0 4px 0 rgba(11, 46, 107, .12);
+  color: var(--primary); font-weight: 800; font-size: 1rem; line-height: 1.3; text-align: center;
+}
+.speech::before {
+  content: ""; position: absolute; top: -11px; left: 50%; width: 16px; height: 16px; transform: translateX(-50%) rotate(45deg);
+  background: #fff; border-left: 3px solid var(--primary); border-top: 3px solid var(--primary);
+}
+@media (prefers-reduced-motion: reduce) { .pip, .stop-pip { animation: none !important; } }
+
+/* Welcome card */
+.welcome {
+  display: grid; grid-template-columns: minmax(150px, 240px) minmax(0, 1fr); align-items: center; gap: 12px 32px;
+  padding: 26px clamp(18px, 4vw, 44px); border-radius: 32px; box-shadow: var(--shadow);
+  background: radial-gradient(circle at 100% 0, #fff3be 0 120px, transparent 121px), linear-gradient(135deg, #fff 0%, #f2f9ff 70%);
+}
+.welcome-main { text-align: left; }
+.welcome h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 8px; }
+.welcome .class-name { margin: 0 0 10px; }
+.welcome .pupil { margin: 0 0 10px; max-width: 380px; }
+.welcome .pupil-field { text-align: left; }
+.welcome .me-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px; justify-content: stretch; }
+.welcome .me-cards > .btn { justify-self: start; }
+.welcome .me-card {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; text-align: left;
+  border-radius: 18px; background: #fff; border: 2px solid var(--line); color: var(--ink); text-decoration: none;
+  box-shadow: 0 3px 0 rgba(11, 46, 107, .06); transition: transform .12s ease, border-color .12s ease;
+}
+.welcome a.me-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+.welcome .me-icon { flex: none; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 14px; font-size: 1.45rem; background: var(--primary-soft); }
+.welcome .me-card:nth-child(2) .me-icon { background: #fff3cf; }
+.welcome .me-card:nth-child(3) .me-icon { background: #ffe3ee; }
+.welcome .me-card:nth-child(4) .me-icon { background: #e0f4ff; }
+.welcome .me-card:nth-child(n+5) .me-icon { background: #dcf8f4; }
+.welcome .me-card.review { border-color: var(--star); background: #fff8e1; }
+.welcome .me-card.review .me-icon { background: var(--star); }
+.me-text { display: flex; flex-direction: column; line-height: 1.2; }
+.me-text span { font-size: .85rem; color: var(--muted); }
+.welcome .join-box { justify-content: flex-start; margin-top: 12px; }
+.welcome + .steps, .welcome ~ .steps { margin-top: 18px; }
+@media (max-width: 720px) {
+  .welcome { grid-template-columns: 1fr; text-align: center; padding-top: 18px; }
+  .welcome-main { text-align: center; }
+  .welcome .pupil, .welcome .pupil-field { margin-left: auto; margin-right: auto; text-align: center; }
+  .pip-big .pip { width: 110px; }
+  .welcome .join-box { justify-content: center; }
+  .welcome .hero-kicker { display: none; }
+  .welcome .me-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .welcome .me-card { flex-direction: column; text-align: center; gap: 4px; padding: 10px 6px; }
+  .me-text { align-items: center; }
+  .welcome .me-cards > .btn { justify-self: center; grid-column: 1 / -1; }
+}
+
+/* Home sections */
+.home-section { margin-top: 26px; padding: 20px clamp(14px, 3vw, 28px) 24px; border-radius: 28px; background: rgba(255, 255, 255, .78); box-shadow: var(--shadow); }
+.home-section > h2 { font-size: 1.5rem; margin: 0 0 2px; }
+.home-section > .hint { margin: 0; }
+.assigned.home-section { background: #fff8e1; border: 3px solid var(--star); text-align: left; }
+.assigned.home-section h2 { text-align: left; }
+
+/* Pip's sound journey */
+.journey-map { position: relative; list-style: none; margin: 14px 0 6px; padding: 40px 0 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.journey-map::before { content: ""; position: absolute; left: 8%; right: 8%; top: 71px; border-top: 5px dashed #bcd6f3; }
+.stop { position: relative; display: flex; flex-direction: column; align-items: center; }
+.stop-btn { font: inherit; color: var(--ink); background: none; border: 0; padding: 4px; border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.stop-btn:focus-visible { outline: 4px solid var(--star); }
+.stop-num {
+  width: 60px; height: 60px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--accent); color: #fff; border: 4px solid #fff; font-size: 1.5rem; font-weight: 900;
+  box-shadow: 0 5px 0 rgba(0, 0, 0, .12); transition: transform .15s ease;
+}
+.stop.open .stop-num { transform: scale(1.14); box-shadow: 0 0 0 5px rgba(11, 46, 107, .14), 0 5px 0 rgba(0, 0, 0, .12); }
+.stop.finished .stop-num { background: var(--star); color: var(--primary); }
+.stop-name { font-weight: 800; font-size: .9rem; line-height: 1.15; text-align: center; }
+.stop-count { font-size: .78rem; color: var(--muted); }
+.stop.open .stop-name { color: var(--primary); text-decoration: underline 3px var(--accent); text-underline-offset: 4px; }
+.stop-pip { position: absolute; top: -40px; width: 46px; height: 46px; filter: drop-shadow(0 4px 4px rgba(11, 46, 107, .2)); }
+.stop-lists { margin-top: 12px; padding: 16px; border-radius: 22px; background: #f7fbff; border: 2px solid var(--line); border-top: 6px solid var(--accent); }
+.stop-lists h3 { margin: 0 0 10px; }
+.list-card.done { border-top-color: var(--good); }
+.list-card.done .lc-count { color: var(--good); font-weight: 800; }
+@media (max-width: 720px) {
+  .journey-map { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 46px; }
+  .journey-map::before { display: none; }
+  /* Two cards across on phones, so the lists aren't one long column */
+  .home-section .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .home-section .list-card { padding: 10px 12px; }
+  .home-section .lc-example { font-size: 1.6rem; }
+  .stop-lists { padding: 12px; }
+}
+
+/* Pip on results screens and progress pages */
+.summary .pip-big { margin: -6px 0 4px; }
+.summary .pip-big .pip { width: 120px; }
+.page-head { display: flex; align-items: center; gap: 14px; }
+.page-head h1 { margin: 0; }
+.page-head .pip-small .pip { width: 64px; }
+
+/* More to explore */
+.area-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; padding: 4px 2px 8px; }
+.area-tab { flex: none; font: inherit; font-weight: 800; font-size: .95rem; padding: 9px 16px; border-radius: 999px; border: 2px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+.area-tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 0 rgba(0, 0, 0, .12); }
+.explore-group { font-size: 1rem; margin: 14px 0 8px; color: var(--muted); }
+.tile-card .lc-icon { width: 52px; height: 52px; display: grid; place-items: center; margin-bottom: 6px; border-radius: 16px; font-size: 1.8rem; background: var(--primary-soft); }
+.list-card { border-radius: 18px; border-width: 6px 2px 2px; }
+
 /* ---------- Panels ---------- */
 
 .panel {
