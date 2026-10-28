@@ -983,7 +983,7 @@
     sessions.forEach(s => {
       const key = String(s.pupil || "").trim().toLowerCase();
       const p = pupils[key] = pupils[key] || { pupil: String(s.pupil || "").trim(), lists: 0,
-        worksheets: 0, words: 0, right: 0, firstGo: 0, last: 0, recent: [], sounds: {}, lastSwitch: null };
+        worksheets: 0, words: 0, right: 0, firstGo: 0, last: 0, recent: [], sounds: {}, lastSwitch: null, lastCanopy: null };
       const words = s.words || [];
       p.lists++;
       if (s.source === "worksheet") p.worksheets++;
@@ -996,6 +996,8 @@
         source: s.source === "worksheet" ? "Worksheet" : "Online", score: `${first}/${words.length}` });
       if (String(s.listId || "").startsWith("g-switch-") && (!p.lastSwitch || s.at > p.lastSwitch.at))
         p.lastSwitch = { at: s.at, list: s.list, words };
+      if (String(s.listId || "").startsWith("g-canopy-") && (!p.lastCanopy || s.at > p.lastCanopy.at))
+        p.lastCanopy = { at: s.at, list: s.list, words };
       words.forEach(w => (w.missed || []).forEach(m => { p.sounds[m] = (p.sounds[m] || 0) + 1; }));
     });
     return Object.values(pupils).map(p => Object.assign(p, {
@@ -1005,13 +1007,13 @@
 
   function downloadCSV(sessions) {
     const cell = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
-    const lines = [["Date", "Time", "Pupil", "List", "Source", "Word", "Sounds", "Result", "Wrong tries", "Sounds missed", "Seconds"].map(cell).join(",")];
+    const lines = [["Date", "Time", "Pupil", "List", "Source", "Word", "Sounds", "Result", "Wrong tries", "Skills missed", "Seconds", "Ways made"].map(cell).join(",")];
     sessions.slice().reverse().forEach(s => (s.words || []).forEach(w => {
       const d = new Date(s.at);
       const result = (w.challenge ? "New word: " : "") + (w.correct ? (w.triesUsed === 1 ? "Right first time" : `Right on try ${w.triesUsed}`) : "Missed");
       lines.push([d.toLocaleDateString("en-GB"), d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }), s.pupil, s.list,
         s.source === "worksheet" ? "Worksheet" : "Online", w.word, w.sounds, result,
-        (w.wrong || []).join(" "), (w.missed || []).join(" "), w.seconds ?? ""].map(cell).join(","));
+        (w.wrong || []).join(" "), (w.missed || []).join(" "), w.seconds ?? "", (w.methods || []).join("; ")].map(cell).join(","));
     }));
     const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
     const a = document.createElement("a");
@@ -1794,13 +1796,19 @@
           <div class="next-head"><h3>${esc(p.pupil)}</h3><div class="row"><button class="btn small" data-report="${esc(p.pupil)}">📄 Progress report</button>
             <button class="btn small" data-pn="${esc(p.pupil)}">📅 Parents' night</button></div></div>
            <p class="meta">${p.lists} lists (${p.worksheets} worksheets) · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
-          ${p.topSounds.length ? `<div><b>Sounds to work on</b><br>${p.topSounds.map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</div>` : `<div>No missed sounds 🎉</div>`}
+          ${p.topSounds.length ? `<div><b>Skills to practise</b><br>${p.topSounds.map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</div>` : `<div>No missed skills 🎉</div>`}
            <ul class="recent">${p.recent.map(r => `<li>${day(r.at)} · ${esc(r.source)} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
            ${p.lastSwitch ? `<details class="game-review"><summary>🎮 Last Sound Switch game · ${day(p.lastSwitch.at)}</summary>
              <p class="hint">Time includes listening and thinking; it is never used to score the child.</p>
              <ul>${p.lastSwitch.words.map(w => `<li><b>${esc(w.word)}</b> · ${w.triesUsed === 1 ? "first go" : "with support"}
                ${Number.isFinite(w.seconds) ? ` · ${w.seconds}s` : ""}
                ${(w.wrong || []).length ? `<br><span class="meta">${esc(w.wrong.join(", "))}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
+           ${p.lastCanopy ? `<details class="game-review"><summary>✨ Last Counting Canopy game · ${day(p.lastCanopy.at)}</summary>
+             <p class="hint">Time shows thinking time only; it never changes the score.</p>
+             <ul>${p.lastCanopy.words.map(w => `<li><b>${esc(w.word)}</b> · ${w.triesUsed === 1 ? "first go" : "with support"}
+               ${Number.isFinite(w.seconds) ? ` · ${w.seconds}s` : ""}
+               ${(w.methods || []).length ? `<br><span class="meta">Ways made: ${esc(w.methods.join(" and "))}</span>` : ""}
+               ${(w.wrong || []).length ? `<br><span class="meta">Tried: ${esc(w.wrong.join(", "))}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
         </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}
       ${pupils.length ? (() => {
         const organisers = [...new Set(cfeRows(sessions).map(r => r.organiser))];

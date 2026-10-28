@@ -375,10 +375,11 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? (["map", "switch"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
+        triesUsed: r.correct ? (["map", "switch", "canopy"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
         ...(Number.isFinite(r.seconds) ? { seconds: r.seconds } : {}),
+        ...(r.methods?.length ? { methods: r.methods } : {}),
         // Starting checks: the list or activity each word was testing
         ...(r.item.from ? { from: r.item.from } : {})
       }))
@@ -1025,7 +1026,8 @@
       ${tile("#/bests", "🏅", "My bests", `${plural(week.thisWeek, "go", "goes")} this week`)}
       ${storyActivities().length && !locked ? tile("#/stories", "📚", "My stories", `${readyStories(prog).length} ready to read`) : ""}
       ${locked ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
-      ${locked ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}`;
+      ${locked ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
+      ${locked ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}`;
     // Pip says what's most useful right now (and changes if the teacher has set work)
     const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
       const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
@@ -1317,7 +1319,7 @@
       ${previewBanner()}
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
+        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity && session.items[session.i]?.kind === "canopy" ? "Clearing" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
         ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -1643,7 +1645,7 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
-        ${act.area === "games" && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
+        ${/^g-(hopper|switch)-/.test(act.id) && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
           <select id="hopperAccent"${CLASS && CLASS.accent ? " disabled" : ""}>
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
             <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
@@ -1781,6 +1783,7 @@
     const q = session.items[session.i];
     if (q.kind === "map") return showSoundHopper(q);
     if (q.kind === "switch") return showSoundSwitch(q);
+    if (q.kind === "canopy") return showCountingCanopy(q);
     const wrong = [];
     let missed = [];
     const passage = act.passage;
@@ -1943,11 +1946,8 @@
           <div class="hopper-river" aria-hidden="true">♪ &nbsp; ♫ &nbsp; ♪ &nbsp; ♫</div>
           <div class="hopper-bank left" aria-hidden="true"></div><div class="hopper-bank right" aria-hidden="true"></div>
           <div class="hopper-bridge" aria-hidden="true">${q.tokens.map((_, i) => `<span class="bridge-plank" data-plank="${i}"></span>`).join("")}</div>
-          <div class="hopper-creature" id="hopperCreature" role="img" aria-label="Pip, the sound hopper">
-            <span class="hopper-ear one"></span><span class="hopper-ear two"></span>
-            <span class="hopper-eye one"></span><span class="hopper-eye two"></span>
-            <span class="hopper-cheek"></span><span class="hopper-foot one"></span><span class="hopper-foot two"></span>
-          </div>
+          <img class="hopper-creature" id="hopperCreature" src="assets/brand/pip-hop-small.webp"
+            alt="Pip, the sound hopper" width="88" height="88">
           <div class="hopper-reward" id="hopperReward" aria-live="polite"></div>
         </div>
         <h1 class="hopper-title">${session.i === 0 ? "Help Pip cross!" : "Another river to cross!"}</h1>
@@ -2082,6 +2082,7 @@
       if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: !wrong.length });
       scene.classList.add("crossed");
+      $("#hopperCreature").src = "assets/brand/pip-celebrate-small.webp";
       $("#hopperReward").textContent = wrong.length ? "♪ Bridge built!" : "✨ 💎 Perfect bridge!";
       feedback.className = "feedback good";
       feedback.innerHTML = `You built <b>${esc(q.answer)}</b> — ${q.tokens.map(t => `<span class="chip">${esc(label(t))}</span>`).join("")} <span class="stars-inline">${stars(earned)}</span>`;
@@ -2126,9 +2127,8 @@
         <div class="switch-scene" id="switchScene" role="img" aria-label="Pip beside a locked workshop door">
           <div class="switch-cloud one"></div><div class="switch-cloud two"></div>
           <div class="switch-floor"></div>
-          <div class="hopper-creature" aria-hidden="true"><span class="hopper-ear one"></span><span class="hopper-ear two"></span>
-            <span class="hopper-eye one"></span><span class="hopper-eye two"></span><span class="hopper-cheek"></span>
-            <span class="hopper-foot one"></span><span class="hopper-foot two"></span></div>
+          <img class="hopper-creature" src="assets/brand/pip-think-small.webp"
+            alt="" width="88" height="88">
           <div class="switch-door-frame"><div class="switch-door"><span class="switch-lock">🔒</span></div></div>
           <span class="switch-spark" aria-hidden="true">✦ ✧ ✦</span>
         </div>
@@ -2235,6 +2235,7 @@
       $("#switchChoices").hidden = true;
       $("#hintSwitch").disabled = true;
       scene.classList.add("open");
+      scene.querySelector(".hopper-creature").src = "assets/brand/pip-celebrate-small.webp";
       scene.setAttribute("aria-label", "The door opens and Pip walks through");
       hopperTone(660);
       chimeRight();
@@ -2250,6 +2251,196 @@
       $("#nextQ").focus();
       $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
     }
+  }
+
+  /* ---------- Counting Canopy: four ways to think about number ---------- */
+
+  const CANOPY_FLASH = { 1: [0], 2: [0, 1], 3: [0, 1, 2],
+    4: [0, 1, 5, 6], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 5, 6, 7] };
+  function canopyFrame(count, size = 10, flash = false) {
+    const spots = new Set(flash ? CANOPY_FLASH[count] : Array.from({ length: count }, (_, i) => i));
+    return `<div class="canopy-frame${size === 20 ? " twenty" : ""}" role="img" aria-label="${count} fireflies in a ${size}-frame">
+      ${Array.from({ length: size }, (_, i) => `<span class="canopy-cell${spots.has(i) ? " lit" : ""}">${spots.has(i) ? "✦" : ""}</span>`).join("")}</div>`;
+  }
+
+  function showCountingCanopy(q) {
+    document.body.classList.add("playing-game");
+    const act = session.activity;
+    const wrong = [];
+    const missed = new Set();
+    const rejected = new Set();
+    const startedAt = Date.now();
+    let finished = false;
+    let hinted = false;
+    let keepFlash = false;
+    let flashTimer = null;
+    let revealFlash = () => {};
+    let left = 0, right = 0, firstWay = null;
+    const instructions = {
+      flash: "Look at the fireflies. How many did you see? You can look again.",
+      make: `Help Pip make ${q.total}. Put fireflies in both nests, then find another way.`,
+      hide: `There are ${q.total} fireflies. I can see ${q.visible}. How many are hiding?`,
+      compare: "Look at both trees. Which has more fireflies, or are they the same?"
+    };
+    const headings = { flash: "Firefly flash", make: "Build Pip's bridge", hide: "Who is hiding?", compare: "Balance the branches" };
+    app.innerHTML = `
+      <section class="panel practice activity counting-canopy" style="--accent:${esc(act.colour)}">
+        ${progressHTML()}
+        <div class="game-trail" aria-label="Forest clearings">${session.items.map((_, i) =>
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Clearing ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>
+        <div class="canopy-scene" id="canopyScene" role="img" aria-label="Pip exploring the counting forest">
+          <span class="canopy-sun" aria-hidden="true"></span><span class="canopy-tree one" aria-hidden="true"></span>
+          <span class="canopy-tree two" aria-hidden="true"></span><span class="canopy-stream" aria-hidden="true"></span>
+          <span class="canopy-bridge" aria-hidden="true">${session.items.map((_, i) => `<i class="${i < session.i ? "built" : ""}"></i>`).join("")}</span>
+          <img class="canopy-pip" id="canopyPip" src="assets/brand/pip-listen-small.webp" alt="" width="100" height="100">
+          <span class="canopy-owl" aria-hidden="true">🦉</span>
+        </div>
+        <div class="canopy-head"><h1>${headings[q.mode]}</h1>
+          <button type="button" class="btn small" id="canopyHear">🔊 Hear Pip</button></div>
+        <p class="canopy-instruction">${esc(instructions[q.mode])}</p>
+        <div class="canopy-work" id="canopyWork"></div>
+        <div class="row center"><button type="button" class="btn small" id="canopyHint">💡 Show a clue</button></div>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+      </section>`;
+    wireStop();
+    const work = $("#canopyWork");
+    const feedback = $("#feedback");
+    const scene = $("#canopyScene");
+    const listen = () => speak(instructions[q.mode]);
+    $("#canopyHear").onclick = listen;
+    listen();
+
+    function mistake(value, message) {
+      if (wrong.length < 8) wrong.push(value);
+      missed.add(q.skill);
+      feedback.className = "feedback oops";
+      feedback.textContent = message;
+      hopperTone(210);
+    }
+    function finish(methods = []) {
+      if (finished) return;
+      finished = true;
+      if (flashTimer) clearTimeout(flashTimer);
+      const earned = wrong.length ? 1 : 2;
+      session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned,
+        missed: [...missed], methods, seconds: Math.max(1, Math.round((Date.now() - startedAt) / 1000)) });
+      if (!session.preview) countGo();
+      livePing(session, "word", { word: q.label, ok: !wrong.length });
+      scene.classList.add("solved");
+      scene.querySelector(".canopy-bridge i:nth-child(${session.i + 1})")?.classList.add("built");
+      $("#canopyPip").src = "assets/brand/pip-celebrate-small.webp";
+      const result = q.mode === "make" ? methods.join(" and ") + ` both make ${q.total}`
+        : q.mode === "hide" ? `${q.visible} and ${q.answer} make ${q.total}`
+        : q.mode === "compare" ? `${q.left} and ${q.right}: ${q.answer === "same" ? "the same amount" : `${q.answer} has more`}`
+        : `${q.total} fireflies`;
+      feedback.className = "feedback good";
+      feedback.innerHTML = `Pip made it! <b>${esc(result)}</b> <span class="stars-inline">${stars(earned)}</span>`;
+      chimeRight();
+      app.querySelectorAll("#canopyWork button, #canopyHint").forEach(button => { button.disabled = true; });
+      const next = document.createElement("div");
+      next.className = "row center";
+      const last = session.i === session.items.length - 1;
+      next.innerHTML = `<button class="btn big primary" id="nextQ">${last ? "See my stars 🏆" : "Next clearing →"}</button>`;
+      feedback.after(next);
+      $("#nextQ").focus();
+      $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
+    }
+    function choices(options, labelFor, wrongMessage) {
+      const box = $("#canopyChoices");
+      box.innerHTML = options.map((value, i) => `<button type="button" class="canopy-choice" data-choice="${i}" ${rejected.has(String(value)) ? "disabled" : ""}>${esc(labelFor(value))}</button>`).join("");
+      box.querySelectorAll("[data-choice]").forEach(button => {
+        const value = String(options[Number(button.dataset.choice)]);
+        button.onclick = () => {
+          if (finished || rejected.has(value)) return;
+          if (value === q.answer) return finish();
+          rejected.add(value);
+          mistake(labelFor(value), wrongMessage);
+          button.disabled = true;
+          if (rejected.size >= 2) box.querySelectorAll("button").forEach(b => {
+            if (String(options[Number(b.dataset.choice)]) === q.answer) b.classList.add("hinted");
+          });
+        };
+      });
+    }
+    function renderMake(focus = "") {
+      const placed = left + right;
+      const nest = (side, n, name) => `<div class="canopy-nest" aria-label="${name}: ${n} fireflies">
+        <h2>${name}</h2><div class="canopy-pile" aria-hidden="true">${"✦".repeat(n) || "·"}</div>
+        <div class="canopy-controls"><button type="button" data-nest="${side}" data-change="-1" aria-label="Take one firefly from ${name}" ${n ? "" : "disabled"}>−</button>
+          <strong aria-live="polite">${n}</strong><button type="button" data-nest="${side}" data-change="1" aria-label="Add one firefly to ${name}" ${placed < q.total ? "" : "disabled"}>＋</button></div></div>`;
+      work.innerHTML = `<p class="canopy-target">Make <b>${q.total}</b> fireflies in two nests</p>
+        ${firstWay ? `<p class="canopy-first">First bridge: ${firstWay[0]} + ${firstWay[1]} = ${q.total}. Make a different split!</p>` : ""}
+        <div class="canopy-nests">${nest("left", left, "Owl's nest")}${nest("right", right, "Fox's nest")}</div>
+        <p class="canopy-remaining">${q.total - placed} still to place</p>
+        <button type="button" class="btn big primary" id="canopyCheck">${firstWay ? "Check second bridge" : "Check first bridge"}</button>`;
+      work.querySelectorAll("[data-nest]").forEach(button => {
+        button.onclick = () => {
+          const side = button.dataset.nest, delta = Number(button.dataset.change);
+          if (side === "left") left += delta; else right += delta;
+          renderMake(`${side}:${delta}`);
+        };
+      });
+      $("#canopyCheck").onclick = () => {
+        if (left + right !== q.total) return mistake(`${left}+${right}`, `Count the fireflies still to place. Pip needs ${q.total} altogether.`);
+        if (!left || !right) return mistake(`${left}+${right}`, "Put at least one firefly in each nest.");
+        const same = firstWay && [left, right].sort((a, b) => a - b).join("+") === firstWay.slice().sort((a, b) => a - b).join("+");
+        if (same) return mistake(`${left}+${right} again`, "That is the same split with the nests swapped. Find another way.");
+        if (firstWay) return finish([`${firstWay[0]} + ${firstWay[1]}`, `${left} + ${right}`]);
+        firstWay = [left, right];
+        feedback.className = "feedback good";
+        feedback.textContent = `${left} and ${right} make ${q.total}. Now make it another way!`;
+        hopperTone(520);
+        left = 0; right = 0;
+        renderMake();
+      };
+      if (focus) (work.querySelector(`[data-nest="${focus.split(":")[0]}"][data-change="${focus.split(":")[1]}"]:not(:disabled)`)
+        || $("#canopyCheck")).focus();
+    }
+    if (q.mode === "make") renderMake();
+    else if (q.mode === "flash") {
+      work.innerHTML = `<div class="canopy-flash" id="canopyFlash">${canopyFrame(q.total, 10, true)}
+        <span class="canopy-cover" aria-hidden="true">🍃</span></div>
+        <button type="button" class="btn small" id="canopyAgain">👀 Look again</button>
+        <div class="canopy-choices" id="canopyChoices" role="group" aria-label="How many fireflies?"></div>`;
+      const flash = $("#canopyFlash");
+      revealFlash = () => {
+        flash.classList.remove("covered");
+        if (flashTimer) clearTimeout(flashTimer);
+        if (!keepFlash) flashTimer = setTimeout(() => { if (!finished && app.contains(flash)) flash.classList.add("covered"); }, 1800);
+      };
+      $("#canopyAgain").onclick = revealFlash;
+      choices(q.options, n => String(n), "Look again at the fireflies. You can replay them as often as you like.");
+      revealFlash();
+    } else if (q.mode === "hide") {
+      work.innerHTML = `<p class="canopy-target"><b>${q.total}</b> fireflies in all</p>
+        <div class="canopy-groups"><div><h2>I can see ${q.visible}</h2>${canopyFrame(q.visible, q.total > 10 ? 20 : 10)}</div>
+          <div class="canopy-hidden"><span aria-hidden="true">🍃</span><b>How many are hiding?</b></div></div>
+        <div class="canopy-choices" id="canopyChoices" role="group" aria-label="How many are hiding?"></div>`;
+      choices(q.options, n => String(n), `Count on from ${q.visible} to ${q.total}. How many more?`);
+    } else {
+      work.innerHTML = `<div class="canopy-groups compare"><div><h2>Owl's tree</h2>${canopyFrame(q.left)}</div>
+        <div><h2>Fox's tree</h2>${canopyFrame(q.right)}</div></div>
+        <div class="canopy-choices" id="canopyChoices" role="group" aria-label="Compare the two groups"></div>`;
+      choices(q.options, v => ({ left: "Owl has more", same: "The same", right: "Fox has more" })[v],
+        "Look again. Line up the fireflies in both groups and see which has extras.");
+    }
+    $("#canopyHint").onclick = () => {
+      if (finished) return;
+      if (!hinted) { hinted = true; if (wrong.length < 8) wrong.push("used a clue"); missed.add(q.skill); }
+      feedback.className = "feedback good";
+      if (q.mode === "flash") {
+        keepFlash = true; revealFlash();
+        feedback.textContent = "The fireflies will stay visible. Look for groups you know.";
+      } else if (q.mode === "make") {
+        const hint = [[1, q.total - 1], [2, q.total - 2], [3, q.total - 3]]
+          .find(pair => !firstWay || pair.slice().sort((a, b) => a - b).join("+") !== firstWay.slice().sort((a, b) => a - b).join("+"));
+        feedback.textContent = `Try ${hint[0]} in one nest and ${hint[1]} in the other.`;
+      } else if (q.mode === "hide") {
+        feedback.textContent = `Count on: ${Array.from({ length: q.total - q.visible + 1 }, (_, i) => q.visible + i).join(", ")}. How many hops?`;
+      } else {
+        feedback.textContent = `Owl has ${q.left}; Fox has ${q.right}. Which has more, or are they equal?`;
+      }
+    };
   }
 
   function showActivitySummary() {
