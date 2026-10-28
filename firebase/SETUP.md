@@ -102,7 +102,7 @@ Everything is at [console.cloud.google.com](https://console.cloud.google.com), s
 
 Google checks apps that ask for calendar access once. It's free and usually takes a few days to a few weeks. Have these ready, then go to **Google Auth Platform → Verification Centre**:
 
-- **Branding** (**Google Auth Platform → Branding**): the app name *PopSpell*, a support email, the logo, the home page `https://popspell.com`, a **privacy policy** link and **authorised domain** `popspell.com`. The name and logo must match the website.
+- **Branding** (**Google Auth Platform → Branding**): the app name *PopSpell*, a support email, the logo (`assets/brand/pip-logo-120.png`, 120px square), the home page `https://popspell.com`, a **privacy policy** link and **authorised domain** `popspell.com`. The name and logo must match the website.
 - **A privacy policy page:** [popspell.com/privacy.html](https://popspell.com/privacy.html) (`privacy.html`). It says what calendar access is used for: adding, moving and removing the teacher's own PopSpell lesson events, nothing else, not shared, and the permission can be removed at any time from the Google Account's *Security → Third-party connections*.
 - **Proof you own popspell.com:** add it as a *Domain* property in [Google Search Console](https://search.google.com/search-console) using the same Google account. Search Console gives a DNS TXT record to add at the domain registrar.
 - **Why the scope is needed** (a sentence for the form): *"Teachers press Sync to add their pupils' lesson times to their own Google Calendar; PopSpell creates, updates and removes only these lesson events. `calendar.events` is the narrowest scope that allows creating events in the teacher's existing calendar."*
