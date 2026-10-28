@@ -571,6 +571,42 @@ a.me-card:hover { border-color: var(--primary); }
 .roster-card label:not(.check) { display: grid; gap: 2px; font-size: .85rem; color: var(--muted); }
 .roster-card .check { text-align: left; }
 .worksheet-print { display: none; }
+.work-flow { background: var(--surface); border: 2px solid var(--line); border-radius: 20px; padding: 18px 20px; margin: 16px 0; box-shadow: var(--shadow); }
+.work-flow h2 { margin: 0 0 4px; font-size: 1.35rem; }
+.work-flow .hint { margin: 0 0 12px; }
+.work-flow .add-row { margin-top: 0; }
+.preview-picker { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.preview-picker select { min-width: 180px; }
+.preview-banner { max-width: 850px; margin: 12px auto; padding: 10px 14px; border: 2px solid var(--accent); border-radius: 14px; background: #fff8d8; color: var(--primary); font-weight: 700; text-align: center; }
+.worksheet-preview { width: min(96vw, 1000px); max-width: none; max-height: 92vh; padding: 0; border: 2px solid var(--line); border-radius: 18px; background: #e8edf5; color: #111; box-shadow: 0 20px 60px #001a4a55; }
+.worksheet-preview::backdrop { background: #00143a99; }
+.worksheet-preview-actions { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--line); }
+.worksheet-preview-actions h2 { margin: 0 auto 0 0; color: var(--primary); font-size: 1.2rem; }
+.sheet-preview-page { width: min(100% - 32px, 794px); min-height: 900px; margin: 16px auto; padding: 40px; background: #fff; box-shadow: 0 4px 18px #001a4a26; font: 12pt Arial, sans-serif; }
+.sheet-preview-page h1 { font-size: 18pt; margin: 0 0 10px; }
+.sheet-preview-page p { margin: 8px 0 14px; }
+.sheet-preview-page table { width: 100%; border-collapse: collapse; }
+.sheet-preview-page th, .sheet-preview-page td { border: 1px solid #777; padding: 8px; height: 28px; }
+.sheet-preview-page th { text-align: left; background: #eee; }
+.sheet-preview-page .write-line { width: 58%; }
+.sheet-preview-page .check-box { width: 10%; text-align: center; }
+.sheet-preview-page .sound-boxes { display: flex; gap: 4px; }
+.sheet-preview-page .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
+.sheet-preview-page.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
+.sheet-preview-page .ws-literacy h1, .sheet-preview-page.ws-literacy h1 { font-family: var(--font); }
+.sheet-preview-page .ws-row { display: block; width: 100%; height: auto; margin: 2px 0 10px; }
+.sheet-preview-page .ws-row text { font-family: var(--reading-font); }
+.sheet-preview-page .ws-row .ws-model { fill: #111; }
+.sheet-preview-page .ws-row .ws-grey { fill: #c9c9c9; }
+.sheet-preview-page .ws-row .ws-dots { fill: url(#wsDots); }
+.sheet-preview-page .ws-row .ws-top, .sheet-preview-page .ws-row .ws-tail { stroke: #8a8a8a; stroke-width: 1.2; stroke-dasharray: 6 5; }
+.sheet-preview-page .ws-row .ws-mid { stroke: #3d7bd6; stroke-width: 1.4; stroke-dasharray: 4 4; }
+.sheet-preview-page .ws-row .ws-base { stroke: #333; stroke-width: 1.6; }
+.sheet-preview-page .ws-row .ws-sep { stroke: #ddd; stroke-width: 1; }
+.sheet-preview-page .ws-sentence { margin-bottom: 8px; }
+.sheet-preview-page .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
+.sheet-preview-page .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
+@media (max-width: 640px) { .sheet-preview-page { width: 100%; margin: 0; padding: 18px; } .work-flow { padding: 14px; } }
 
 /* Activities: questions, options and passages */
 .q-prompt { font-size: clamp(1.3rem, 4vw, 1.8rem); font-family: var(--reading-font); }

@@ -202,10 +202,15 @@
   // numeracy activities (activities.js), then sentence dictation for any spelling list
   function catalogueOptions() {
     const checks = Object.values(P().CHECKS).filter(c => c.id === "check-spelling" || window.PopActivities);
-    const groups = [`<optgroup label="🧭 Starting checks">${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`].concat(P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
+    const groups = [];
     const A = window.PopActivities;
+    const gameArea = A && A.AREAS.find(area => area.id === "games");
+    if (gameArea) groups.push(`<optgroup label="${gameArea.icon} ${esc(gameArea.title)}">${gameArea.activities
+      .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`);
+    groups.push(`<optgroup label="🧭 Starting checks">${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`);
+    P().STAGES.forEach(st => groups.push(`<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
     if (A) {
-      A.AREAS.forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
+      A.AREAS.filter(area => area.id !== "games").forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
         .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`));
       groups.push(`<optgroup label="✍️ Sentence dictation">${P().STAGES.flatMap(st => st.lists)
         .map(l => `<option value="dictate:${esc(l.id)}">Dictation: ${esc(l.title)}</option>`).join("")}</optgroup>`);
@@ -213,6 +218,11 @@
     return `<option value="">Choose work…</option>${groups.join("")}`;
   }
   const listTitle = entry => { const r = P().resolveAssigned(entry); return r ? r.title : entry; };
+  const previewHref = entry => {
+    const work = P().resolveAssigned(entry);
+    if (!work) return "";
+    return work.href + (work.href.includes("?") ? "&" : "?") + "preview=1";
+  };
 
   async function drawAssign(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
@@ -221,21 +231,23 @@
     if (tab !== "assign") return;
     const options = catalogueOptions();
     body.innerHTML = `
-      <p class="hint">Choose lists for each pupil in <b>${esc(current.name)}</b>. They appear at the top of the pupil's home page as <b>"📌 Your lists today"</b>.
-        A row called <b>Everyone</b> is shown to every pupil in the class. Type names exactly as pupils type them.</p>
+      <p class="hint">Choose work for each pupil in <b>${esc(current.name)}</b>. Use <b>Test online</b> before assigning it; previews do not save results. A row called <b>Everyone</b> is shown to every pupil in the class. Type names exactly as pupils type them.</p>
       <table class="t-table">
         <thead><tr><th>Pupil</th><th>Lists</th><th>Add a list</th></tr></thead>
         <tbody>${rows.length ? rows.map((a, i) => `
           <tr>
             <td class="who">${esc(a.who)}</td>
             <td><div class="chips">${a.lists.map((l, j) => `<span class="t-chip">${esc(listTitle(l))}<button title="Remove" data-row="${i}" data-remove="${j}">×</button></span>`).join("") || "<i>none</i>"}</div></td>
-            <td><select data-add="${i}">${options}</select></td>
+            <td><div class="preview-picker"><select data-add="${i}">${options}</select>
+              <a class="btn small" data-preview-row="${i}" target="_blank" rel="noopener" hidden>▶ Test online</a>
+              <button class="btn small primary" data-assign-row="${i}" type="button" disabled>Assign</button></div></td>
           </tr>`).join("") : `<tr><td colspan="3" class="empty">No assignments yet. Add a pupil below.</td></tr>`}</tbody>
       </table>
       <form class="add-row" id="addForm">
         <input type="text" id="newWho" placeholder="Pupil's first name (or Everyone)" maxlength="30">
         <select id="newList">${options}</select>
         <input type="text" id="newLink" placeholder="…or paste a Make a list link">
+        <a class="btn small" id="newPreview" target="_blank" rel="noopener" hidden>▶ Test online</a>
         <button class="btn primary" type="submit">Add</button>
       </form>`;
     const save = async (who, lists) => {
@@ -245,8 +257,29 @@
       b.onclick = () => { const a = rows[b.dataset.row]; save(a.who, a.lists.filter((_, j) => j !== Number(b.dataset.remove))); };
     });
     body.querySelectorAll("[data-add]").forEach(s => {
-      s.onchange = () => { const a = rows[s.dataset.add]; if (s.value && !a.lists.includes(s.value)) save(a.who, a.lists.concat(s.value)); };
+      const index = s.dataset.add;
+      const preview = body.querySelector(`[data-preview-row="${index}"]`);
+      const assign = body.querySelector(`[data-assign-row="${index}"]`);
+      s.onchange = () => {
+        const href = previewHref(s.value);
+        preview.hidden = !href;
+        if (href) preview.href = href;
+        assign.disabled = !s.value;
+      };
+      assign.onclick = () => {
+        const a = rows[index];
+        if (s.value && !a.lists.includes(s.value)) save(a.who, a.lists.concat(s.value));
+      };
     });
+    const updateNewPreview = () => {
+      const link = $("#newLink").value.trim();
+      const entry = link ? (link.includes("#/") ? link.slice(link.indexOf("#/")) : link) : $("#newList").value;
+      const href = previewHref(entry);
+      $("#newPreview").hidden = !href;
+      if (href) $("#newPreview").href = href;
+    };
+    $("#newList").onchange = updateNewPreview;
+    $("#newLink").oninput = updateNewPreview;
     $("#addForm").onsubmit = e => {
       e.preventDefault();
       const who = $("#newWho").value.trim();
@@ -302,23 +335,23 @@
   const sheetHead = (title, who, extra = "") => `<h1>PopSpell · ${esc(title)}</h1>
     <p><b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}</p>`;
 
-  function printHandwriting(who, list) {
-    printSheet("ws-literacy", `${dotPattern}${sheetHead(`${list.title} · handwriting`, who)}
+  function handwritingHTML(who, list) {
+    return `${dotPattern}${sheetHead(`${list.title} · handwriting`, who)}
       <p>Look at the word and say its sounds. Trace the grey word, then the dotted word, then write it on your own.</p>
-      ${list.items.map(item => handwritingRow(item.spelling)).join("")}`);
+      ${list.items.map(item => handwritingRow(item.spelling)).join("")}`;
   }
 
-  function printSentences(who, list) {
+  function sentencesHTML(who, list) {
     const sentences = window.SENTENCES || {};
     const rows = list.items.filter(item => sentences[item.spelling.toLowerCase()]).map((item, i) => {
       const sentence = sentences[item.spelling.toLowerCase()];
       const blanked = esc(sentence).replace(new RegExp(`\\b${item.spelling}\\b`, "i"), `<span class="ws-blank"></span>`);
       return `<div class="ws-sentence"><p><b>${i + 1}.</b> ${blanked}</p>${handwritingRow("", ["blank"])}</div>`;
     });
-    printSheet("ws-literacy", `${sheetHead(`${list.title} · sentences`, who)}
+    return `${sheetHead(`${list.title} · sentences`, who)}
       <p>Words to use: <b>${list.items.map(i => esc(i.spelling)).join(", ")}</b></p>
       <p>Fill in the missing word. Then write the whole sentence on the lines, with a capital letter and a full stop.</p>
-      ${rows.join("")}`);
+      ${rows.join("")}`;
   }
 
   function printLetters() {
@@ -328,20 +361,18 @@
       ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`);
   }
 
-  function printWorksheet(who, plan, mode) {
+  function worksheetSpec(who, plan, mode) {
     const list = catalogueList(plan.list);
-    if (!list) return showError(new Error("Choose a built-in spelling list to print."));
-    if (mode === "handwriting") return printHandwriting(who, list);
-    if (mode === "sentences") return printSentences(who, list);
+    if (!list) return null;
+    if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
+    if (mode === "sentences") return { className: "ws-literacy", html: sentencesHTML(who, list) };
     const lines = list.items.map((item, i) => mode === "key"
       ? `<tr><td>${i + 1}</td><td>${esc(item.spelling)}</td><td>${esc(item.tokens.join(" · "))}</td></tr>`
       : mode === "dictation"
         ? `<tr><td>${i + 1}</td><td class="write-line"></td><td class="check-box">□</td></tr>`
         : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
           <td class="check-box">□</td></tr>`).join("");
-    const sheet = document.createElement("section");
-    sheet.className = "worksheet-print";
-    sheet.innerHTML = `<h1>PopSpell · ${esc(list.title)}${mode === "key" ? " · teacher key" : ""}</h1>
+    const html = `<h1>PopSpell · ${esc(list.title)}${mode === "key" ? " · teacher key" : ""}</h1>
       <p><b>Pupil:</b> ${esc(who === "Everyone" ? "____________________" : who)}
         &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Date:</b> ${esc(plan.from)}</p>
       <p>${mode === "key" ? "Read each word aloud. One box represents one sound; the letters shown are the matching grapheme." :
@@ -350,11 +381,29 @@
       ${list.tip ? `<p><b>Sound focus:</b> ${esc(list.tip)}</p>` : ""}
       <table><thead><tr><th>#</th><th>${mode === "key" ? "Word" : mode === "dictation" ? "Write the word" : "Map each sound to letters"}</th>
         <th>${mode === "key" ? "Sound map" : "Check"}</th></tr></thead><tbody>${lines}</tbody></table>`;
-    document.body.append(sheet);
-    document.body.classList.add("printing-worksheet");
-    const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
-    window.addEventListener("afterprint", clean, { once: true });
-    window.print();
+    return { className: "", html };
+  }
+
+  function printWorksheet(who, plan, mode) {
+    const sheet = worksheetSpec(who, plan, mode);
+    if (!sheet) return showError(new Error("Worksheets are available for built-in spelling lists."));
+    printSheet(sheet.className, sheet.html);
+  }
+
+  function previewWorksheet(who, plan, mode) {
+    const sheet = worksheetSpec(who, plan, mode);
+    if (!sheet) return showError(new Error("Worksheets are available for built-in spelling lists. Test this activity online instead."));
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
+      <button class="btn small" type="button" data-close>Close</button>
+      <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
+      <section class="sheet-preview-page ${sheet.className}">${sheet.html}</section>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); printSheet(sheet.className, sheet.html); };
+    dialog.showModal();
   }
 
   function drawMark(body) {
@@ -391,30 +440,99 @@
     if (tab !== "plans") return;
     const plans = rows.flatMap((row, rowIndex) => row.plans.map((plan, planIndex) =>
       ({ row, rowIndex, plan, planIndex })));
-    body.innerHTML = `<p class="hint">Schedule a spelling list for a pupil. It appears online only between the chosen dates, inclusive. Print a sound-mapping, dictation, handwriting or sentence sheet, then record the child's worksheet results here.</p>
-      <div class="row"><button class="btn small" id="printLetters" type="button">Print letter formation (a–z)</button></div>
+    const spellingOptions = P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+    const games = (window.PopActivities?.AREAS.find(area => area.id === "games") || {}).activities || [];
+    body.innerHTML = `<div class="work-flow">
+      <h2>💻 Online work</h2>
+      <p class="hint">Choose a list or activity, test it as a pupil, then schedule when it appears on the child's device.</p>
       <form class="add-row" id="planForm">
         <input type="text" id="planWho" placeholder="Pupil's name (or Everyone)" maxlength="40" required>
         <select id="planList" required>${catalogueOptions()}</select>
         <label>From <input type="date" id="planFrom" value="${todayKey()}" required></label>
         <label>Through <input type="date" id="planUntil" value="${todayKey()}" required></label>
-        <button class="btn primary" type="submit">Schedule</button>
-      </form>
+        <a class="btn small" id="planOnlinePreview" target="_blank" rel="noopener" hidden>▶ Test online</a>
+        <button class="btn primary" type="submit">Schedule online</button>
+      </form></div>
+      <div class="work-flow">
+        <h2>🖨️ Paper worksheets</h2>
+        <p class="hint">Preview the sheet before printing. After the child completes it, enter the marks here; this adds the findings to their progress without assigning online work.</p>
+        <div class="add-row" id="paperTools">
+          <input type="text" id="paperWho" placeholder="Pupil's name" maxlength="40">
+          <select id="paperList"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
+          <label>Sheet type <select id="paperMode"><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+            <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Teacher key</option></select></label>
+          <button class="btn small" id="paperPreview" type="button" disabled>👀 Preview sheet</button>
+          <button class="btn small" id="paperPrint" type="button" disabled>🖨️ Print / Save PDF</button>
+          <button class="btn small primary" id="paperMark" type="button" disabled>✍️ Enter marks</button>
+        </div>
+        <div class="row"><button class="btn small" id="printLetters" type="button">Print letter formation (a–z)</button></div>
+      </div>
+      <div class="work-flow">
+        <h2>🎮 Quick game</h2>
+        <p class="hint">Test a game first, then give it to one pupil for today. It disappears from their assigned work after today.</p>
+        <form class="add-row" id="quickGameForm">
+          <input type="text" id="quickWho" placeholder="Pupil's name" maxlength="40" required>
+          <select id="quickGame">${games.map(g => `<option value="${esc(g.id)}">${esc(g.title)}</option>`).join("")}</select>
+          <a class="btn small" id="quickPreview" target="_blank" rel="noopener" href="${esc(games.length ? previewHref(games[0].id) : "#")}">▶ Test game</a>
+          <button class="btn primary" type="submit">Assign for today</button>
+        </form>
+      </div>
+      <h2 class="t-h2">Scheduled work</h2>
       ${plans.length ? `<div class="pupil-grid">${plans.map(({ row, rowIndex, plan, planIndex }) => `
         <article class="pcard t-plancard">
           <h3>${esc(row.who)} · ${esc(listTitle(plan.list))}</h3>
           <div class="add-row"><label>From <input type="date" data-from="${rowIndex}-${planIndex}" value="${esc(plan.from)}"></label>
             <label>Through <input type="date" data-until="${rowIndex}-${planIndex}" value="${esc(plan.until)}"></label>
             <button class="btn small" data-save-plan="${rowIndex}-${planIndex}">Save dates</button></div>
-          <div class="row"><button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
+          <div class="row"><a class="btn small" href="${esc(previewHref(plan.list))}" target="_blank" rel="noopener">▶ Test online</a>
+            ${catalogueList(plan.list) ? `<button class="btn small" data-preview-plan="${rowIndex}-${planIndex}">👀 Preview worksheet</button>
+            <button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
             <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
             <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print teacher key</button>
             <button class="btn small" data-print-handwriting="${rowIndex}-${planIndex}">Print handwriting</button>
             <button class="btn small" data-print-sentences="${rowIndex}-${planIndex}">Print sentences</button>
-            ${row.who.toLowerCase() === "everyone" ? "" : `<button class="btn small" data-mark-plan="${rowIndex}-${planIndex}">Mark worksheet</button>`}
+            ${row.who.toLowerCase() === "everyone" ? "" : `<button class="btn small" data-mark-plan="${rowIndex}-${planIndex}">Mark worksheet</button>`}` : `<span class="hint">Online activity · no paper sheet</span>`}
             <button class="btn small" data-remove-plan="${rowIndex}-${planIndex}">Remove</button></div>
         </article>`).join("")}</div>` : `<div class="empty">No plans yet — schedule one above.</div>`}`;
     const ref = key => { const [r, p] = key.split("-").map(Number); return { row: rows[r], index: p, plan: rows[r].plans[p] }; };
+    $("#planList").onchange = () => {
+      const href = previewHref($("#planList").value);
+      $("#planOnlinePreview").hidden = !href;
+      if (href) $("#planOnlinePreview").href = href;
+    };
+    const paperSelection = () => {
+      const ready = !!$("#paperList").value;
+      $("#paperPreview").disabled = !ready;
+      $("#paperPrint").disabled = !ready;
+      $("#paperMark").disabled = !ready;
+    };
+    $("#paperList").onchange = paperSelection;
+    const paperPlan = () => ({ list: $("#paperList").value, from: todayKey() });
+    $("#paperPreview").onclick = () => previewWorksheet($("#paperWho").value.trim(), paperPlan(), $("#paperMode").value);
+    $("#paperPrint").onclick = () => printWorksheet($("#paperWho").value.trim(), paperPlan(), $("#paperMode").value);
+    $("#paperMark").onclick = () => {
+      const who = $("#paperWho").value.trim();
+      if (!who || who.toLowerCase() === "everyone") return showError(new Error("Enter the pupil's name before recording marks."));
+      marking = { who, list: $("#paperList").value };
+      drawMark(body);
+    };
+    $("#quickGame").onchange = () => { $("#quickPreview").href = previewHref($("#quickGame").value); };
+    $("#quickGameForm").onsubmit = async e => {
+      e.preventDefault();
+      const who = $("#quickWho").value.trim();
+      const game = $("#quickGame").value;
+      if (!who || !game) return;
+      const existing = rows.find(r => r.who.toLowerCase() === who.toLowerCase());
+      const today = todayKey();
+      const gameIds = new Set(games.map(g => g.id));
+      const prior = (existing ? existing.plans : []).filter(p =>
+        p.until >= today || !gameIds.has(p.list) || p.from !== p.until);
+      if ((existing?.lists || []).includes(game) || prior.some(p => p.list === game && p.from <= today && today <= p.until))
+        return showError(new Error("This game is already assigned to that pupil for today."));
+      if (prior.length >= 30) return showError(new Error("This pupil has the maximum of 30 plans."));
+      try { await cloud.savePlans(current.id, existing ? existing.who : who, prior.concat({ list: game, from: today, until: today }));
+        drawPlans(body); } catch (err) { showError(err); }
+    };
     $("#planForm").onsubmit = async e => {
       e.preventDefault();
       const who = $("#planWho").value.trim();
@@ -442,6 +560,10 @@
         drawPlans(body); } catch (err) { showError(err); }
     }; });
     $("#printLetters").onclick = printLetters;
+    body.querySelectorAll("[data-preview-plan]").forEach(b => { b.onclick = () => {
+      const { row, plan } = ref(b.dataset.previewPlan);
+      previewWorksheet(row.who, plan, "mapping");
+    }; });
     ["mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
       b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
         printWorksheet(row.who, plan, mode); };
