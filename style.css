@@ -311,6 +311,63 @@ button.box { cursor: pointer; }
   font-weight: 800; cursor: pointer; }
 .map-choice:hover, .map-choice.chosen { border-color: var(--accent); background: #effaff; }
 .map-slot:focus-visible, .map-choice:focus-visible { outline: 4px solid var(--accent); outline-offset: 3px; }
+
+/* Sound Hopper fits one screen: no site bar or footer, the stones are the progress bar,
+   a river sized to the screen, and the drum with its buttons side by side */
+body.playing-game .topbar, body.playing-game .site-footer { display: none; }
+body.playing-game .wrap { padding-top: 8px; padding-bottom: 8px; }
+.hopper.panel { padding-top: 12px; padding-bottom: 14px; }
+.hopper .bar { display: none; }
+.hopper .game-trail { margin: 6px 0 10px; gap: 6px; }
+.hopper .trail-stone { width: 32px; height: 32px; border-width: 2px; font-size: .9rem; }
+.hopper .hopper-title { font-size: 1.45rem; margin: 10px 0 2px; }
+.hopper-head { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 12px; margin-bottom: 4px; }
+.hopper-head .hopper-instruction { margin: 0; font-size: 1.05rem; }
+.hopper .hopper-beats { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 24px; margin-top: 8px; }
+.hopper .hopper-beats[hidden] { display: none; }
+.hopper .beat-side { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.hopper .beat-dots { min-height: 30px; margin: 0; }
+.hopper .beat-side .row { margin: 0; }
+.hopper .map-game { margin-top: 6px; }
+.hopper .map-game .hint { margin: 0 0 4px; }
+.hopper .map-slots { margin: 6px auto 10px; }
+.hopper .map-choices { margin-bottom: 6px; }
+.hopper .feedback { margin: 6px 0 0; min-height: 0; }
+.hopper .feedback + .row { margin-top: 8px; }
+/* "Bridge built!" sits at the top in the middle, clear of Pip on the far bank */
+.hopper .hopper-reward { left: 50%; right: auto; top: 8px; transform: translateX(-50%); white-space: nowrap; }
+
+/* Shorter screens (most laptops, tablets on their side) and phones: a lower river and smaller pieces */
+@media (max-height: 760px), (max-width: 520px) {
+  .hopper-scene { height: 150px; }
+  .hopper-river { height: 44px; font-size: 1.2rem; }
+  .hopper-bank { height: 60px; border-top-width: 9px; }
+  .hopper-bridge { bottom: 30px; left: 21%; right: 21%; }
+  .bridge-plank { height: 22px; font-size: 1rem; }
+  .bridge-plank.built { height: 36px; }
+  /* Pip waits on the bank, clear of the first plank, however narrow the screen */
+  .hopper-creature { width: 54px; height: 53px; bottom: 54px; left: max(2px, calc(21% - 60px)); }
+  .hopper-ear { top: -15px; width: 14px; height: 21px; }
+  .hopper-ear.one { left: 8px; } .hopper-ear.two { right: 8px; }
+  .hopper-eye { top: 17px; width: 7px; height: 10px; }
+  .hopper-eye.one { left: 13px; } .hopper-eye.two { right: 13px; }
+  .hopper-cheek { left: 22px; top: 31px; width: 9px; }
+  .hopper-foot { width: 16px; height: 10px; }
+  .hopper-wave { top: 14px; }
+  .hopper .hopper-reward { top: 4px; font-size: 1.2rem; }
+  .beat-pad { width: 108px; height: 108px; font-size: 2rem; box-shadow: 0 6px 0 #9c1f56; }
+  .map-slot { min-height: 64px; min-width: 62px; }
+  .map-choice { min-height: 50px; }
+  /* a lower hop, so Pip stays inside the shorter scene */
+  .hopper-scene.crossed .hopper-creature { animation-name: hopper-cross-low; }
+}
+@keyframes hopper-cross-low { 0% { left: max(2px, calc(21% - 60px)); transform: translateY(0); } 35% { left: 39%; transform: translateY(-34px); }
+  70% { left: 66%; transform: translateY(-18px); } 100% { left: calc(100% - 64px); transform: translateY(0); } }
+@media (max-height: 640px) {
+  .hopper-scene { height: 118px; }
+  .hopper .hopper-title { display: none; }
+  .beat-pad { width: 92px; height: 92px; }
+}
 .tip-inline { display: block; margin-top: 6px; font-weight: 400; color: var(--ink); }
 
 .timer { height: 12px; background: #efebe1; border-radius: 999px; overflow: hidden; margin: 16px auto 0; max-width: 420px; }

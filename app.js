@@ -617,6 +617,7 @@
   function newScreen() {
     timers.forEach(clearTimeout);
     timers = [];
+    document.body.classList.remove("playing-game");
     if (synth) synth.cancel();
     stopRecorded();
     return ++phase;
@@ -1755,13 +1756,17 @@
           <div class="hopper-reward" id="hopperReward" aria-live="polite"></div>
         </div>
         <h1 class="hopper-title">${session.i === 0 ? "Help Pip cross!" : "Another river to cross!"}</h1>
-        <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap one beat for every sound you hear.</p>
-        <button type="button" class="btn" id="hearQ">🔊 Hear the word again</button>
+        <div class="hopper-head">
+          <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap one beat for every sound you hear.</p>
+          <button type="button" class="btn small" id="hearQ">🔊 Hear it again</button>
+        </div>
         <div class="hopper-beats" id="beatPhase">
           <button type="button" class="beat-pad" id="beatPad" aria-label="Tap one beat for a sound">🥁<span>Tap a beat</span></button>
-          <div class="beat-dots" id="beatDots" aria-live="polite">No beats yet</div>
-          <div class="row center"><button type="button" class="btn" id="beatUndo" disabled>Undo a beat</button>
-            <button type="button" class="btn primary" id="beatCheck" disabled>Check my beats</button></div>
+          <div class="beat-side">
+            <div class="beat-dots" id="beatDots" aria-live="polite">No beats yet</div>
+            <div class="row center"><button type="button" class="btn" id="beatUndo" disabled>Undo a beat</button>
+              <button type="button" class="btn primary" id="beatCheck" disabled>Check my beats</button></div>
+          </div>
         </div>
         <div class="map-game" id="mapPhase" hidden>
           <p class="hint">Tap a tile, or drag it into the highlighted sound box.</p>
@@ -1771,6 +1776,9 @@
         </div>
         <p class="feedback" id="feedback" aria-live="polite"></p>
       </section>`;
+    // The game fills the screen: the site's top bar and footer step aside until the next screen
+    document.body.classList.add("playing-game");
+    window.scrollTo(0, 0);
     wireStop();
     const scene = $("#hopperScene");
     const feedback = $("#feedback");
