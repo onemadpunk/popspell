@@ -2327,7 +2327,7 @@
       if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: !wrong.length });
       scene.classList.add("solved");
-      scene.querySelector(".canopy-bridge i:nth-child(${session.i + 1})")?.classList.add("built");
+      scene.querySelector(`.canopy-bridge i:nth-child(${session.i + 1})`)?.classList.add("built");
       $("#canopyPip").src = "assets/brand/pip-celebrate-small.webp";
       const result = q.mode === "make" ? methods.join(" and ") + ` both make ${q.total}`
         : q.mode === "hide" ? `${q.visible} and ${q.answer} make ${q.total}`

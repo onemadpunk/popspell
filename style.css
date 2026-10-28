@@ -643,8 +643,8 @@ button.switch-block, .switch-gap, .switch-choice { cursor: pointer; }
 .canopy-cell.lit { background: #fff2b8; text-shadow: 0 0 7px #ffd847; }
 .canopy-flash { position: relative; width: fit-content; margin: 3px auto 10px; }
 .canopy-cover { pointer-events: none; position: absolute; inset: 0; display: grid; place-items: center;
-  font-size: 5rem; opacity: 0; transition: opacity .2s; }
-.canopy-flash.covered .canopy-cell.lit { visibility: hidden; }
+  z-index: 1; border: 3px solid #235d75; border-radius: 13px; background: #e9f8fb;
+  font-size: 4rem; opacity: 0; transition: opacity .2s; }
 .canopy-flash.covered .canopy-cover { opacity: 1; }
 .canopy-choices { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 12px auto 2px; }
 .canopy-choice { min-width: 100px; min-height: 56px; padding: 7px 14px; border: 3px solid #275c80;
