@@ -3,17 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Spelling Practice</title>
-  <meta name="description" content="Sounds-first spelling practice: listen, say the sounds, spell it.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✏️</text></svg>">
+  <title>PopSpell · Hear it. Map it. Spell it.</title>
+  <meta name="description" content="PopSpell helps children hear, map and spell words sound by sound.">
+  <meta property="og:title" content="PopSpell · Hear it. Map it. Spell it.">
+  <meta property="og:description" content="Sounds-first spelling practice for children and teachers.">
+  <meta property="og:image" content="https://popspell.com/assets/brand/social-preview.png">
+  <link rel="icon" href="assets/brand/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
-    <a href="#/" class="brand"><span aria-hidden="true">✏️</span> <span id="siteTitle">Spelling Practice</span></a>
+    <a href="#/" class="brand"><img src="assets/brand/wordmark.png" alt="PopSpell"><span class="sr-only" id="siteTitle">PopSpell</span></a>
     <nav class="topnav">
       <a href="#/sounds" class="navlink">⭐ My sounds</a>
       <a href="#/make" class="navlink teacher-only">Make a list</a>
@@ -41,17 +44,6 @@
       </div>
       <p class="hint"><a href="listen.html">🎧 Check every recording</a> — listen to each word and sentence and mark any that sound wrong.</p>
 
-      <label class="field">How long the word stays on screen
-        <select id="setLook">
-          <option value="2">2 seconds</option>
-          <option value="3">3 seconds</option>
-          <option value="4">4 seconds</option>
-          <option value="5">5 seconds</option>
-          <option value="8">8 seconds</option>
-          <option value="0">Until the pupil presses "I'm ready"</option>
-        </select>
-      </label>
-
       <label class="field">Tries for each word
         <select id="setTries">
           <option value="1">1</option>
@@ -63,7 +55,6 @@
       </label>
 
       <label class="check"><input type="checkbox" id="setShuffle"> Mix up the order of the words</label>
-      <label class="check"><input type="checkbox" id="setBoxes"> Show sound boxes when spelling</label>
       <label class="check"><input type="checkbox" id="setSentences"> Say each word in a sentence</label>
       <label class="check"><input type="checkbox" id="setChecks"> Finish lists with new-word challenges</label>
       <label class="check"><input type="checkbox" id="setSpell"> Spell out the letters, sound by sound, when a word is missed</label>
@@ -89,3 +80,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+

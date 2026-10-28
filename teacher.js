@@ -1,5 +1,5 @@
-/* PopSpell teacher area (#/teacher): Google sign-in, live class, assignments, results,
-   class links and, for owners, inviting teachers. Data comes from cloud.js (window.PopCloud). */
+/* PopSpell teacher area (#/teacher): classes, scheduled assignments, printable
+   worksheets, marking and results. Data comes from cloud.js (window.PopCloud). */
 (() => {
   "use strict";
 
@@ -18,6 +18,7 @@
   let stopLive = null;  // unsubscribes the live board
   let liveTimer = null;
   let liveData = [];
+  let marking = null;
 
   const P = () => window.PopSpell;
   const esc = s => P().esc(s == null ? "" : s);
@@ -28,6 +29,8 @@
   const shortName = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
   window.PopTeacherShortName = shortName;
   const joinLink = code => `${location.origin}${location.pathname}#/join/${code}`;
+  const canAdmin = () => me && ["owner", "admin"].includes(me.role);
+  const roleLabel = role => role === "owner" ? "Owner" : role === "admin" ? "Site admin" : "Teacher";
 
   function stopWatching() {
     if (stopLive) { stopLive(); stopLive = null; }
@@ -92,13 +95,14 @@
 
   function draw() {
     stopWatching();
-    const tabs = [["live", "Live class"], ["assign", "Assignments"], ["pupils", "Pupils"], ["classes", "Classes"]];
-    if (me.role === "owner") tabs.push(["teachers", "Teachers"]);
+    const tabs = [["live", "Live class"], ["assign", "Assignments"], ["plans", "Plans & worksheets"],
+      ["diary", "Lesson diary"], ["pupils", "Pupils"], ["classes", "Classes"]];
+    if (canAdmin()) tabs.push(["teachers", "Teachers"]);
     root.innerHTML = `
       <section class="t-wrap">
         <div class="t-top">
           <div>
-            <h1>Hello, ${esc(shortName(me.name))}${me.role === "owner" ? ` <span class="t-role">Owner</span>` : ""}</h1>
+            <h1>Hello, ${esc(shortName(me.name))}${canAdmin() ? ` <span class="t-role">${roleLabel(me.role)}</span>` : ""}</h1>
             <p class="meta">${esc(me.email)} · <button class="linklike" id="signOut">Sign out</button></p>
           </div>
           ${classes.length ? `
@@ -119,12 +123,13 @@
       draw();
     };
     const body = $("#tBody");
-    const needsClass = ["live", "assign", "pupils"].includes(tab);
+    const needsClass = ["live", "assign", "plans", "diary", "pupils"].includes(tab);
     if (needsClass && !current) {
       body.innerHTML = `<div class="empty">Make a class first, in the <b>Classes</b> tab.</div>`;
       return;
     }
-    ({ live: drawLive, assign: drawAssign, pupils: drawPupils, classes: drawClasses, teachers: drawTeachers })[tab](body);
+    ({ live: drawLive, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+      classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
   function showError(err) {
@@ -243,21 +248,220 @@
     };
   }
 
+  /* ---------- Dated plans, printable worksheets and teacher marking ---------- */
+
+  const todayKey = () => new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit"
+  }).format(new Date());
+  const tomorrowKey = () => {
+    const date = new Date(`${todayKey()}T12:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + 1);
+    return date.toISOString().slice(0, 10);
+  };
+  const catalogueList = id => P().LISTS[id] || null;
+
+  function printWorksheet(who, plan, mode) {
+    const list = catalogueList(plan.list);
+    if (!list) return showError(new Error("Choose a built-in spelling list to print."));
+    const lines = list.items.map((item, i) => mode === "key"
+      ? `<tr><td>${i + 1}</td><td>${esc(item.spelling)}</td><td>${esc(item.tokens.join(" · "))}</td></tr>`
+      : mode === "dictation"
+        ? `<tr><td>${i + 1}</td><td class="write-line"></td><td class="check-box">□</td></tr>`
+        : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
+          <td class="check-box">□</td></tr>`).join("");
+    const sheet = document.createElement("section");
+    sheet.className = "worksheet-print";
+    sheet.innerHTML = `<h1>PopSpell · ${esc(list.title)}${mode === "key" ? " · teacher key" : ""}</h1>
+      <p><b>Pupil:</b> ${esc(who === "Everyone" ? "____________________" : who)}
+        &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Date:</b> ${esc(plan.from)}</p>
+      <p>${mode === "key" ? "Read each word aloud. One box represents one sound; the letters shown are the matching grapheme." :
+        mode === "dictation" ? "Listen, say the sounds, then write the word your teacher or adult says." :
+        "Listen to the word. Say it, stretch it, tap one box for each sound, then write the letters for each sound in its box."}</p>
+      ${list.tip ? `<p><b>Sound focus:</b> ${esc(list.tip)}</p>` : ""}
+      <table><thead><tr><th>#</th><th>${mode === "key" ? "Word" : mode === "dictation" ? "Write the word" : "Map each sound to letters"}</th>
+        <th>${mode === "key" ? "Sound map" : "Check"}</th></tr></thead><tbody>${lines}</tbody></table>`;
+    document.body.append(sheet);
+    document.body.classList.add("printing-worksheet");
+    const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
+    window.addEventListener("afterprint", clean, { once: true });
+    window.print();
+  }
+
+  function drawMark(body) {
+    const list = catalogueList(marking.list);
+    if (!list) { marking = null; return drawPlans(body); }
+    body.innerHTML = `<div class="row t-row"><h2 class="t-h2">Mark ${esc(list.title)} · ${esc(marking.who)}</h2>
+      <button class="btn" id="cancelMark">Back to plans</button></div>
+      <p class="hint">Mark every word. “Right with help” counts as correct, but not first time. Tick any sound-to-spelling choices that need practice; they will appear in the pupil's progress summary.</p>
+      <form id="markForm"><table class="t-table"><thead><tr><th>Word</th><th>Result</th><th>Sounds to revisit</th></tr></thead>
+        <tbody>${list.items.map((item, i) => `<tr><td class="who">${esc(item.spelling)}</td>
+          <td><select data-mark="${i}" required><option value="">Choose…</option><option value="first">Right first time</option>
+            <option value="help">Right with help</option><option value="miss">Missed</option></select></td>
+          <td><div class="sound-choices">${[...new Set(item.tokens)].map(tok => `<label><input type="checkbox" data-sound="${i}" value="${esc(tok)}"> ${esc(tok)}</label>`).join("")}</div></td></tr>`).join("")}</tbody></table>
+        <div class="row end"><button class="btn primary" type="submit">Save worksheet results</button></div></form>`;
+    $("#cancelMark").onclick = () => { marking = null; drawPlans(body); };
+    $("#markForm").onsubmit = async e => {
+      e.preventDefault();
+      const words = list.items.map((item, i) => {
+        const status = body.querySelector(`[data-mark="${i}"]`).value;
+        const missed = [...body.querySelectorAll(`[data-sound="${i}"]:checked`)].map(el => el.value);
+        return { word: item.spelling, sounds: item.tokens.join(" · "), correct: status !== "miss",
+          triesUsed: status === "first" ? 1 : status === "help" ? 2 : 3, wrong: [], missed };
+      });
+      try { await cloud.recordWorksheet(current.id, marking.who, marking.list, list.title, words);
+        marking = null; drawPlans(body); } catch (err) { showError(err); }
+    };
+  }
+
+  async function drawPlans(body) {
+    if (marking) return drawMark(body);
+    body.innerHTML = `<div class="empty">Loading…</div>`;
+    let rows;
+    try { rows = await cloud.assignments(current.id); } catch (err) { return showError(err); }
+    if (tab !== "plans") return;
+    const plans = rows.flatMap((row, rowIndex) => row.plans.map((plan, planIndex) =>
+      ({ row, rowIndex, plan, planIndex })));
+    body.innerHTML = `<p class="hint">Schedule a spelling list for a pupil. It appears online only between the chosen dates, inclusive. Print a sound-mapping sheet or a dictation sheet, then record the child's worksheet results here.</p>
+      <form class="add-row" id="planForm">
+        <input type="text" id="planWho" placeholder="Pupil's name (or Everyone)" maxlength="40" required>
+        <select id="planList" required>${catalogueOptions()}</select>
+        <label>From <input type="date" id="planFrom" value="${todayKey()}" required></label>
+        <label>Through <input type="date" id="planUntil" value="${todayKey()}" required></label>
+        <button class="btn primary" type="submit">Schedule</button>
+      </form>
+      ${plans.length ? `<div class="pupil-grid">${plans.map(({ row, rowIndex, plan, planIndex }) => `
+        <article class="pcard t-plancard">
+          <h3>${esc(row.who)} · ${esc(listTitle(plan.list))}</h3>
+          <div class="add-row"><label>From <input type="date" data-from="${rowIndex}-${planIndex}" value="${esc(plan.from)}"></label>
+            <label>Through <input type="date" data-until="${rowIndex}-${planIndex}" value="${esc(plan.until)}"></label>
+            <button class="btn small" data-save-plan="${rowIndex}-${planIndex}">Save dates</button></div>
+          <div class="row"><button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
+            <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
+            <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print teacher key</button>
+            ${row.who.toLowerCase() === "everyone" ? "" : `<button class="btn small" data-mark-plan="${rowIndex}-${planIndex}">Mark worksheet</button>`}
+            <button class="btn small" data-remove-plan="${rowIndex}-${planIndex}">Remove</button></div>
+        </article>`).join("")}</div>` : `<div class="empty">No plans yet — schedule one above.</div>`}`;
+    const ref = key => { const [r, p] = key.split("-").map(Number); return { row: rows[r], index: p, plan: rows[r].plans[p] }; };
+    $("#planForm").onsubmit = async e => {
+      e.preventDefault();
+      const who = $("#planWho").value.trim();
+      const list = $("#planList").value;
+      const from = $("#planFrom").value;
+      const until = $("#planUntil").value;
+      if (from > until) return showError(new Error("The end date must be on or after the start date."));
+      const existing = rows.find(r => r.who.toLowerCase() === who.toLowerCase());
+      const prior = existing ? existing.plans : [];
+      if (prior.length >= 30) return showError(new Error("This pupil has the maximum of 30 plans."));
+      try { await cloud.savePlans(current.id, existing ? existing.who : who, prior.concat({ list, from, until }));
+        drawPlans(body); } catch (err) { showError(err); }
+    };
+    body.querySelectorAll("[data-save-plan]").forEach(b => { b.onclick = async () => {
+      const { row, index } = ref(b.dataset.savePlan);
+      const from = body.querySelector(`[data-from="${b.dataset.savePlan}"]`).value;
+      const until = body.querySelector(`[data-until="${b.dataset.savePlan}"]`).value;
+      if (!from || !until || from > until) return showError(new Error("Choose a valid date range."));
+      try { await cloud.savePlans(current.id, row.who, row.plans.map((p, i) => i === index ? { ...p, from, until } : p));
+        drawPlans(body); } catch (err) { showError(err); }
+    }; });
+    body.querySelectorAll("[data-remove-plan]").forEach(b => { b.onclick = async () => {
+      const { row, index } = ref(b.dataset.removePlan);
+      try { await cloud.savePlans(current.id, row.who, row.plans.filter((_, i) => i !== index));
+        drawPlans(body); } catch (err) { showError(err); }
+    }; });
+    ["mapping", "dictation", "key"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
+      b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
+        printWorksheet(row.who, plan, mode); };
+    }));
+    body.querySelectorAll("[data-mark-plan]").forEach(b => { b.onclick = () => {
+      const { row, plan } = ref(b.dataset.markPlan);
+      marking = { who: row.who, list: plan.list };
+      drawMark(body);
+    }; });
+  }
+
+  /* ---------- Private lesson diary ---------- */
+
+  async function drawDiary(body) {
+    body.innerHTML = `<div class="empty">Loading…</div>`;
+    let entries, sessions, assignments;
+    try { [entries, sessions, assignments] = await Promise.all([
+      cloud.diary(current.id), cloud.sessions(current.id, 365), cloud.assignments(current.id)
+    ]); } catch (err) { return showError(err); }
+    if (tab !== "diary") return;
+    const names = [...new Set(sessions.map(s => s.pupil).concat(assignments.map(a => a.who))
+      .concat(entries.map(e => e.pupil)).filter(n => n && n.toLowerCase() !== "everyone"))]
+      .sort((a, b) => a.localeCompare(b));
+    const summaries = summarise(sessions);
+    body.innerHTML = `<p class="hint">Keep a private record of what each pupil did and what to cover next. Choose a next list and date to put it on their online schedule automatically. These notes are visible to teachers and site admins only.</p>
+      <form class="t-diary-form" id="diaryForm">
+        <div class="add-row"><label>Pupil <input type="text" id="diaryPupil" list="diaryNames" maxlength="40" required></label>
+          <datalist id="diaryNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist>
+          <label>Lesson date <input type="date" id="diaryDate" value="${todayKey()}" required></label></div>
+        <div class="empty" id="diaryProgress">Choose a pupil to see their recorded progress.</div>
+        <label>Last work and progress <textarea id="diaryLast" rows="4" maxlength="2000" placeholder="What did the pupil practise? What went well or needs more work?"></textarea></label>
+        <button class="btn small" type="button" id="useProgress">Use latest result as a starting note</button>
+        <label>Next lesson <textarea id="diaryNext" rows="4" maxlength="2000" placeholder="What should happen next lesson?"></textarea></label>
+        <div class="add-row"><label>Next spelling list (optional) <select id="diaryNextList">${catalogueOptions()}</select></label>
+          <label>On this date <input type="date" id="diaryNextDate"></label></div>
+        <div class="row end"><button class="btn primary" type="submit">Save diary entry</button></div>
+      </form>
+      <h2 class="t-h2">Recent diary entries</h2>
+      ${entries.length ? `<div class="pupil-grid">${entries.map(e => `<article class="pcard diary-entry" data-pupil="${esc(e.pupil.toLowerCase())}">
+        <h3>${esc(e.pupil)} · ${esc(e.lessonDate)}</h3>
+        <p><b>Last work:</b> ${esc(e.lastWork || "—")}</p><p><b>Next lesson:</b> ${esc(e.nextLesson || "—")}</p>
+        ${e.nextList ? `<p class="meta">Scheduled: ${esc(listTitle(e.nextList))} · ${esc(e.nextDate)}</p>` : ""}
+        <p class="meta">Recorded by ${esc(e.by)}</p></article>`).join("")}</div>` : `<div class="empty">No diary entries yet.</div>`}`;
+    const progress = () => {
+      const name = $("#diaryPupil").value.trim().toLowerCase();
+      const p = summaries.find(x => x.pupil.toLowerCase() === name);
+      const latest = sessions.find(s => String(s.pupil || "").trim().toLowerCase() === name);
+      $("#diaryProgress").innerHTML = p ? `<b>Recorded progress:</b> ${p.lists} lists, ${p.right}/${p.words} words right,
+        ${p.firstGo} first time. ${p.topSounds.length ? `Sounds to revisit: ${p.topSounds.map(([s]) => esc(s)).join(", ")}.` : ""}
+        ${latest ? `Latest: ${esc(latest.list)} on ${day(latest.at)} (${latest.source === "worksheet" ? "worksheet" : "online"}).` : ""}`
+        : "No recorded work yet for this pupil.";
+      return latest;
+    };
+    $("#diaryPupil").oninput = progress;
+    $("#useProgress").onclick = () => {
+      const latest = progress();
+      if (!latest) return;
+      const words = latest.words || [];
+      const first = words.filter(w => w.correct && w.triesUsed === 1).length;
+      const right = words.filter(w => w.correct).length;
+      const missed = [...new Set(words.flatMap(w => w.missed || []))];
+      $("#diaryLast").value = `${latest.list} (${latest.source === "worksheet" ? "worksheet" : "online"}): ${right}/${words.length} correct, ${first} first time.`
+        + (missed.length ? ` Sounds to revisit: ${missed.join(", ")}.` : "");
+    };
+    $("#diaryForm").onsubmit = async e => {
+      e.preventDefault();
+      const entry = { pupil: $("#diaryPupil").value.trim(), lessonDate: $("#diaryDate").value,
+        lastWork: $("#diaryLast").value.trim(), nextLesson: $("#diaryNext").value.trim(),
+        nextList: $("#diaryNextList").value, nextDate: $("#diaryNextDate").value };
+      if (!entry.lastWork && !entry.nextLesson) return showError(new Error("Write at least one lesson note."));
+      if (entry.nextList && !entry.nextDate) return $("#diaryNextDate").focus();
+      if (entry.nextDate && !entry.nextList) return $("#diaryNextList").focus();
+      try { await cloud.saveDiary(current.id, entry); drawDiary(body); } catch (err) { showError(err); }
+    };
+  }
+
   /* ---------- Pupils' results ---------- */
 
   function summarise(sessions) {
     const pupils = {};
     sessions.forEach(s => {
       const key = String(s.pupil || "").trim().toLowerCase();
-      const p = pupils[key] = pupils[key] || { pupil: String(s.pupil || "").trim(), lists: 0, words: 0, right: 0, firstGo: 0, last: 0, recent: [], sounds: {} };
+      const p = pupils[key] = pupils[key] || { pupil: String(s.pupil || "").trim(), lists: 0,
+        worksheets: 0, words: 0, right: 0, firstGo: 0, last: 0, recent: [], sounds: {} };
       const words = s.words || [];
       p.lists++;
+      if (s.source === "worksheet") p.worksheets++;
       p.words += words.length;
       p.right += words.filter(w => w.correct).length;
       const first = words.filter(w => w.correct && w.triesUsed === 1).length;
       p.firstGo += first;
       p.last = Math.max(p.last, s.at);
-      if (p.recent.length < 4) p.recent.push({ at: s.at, list: s.list, score: `${first}/${words.length}` });
+      if (p.recent.length < 4) p.recent.push({ at: s.at, list: s.list,
+        source: s.source === "worksheet" ? "Worksheet" : "Online", score: `${first}/${words.length}` });
       words.forEach(w => (w.missed || []).forEach(m => { p.sounds[m] = (p.sounds[m] || 0) + 1; }));
     });
     return Object.values(pupils).map(p => Object.assign(p, {
@@ -267,11 +471,12 @@
 
   function downloadCSV(sessions) {
     const cell = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
-    const lines = [["Date", "Time", "Pupil", "List", "Word", "Sounds", "Result", "Wrong tries", "Sounds missed"].map(cell).join(",")];
+    const lines = [["Date", "Time", "Pupil", "List", "Source", "Word", "Sounds", "Result", "Wrong tries", "Sounds missed"].map(cell).join(",")];
     sessions.slice().reverse().forEach(s => (s.words || []).forEach(w => {
       const d = new Date(s.at);
       const result = (w.challenge ? "New word: " : "") + (w.correct ? (w.triesUsed === 1 ? "Right first time" : `Right on try ${w.triesUsed}`) : "Missed");
-      lines.push([d.toLocaleDateString("en-GB"), d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }), s.pupil, s.list, w.word, w.sounds, result,
+      lines.push([d.toLocaleDateString("en-GB"), d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }), s.pupil, s.list,
+        s.source === "worksheet" ? "Worksheet" : "Online", w.word, w.sounds, result,
         (w.wrong || []).join(" "), (w.missed || []).join(" ")].map(cell).join(","));
     }));
     const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
@@ -287,11 +492,30 @@
 
   async function drawPupils(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
-    let sessions;
-    try { sessions = await cloud.sessions(current.id, days); } catch (err) { return showError(err); }
+    let sessions, roster;
+    try { [sessions, roster] = await Promise.all([cloud.sessions(current.id, days), cloud.pupils(current.id)]); }
+    catch (err) { return showError(err); }
     if (tab !== "pupils") return;
     const pupils = summarise(sessions);
+    const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
+      <h2 class="t-h2">Pupils in ${esc(current.name)}</h2>
+      <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
+      <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
+      <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" placeholder="Pupil's name or code" required>
+        <input type="email" id="rosterParent" placeholder="Parent email (optional)">
+        <button class="btn primary" type="submit">Add pupil</button></form>
+      ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
+        <h3>${esc(r.name)}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
+        <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
+        <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
+        <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
+          <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label></div>
+        <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
+        <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
+          ${r.reminderOptIn && r.parentEmail && r.nextLessonDate ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare reminder email</button>` : ""}
+          ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}</div>
+      </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}
       <div class="row t-row">
         <label class="t-class">Show <select id="days">${PERIODS.map(([d, t]) => `<option value="${d}"${d === days ? " selected" : ""}>${t}</option>`).join("")}</select></label>
         <p class="hint">${esc(current.name)}: ${sessions.length} lists done by ${pupils.length} pupils.</p>
@@ -299,12 +523,50 @@
       ${pupils.length ? `<div class="pupil-grid">${pupils.map(p => `
         <article class="pcard">
           <h3>${esc(p.pupil)}</h3>
-          <p class="meta">${p.lists} lists · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
+           <p class="meta">${p.lists} lists (${p.worksheets} worksheets) · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
           ${p.topSounds.length ? `<div><b>Sounds to work on</b><br>${p.topSounds.map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</div>` : `<div>No missed sounds 🎉</div>`}
-          <ul class="recent">${p.recent.map(r => `<li>${day(r.at)} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
+           <ul class="recent">${p.recent.map(r => `<li>${day(r.at)} · ${esc(r.source)} · ${esc(r.list)} · ${esc(r.score)} first time</li>`).join("")}</ul>
         </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
+    $("#addPupil").onsubmit = async e => {
+      e.preventDefault();
+      const name = $("#rosterName").value.trim();
+      const parentEmail = $("#rosterParent").value.trim();
+      if (roster.some(p => p.name.toLowerCase() === name.toLowerCase()))
+        return showError(new Error("This pupil is already in the class roster."));
+      try { await cloud.savePupil(current.id, { name, parentEmail }); drawPupils(body); }
+      catch (err) { showError(err); }
+    };
+    body.querySelectorAll("[data-homework]").forEach((el, i) => { el.value = roster[i].homeworkList || ""; });
+    body.querySelectorAll("[data-save-pupil]").forEach(b => { b.onclick = async () => {
+      const pupil = roster.find(r => r.key === b.dataset.savePupil);
+      const card = b.closest(".roster-card");
+      const parentEmail = card.querySelector("[data-parent]").value.trim();
+      const reminderOptIn = card.querySelector("[data-optin]").checked;
+      if (reminderOptIn && !parentEmail) return showError(new Error("Add a parent email before enabling reminders."));
+      try { await cloud.savePupil(current.id, { name: pupil.name, parentEmail, reminderOptIn,
+        nextLessonDate: card.querySelector("[data-lesson-date]").value,
+        lessonTime: card.querySelector("[data-lesson-time]").value,
+        homeworkList: card.querySelector("[data-homework]").value });
+        drawPupils(body); } catch (err) { showError(err); }
+    }; });
+    body.querySelectorAll("[data-print-homework]").forEach(b => { b.onclick = () => {
+      const pupil = roster.find(r => r.key === b.dataset.printHomework);
+      printWorksheet(pupil.name, { list: pupil.homeworkList, from: pupil.nextLessonDate || todayKey() }, "mapping");
+    }; });
+    body.querySelectorAll("[data-email-pupil]").forEach(b => { b.onclick = () => {
+      const pupil = roster.find(r => r.key === b.dataset.emailPupil);
+      const date = new Date(`${pupil.nextLessonDate}T12:00:00Z`).toLocaleDateString("en-GB",
+        { weekday: "long", day: "numeric", month: "long" });
+      const list = catalogueList(pupil.homeworkList);
+      const subject = `PopSpell lesson ${date} for ${pupil.name}`;
+      const bodyText = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson on ${date}`
+        + (pupil.lessonTime ? ` at ${pupil.lessonTime}` : "") + `.\n\n`
+        + (list ? `Homework: ${list.title}. Please say each word aloud, then ask ${pupil.name} to segment it into sounds and write the matching letters in the boxes on the sound-mapping worksheet.\n\n` : "")
+        + `Best wishes,\nPopSpell`;
+      location.href = `mailto:${encodeURIComponent(pupil.parentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+    }; });
   }
 
   /* ---------- Classes ---------- */
@@ -320,7 +582,7 @@
         <p class="hint">Open this link once on each pupil's device (or type the code on the home page):</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link">
           <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button></div>
-        ${c.teacher === me.uid || me.role === "owner" ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" data-rename-input="${esc(c.id)}">
+        ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" data-rename-input="${esc(c.id)}">
           <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>` : ""}
       </article>`;
     body.innerHTML = `
@@ -357,7 +619,7 @@
     });
   }
 
-  /* ---------- Teachers (owners only) ---------- */
+  /* ---------- Teachers (owner and site admins) ---------- */
 
   async function drawTeachers(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
@@ -366,20 +628,22 @@
     if (tab !== "teachers") return;
     const count = email => classes.filter(c => (c.teacherEmail || "").toLowerCase() === email).length;
     body.innerHTML = `
-      <p class="hint">Invite a tutor by their <b>Google</b> email address (Gmail or a Google Workspace account). They can then sign in on this site with 👩‍🏫 Teacher.</p>
+      <p class="hint">Invite someone by their <b>Google</b> email address. Teachers see their own classes; site admins can manage all classes, plans, results and teachers. Only the owner can grant site admin access.</p>
       <form class="add-row" id="invite">
         <input type="email" id="invEmail" placeholder="tutor@gmail.com" required>
         <input type="text" id="invName" placeholder="Name, e.g. Mrs Green" maxlength="60">
+        ${me.role === "owner" ? `<select id="invRole"><option value="teacher">Teacher</option><option value="admin">Site admin</option></select>` : ""}
         <button class="btn primary" type="submit">Invite</button>
       </form>
       <table class="t-table">
         <thead><tr><th>Teacher</th><th>Email</th><th>Classes</th><th></th></tr></thead>
         <tbody>${list.map(t => `
           <tr>
-            <td class="who">${esc(t.name)}${t.role === "owner" ? ` <span class="t-role">Owner</span>` : ""}</td>
+            <td class="who">${esc(t.name)}${t.role !== "teacher" ? ` <span class="t-role">${roleLabel(t.role)}</span>` : ""}</td>
             <td>${esc(t.email)}</td>
             <td>${count(t.email)}</td>
-            <td>${t.email !== me.email ? `<button class="btn small" data-remove-teacher="${esc(t.email)}">Remove</button>` : ""}</td>
+            <td>${t.email !== me.email && t.role !== "owner" && (t.role !== "admin" || me.role === "owner")
+              ? `<button class="btn small" data-remove-teacher="${esc(t.email)}">Remove</button>` : ""}</td>
           </tr>`).join("")}</tbody>
       </table>
       <p class="hint">Removing a teacher stops them signing in. Their classes and pupils' results stay, and you can still see them.</p>`;
@@ -387,7 +651,8 @@
       e.preventDefault();
       const email = $("#invEmail").value.trim().toLowerCase();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return $("#invEmail").focus();
-      try { await cloud.inviteTeacher(email, $("#invName").value); drawTeachers(body); } catch (err) { showError(err); }
+      const role = $("#invRole") ? $("#invRole").value : "teacher";
+      try { await cloud.inviteTeacher(email, $("#invName").value, role); drawTeachers(body); } catch (err) { showError(err); }
     };
     body.querySelectorAll("[data-remove-teacher]").forEach(b => {
       b.onclick = async () => {
@@ -399,3 +664,4 @@
 
   window.PopTeacher = { show };
 })();
+

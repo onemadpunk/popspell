@@ -39,8 +39,8 @@
 */
 
 window.SITE = {
-  title: "Spelling Practice",
-  subtitle: "Listen · Say the sounds · Spell it",
+  title: "PopSpell",
+  subtitle: "Hear it. Map it. Spell it.",
   fontFile: "",
   firebase: {
     // Paste the "firebaseConfig" values from Firebase console → Project settings → Your apps
@@ -232,3 +232,4 @@ window.SPELLING_LISTS = [
     ]
   }
 ];
+
