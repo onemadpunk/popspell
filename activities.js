@@ -623,6 +623,7 @@ window.PopActivities = (() => {
     sh: ["ch", "th"], ch: ["sh", "tch"], th: ["sh", "ch"],
     ai: ["ay", "a_e"], ay: ["ai", "a_e"], a_e: ["ai", "ay"],
     ee: ["ea", "e_e"], ea: ["ee", "e_e"], e_e: ["ee", "ea"],
+    ar: ["or", "er"], or: ["ar", "ur"], er: ["ir", "ur"], ir: ["er", "ur"], ur: ["er", "ir"],
     c: ["k", "ck"], k: ["c", "ck"], ck: ["c", "k"],
     b: ["d", "p"], d: ["b", "t"], p: ["b", "t"],
     f: ["v", "th"], v: ["f", "w"], m: ["n", "w"], n: ["m", "ng"],
@@ -634,7 +635,7 @@ window.PopActivities = (() => {
   const trailWords = ids => {
     const lists = (window.PopSpell || {}).LISTS || {};
     return shuffle(ids.flatMap(id => (lists[id] || {}).items || [])
-      .filter(it => !it.whole && it.tokens.length >= 3 && it.tokens.length <= 5))
+      .filter(it => !it.whole && it.tokens.length >= 2 && it.tokens.length <= 5))
       .slice(0, 6).map(it => ({
         kind: "map", prompt: "Listen. Say each sound. Build the word, one sound at a time.",
         answer: it.spelling, spelling: it.spelling, tokens: it.tokens,
@@ -652,7 +653,10 @@ window.PopActivities = (() => {
       make: () => trailWords(["sh", "ch", "th"]) },
     { id: "g-hopper-long-a", title: "Sound Hopper: long a", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
       blurb: "Hear the beats and choose between ai, ay and a–e to make a bridge.",
-      make: () => trailWords(["ai", "ay", "a-e"]) }
+      make: () => trailWords(["ai", "ay", "a-e"]) },
+    { id: "g-hopper-r", title: "Sound Hopper: r sounds", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "In Scottish mode, hear the vowel then r as two sounds. Try the same words in English mode to compare.",
+      make: () => trailWords(["ar", "or", "er-ir-ur"]) }
   ];
 
   /* ---------- The catalogue ---------- */

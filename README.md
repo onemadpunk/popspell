@@ -29,7 +29,7 @@ Alongside the spelling lists, [`activities.js`](activities.js) adds activities t
 
 | Area | Activities |
 |---|---|
-| 🎮 **Sound Hopper games** | Three six-word river crossings: short vowels, two-letter sounds, and long **a**. Hear a word, tap one drum beat per sound, then tap or drag grapheme tiles into sound boxes to build a bridge for Pip. A wrong choice points to that sound; correct bridge pieces lock in place. Pip hops across when the word is mapped. The game uses the usual stars, personal bests and teacher results. |
+| 🎮 **Sound Hopper games** | Four six-word river crossings: short vowels, two-letter sounds, long **a**, and **r** sounds. Hear a word, tap one drum beat per sound, then tap or drag grapheme tiles into sound boxes to build a bridge for Pip. A wrong choice points to that sound; correct bridge pieces lock in place. Pip hops across when the word is mapped. The game uses the usual stars, personal bests and teacher results. |
 | ✍️ **Writing** | Capital letters and full stops · full stop, question or exclamation mark · joining words (and, but, because, so) · past tense -ed · **sentence dictation** for any spelling list (hear it, write it all: spellings, capital letter and full stop are each checked) |
 | 📖 **Reading** | Tricky-word sentences · six short stories matched to the phonics stages (short vowels → digraphs → silent e → vowel teams → r-vowels → a longer Second-level story), with questions on finding information, inference and vocabulary. Every story can be read aloud. |
 | 👂 **Listening and sounds** (Early level) | Rhyming words · first sounds · counting sounds · two "listen to the story" activities. The questions are spoken, and every answer has a 🔊 button, so non-readers can do them on their own. |
@@ -38,6 +38,8 @@ Alongside the spelling lists, [`activities.js`](activities.js) adds activities t
 Every list and activity is labelled with a **Curriculum for Excellence level** (Early, First or Second) and **organiser** (e.g. *Literacy · Writing · Tools for writing*, *Numeracy · Money*). Teachers' reports are grouped by these. They're a starting guide; teachers should check them against their own planning.
 
 **Game plan:** Sound Hopper is the first game mode. It uses a character, a musical river, beat tapping, a tile bridge, and a crossing payoff. The six rounds have large touch targets and no timer or public leaderboard. The score rewards accurate mapping; speed does not affect progress. A teacher can assign a level like any other activity. Try it with pupils before expanding to modes such as an endless music run or a word-building sandbox, and check whether they can explain the sounds they hear.
+
+Before starting a game, the pupil or teacher can choose **Scottish** (default: *car* is `c · a · r`, *her* is `h · e · r`) or **English** (*car* is `c · ar`). This uses the same accent setting as the spelling lessons and changes the sound count, tiles and bridge pieces after a reload.
 
 The stories and their questions are in [`passages.js`](passages.js) and can be edited there. New or changed stories are recorded in Eponine's voice automatically.
 

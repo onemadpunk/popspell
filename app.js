@@ -1495,11 +1495,21 @@
         <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
         <h1>${esc(act.title)}</h1>
         <p class="tip">${esc(act.blurb)}</p>
+        ${act.area === "games" ? `<label class="field hopper-accent">How do you say r sounds?
+          <select id="hopperAccent">
+            <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
+            <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
+          </select></label>` : ""}
         <div class="pupil" id="pupilBox"></div>
         <button class="btn big primary" id="go">▶ Start</button>
       </section>`;
     const go = $("#go");
     const box = $("#pupilBox");
+    const accent = $("#hopperAccent");
+    if (accent) {
+      accent.value = R_SOUNDED ? "scottish" : "english";
+      accent.onchange = () => { settings.accent = accent.value; saveSettings(); location.reload(); };
+    }
     mountPupil(box, { onEnter: () => go.click() });
     (getPupil() ? go : box.querySelector(".pupil-name")).focus();
     go.onclick = () => { if (takePupilName(box)) startActivity(act); };

@@ -14,7 +14,10 @@ const examples = {
   th: [["thin", ["th", "i", "n"]], ["moth", ["m", "o", "th"]], ["bath", ["b", "a", "th"]]],
   ai: [["rain", ["r", "ai", "n"]], ["sail", ["s", "ai", "l"]], ["mail", ["m", "ai", "l"]]],
   ay: [["play", ["p", "l", "ay"]], ["stay", ["s", "t", "ay"]], ["tray", ["t", "r", "ay"]]],
-  "a-e": [["cake", ["c", "a_e", "k"]], ["make", ["m", "a_e", "k"]], ["snake", ["s", "n", "a_e", "k"]]]
+  "a-e": [["cake", ["c", "a_e", "k"]], ["make", ["m", "a_e", "k"]], ["snake", ["s", "n", "a_e", "k"]]],
+  ar: [["car", ["c", "a", "r"]], ["cart", ["c", "a", "r", "t"]], ["farm", ["f", "a", "r", "m"]]],
+  or: [["fork", ["f", "o", "r", "k"]], ["corn", ["c", "o", "r", "n"]], ["storm", ["s", "t", "o", "r", "m"]]],
+  "er-ir-ur": [["her", ["h", "e", "r"]], ["bird", ["b", "i", "r", "d"]], ["fur", ["f", "u", "r"]]]
 };
 const LISTS = Object.fromEntries(Object.entries(examples).map(([id, words]) => [id, {
   items: words.map(([spelling, tokens]) => ({ spelling, tokens, whole: false }))
@@ -24,7 +27,7 @@ runInNewContext(readFileSync(new URL("../activities.js", import.meta.url), "utf8
 const catalogue = browser.window.PopActivities;
 
 test("each Sound Hopper level has six heard words with a valid choice for every sound", () => {
-  for (const id of ["g-hopper-short", "g-hopper-digraphs", "g-hopper-long-a"]) {
+  for (const id of ["g-hopper-short", "g-hopper-digraphs", "g-hopper-long-a", "g-hopper-r"]) {
     const game = catalogue.get(id);
     assert.ok(game, id);
     assert.equal(catalogue.tag(id).area, "games");
@@ -37,6 +40,21 @@ test("each Sound Hopper level has six heard words with a valid choice for every 
       assert.equal(q.optionsBySlot.length, q.tokens.length);
       q.tokens.forEach((token, i) => assert.ok(q.optionsBySlot[i].includes(token)));
     }
+  }
+});
+
+test("r-sound game uses the accent-specific phonemes supplied by PopSpell", () => {
+  const lists = browser.window.PopSpell.LISTS;
+  const original = [lists.ar.items, lists.or.items, lists["er-ir-ur"].items];
+  lists.or.items = [];
+  lists["er-ir-ur"].items = [];
+  try {
+    lists.ar.items = [{ spelling: "car", tokens: ["c", "a", "r"], whole: false }];
+    assert.deepEqual(Array.from(catalogue.get("g-hopper-r").make()[0].tokens), ["c", "a", "r"]);
+    lists.ar.items = [{ spelling: "car", tokens: ["c", "ar"], whole: false }];
+    assert.deepEqual(Array.from(catalogue.get("g-hopper-r").make()[0].tokens), ["c", "ar"]);
+  } finally {
+    [lists.ar.items, lists.or.items, lists["er-ir-ur"].items] = original;
   }
 });
 
