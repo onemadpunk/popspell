@@ -19,7 +19,7 @@ A free, sounds-first spelling website for pupils, built on **systematic syntheti
 
 - **My bests.** Pupils only ever compete with themselves. Every word and question they try is a "go", right or wrong, so effort counts as well as accuracy. The results screen celebrates a new best score on a list or activity (most right first time), a best week ever (most goes), and weeks in a row of practice. When it isn't a best, it says how close they are ("4 more to beat your best week!"). There are no leaderboards. The **🏅 My bests** page shows each best score with a "Beat it" button.
 
-Pupils type their first name before starting, so each child on a shared device has their own review words, stars and bests. Review words, stars and bests are stored **on that device**. The pupil's results also go to their teacher (below).
+Pupils type their first name before starting, so each child on a shared device has their own review words, stars and bests. Review words, stars and bests are kept on the device and, when it has joined a class, also saved with the class. That means they follow the pupil to another device, such as a school tablet and a laptop at home. Both copies are merged, keeping the newest of everything. The pupil's results also go to their teacher (below).
 
 There are 48 ready-made lists of up to 15 words, grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
 
@@ -75,7 +75,9 @@ Teachers sign in **on the site** with their Google account (👩‍🏫 **Teache
 - **"Pupils only see the work I set":** a per-class setting (in Classes) that hides the rest of the library from that class's devices.
 - **Accent for sounds:** a per-class setting (in Classes). Choose Scottish (the r is sounded: c·a·r) for pupils in Scotland, or English (c·ar) for pupils in England.
 - **Lesson diary:** record what a pupil did, what they need next, and optionally schedule their next list and lesson date. Diary notes stay in the teacher area.
-- **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email draft and save the homework worksheet as a PDF to attach manually.
+- **Pupil roster:** add pupils, lesson dates, optional parent email and reminder preference. The day before a lesson, prepare a reminder email and save the homework worksheet as a PDF to attach.
+- **🏠 Home login:** each pupil in the roster has a personal link (`#/join/CODE?pupil=Name`). Opening it once on the child's own device joins the class and signs in as that child, so their homework, stars, review words and bests carry on at home, and home results reach the teacher.
+- **✉️ Branded emails:** **Email home login** and the lesson reminder open a preview of a PopSpell-branded email, with logo, colours, a big button, the homework and the parent page link. **Copy email** copies it with its pictures and formatting. **Open email app** starts an email with the parent's address and subject filled in; paste and send. No email service is involved, so it stays free.
 - **👪 Parent pages:** for any pupil in the roster, **Make a parent link** creates a private page (`parent.html#…`) for the family.
   - **Sharing:** copy the link and send it by WhatsApp, text or email. Parents need no account or password.
   - **What's on it:** the pupil's first name, a note for home, what's coming up, sounds to practise, sounds getting there and sounds known well, recent work, Curriculum for Excellence progress, and tips for helping at home. The private lesson diary, parent email and other pupils' results are never on it.

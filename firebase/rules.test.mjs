@@ -150,6 +150,17 @@ await check("teacher can't rename a roster identity", assertFails(updateDoc(doc(
 await check("teacher saves a parent link and note", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLink: "abcdefghijklmnopqrstuvwxyz012345", parentAt: Date.now(), parentNote: "Well done!" })));
 await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
 
+console.log("Pupils' own progress");
+const prog = { pupil: "Ava", words: { rain: { box: 2, right: 1, missed: 0 } }, sounds: { ai: { right: 1, wrong: 0 } }, bests: { weeks: {}, lists: {} }, updated: serverTimestamp() };
+await check("a pupil device saves its progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/progress/fp-ava"), prog)));
+await check("a pupil device loads its progress by name", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/progress/fp-ava"))));
+await check("a pupil device can't list everyone's progress", assertFails(getDocs(collection(pupil, "classes/ABC234/progress"))));
+await check("signed-out visitors can't read progress", assertFails(getDoc(doc(nobody, "classes/ABC234/progress/fp-ava"))));
+await check("progress can't carry other fields", assertFails(setDoc(doc(pupil, "classes/ABC234/progress/fp-ava"), { ...prog, parentEmail: "x@example.com" })));
+await check("progress needs a real class", assertFails(setDoc(doc(pupil, "classes/NOPE99/progress/fp-ava"), prog)));
+await check("the class teacher can see pupils' progress", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/progress"))));
+await check("another teacher can't list it", assertFails(getDocs(collection(other, "classes/ABC234/progress"))));
+
 console.log("Parent pages");
 const LINK = "abcdefghijklmnopqrstuvwxyz012345";
 const parentDoc = { classId: "ABC234", pupil: "Ava", summary: { sounds: { secure: ["ai"] } }, note: "Well done!", updated: serverTimestamp(), by: "tutor@example.com" };

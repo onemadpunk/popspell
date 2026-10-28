@@ -101,6 +101,19 @@ service cloud.firestore {
         allow list, write: if canSee(c);
       }
 
+      // Each pupil's own progress (sound stars, review words, personal bests), so it follows them
+      // from a school tablet to a home device. Keyed by a fingerprint of their name, like assign.
+      match /progress/{p} {
+        allow get: if signedIn();
+        allow list, delete: if canSee(c);
+        allow create, update: if signedIn() && exists(/databases/$(database)/documents/classes/$(c))
+          && request.resource.data.keys().hasOnly(['pupil', 'words', 'sounds', 'bests', 'updated'])
+          && shortText(request.resource.data.pupil, 40)
+          && request.resource.data.words is map
+          && request.resource.data.sounds is map
+          && request.resource.data.bests is map;
+      }
+
       // Lesson notes are private to the class teacher and site admins.
       match /diary/{entry} {
         allow read: if canSee(c);

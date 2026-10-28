@@ -512,6 +512,10 @@ a.me-card:hover { border-color: var(--primary); }
 .parent-list { padding-left: 1.2em; margin: 0; }
 .parent-list li { margin-bottom: 6px; }
 
+/* Branded email preview (teacher area) */
+.email-preview .email-steps, .email-preview .email-subject { margin: 12px 16px 0; }
+.email-page { margin: 12px 16px 16px; border-radius: 14px; overflow: hidden; }
+
 /* Parent page controls (teacher area) */
 .parent-box { border-top: 2px dashed var(--line); margin-top: 10px; padding-top: 8px; }
 .parent-box p { margin: 0 0 6px; }

@@ -139,6 +139,20 @@ async function start() {
       return [...new Set(mine.concat(everyone))];
     },
 
+    // A pupil's own progress (stars, review words, bests), so it follows them between devices
+    async progress(classId, pupil) {
+      await pupilAuth();
+      const snap = await getDoc(doc(store, "classes", classId, "progress", await fingerprint(pupil)));
+      return snap.exists() ? snap.data() : null;
+    },
+    async saveProgress(classId, pupil, prog) {
+      await pupilAuth();
+      await setDoc(doc(store, "classes", classId, "progress", await fingerprint(pupil)), {
+        pupil: String(pupil).trim().slice(0, 40), words: prog.words || {}, sounds: prog.sounds || {},
+        bests: prog.bests || { weeks: {}, lists: {} }, updated: serverTimestamp()
+      });
+    },
+
     /* ---------- Teachers ---------- */
 
     // Waits until the invitation check has caught up with whoever is signed in right now

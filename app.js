@@ -416,9 +416,11 @@
   // Leaving a list part-way: the report and the dashboard both hear about it
   function leaveSession(s) {
     if (!s) return;
-    if (!s.ended) livePing(s, "stop");
+    const wasRunning = !s.ended;
+    if (wasRunning) livePing(s, "stop");
     s.ended = true;
     sendReport(s, false);
+    if (wasRunning && !s.preview) syncProgress(); // the words done so far count on every device
   }
 
   // "Your lists today": looked up by a fingerprint (SHA-256) of the pupil's name, so a device
@@ -465,6 +467,54 @@
     const all = readAllProgress();
     all[pupilKey()] = prog;
     try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(all)); } catch { /* full or private mode */ }
+  }
+
+  /* ---------- Progress follows the pupil between devices in their class (school and home) ---------- */
+
+  // Two copies of a pupil's progress made one, keeping the newest of everything: each word's most
+  // recent practice, each sound's fuller history, and the higher of every best.
+  function mergeProgress(a, b) {
+    const union = (x, y) => [...new Set(Object.keys(x || {}).concat(Object.keys(y || {})))];
+    const pick = (x, y, better) => (!x ? y : !y ? x : better(x, y) ? x : y);
+    const words = {};
+    union(a.words, b.words).forEach(k => {
+      words[k] = pick((a.words || {})[k], (b.words || {})[k], (x, y) =>
+        (x.last || "") > (y.last || "") || ((x.last || "") === (y.last || "") && x.right + x.missed >= y.right + y.missed));
+    });
+    const sounds = {};
+    union(a.sounds, b.sounds).forEach(k => {
+      const x = (a.sounds || {})[k], y = (b.sounds || {})[k];
+      const best = pick(x, y, (p, q) => p.right + p.wrong >= q.right + q.wrong);
+      sounds[k] = Object.assign({}, best, { days: [...new Set(((x || {}).days || []).concat((y || {}).days || []))].sort().slice(-10) });
+    });
+    const ab = Object.assign({ weeks: {}, lists: {} }, a.bests), bb = Object.assign({ weeks: {}, lists: {} }, b.bests);
+    const weeks = {};
+    union(ab.weeks, bb.weeks).forEach(k => { weeks[k] = Math.max(ab.weeks[k] || 0, bb.weeks[k] || 0); });
+    const lists = {};
+    union(ab.lists, bb.lists).forEach(k => { lists[k] = pick(ab.lists[k], bb.lists[k], (x, y) => x.best >= y.best); });
+    return { words, sounds, bests: { weeks, lists } };
+  }
+
+  // Fetches the class's copy, merges it with this device's, and saves both. Resolves true if this
+  // device learned something new (so the screen can redraw). Offline, it simply waits for next time.
+  let syncedFor = null;
+  async function syncProgress() {
+    const name = getPupil();
+    if (!REPORTING || !name || previewMode) return false;
+    syncedFor = name;
+    try {
+      const remote = await cloud.progress(CLASS.id, name);
+      if (name !== getPupil()) return false;
+      const local = loadProgress();
+      const merged = remote ? mergeProgress(local, remote) : local;
+      const learned = JSON.stringify(mergeProgress(local, local)) !== JSON.stringify(mergeProgress(merged, merged));
+      saveProgress(merged);
+      if (Object.keys(merged.words).length) await cloud.saveProgress(CLASS.id, name, merged);
+      return learned;
+    } catch (err) {
+      console.warn("PopSpell: progress not synced", err);
+      return false;
+    }
   }
 
   // A sound is secure once it's been spelled right first time at least 4 times, on 2+ different
@@ -693,7 +743,8 @@
         words: parseWords(params.get("words"))
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""));
+    // A home login link (#/join/CODE?pupil=Ava) also signs this device in as that pupil
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""));
     else if (parts[0] === "teacher" && window.PopTeacher) window.PopTeacher.show(app, decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
@@ -708,7 +759,7 @@
   }
 
   // A class link (#/join/K7P2QX) or a typed code puts this device in that teacher's class
-  async function joinClass(code, onDone) {
+  async function joinClass(code, onDone, pupil = "") {
     const my = phase;
     if (!onDone) app.innerHTML = `<section class="panel start"><h1>Joining the class…</h1></section>`;
     const api = await window.PopCloudReady;
@@ -721,6 +772,7 @@
       return;
     }
     saveClass(info);
+    if (pupil) setPupil(pupil); // their progress and homework load on the home page
     justJoined = true;
     if (!onDone) history.replaceState(null, "", "#/");
     if (reloadForAccent()) return; // the class uses the other accent
@@ -905,6 +957,11 @@
       $("#meCards").innerHTML = `<button class="btn primary" id="saveName">Save my name</button>`;
       $("#saveName").onclick = save;
       return;
+    }
+    // Once per pupil per visit, pick up any progress made on another device (e.g. at school)
+    if (REPORTING && syncedFor !== getPupil()) {
+      const shown = phase;
+      syncProgress().then(learned => { if (learned && shown === phase && $("#homePupil")) showHome(); });
     }
     const prog = loadProgress();
     const due = dueItems(prog).length;
@@ -1499,6 +1556,7 @@
     livePing(session, "end");
     session.ended = true;
     const my = phase;
+    if (!session.preview) syncProgress(); // so the review words and stars are there on any device
     sendReport(session, true).then(sent => {
       const note = $("#sent");
       if (!note || my !== phase || sent === null) return;
@@ -2016,6 +2074,7 @@
     livePing(session, "end");
     session.ended = true;
     const my = phase;
+    if (!session.preview) syncProgress(); // so the stars and bests are there on any device
     sendReport(session, true).then(sent => {
       const note = $("#sent");
       if (!note || my !== phase || sent === null) return;

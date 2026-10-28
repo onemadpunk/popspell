@@ -30,6 +30,8 @@
   const shortName = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
   window.PopTeacherShortName = shortName;
   const joinLink = code => `${location.origin}${location.pathname}#/join/${code}`;
+  // Joins the class and signs the device in as the pupil (app.js), for use at home
+  const homeLink = name => `${joinLink(current.id)}?pupil=${encodeURIComponent(String(name).trim())}`;
   const canAdmin = () => me && ["owner", "admin"].includes(me.role);
   const roleLabel = role => role === "owner" ? "Owner" : role === "admin" ? "Site admin" : "Teacher";
 
@@ -925,6 +927,99 @@
       <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
   }
 
+  /* ---------- Branded emails the teacher sends from their own email app ---------- */
+
+  // No email service (it stays free): the teacher previews the email here, copies it with its
+  // logo, colours and button, and pastes it into their own email. Inline styles and table layout,
+  // because that's what email apps keep; pictures load from the website.
+  const SITE_ROOT = `${location.origin}${location.pathname.replace(/[^/]*$/, "")}`;
+  function brandedEmail({ title, paragraphs, button, boxes = [], sign }) {
+    const p = html => `<p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#142a56;">${html}</p>`;
+    return `<div style="background:#eaf3ff;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;color:#142a56;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #d6e5f7;border-radius:18px;border-collapse:separate;">
+<tr><td style="padding:20px 24px 14px;text-align:center;border-bottom:4px solid #ffc837;">
+  <img src="${SITE_ROOT}assets/brand/wordmark.png" alt="PopSpell" width="150" style="display:block;margin:0 auto 8px;border:0;width:150px;height:auto;">
+  <img src="${SITE_ROOT}assets/brand/children.png" alt="" width="120" style="display:block;margin:0 auto;border:0;width:120px;height:auto;">
+</td></tr>
+<tr><td style="padding:22px 28px 10px;">
+  <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;color:#0b2e6b;">${title}</h1>
+  ${paragraphs.map(p).join("")}
+  ${button ? `<p style="margin:22px 0 8px;text-align:center;"><a href="${button.href}" style="display:inline-block;background:#0eb5f2;color:#ffffff;text-decoration:none;font-weight:bold;font-size:18px;padding:14px 28px;border-radius:999px;">${button.text}</a></p>
+  <p style="margin:0 0 18px;text-align:center;font-size:12px;color:#5b6b8c;word-break:break-all;">Or open this link: <a href="${button.href}" style="color:#0b2e6b;">${button.href}</a></p>` : ""}
+  ${boxes.map(box => `<div style="background:#fff6df;border:2px solid #ffc837;border-radius:14px;padding:12px 16px;margin:0 0 14px;font-size:15px;line-height:1.5;color:#142a56;">${box}</div>`).join("")}
+  ${p(`Best wishes,<br><b>${sign}</b>`)}
+</td></tr>
+<tr><td style="padding:14px 24px;background:#f5f9ff;border-top:1px solid #d6e5f7;border-radius:0 0 18px 18px;text-align:center;font-size:12px;line-height:1.5;color:#5b6b8c;">
+  PopSpell · Hear it. Map it. Spell it. · <a href="${SITE_ROOT}" style="color:#0b2e6b;">popspell.com</a><br>Please keep these links private to your family.
+</td></tr>
+</table></div>`;
+  }
+
+  function homeLoginEmail(pupil) {
+    const name = esc(pupil.name);
+    const link = homeLink(pupil.name);
+    const homework = pupil.homeworkList ? esc(listTitle(pupil.homeworkList)) : "";
+    const boxes = [];
+    if (homework) boxes.push(`📌 <b>This week's homework: ${homework}</b><br>It's at the top of the PopSpell home page, under "Your lists today".`);
+    if (pupil.parentLink) boxes.push(`👪 <b>See ${name}'s progress</b><br><a href="${parentURL(pupil.parentLink)}" style="color:#0b2e6b;">${name}'s progress page</a> shows their sounds, recent work and what to practise.`);
+    const html = brandedEmail({
+      title: `${name}'s PopSpell login for home`,
+      paragraphs: [
+        "Hello,",
+        `Here is ${name}'s own PopSpell link for practising at home. Please open it <b>once</b> on the device ${name} will use at home (a tablet, laptop or phone).`,
+        `PopSpell will then remember ${name} on that device. ${name}'s homework, stars and review words will be there, carrying on from our lessons, and work done at home comes back to me too.`
+      ],
+      button: { href: link, text: `▶ Open PopSpell as ${name}` },
+      boxes,
+      sign: esc(shortName(me.name))
+    });
+    const text = `Hello,\n\nHere is ${pupil.name}'s PopSpell link for practising at home:\n${link}\n\n`
+      + `Please open it once on the device ${pupil.name} will use at home. PopSpell will then remember ${pupil.name}, and their homework, stars and review words will be there.\n\n`
+      + (pupil.homeworkList ? `This week's homework: ${listTitle(pupil.homeworkList)}.\n\n` : "")
+      + (pupil.parentLink ? `${pupil.name}'s progress: ${parentURL(pupil.parentLink)}\n\n` : "")
+      + `Please keep these links private to your family.\n\nBest wishes,\n${shortName(me.name)}`;
+    return { subject: `${pupil.name}'s PopSpell login for home`, html, text };
+  }
+
+  // Preview, then copy (with pictures and styling) and paste into the teacher's own email
+  function previewEmail(to, email) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview email-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Email preview</h2>
+        <button class="btn small" type="button" data-close>Close</button>
+        <button class="btn small" type="button" data-open>✉️ Open email app</button>
+        <button class="btn small primary" type="button" data-copy>📋 Copy email</button></div>
+      <p class="hint email-steps"><b>1.</b> Copy email &nbsp; <b>2.</b> Open email app (the parent's address${to ? ` <b>${esc(to)}</b>` : ""} and subject are filled in) &nbsp; <b>3.</b> Paste into the message and send.</p>
+      <p class="email-subject"><b>Subject:</b> ${esc(email.subject)}</p>
+      <section class="email-page">${email.html}</section>`;
+    document.body.append(dialog);
+    const page = dialog.querySelector(".email-page");
+    const copyBtn = dialog.querySelector("[data-copy]");
+    copyBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({
+          "text/html": new Blob([email.html], { type: "text/html" }),
+          "text/plain": new Blob([email.text], { type: "text/plain" })
+        })]);
+      } catch {
+        // Older browsers: copy what's on screen, which keeps the formatting too
+        const range = document.createRange();
+        range.selectNodeContents(page);
+        const sel = getSelection();
+        sel.removeAllRanges(); sel.addRange(range);
+        document.execCommand("copy");
+        sel.removeAllRanges();
+      }
+      copyBtn.textContent = "✓ Copied — now paste it";
+    };
+    dialog.querySelector("[data-open]").onclick = () => {
+      location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(email.subject)}`;
+    };
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.showModal();
+  }
+
   /* ---------- Parent pages: a private progress link for each pupil's family (parent.html) ---------- */
 
   const PARENT_DAYS = 120; // the parent page covers about the last four months
@@ -1012,6 +1107,13 @@
           <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label></div>
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
         <div class="parent-box">
+          <p><b>🏠 Home login</b></p>
+          <p class="hint">Opening this link once on ${esc(r.name)}'s own device signs it in as ${esc(r.name)} in this class, so homework, stars and review words carry on at home.</p>
+          <div class="add-row"><input type="text" readonly class="t-link" value="${esc(homeLink(r.name))}" aria-label="Home login link">
+            <button class="btn small" data-home-copy="${esc(r.key)}">📋 Copy</button>
+            <button class="btn small primary" data-home-email="${esc(r.key)}">✉️ Email home login</button></div>
+        </div>
+        <div class="parent-box">
           <p><b>👪 Parent page</b>${r.parentLink ? ` <span class="meta">· updated ${r.parentAt ? esc(day(r.parentAt)) : "—"}</span>` : ""}</p>
           <label>Note for home, shown on the parent page
             <textarea data-parent-note rows="2" maxlength="1000" placeholder="e.g. Great effort this week! Practise the ai words at bedtime.">${esc(r.parentNote || "")}</textarea></label>
@@ -1078,6 +1180,16 @@
         drawPupils(body);
       } catch (err) { showError(err); }
     }; });
+    body.querySelectorAll("[data-home-copy]").forEach(b => { b.onclick = async () => {
+      const pupil = roster.find(r => r.key === b.dataset.homeCopy);
+      try { await navigator.clipboard.writeText(homeLink(pupil.name)); b.textContent = "✓ Copied"; }
+      catch { b.closest(".add-row").querySelector("input").select(); }
+    }; });
+    body.querySelectorAll("[data-home-email]").forEach(b => { b.onclick = () => {
+      const pupil = roster.find(r => r.key === b.dataset.homeEmail);
+      const to = b.closest(".roster-card").querySelector("[data-parent]").value.trim() || pupil.parentEmail || "";
+      previewEmail(to, homeLoginEmail(pupil));
+    }; });
     body.querySelectorAll("[data-parent-copy]").forEach(b => { b.onclick = async () => {
       const pupil = roster.find(r => r.key === b.dataset.parentCopy);
       try { await navigator.clipboard.writeText(parentURL(pupil.parentLink)); b.textContent = "✓ Copied"; }
@@ -1111,12 +1223,20 @@
       const date = new Date(`${pupil.nextLessonDate}T12:00:00Z`).toLocaleDateString("en-GB",
         { weekday: "long", day: "numeric", month: "long" });
       const list = catalogueList(pupil.homeworkList);
+      const name = esc(pupil.name);
+      const when = `${date}${pupil.lessonTime ? ` at ${pupil.lessonTime}` : ""}`;
       const subject = `PopSpell lesson tomorrow for ${pupil.name}`;
-      const bodyText = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson tomorrow, ${date}`
-        + (pupil.lessonTime ? ` at ${pupil.lessonTime}` : "") + `.\n\n`
-        + (list ? `Homework: ${list.title}. The sound-mapping worksheet is attached. Please say each word aloud, then ask ${pupil.name} to segment it into sounds and write the matching letters in the boxes.\n\n` : "")
-        + `Best wishes,\nPopSpell`;
-      location.href = `mailto:${encodeURIComponent(pupil.parentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      const boxes = list ? [`📌 <b>Homework: ${esc(list.title)}</b><br>The sound-mapping worksheet is attached. Please say each word aloud, then ask ${name} to say its sounds and write the matching letters in the boxes.`] : [];
+      const html = brandedEmail({
+        title: `${name}'s lesson is tomorrow`,
+        paragraphs: ["Hello,", `A reminder that ${name} has a PopSpell lesson tomorrow, <b>${esc(when)}</b>.`],
+        button: { href: homeLink(pupil.name), text: `▶ Practise on PopSpell as ${name}` },
+        boxes, sign: esc(shortName(me.name))
+      });
+      const text = `Hello,\n\nA reminder that ${pupil.name} has a PopSpell lesson tomorrow, ${when}.\n\n`
+        + (list ? `Homework: ${list.title}. The sound-mapping worksheet is attached.\n\n` : "")
+        + `Practise on PopSpell: ${homeLink(pupil.name)}\n\nBest wishes,\n${shortName(me.name)}`;
+      previewEmail(pupil.parentEmail, { subject, html, text });
     }; });
   }
 
