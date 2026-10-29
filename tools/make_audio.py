@@ -52,7 +52,26 @@ PHRASES = {
     "q-rhyme": "Which word rhymes with this word? Listen.",
     "q-first": "Which word starts with the same sound as this word? Listen.",
     "q-count": "How many sounds can you hear in this word? Listen.",
+    # Pip's games use the same Eponine recording as the rest of PopSpell.
+    "switch-swap": "Change one sound. Listen to the first word.",
+    "switch-add": "Add one sound. Listen to the first word.",
+    "switch-remove": "Take away one sound. Listen to the first word.",
+    "switch-make": "Make this word.",
+    "canopy-flash": "The fireflies light Pip's path. How many flashed? Look again whenever you like.",
+    "canopy-compare": "Pip has reached a fork. Which tree has more fireflies, or are they the same?",
 }
+PHRASES.update({
+    f"canopy-make-{n}":
+        f"Pip needs one bridge of {n} fireflies. Pick a group for each side so they make {n} altogether."
+    for n in range(5, 11)
+})
+PHRASES.update({
+    f"canopy-hide-{total}-{visible}":
+        f"Some fireflies are behind the leaves. There are {total} altogether and {visible} are showing. How many are hidden?"
+    for total, visible in [(5, 2), (6, 4), (7, 3), (8, 5), (9, 6), (10, 7),
+                           (11, 7), (12, 8), (13, 9), (15, 10), (17, 12), (20, 14),
+                           (9, 5), (10, 6)]
+})
 
 
 def spelling(entry):

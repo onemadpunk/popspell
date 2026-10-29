@@ -1779,9 +1779,9 @@
 
   // Pupils choose the speed themselves, so they can read along rather than be read to.
   // It's remembered on the device.
-  // The recordings become muddy when stretched far below their original speed. Slow uses
-  // the device voice at a slower speaking rate; the recorded voice stays near its natural rate.
-  const READ_SPEEDS = [["slow", 0.8, "🐢 Slow"], ["steady", 0.94, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
+  // Stretching the recording makes it muddy. Slow keeps Eponine at her natural pace
+  // and gives the pupil a longer pause between sentences instead.
+  const READ_SPEEDS = [["slow", 1, "🐢 Slow"], ["steady", 0.94, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
   const READ_KEY = "popspell-read-speed";
   const readSpeed = () => {
     let key = "";
@@ -1804,12 +1804,11 @@
     for (let n = from; n < parts.length; n++) {
       if (run !== readRun || my !== phase) return;
       mark(n);
-      const clearSlow = mode === "slow" && !!synth;
-      const ok = clearSlow || !useRecorded()
-        ? await speak(parts[n], clearSlow ? Math.max(0.72, Math.min(0.9, settings.rate * 0.9)) : settings.rate * speed)
-        : await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, mode === "slow" ? 1 : speed);
+      const ok = !useRecorded()
+        ? await speak(parts[n], settings.rate * speed)
+        : await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, speed);
       if (run !== readRun || my !== phase || ok === null) return;
-      await new Promise(r => setTimeout(r, mode === "slow" ? 800 : mode === "steady" ? 450 : 300));
+      await new Promise(r => setTimeout(r, mode === "slow" ? 1100 : mode === "steady" ? 450 : 300));
     }
     if (run === readRun) mark(-1);
   }
@@ -1821,7 +1820,7 @@
       <button type="button" class="btn small" data-read="stop" hidden>⏹ Stop</button>
       <span class="read-speed" role="group" aria-label="Reading speed">${READ_SPEEDS.map(([key, , text]) =>
         `<button type="button" class="speed-btn" data-speed="${key}" aria-pressed="${readSpeed()[0] === key}">${text}</button>`).join("")}</span>
-      <small class="read-speed-note" aria-live="polite">${readSpeed()[0] === "slow" ? "Slow uses your device voice so the words stay clear." : ""}</small>
+      <small class="read-speed-note" aria-live="polite">${readSpeed()[0] === "slow" ? "Slow keeps Eponine clear and adds a longer pause after each sentence." : ""}</small>
     </div>`;
   // Read it / Stop, the speed buttons, and tapping a sentence to hear it from there
   function wireReadAlong(box, p) {
@@ -1842,7 +1841,7 @@
         try { localStorage.setItem(READ_KEY, b.dataset.speed); } catch { /* private mode */ }
         box.querySelectorAll("[data-speed]").forEach(x => x.setAttribute("aria-pressed", x === b));
         box.querySelector(".read-speed-note").textContent = b.dataset.speed === "slow"
-          ? "Slow uses your device voice so the words stay clear." : "";
+          ? "Slow keeps Eponine clear and adds a longer pause after each sentence." : "";
         // Already reading? Carry on from the same sentence at the new speed
         const now = box.querySelector(".ra-s.reading");
         if (!stop.hidden) start(now ? Number(now.dataset.s) : 0);
@@ -2241,11 +2240,11 @@
     const positions = [...app.querySelectorAll("[data-place]")];
     const hear = async () => {
       const here = phase;
-      await speak(`${step}. Listen to the first word.`);
+      await sayPhrase([`switch-${q.action}`, `${step}. Listen to the first word.`]);
       if (here !== phase || finished) return;
       await sayWord(q.source);
       if (here !== phase || finished) return;
-      await speak("Make this word.");
+      await sayPhrase(["switch-make", "Make this word."]);
       if (here === phase && !finished) sayWord(q.answer);
     };
     $("#hearSwitch").onclick = hear;
@@ -2403,7 +2402,9 @@
     const work = $("#canopyWork");
     const feedback = $("#feedback");
     const scene = $("#canopyScene");
-    const listen = () => speak(instructions[q.mode]);
+    const cue = q.mode === "make" ? `canopy-make-${q.total}`
+      : q.mode === "hide" ? `canopy-hide-${q.total}-${q.visible}` : `canopy-${q.mode}`;
+    const listen = () => sayPhrase([cue, instructions[q.mode]]);
     $("#canopyHear").onclick = listen;
     listen();
 
@@ -2430,7 +2431,7 @@
       const result = q.mode === "make" ? `${methods[0]} makes ${q.total}. The whole bridge is ready!`
         : q.mode === "hide" ? `${q.visible} and ${q.answer} make ${q.total}`
         : q.mode === "compare" ? `${q.left} and ${q.right}: ${q.answer === "same" ? "the same amount" : `${q.answer} has more`}`
-        : `${q.total} fireflies`;
+        : `${q.total} ${q.total === 1 ? "firefly" : "fireflies"}`;
       const payoff = { flash: "The path lights up!", make: "Pip crosses the river!", hide: "The fireflies come out!", compare: "Pip found the way!" }[q.mode];
       feedback.className = "feedback good";
       feedback.innerHTML = `${payoff} <b>${esc(result)}</b> <span class="stars-inline">${stars(earned)}</span>`;
