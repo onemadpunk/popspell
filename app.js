@@ -935,6 +935,43 @@
       ${says ? `<p class="speech" aria-live="polite">${says}</p>` : ""}
     </div>`;
 
+  // Pip says what's in his speech bubble whenever it appears or changes, and tapping Pip (or the
+  // bubble) says it again, so children who can't read yet know what he's saying. Fixed lines are
+  // Eponine recordings: keep in step with PIP_LINES in tools/make_audio.py. A child's name is left
+  // out of the recording ("Hi Ava! …" plays "Hi! …"); anything else uses the device voice.
+  const START_LINE = "Ready? Press the big button to start!";
+  const dueLine = n => `You've got ${plural(n, "word", "words")} to practise again. Let's go!`;
+  const setLine = n => `Your teacher has set you ${plural(n, "thing", "things")} for today. ${n === 1 ? "It's" : "They're"} just below!`;
+  let pipKeys = null; // built on first use, once QUEST exists
+  function pipKeyFor(text) {
+    if (!pipKeys) {
+      pipKeys = new Map([["Hi! I'm Pip. What's your name?", "pip-name"], ["Pick a stop on our journey. I'll hop along with you!", "pip-journey"],
+        ["Hi! Will you help me visit my five islands?", "pip-quest"], ["We did it! Thank you for helping me!", "pip-quest-done"], [START_LINE, "pip-start"]]);
+      for (let n = 1; n <= 12; n++) { pipKeys.set(dueLine(n), `pip-due-${n}`); pipKeys.set(setLine(n), `pip-set-${n}`); }
+      QUEST.forEach(isl => pipKeys.set(isl.intro, `pip-island-${isl.key}`));
+    }
+    return pipKeys.get(text) || pipKeys.get(text.replace(/^Hi [^!]{1,40}! /, "Hi! "));
+  }
+  // Emoji aren't read out: 🔊 becomes "the speaker", the rest are dropped
+  const forSpeech = text => text.replace(/🔊/g, "the speaker").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "").replace(/\s+/g, " ").trim();
+  function sayPip(text) {
+    const key = pipKeyFor(text);
+    return key ? sayPhrase([key, forSpeech(text)]) : speak(forSpeech(text));
+  }
+  const bubbleText = el => el.textContent.replace(/\s+/g, " ").trim();
+  let pipSaid = "";
+  new MutationObserver(() => {
+    const bubble = app.querySelector(".speech");
+    const text = bubble ? bubbleText(bubble) : "";
+    if (!text) { pipSaid = ""; return; }
+    if (text !== pipSaid) { pipSaid = text; later(() => sayPip(text), 300); }
+  }).observe(app, { childList: true, subtree: true, characterData: true });
+  app.addEventListener("click", e => {
+    const wrap = e.target.closest(".pip-wrap");
+    const bubble = wrap && wrap.querySelector(".speech");
+    if (bubble) sayPip(bubbleText(bubble));
+  });
+
   let homeStage = null; // the journey stop being looked at (this visit)
   let homeArea = "games"; // the "More to explore" tab
   const stageDone = (stage, b) => stage.lists.filter(l => b.lists[l.id]).length;
@@ -1096,7 +1133,7 @@
     const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
       const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
       app.querySelector(".welcome .pip-wrap").append(p); return p; })(); bubble.textContent = text; };
-    say(due ? `You've got ${plural(due, "word", "words")} to practise again. Let's go!` : "Pick a stop on our journey. I'll hop along with you!");
+    say(due ? dueLine(due) : "Pick a stop on our journey. I'll hop along with you!");
 
     // Lists the teacher has set for this pupil, if the sheet is connected
     const my = phase;
@@ -1109,7 +1146,7 @@
           : "There's no new work set for you today. Practise your review words, or ask your teacher.";
       }
       if (!lists.length) return;
-      say(`Your teacher has set you ${plural(lists.length, "thing", "things")} for today. ${lists.length === 1 ? "It's" : "They're"} just below!`);
+      say(setLine(lists.length));
       const section = document.createElement("section");
       section.className = "assigned home-section";
       section.innerHTML = `
@@ -1381,11 +1418,11 @@
       <section class="panel start" style="--accent:${esc(list.accent)}">
         <a class="back" href="#/">← All lists</a>
         ${previewBanner()}
-        <div class="start-pip">${pipHTML("small", "bob", "", "listen")}</div>
-        <p class="eyebrow">${esc(list.stage || "")}</p>
+        <div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>
+        ${forTeacher() ? `<p class="eyebrow">${esc(list.stage || "")}</p>` : ""}
         <h1>${esc(list.title)}</h1>
-        ${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
-        <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>
+        ${forTeacher() ? `${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
+          <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>` : ""}
         ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
         <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
         ${LISTS[list.id] && list.items.some(it => it.sentence) && window.PopActivities
@@ -1410,6 +1447,8 @@
     };
   }
 
+  // Curriculum labels, tips and word counts are for teachers; pupils get Pip and one big button
+  const forTeacher = () => previewMode || teacherUnlocked();
   const checksFor = list => (settings.checks ? list.checks || [] : []);
 
   /* ---------- Practice ---------- */
@@ -1742,10 +1781,10 @@
       <section class="panel start" style="--accent:${esc(act.colour)}">
         <a class="back" href="#/">← All activities</a>
         ${previewBanner()}
-        <div class="start-pip">${pipHTML("small", "bob", "", "listen")}</div>
-        <p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>
-        <h1>${esc(act.title)}</h1>
-        <p class="tip">${esc(act.blurb)}</p>
+        <div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>
+        ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>` : ""}
+        <h1>${act.icon ? `<span aria-hidden="true">${act.icon}</span> ` : ""}${esc(act.title)}</h1>
+        ${forTeacher() ? `<p class="tip">${esc(act.blurb)}</p>` : ""}
         ${act.id === "g-canopy-run" ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
           <span>Catch lights ✦ · Cross rivers 🌉 · Find hidden friends 🍃 · Choose the path ↗</span>
           <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
@@ -1787,6 +1826,18 @@
   }
 
   // Plays a question's sound: a recorded word, a recording (with the device voice as back-up), or text
+  // How a written question sounds read out: symbols become words, so "3 + ? = 10" is
+  // "3 add what equals 10"
+  const speakable = text => String(text || "")
+    .replace(/_{2,}/g, " blank ").replace(/(^|\s)\?(?=\s|$|\/)/g, "$1what")
+    .replace(/×/g, " times ").replace(/÷/g, " divided by ").replace(/−/g, " take away ").replace(/\+/g, " add ")
+    .replace(/=\s*$/, " makes what?").replace(/=/g, " equals ").replace(/(\d)\/(\d)/g, "$1 over $2")
+    .replace(/\s+/g, " ").trim();
+  // Every question is read out, so a child who can't read yet can still answer it
+  const questionSay = q => q.say || (q.prompt ? { text: speakable(q.prompt) } : null);
+  // An answer choice read out: a recorded word where there is one
+  const sayOption = o => (/\s/.test(o) ? speak(speakable(o)) : sayWord(o));
+
   function sayQuestion(q) {
     if (!q.say) return Promise.resolve();
     if (q.say.word) {
@@ -1898,6 +1949,9 @@
     if (q.kind === "map") return showSoundHopper(q);
     if (q.kind === "switch") return showSoundSwitch(q);
     if (q.kind === "canopy") return showCountingCanopy(q);
+    if (!q.say) q.say = questionSay(q);
+    // Answers made of words can be heard too (not bare numbers or punctuation)
+    const hearOptions = q.kind === "choice" && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
     const wrong = [];
     let missed = [];
     const passage = act.passage;
@@ -1908,7 +1962,7 @@
     const optionHTML = (opt, i) => `
       <div class="q-option-wrap">
         <button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button>
-        ${q.sayOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}
+        ${hearOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}
       </div>`;
     app.innerHTML = `
       <section class="panel practice activity" style="--accent:${esc(act.colour)}">
@@ -1916,7 +1970,7 @@
         ${passageBox}
         <p class="phase q-prompt">${esc(q.prompt)}</p>
         ${q.html || ""}
-        ${q.say ? `<div class="row center"><button class="btn" id="hearQ">🔊 Hear it${q.say.word ? "" : " again"}</button></div>` : ""}
+        ${q.say ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
         ${q.kind === "choice"
           ? `<div class="q-options">${q.options.map(optionHTML).join("")}</div>`
           : `<form class="spell-form" id="qForm" autocomplete="off">
@@ -1949,6 +2003,9 @@
           ? `The sentence was: <b>${esc(q.answer)}</b>`
           : `The answer is <b>${esc(q.answer)}</b>${/[.!?]$/.test(q.answer) ? "" : "."} ${esc(q.explain || "")}`;
       if (correct) chimeRight(); else chimeWrong();
+      // Said as well as shown: praise, or the answer and why
+      later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
+        : speak(forSpeech(`The answer is ${speakable(q.answer)}. ${q.kind === "dictation" ? "" : q.explain || ""}`))), 350);
       app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
       next.className = "row center";
@@ -1965,10 +2022,11 @@
       chimeWrong();
       $("#feedback").className = "feedback oops";
       $("#feedback").textContent = text;
+      later(() => sayPhrase(PHRASES.tryAgain), 300);
     };
 
     if (q.kind === "choice") {
-      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayWord(q.options[Number(b.dataset.hear)]); });
+      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayOption(q.options[Number(b.dataset.hear)]); });
       app.querySelectorAll(".q-option").forEach(b => {
         b.onclick = () => {
           const value = q.options[Number(b.dataset.opt)];
@@ -1977,7 +2035,7 @@
           b.classList.add("wrong");
           b.disabled = true;
           if (wrong.length >= ACTIVITY_TRIES) return finish(false);
-          tryAgain("Not quite — have another look.");
+          tryAgain("🔁 Not quite. Have another go.");
         };
       });
       return;
@@ -2010,7 +2068,7 @@
           wrong.push(value);
           input.value = "";
           input.focus();
-          return tryAgain("Not quite — have another go.");
+          return tryAgain("🔁 Not quite. Have another go.");
         }
       }
       if (!right) wrong.push(value);
@@ -2746,6 +2804,8 @@
     const q = session.items[session.i];
     const spelling = session.check === "spelling";
     const quest = session.quest;
+    if (!spelling && !q.say) q.say = questionSay(q); // read out, as in every activity
+    const hearOptions = q.kind === "choice" && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
     app.innerHTML = `
       <section class="panel practice activity${quest ? " quest-q" : ""}" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}
@@ -2760,7 +2820,7 @@
         ${spelling ? sentenceHTML(q, true) : q.html || ""}
         ${q.kind === "choice"
           ? `<div class="q-options${q.readWords ? " read-words" : ""}">${q.options.map((opt, i) => `<div class="q-option-wrap"><button type="button" class="q-option" data-opt="${i}">${esc(opt)}</button>
-              ${q.sayOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}</div>`).join("")}</div>`
+              ${hearOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}</div>`).join("")}</div>`
           : `<form class="spell-form" id="checkForm" autocomplete="off">
               <label for="checkAnswer" class="sr-only">Your answer</label>
               <input id="checkAnswer" class="answer" type="text" inputmode="${q.input === "numeric" || q.input === "decimal" ? q.input : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">
@@ -2806,7 +2866,7 @@
       sayQuestion(q);
     }
     if (q.kind === "choice") {
-      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayWord(q.options[Number(b.dataset.hear)]); });
+      app.querySelectorAll("[data-hear]").forEach(b => { b.onclick = () => sayOption(q.options[Number(b.dataset.hear)]); });
       app.querySelectorAll(".q-option").forEach(b => { b.onclick = () => answer(q.options[Number(b.dataset.opt)]); });
       return;
     }

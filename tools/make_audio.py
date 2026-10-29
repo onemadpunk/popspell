@@ -47,6 +47,17 @@ PHRASES = {
     "all-right": "Fantastic! You spelled every word.",
     "all-done": "Fantastic! You got every one right.",
     "try-again": "Not quite. Have another go.",
+    # Pip's speech bubbles (PIP_LINES in app.js reads them out): keep the wording in step
+    "pip-name": "Hi! I'm Pip. What's your name?",
+    "pip-journey": "Pick a stop on our journey. I'll hop along with you!",
+    "pip-quest": "Hi! Will you help me visit my five islands?",
+    "pip-quest-done": "We did it! Thank you for helping me!",
+    "pip-start": "Ready? Press the big button to start!",
+    "pip-island-listen": "Pip's friends love sounds! Listen to each word, then tap your answer. Tap the speaker to hear a word again.",
+    "pip-island-read": "Pip will say a word. Find it and tap it! Say the sounds in each word to help you.",
+    "pip-island-spell": "Pip will say a word, then use it in a sentence. Write it in the sand! Some words get tricky, so just have a go.",
+    "pip-island-story": "Read Pip's story all by yourself, then answer the questions about it.",
+    "pip-island-numbers": "Climb Number Peak! Answer each question. Some get tricky, so just have a go.",
     "finished": "Well done! Have a look at your stars.",
     "test": "Can you spell the word, cake?",
     # Spoken questions for the early-level listening games (activities.js)
@@ -61,6 +72,9 @@ PHRASES = {
     "canopy-flash": "The fireflies light Pip's path. How many flashed? Look again whenever you like.",
     "canopy-compare": "Pip has reached a fork. Which tree has more fireflies, or are they the same?",
 }
+PHRASES.update({f"pip-due-{n}": f"You've got {n} {'word' if n == 1 else 'words'} to practise again. Let's go!" for n in range(1, 13)})
+PHRASES.update({f"pip-set-{n}": f"Your teacher has set you {n} {'thing' if n == 1 else 'things'} for today. {'It' if n == 1 else 'They'}'{'s' if n == 1 else 're'} just below!"
+                for n in range(1, 13)})
 PHRASES.update({
     f"canopy-make-{n}":
         f"Pip needs one bridge of {n} fireflies. Pick a group for each side so they make {n} altogether."

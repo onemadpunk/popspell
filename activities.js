@@ -593,7 +593,7 @@ window.PopActivities = (() => {
   ];
   const storyQuestions = (p, listen) => () => p.questions.map((q, i) => choice(q.q, q.a, q.others, {
     label: `${p.title} Q${i + 1}`, skill: q.skill || "comprehension", explain: q.why || "",
-    say: listen ? { text: q.q, clip: `audio/passages/${p.id}-q${i + 1}.mp3` } : undefined
+    say: { text: q.q, clip: `audio/passages/${p.id}-q${i + 1}.mp3` } // read aloud, so non-readers can answer
   }));
   const passageActivities = (window.PASSAGES || []).flatMap(p => {
     const make = listen => storyQuestions(p, listen);
