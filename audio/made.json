@@ -320,6 +320,7 @@
 "phrases/switch-remove": "[\"pocket-tts\", \"eponine\", 200, \"Take away one sound. Listen to the first word.\"]",
 "phrases/switch-swap": "[\"pocket-tts\", \"eponine\", 200, \"Change one sound. Listen to the first word.\"]",
 "phrases/test": "[\"pocket-tts\", \"eponine\", 200, \"Can you spell the word, cake?\"]",
+"phrases/try-again": "[\"pocket-tts\", \"eponine\", 200, \"Not quite. Have another go.\"]",
 "phrases/well-done": "[\"pocket-tts\", \"eponine\", 200, \"Well done!\"]",
 "sentences/alphabet": "[\"pocket-tts\", \"eponine\", 200, \"Sing the alphabet song.\"]",
 "sentences/annoy": "[\"pocket-tts\", \"eponine\", 200, \"Flies annoy me.\"]",

@@ -46,6 +46,7 @@ PHRASES = {
     "amazing": "Amazing!",
     "all-right": "Fantastic! You spelled every word.",
     "all-done": "Fantastic! You got every one right.",
+    "try-again": "Not quite. Have another go.",
     "finished": "Well done! Have a look at your stars.",
     "test": "Can you spell the word, cake?",
     # Spoken questions for the early-level listening games (activities.js)

@@ -1363,3 +1363,22 @@ a.me-card:hover { border-color: var(--primary); }
 .btn.danger:hover { background: var(--oops-soft); }
 .old-table tr.old-row td { background: var(--oops-soft); }
 #checkOld { margin-bottom: 10px; }
+
+/* Spelling: one page per word, for children who can't read yet */
+.one-page .word-stage { min-height: 150px; display: grid; place-items: center; margin: 6px 0 4px; }
+.one-page .look-word { margin: 0; }
+.one-page .look-word[hidden], .one-page .peek-btn[hidden] { display: none; }
+.peek-btn { font: inherit; font-weight: 900; font-size: 1.5rem; color: var(--primary); background: var(--primary-soft);
+  border: 3px dashed #9cc3ee; border-radius: 22px; padding: 18px 30px; cursor: pointer; display: inline-flex; align-items: center; gap: 12px; }
+.peek-btn span { font-size: 2.4rem; line-height: 1; }
+.peek-btn:hover, .peek-btn:focus-visible { border-style: solid; border-color: var(--accent); }
+.one-page .boxes { margin-top: 4px; }
+.one-page .spell-form { margin-top: 14px; }
+.one-page .spell-form .answer { font-size: 2rem; text-align: center; }
+.check-btn { min-width: 84px; font-size: 2rem !important; padding: 0 22px !important; }
+.icon-btn { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; min-width: 92px; padding: 8px 14px !important; font-size: .95rem; }
+.icon-btn span { font-size: 1.8rem; line-height: 1.1; }
+.one-page .tools { margin-top: 10px; }
+.one-page .feedback { min-height: 1.6em; font-size: 1.2rem; }
+.one-page .stars-big { margin: 6px 0; }
+.next-btn { font-size: 1.6rem !important; padding: 14px 40px !important; }

@@ -329,6 +329,7 @@
     allRight: ["all-right", "Fantastic! You spelled every word."],
     // Games and number work: not every question is a word to spell
     allDone: ["all-done", "Fantastic! You got every one right."],
+    tryAgain: ["try-again", "Not quite. Have another go."],
     finished: ["finished", "Well done! Have a look at your stars."],
     test: ["test", "Can you spell the word, cake?"]
   };
@@ -1449,36 +1450,110 @@
     });
   }
 
-  // 1. LISTEN & SEGMENT: hear the word and count its phonemes before any graphemes appear.
+  // One page per word, built for children who can't read yet: the word is shown (with its sound
+  // markings) while it's spoken, then hides by itself, or as soon as they start typing. 👀 shows it
+  // again. Typing, checking and the result all happen on this page, with icons rather than text.
   function showLook() {
-    const item = session.items[session.i];
     newScreen();
-    if (item.challenge) return showWrite();
+    const item = session.items[session.i];
+    const showBoxes = !item.whole;
+    const seeable = !item.challenge; // a new-word challenge is never shown first
+    const wrong = [];
+    const firstMissed = [];
+    const my = phase;
     app.innerHTML = `
-      <section class="panel practice" style="--accent:${esc(session.list.accent)}">
+      <section class="panel practice one-page" style="--accent:${esc(session.list.accent)}">
         ${progressHTML()}
-        <p class="phase"><span class="dot look"></span>Look, listen and segment</p>
-        <!-- The word is on screen while it's spoken, and hidden again when it's time to spell it -->
-        <div class="look-word" id="lookWord">${wordHTML(item)}</div>
-        <p class="hint look-hint">Look at the word while you hear it. It will hide when you spell it.</p>
-        ${item.whole ? `<p class="prompt">Listen carefully. This word has a tricky part, so look closely at it.</p>` : `
-          <p class="sound-count">${plural(item.tokens.length, "sound", "sounds")}</p>
-          <div class="boxes segment-boxes" aria-label="${plural(item.tokens.length, "sound box", "sound boxes")}">${boxesHTML(item)}</div>
-          <p class="prompt">Say the word slowly. Tap one box for each sound you hear.</p>`}
-        <div class="row center">
-          <button class="btn" id="hear">🔊 Hear it again</button>
-          <button class="btn primary" id="ready">Map the sounds →</button>
+        ${item.challenge ? `<p class="phase challenge"><span aria-hidden="true">🔍</span> New word!</p>` : ""}
+        <div class="word-stage" id="stage">
+          ${seeable ? `<div class="look-word" id="lookWord">${wordHTML(item)}</div>
+            <button type="button" class="peek-btn" id="peek" hidden><span aria-hidden="true">👀</span> See it again</button>`
+            : `<button type="button" class="peek-btn" id="hearBig"><span aria-hidden="true">🔊</span> Listen</button>`}
+        </div>
+        ${sentenceHTML(item, true)}
+        ${showBoxes ? `<div class="boxes" id="boxes" aria-label="${plural(item.tokens.length, "sound", "sounds")}">${boxesHTML(item)}</div>` : ""}
+        <form class="spell-form" id="spellForm" autocomplete="off">
+          <label for="answer" class="sr-only">Type the word</label>
+          <input id="answer" class="answer" type="text" autocomplete="off" autocorrect="off"
+                 autocapitalize="none" spellcheck="false" enterkeyhint="done" maxlength="40">
+          <button class="btn primary check-btn" type="submit" aria-label="Check"><span aria-hidden="true">✓</span></button>
+        </form>
+        <div class="tries" id="tries"></div>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+        <div class="row center tools" id="tools">
+          <button class="btn icon-btn" id="hear" type="button"><span aria-hidden="true">🔊</span>Hear</button>
+          ${wantSentence(item) ? `<button class="btn icon-btn" id="hearSentence" type="button"><span aria-hidden="true">💬</span>Sentence</button>` : ""}
         </div>
       </section>`;
     wireStop();
-    wireSoundButtons($("#lookWord"), item);
-    $("#hear").onclick = () => sayWordInSentence(item);
-    $("#ready").onclick = () => showWrite();
-    app.querySelectorAll(".segment-boxes button.box").forEach(b => {
-      b.onclick = () => b.classList.toggle("lit");
+
+    const input = $("#answer");
+    const feedback = $("#feedback");
+    const word = $("#lookWord");
+    const peek = $("#peek");
+    let showing = 0; // each showing gets a number, so an old timer can't hide a newer one
+    const hide = () => {
+      if (!word || word.hidden) return;
+      word.hidden = true;
+      peek.hidden = false;
+    };
+    // Show the word while it's said, then hide it a moment after
+    const show = say => {
+      if (!word) return;
+      const n = ++showing;
+      word.hidden = false;
+      peek.hidden = true;
+      Promise.resolve(say()).then(() => later(() => { if (n === showing && my === phase) hide(); }, 1500));
+    };
+    if (word) {
+      wireSoundButtons(word, item);
+      peek.onclick = () => { show(() => sayWord(item.spelling)); input.focus({ preventScroll: true }); };
+    }
+    input.addEventListener("input", hide);
+    if ($("#hearBig")) $("#hearBig").onclick = () => { sayWordInSentence(item); input.focus({ preventScroll: true }); };
+
+    const wireBoxes = () => document.querySelectorAll("#boxes button.box").forEach(b => {
+      b.onclick = () => { b.classList.toggle("lit"); input.focus({ preventScroll: true }); };
     });
-    $("#ready").focus();
-    sayWordInSentence(item);
+    const drawTries = () => {
+      const left = settings.tries - wrong.length;
+      $("#tries").innerHTML = Array.from({ length: settings.tries }, (_, k) =>
+        `<span class="try ${k < left ? "" : "used"}"></span>`).join("") +
+        `<span class="sr-only">${plural(Math.max(0, left), "try", "tries")} left</span>`;
+    };
+    wireBoxes();
+    drawTries();
+    input.focus();
+
+    $("#hear").onclick = () => { sayWord(item.spelling); input.focus({ preventScroll: true }); };
+    if ($("#hearSentence")) $("#hearSentence").onclick = () => { saySentence(item); input.focus({ preventScroll: true }); };
+    if (seeable) show(() => sayWordInSentence(item)); else sayWordInSentence(item);
+
+    $("#spellForm").onsubmit = e => {
+      e.preventDefault();
+      const answer = input.value;
+      if (!answer.trim()) { input.focus(); return; }
+      const result = compare(answer, item);
+      if (!wrong.length) result.boxes.forEach(b => { if (!b.ok) firstMissed.push(b.tok); });
+      if (result.right) { showResult(true, wrong, firstMissed, result); return; }
+      wrong.push(answer.trim());
+      if (wrong.length >= settings.tries) { showResult(false, wrong, firstMissed, result); return; }
+
+      chimeWrong();
+      hide();
+      const bad = result.boxes.filter(b => !b.ok);
+      const focusTip = session.list.tip && bad.some(b => session.list.focusSet.has(b.tok));
+      feedback.className = "feedback oops";
+      feedback.innerHTML = `<span aria-hidden="true">🔁</span> Not quite. Have another go.` + (focusTip ? `<span class="tip-inline">💡 ${esc(session.list.tip)}</span>` : "");
+      if (showBoxes) $("#boxes").innerHTML = boxesHTML(item, result); // green sounds are right, orange need fixing
+      drawTries();
+      input.value = "";
+      input.classList.remove("shake");
+      void input.offsetWidth;
+      input.classList.add("shake");
+      input.focus();
+      later(() => Promise.resolve(sayPhrase(PHRASES.tryAgain)).then(() => { if (my === phase) sayWord(item.spelling); }), 300);
+    };
   }
 
   // Sound boxes: one per sound. Empty to start with; after a try they show what was written
@@ -1490,104 +1565,9 @@
     }).join("");
   }
 
-  // 2. SPELL: word hidden, pupil spells it sound by sound
-  function showWrite() {
-    newScreen();
-    const item = session.items[session.i];
-    const showBoxes = !item.whole;
-    const wrong = [];
-    const firstMissed = [];
-    app.innerHTML = `
-      <section class="panel practice" style="--accent:${esc(session.list.accent)}">
-        ${progressHTML()}
-        ${item.challenge
-          ? `<p class="phase challenge"><span aria-hidden="true">🔍</span> New word! You haven't seen this one</p>
-             <p class="prompt">Listen carefully, say the sounds, and use what you've learned.</p>`
-          : `<p class="phase"><span class="dot write"></span>Map and spell it</p>`}
-        ${sentenceHTML(item, true)}
-        ${showBoxes
-          ? `<div class="boxes" id="boxes">${boxesHTML(item)}</div>
-             <p class="prompt" id="prompt">Say each sound and tap a box. Then write it, saying each sound as you type.</p>`
-          : `<p class="prompt">Listen again, then write the sounds you hear.</p>`}
-        <form class="spell-form" id="spellForm" autocomplete="off">
-          <label for="answer" class="sr-only">Type the word</label>
-          <input id="answer" class="answer" type="text" autocomplete="off" autocorrect="off"
-                 autocapitalize="none" spellcheck="false" enterkeyhint="done" maxlength="40">
-          <button class="btn primary" type="submit">Check ✓</button>
-        </form>
-        <div class="tries" id="tries"></div>
-        <p class="feedback" id="feedback" aria-live="polite"></p>
-        <ul class="attempts" id="attempts"></ul>
-        <div class="row center">
-          <button class="btn" id="hear" type="button">🔊 Hear the word</button>
-          ${wantSentence(item) ? `<button class="btn" id="hearSentence" type="button">💬 Hear the sentence</button>` : ""}
-        </div>
-      </section>`;
-    wireStop();
-
-    const input = $("#answer");
-    const feedback = $("#feedback");
-    const wireBoxes = () => document.querySelectorAll("#boxes button.box").forEach(b => {
-      b.onclick = () => { b.classList.toggle("lit"); input.focus({ preventScroll: true }); };
-    });
-    const drawTries = () => {
-      const left = settings.tries - wrong.length;
-      $("#tries").innerHTML = Array.from({ length: settings.tries }, (_, k) =>
-        `<span class="try ${k < left ? "" : "used"}"></span>`).join("") +
-        `<span class="tries-label">${plural(Math.max(0, left), "try", "tries")} left</span>`;
-    };
-    wireBoxes();
-    drawTries();
-    input.focus();
-
-    $("#hear").onclick = () => { sayWord(item.spelling); input.focus(); };
-    if ($("#hearSentence")) $("#hearSentence").onclick = () => { saySentence(item); input.focus(); };
-    sayWordInSentence(item);
-
-    $("#spellForm").onsubmit = e => {
-      e.preventDefault();
-      const answer = input.value;
-      if (!answer.trim()) {
-        feedback.textContent = "Type the word first, then press Check.";
-        input.focus();
-        return;
-      }
-      const result = compare(answer, item);
-      if (!wrong.length) result.boxes.forEach(b => { if (!b.ok) firstMissed.push(b.tok); });
-      if (result.right) { showResult(true, wrong, firstMissed, result); return; }
-      wrong.push(answer.trim());
-      if (wrong.length >= settings.tries) { showResult(false, wrong, firstMissed, result); return; }
-
-      chimeWrong();
-      const bad = result.boxes.filter(b => !b.ok);
-      const left = settings.tries - wrong.length;
-      let msg = item.whole || !bad.length
-        ? "Not quite — listen again and have another go."
-        : bad.length === 1
-          ? "So close! One sound needs fixing — look at the orange box."
-          : `${bad.length} sounds need fixing. Say the word slowly and listen for each sound.`;
-      msg += ` ${plural(left, "try", "tries")} left.`;
-      const focusTip = session.list.tip && bad.some(b => session.list.focusSet.has(b.tok));
-      feedback.className = "feedback oops";
-      feedback.innerHTML = esc(msg) + (focusTip ? `<span class="tip-inline">💡 ${esc(session.list.tip)}</span>` : "");
-      if (showBoxes) {
-        $("#boxes").innerHTML = boxesHTML(item, result);
-        $("#prompt").textContent = "Green sounds are right. Fix the orange ones.";
-      }
-      $("#attempts").innerHTML = wrong.map(w => `<li>${esc(w)}</li>`).join("");
-      drawTries();
-      input.value = "";
-      input.classList.remove("shake");
-      void input.offsetWidth;
-      input.classList.add("shake");
-      input.focus();
-      later(() => sayWord(item.spelling), 500);
-    };
-  }
-
-  // 3. CHECK: right (with stars), or see the word sound by sound and hear it spelled out
+  // Right (with stars), or the word shown sound by sound and spelled out: on the same page
   function showResult(correct, wrong, firstMissed, last) {
-    newScreen();
+    newScreen(); // stops anything still being said; the page itself stays
     const item = session.items[session.i];
     const earned = correct ? settings.tries - wrong.length : 0;
     session.results.push({ item, correct, wrong: wrong.slice(), stars: earned, missed: [...new Set(firstMissed)] });
@@ -1597,22 +1577,17 @@
     const praise = pick(PRAISE);
     const missed = correct ? new Set() : new Set(last.boxes.map((b, g) => (b.ok ? -1 : g)).filter(g => g >= 0));
 
-    app.innerHTML = `
-      <section class="panel practice" style="--accent:${esc(session.list.accent)}">
-        ${progressHTML()}
-        <p class="phase"><span class="dot ${correct ? "good" : "check"}"></span>${correct ? praise[1] : "Let's look at it together"}</p>
-        <div class="word-box ${correct ? "right pop" : "reveal"}"><span class="word sounds" lang="en-GB">${wordHTML(item, missed)}</span></div>
-        ${correct
-          ? `<p class="stars-big" aria-label="${earned} stars">${stars(earned)}<span class="dim">${stars(settings.tries - earned)}</span></p>`
-          : `<p class="feedback">This is how we spell <b>${esc(item.spelling)}</b>.${missed.size ? " The orange sounds are the ones to practise." : ""}<br>Say each sound and write it in the air with your finger.</p>`}
-        ${wrong.length ? `<p class="attempts-label">Your tries:</p><ul class="attempts">${wrong.map(w => `<li>${esc(w)}</li>`).join("")}</ul>` : ""}
-        <div class="row center">
-          ${correct ? "" : `<button class="btn" id="hear">🔊 Hear it spelled</button>`}
-          <button class="btn big primary" id="next">${isLast ? "See my stars 🏆" : "Next word →"}</button>
-        </div>
-      </section>`;
-    wireStop();
+    ["#boxes", "#spellForm", "#tries", "#feedback", "#tools", ".sentence"].forEach(sel => { const el = app.querySelector(sel); if (el) el.remove(); });
+    $("#stage").innerHTML = `
+      <div class="word-box ${correct ? "right pop" : "reveal"}"><span class="word sounds" lang="en-GB">${wordHTML(item, missed)}</span></div>
+      ${correct ? `<p class="stars-big" aria-label="${earned} stars">${stars(earned)}<span class="dim">${stars(settings.tries - earned)}</span></p>` : ""}
+      <div class="row center">
+        ${correct ? "" : `<button class="btn icon-btn" id="hear" type="button"><span aria-hidden="true">🔊</span>Hear it</button>`}
+        <button class="btn big primary next-btn" id="next" type="button">${isLast ? `<span aria-hidden="true">🏆</span> My stars` : `Next <span aria-hidden="true">➜</span>`}</button>
+      </div>`;
     wireSoundButtons($(".word"), item);
+    // Stop and Help stay as they were; the top bar shows the new score
+    app.querySelector(".progress .earned").textContent = `★ ${session.results.reduce((t, r) => t + r.stars, 0)}`;
 
     const sayIt = () => (settings.spellOut ? saySOS(item) : sayWord(item.spelling));
     if (correct) { chimeRight(); later(() => sayPhrase(praise), 350); }
