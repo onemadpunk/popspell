@@ -1206,6 +1206,8 @@ a.me-card:hover { border-color: var(--primary); }
 .speed-btn { font: inherit; font-weight: 700; font-size: .9rem; border: 0; background: var(--surface); color: var(--ink); padding: 6px 12px; cursor: pointer; }
 .speed-btn + .speed-btn { border-left: 2px solid var(--line); }
 .speed-btn[aria-pressed="true"] { background: var(--primary); color: #fff; }
+.read-speed-note { flex-basis: 100%; color: var(--muted); font-size: .8rem; }
+.read-speed-note:empty { display: none; }
 
 /* Spelling: the word while it's spoken, with its sound buttons */
 .look-word { font-family: var(--reading-font); font-size: clamp(2.6rem, 10vw, 4.2rem); font-weight: 700; color: var(--ink); margin: 6px 0 2px; padding-bottom: .35em; line-height: 1.1; letter-spacing: .03em; }

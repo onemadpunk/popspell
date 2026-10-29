@@ -1704,7 +1704,9 @@
 
   // Pupils choose the speed themselves, so they can read along rather than be read to.
   // It's remembered on the device.
-  const READ_SPEEDS = [["slow", 0.65, "🐢 Slow"], ["steady", 0.8, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
+  // The recordings become muddy when stretched far below their original speed. Slow uses
+  // the device voice at a slower speaking rate; the recorded voice stays near its natural rate.
+  const READ_SPEEDS = [["slow", 0.8, "🐢 Slow"], ["steady", 0.94, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
   const READ_KEY = "popspell-read-speed";
   const readSpeed = () => {
     let key = "";
@@ -1721,15 +1723,18 @@
   async function readAlong(p, box, from = 0) {
     const run = ++readRun;
     const my = phase; // moving to another screen ends the reading too
-    const [, speed] = readSpeed();
+    const [mode, speed] = readSpeed();
     const parts = sentencesOf(p.text);
     const mark = n => box && box.querySelectorAll(".ra-s").forEach(el => el.classList.toggle("reading", Number(el.dataset.s) === n));
     for (let n = from; n < parts.length; n++) {
       if (run !== readRun || my !== phase) return;
       mark(n);
-      const ok = await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, speed);
+      const clearSlow = mode === "slow" && !!synth;
+      const ok = clearSlow || !useRecorded()
+        ? await speak(parts[n], clearSlow ? Math.max(0.72, Math.min(0.9, settings.rate * 0.9)) : settings.rate * speed)
+        : await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, mode === "slow" ? 1 : speed);
       if (run !== readRun || my !== phase || ok === null) return;
-      await new Promise(r => setTimeout(r, 350 / speed)); // a breath between sentences
+      await new Promise(r => setTimeout(r, mode === "slow" ? 800 : mode === "steady" ? 450 : 300));
     }
     if (run === readRun) mark(-1);
   }
@@ -1741,6 +1746,7 @@
       <button type="button" class="btn small" data-read="stop" hidden>⏹ Stop</button>
       <span class="read-speed" role="group" aria-label="Reading speed">${READ_SPEEDS.map(([key, , text]) =>
         `<button type="button" class="speed-btn" data-speed="${key}" aria-pressed="${readSpeed()[0] === key}">${text}</button>`).join("")}</span>
+      <small class="read-speed-note" aria-live="polite">${readSpeed()[0] === "slow" ? "Slow uses your device voice so the words stay clear." : ""}</small>
     </div>`;
   // Read it / Stop, the speed buttons, and tapping a sentence to hear it from there
   function wireReadAlong(box, p) {
@@ -1760,6 +1766,8 @@
       b.onclick = () => {
         try { localStorage.setItem(READ_KEY, b.dataset.speed); } catch { /* private mode */ }
         box.querySelectorAll("[data-speed]").forEach(x => x.setAttribute("aria-pressed", x === b));
+        box.querySelector(".read-speed-note").textContent = b.dataset.speed === "slow"
+          ? "Slow uses your device voice so the words stay clear." : "";
         // Already reading? Carry on from the same sentence at the new speed
         const now = box.querySelector(".ra-s.reading");
         if (!stop.hidden) start(now ? Number(now.dataset.s) : 0);
