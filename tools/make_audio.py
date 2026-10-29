@@ -112,6 +112,20 @@ def list_sentences(sentences_js):
     return {w.lower(): s for w, s in re.findall(r'^\s*([A-Za-z]+):\s*"([^"]*)"', text, flags=re.M)}
 
 
+def activity_phrases(activities_js):
+    """Record the fixed writing and tricky-word prompts in activities.js."""
+    text = activities_js.read_text(encoding="utf-8")
+    end_block = re.search(r"const END_MARKS = \[(.*?)\];", text, flags=re.S).group(1)
+    hfw_block = re.search(r"const HFW = \[(.*?)\];", text, flags=re.S).group(1)
+    end_marks = re.findall(r'\["([^"]+)", "([.?!])"\]', end_block)
+    hfw = re.findall(r'\["([^"]+)", "([^"]+)"\]', hfw_block)
+    if len(end_marks) != 18 or len(hfw) != 20:
+        raise ValueError("Activity voice list changed; check its recording keys")
+    jobs = {f"phrases/end-mark-{i}": s + mark for i, (s, mark) in enumerate(end_marks, 1)}
+    jobs.update({f"phrases/hfw-{i}": s.replace("___", word) for i, (s, word) in enumerate(hfw, 1)})
+    return jobs
+
+
 JS_STRING = r'"((?:[^"\\]|\\.)*)"'
 
 
@@ -148,6 +162,7 @@ def plan():
         jobs[f"letters/{c}"] = text
     for key, text in PHRASES.items():
         jobs[f"phrases/{key}"] = text
+    jobs.update(activity_phrases(ROOT / "activities.js"))
     for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
         jobs[f"passages/{pid}"] = story
         # Read-along: each sentence on its own, so pupils can follow at their own speed

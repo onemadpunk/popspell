@@ -518,8 +518,8 @@ window.PopActivities = (() => {
         return choice("Which sentence is written correctly?", s, [lower, s.slice(0, -1)], { label: w, skill: "capital letters and full stops", explain: "A sentence starts with a capital letter and ends with a full stop." });
       }) },
     { id: "w-end-marks", title: "Full stop, question mark or exclamation mark?", level: "First", organiser: WRITE, blurb: "Choose the right mark for the end of each sentence.",
-      make: () => shuffle(END_MARKS).slice(0, 10).map(([s, mark]) => choice(`${s} ___`, mark, [".", "?", "!"].filter(m => m !== mark),
-        { label: s, skill: mark === "?" ? "question marks" : mark === "!" ? "exclamation marks" : "full stops", say: { text: s + mark }, explain: mark === "?" ? "It asks something, so it needs a question mark." : mark === "!" ? "It's said with strong feeling, so it needs an exclamation mark." : "It tells us something, so it needs a full stop." })) },
+      make: () => shuffle(END_MARKS.map(([s, mark], i) => [s, mark, i + 1])).slice(0, 10).map(([s, mark, n]) => choice(`${s} ___`, mark, [".", "?", "!"].filter(m => m !== mark),
+        { label: s, skill: mark === "?" ? "question marks" : mark === "!" ? "exclamation marks" : "full stops", say: { text: s + mark, clip: `audio/phrases/end-mark-${n}.mp3` }, explain: mark === "?" ? "It asks something, so it needs a question mark." : mark === "!" ? "It's said with strong feeling, so it needs an exclamation mark." : "It tells us something, so it needs a full stop." })) },
     { id: "w-joining", title: "Joining words: and, but, because, so", level: "First", organiser: WRITE, blurb: "Choose the best word to join the two parts.",
       make: () => shuffle(JOINING).slice(0, 10).map(([a, b, w]) => choice(`${a} ___ ${b}`, w, ["and", "but", "because", "so"].filter(x => x !== w).slice(0, 2),
         { label: `${a} … ${w}`, skill: `using "${w}"`, explain: `"${a} ${w} ${b}"` })) },
@@ -604,8 +604,8 @@ window.PopActivities = (() => {
   });
   const reading = [
     { id: "r-tricky", title: "Tricky word sentences", level: "Early", organiser: "Literacy · Reading · Tools for reading", blurb: "Choose the tricky word that finishes the sentence.",
-      make: () => shuffle(HFW).slice(0, 10).map(([s, w]) => choice(s, w, shuffle(TRICKY.filter(t => t.toLowerCase() !== w.toLowerCase())).slice(0, 2).map(t => (/^___/.test(s) ? t[0].toUpperCase() + t.slice(1) : t)),
-        { label: w.toLowerCase(), skill: `tricky word "${w.toLowerCase()}"`, say: { text: s.replace("___", w) }, explain: s.replace("___", w) })) }
+      make: () => shuffle(HFW.map(([s, w], i) => [s, w, i + 1])).slice(0, 10).map(([s, w, n]) => choice(s, w, shuffle(TRICKY.filter(t => t.toLowerCase() !== w.toLowerCase())).slice(0, 2).map(t => (/^___/.test(s) ? t[0].toUpperCase() + t.slice(1) : t)),
+        { label: w.toLowerCase(), skill: `tricky word "${w.toLowerCase()}"`, say: { text: s.replace("___", w), clip: `audio/phrases/hfw-${n}.mp3` }, explain: s.replace("___", w) })) }
   ].concat(passageActivities.filter(a => !a.area));
 
   // Decodable stories (stories.js): read alone, sound by sound. The pupil site matches them to
