@@ -2350,7 +2350,7 @@
     4: [0, 1, 5, 6], 5: [0, 1, 2, 3, 4], 6: [0, 1, 2, 5, 6, 7] };
   function canopyFrame(count, size = 10, flash = false) {
     const spots = new Set(flash ? CANOPY_FLASH[count] : Array.from({ length: count }, (_, i) => i));
-    return `<div class="canopy-frame${size === 20 ? " twenty" : ""}" role="img" aria-label="${count} fireflies in a ${size}-frame">
+    return `<div class="canopy-frame${size === 20 ? " twenty" : ""}" role="img" aria-label="${count} ${count === 1 ? "firefly" : "fireflies"} in a ${size}-frame">
       ${Array.from({ length: size }, (_, i) => `<span class="canopy-cell${spots.has(i) ? " lit" : ""}">${spots.has(i) ? "✦" : ""}</span>`).join("")}</div>`;
   }
 
