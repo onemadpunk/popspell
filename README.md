@@ -69,7 +69,7 @@ Stories can also be set as work from the teacher area.
 
 Teachers sign in **on the site** with their Google account (👩‍🏫 **Teacher**, top right). The owner invites each teacher by email. Once signed in, a teacher has:
 
-- **Work library:** search and filter all spelling lists, starting checks, games, dictation, other online work and letter formation without selecting a class or pupil. See the word sound maps, test any online activity as a pupil, and preview every paper sheet type.
+- **Work library:** everything in one place, found by CfE level (Early, First, Second, with P stages), subject (Literacy or Maths), strand (Spelling, Reading, Writing, Number, Time, Fractions and so on) and type, or by search. Starting checks sit at the top under "Find their level". Every card has **Test** (as a pupil, nothing saved), **Assign** (tick pupils in the chosen class, or Everyone) and **Print**: spelling lists use the five spelling sheets; activities, stories and dictation print fresh questions with an answers page, and listening work and dictation get an adult's page with what to read aloud. Games are online only. The filters are remembered on each device.
 - **Classes:** each class has a short code (e.g. `K7P2QX`) and a join link. Open the link once on each pupil's device, or type the code on the home page. Pupils never need accounts.
 - **Live class:** every pupil working right now: their list, how far through, who's finding it hard, and 🙋 **Help** requests. It updates instantly.
 - **Assignments and plans:** choose lists or activities for each pupil or for *Everyone*. Use **Test online** to play through the pupil view before assigning; teacher previews do not save pupil results or change progress.

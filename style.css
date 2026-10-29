@@ -954,7 +954,7 @@ a.me-card:hover { border-color: var(--primary); }
 .t-top .meta { margin: 2px 0 0; }
 .t-role { font-size: .8rem; vertical-align: middle; background: #fff3cf; color: var(--primary); border: 2px solid var(--star); border-radius: 999px; padding: 1px 8px; }
 .t-class { display: flex; align-items: center; gap: 8px; font-weight: 700; }
-.t-class select, .t-wrap select, .t-wrap input[type="text"], .t-wrap input[type="email"], .t-wrap input[type="date"] {
+.t-class select, .t-wrap select, .t-wrap input[type="text"], .t-wrap input[type="search"], .assign-dialog input[type="text"], .t-wrap input[type="email"], .t-wrap input[type="date"] {
   font: inherit; padding: 6px 10px; border: 2px solid var(--line); border-radius: 10px; background: #fff; max-width: 100%;
 }
 .t-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 20px; border-bottom: 2px solid var(--line); padding-bottom: 10px; }
@@ -1177,6 +1177,31 @@ a.me-card:hover { border-color: var(--primary); }
 .library-card details { margin-top: 10px; }
 .library-card summary { cursor: pointer; color: var(--primary); font-weight: 700; }
 .library-card .wordlist { max-height: 260px; overflow: auto; }
+/* Library: level and subject buttons, then a level and type tag on each card */
+.lib-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.lib-seg button { display: grid; align-content: center; justify-items: center; min-width: 96px; padding: 6px 14px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--primary); font: inherit; font-weight: 700; cursor: pointer; }
+.lib-seg button small { font-size: .78rem; font-weight: 600; color: var(--muted); }
+.lib-seg button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.lib-seg button[aria-pressed="true"] small { color: var(--primary-ink); opacity: .85; }
+/* On a phone each row of buttons shares the width evenly */
+@media (max-width: 560px) {
+  .lib-seg { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 4px; }
+  .lib-seg button { min-width: 0; padding: 6px 4px; font-size: .9rem; }
+  .lib-seg button small { font-size: .68rem; white-space: nowrap; }
+  .lib-seg .lib-wide { display: none; }
+  .lib-more label, .lib-more select, .lib-more input { width: 100%; }
+}
+.lib-more label { display: grid; gap: 2px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+.library-card .lib-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; }
+.lib-level, .lib-type { font-size: .78rem; font-weight: 700; border-radius: 999px; padding: 1px 9px; background: #eef0f3; color: var(--muted); }
+.lib-level.lv-early { background: #e3f6ee; color: #11683f; }
+.lib-level.lv-first { background: #e4efff; color: #1d4fa3; }
+.lib-level.lv-second { background: #f3e8ff; color: #6b2fb3; }
+.lib-online { align-self: center; font-size: .85rem; color: var(--muted); }
+.assign-names { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 12px; max-height: 300px; overflow: auto; margin-bottom: 12px; }
+.assign-names .check { margin-top: 8px; }
+.assign-names .check input { width: 20px; height: 20px; }
+.assign-new { display: grid; gap: 4px; font-weight: 700; margin-bottom: 12px; }
 .preview-banner { max-width: 850px; margin: 12px auto; padding: 10px 14px; border: 2px solid var(--accent); border-radius: 14px; background: #fff8d8; color: var(--primary); font-weight: 700; text-align: center; }
 .worksheet-preview { width: min(96vw, 1000px); max-width: none; max-height: 92vh; padding: 0; border: 2px solid var(--line); border-radius: 18px; background: #e8edf5; color: #111; box-shadow: 0 20px 60px #001a4a55; }
 .worksheet-preview::backdrop { background: #00143a99; }
@@ -1205,6 +1230,23 @@ a.me-card:hover { border-color: var(--primary); }
 .sheet-preview-page .ws-row .ws-sep { stroke: #ddd; stroke-width: 1; }
 .sheet-preview-page .ws-sentence { margin-bottom: 8px; }
 .sheet-preview-page .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
+/* Paper versions of activities (preview and print): questions, tick circles, then the adult's page */
+.ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
+.ws-q { break-inside: avoid; margin: 0 0 16px; }
+.ws-q > p { margin: 0 0 6px; font-size: 13pt; }
+.ws-q .q-pic { margin: 4px 0 8px 1.4em; max-height: 130px; width: auto; }
+.ws-q .q-table { margin: 4px 0 8px 1.4em; font-size: 11pt; }
+.ws-options { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-left: 1.4em; font-size: 13pt; }
+.ws-options span { display: inline-flex; align-items: center; gap: 8px; }
+.ws-options i { display: inline-block; width: 18px; height: 18px; border: 2px solid #222; border-radius: 50%; }
+.ws-answer { margin-left: 1.4em; }
+.ws-answer .ws-blank { width: 9em; height: 1.6em; }
+.ws-passage { margin: 0 0 18px; padding: 10px 14px; border: 1px solid #999; border-radius: 8px; font-family: var(--reading-font); font-size: 14pt; line-height: 1.6; }
+.ws-passage h2 { margin: 0 0 6px; font-family: var(--font); font-size: 15pt; }
+.ws-key { break-before: page; }
+.ws-key h2 { font-size: 15pt; }
+.ws-key li { margin-bottom: 6px; }
+.sheet-preview-page .ws-key { margin-top: 28px; padding-top: 16px; border-top: 2px dashed #999; }
 .sheet-preview-page .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
 @media (max-width: 640px) { .sheet-preview-page { width: 100%; margin: 0; padding: 18px; } .work-flow { padding: 14px; } }
 
