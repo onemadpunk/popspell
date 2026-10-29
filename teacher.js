@@ -108,7 +108,7 @@
           <img class="t-pip" src="assets/brand/pip-mascot-small.webp" alt="" width="64" height="64">
           <div class="t-hello">
             <h1>Hello, ${esc(shortName(me.name))}${canAdmin() ? ` <span class="t-role">${roleLabel(me.role)}</span>` : ""}</h1>
-            <p class="meta">${esc(me.email)} · <button class="linklike" id="signOut">Sign out</button></p>
+            <p class="meta">${esc(me.email)} · <a href="help.html" target="_blank" rel="noopener">❓ Help</a> · <button class="linklike" id="signOut">Sign out</button></p>
           </div>
           ${classes.length ? `
             <label class="t-class">Class

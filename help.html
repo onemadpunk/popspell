@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PopSpell · Teacher help</title>
+  <meta name="description" content="How to use PopSpell's teacher area: classes, pupils, assessments, lessons, homework, reports and calendars.">
+  <link rel="icon" href="assets/brand/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=help-1">
+  <style>
+    .help { max-width: 1180px; margin: 0 auto; padding: 8px 16px 48px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
+    .help-toc { position: sticky; top: 104px; background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; max-height: calc(100vh - 130px); overflow: auto; }
+    .help-toc h2 { font-size: 1rem; margin: 0 0 6px; }
+    .help-toc ol { margin: 0; padding-left: 1.3em; line-height: 1.9; }
+    .help-toc a { color: var(--ink); text-decoration: none; font-weight: 700; }
+    .help-toc a:hover { text-decoration: underline; }
+    .help-main { min-width: 0; }
+    .help-hero { display: flex; gap: 18px; align-items: center; background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px 22px; margin-bottom: 18px; box-shadow: var(--shadow); }
+    .help-hero img { flex: none; }
+    .help-hero h1 { margin: 0 0 4px; }
+    .help-hero p { margin: 0; color: var(--muted); }
+    .help-sec { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px 22px 20px; margin-bottom: 18px; scroll-margin-top: 100px; }
+    .help-sec h2 { margin: 0 0 6px; color: var(--primary); }
+    .help-sec h3 { margin: 18px 0 6px; font-size: 1.05rem; }
+    .help-sec p, .help-sec li { line-height: 1.6; }
+    .help-sec ol.help-steps { padding-left: 1.4em; }
+    .help-sec ol.help-steps li { margin-bottom: 6px; }
+    .help-shot { margin: 12px 0 6px; }
+    .help-shot a { display: block; }
+    .help-shot img { display: block; width: 100%; height: auto; border: 2px solid var(--line); border-radius: 14px; box-shadow: 0 6px 18px rgba(11, 46, 107, .08); }
+    .help-shot.narrow img { max-width: 360px; }
+    .help-shot figcaption { color: var(--muted); font-size: .92rem; margin-top: 6px; }
+    .help-tip { background: #fff8e1; border: 2px solid var(--star); border-radius: 14px; padding: 10px 14px; margin: 12px 0; }
+    .help-tip b:first-child { margin-right: 4px; }
+    .help-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: .97rem; }
+    .help-table th, .help-table td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+    .help-table th { background: var(--primary-soft); }
+    .help-faq dt { font-weight: 800; margin-top: 14px; }
+    .help-faq dd { margin: 4px 0 0; line-height: 1.6; }
+    kbd, .ui { font-family: inherit; font-weight: 800; background: var(--primary-soft); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .help-top { display: inline-block; margin-top: 8px; font-size: .9rem; }
+    @media (max-width: 900px) {
+      .help { grid-template-columns: 1fr; }
+      .help-toc { position: static; max-height: none; }
+      .help-hero { flex-direction: column; text-align: center; }
+    }
+    @media print { .help-toc, .topbar, .help-top { display: none; } .help { display: block; } .help-sec { break-inside: avoid-page; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="./" class="brand"><img src="assets/brand/wordmark.png" alt="PopSpell"></a>
+    <nav class="topnav">
+      <a href="./#/teacher" class="navlink">👩‍🏫 Teacher area</a>
+      <a href="./" class="navlink">🏠 PopSpell home</a>
+    </nav>
+  </header>
+
+  <div class="help" id="top">
+    <nav class="help-toc" aria-label="Contents">
+      <h2>Contents</h2>
+      <ol>
+        <li><a href="#start">Getting started</a></li>
+        <li><a href="#classes">Set up a class</a></li>
+        <li><a href="#pupils">Add pupils</a></li>
+        <li><a href="#assessment">Starting assessment</a></li>
+        <li><a href="#live">Teaching live</a></li>
+        <li><a href="#next">Next steps</a></li>
+        <li><a href="#assign">Library and Assign</a></li>
+        <li><a href="#plans">Plans and worksheets</a></li>
+        <li><a href="#diary">Lesson diary</a></li>
+        <li><a href="#home">Home learning and parents</a></li>
+        <li><a href="#reports">Progress and reports</a></li>
+        <li><a href="#parents-night">Parents' night reports</a></li>
+        <li><a href="#calendar">Calendar</a></li>
+        <li><a href="#records">Old records</a></li>
+        <li><a href="#pupil-view">What pupils see</a></li>
+        <li><a href="#faq">Questions and fixes</a></li>
+      </ol>
+    </nav>
+
+    <main class="help-main">
+      <section class="help-hero">
+        <img src="assets/brand/pip-mascot-small.webp" alt="" width="96" height="96">
+        <div>
+          <h1>Teacher help</h1>
+          <p>Everything in PopSpell's teacher area, step by step. The pictures show a demo class with made-up pupils.</p>
+        </div>
+      </section>
+
+      <section class="help-sec" id="start">
+        <h2>1. Getting started</h2>
+        <ol class="help-steps">
+          <li>Go to <a href="./#/teacher">popspell.com/#/teacher</a> (or press <span class="ui">👩‍🏫 Teacher</span> at the top of PopSpell once you've signed in before).</li>
+          <li>Press <span class="ui">Sign in with Google</span> and choose the Google account your invitation was sent to.</li>
+          <li>Pick your class in the <span class="ui">Class</span> box at the top right. Everything below it is for that class.</li>
+        </ol>
+        <p>Pupils never sign in: they type their first name (or a code you give them) on their device.</p>
+        <table class="help-table">
+          <tr><th>Tab</th><th>What it's for</th></tr>
+          <tr><td>📚 Library</td><td>Browse every list, game and activity, and try them as a pupil would.</td></tr>
+          <tr><td>🟢 Live</td><td>See each pupil working during a lesson, and who has asked for help.</td></tr>
+          <tr><td>🧭 Next steps</td><td>Each pupil's next lesson, how they did last time, and a suggestion to plan in one click.</td></tr>
+          <tr><td>📌 Assign</td><td>Choose the work each pupil (or everyone) sees on their device.</td></tr>
+          <tr><td>🗓️ Plans &amp; sheets</td><td>Schedule work for dates, print worksheets, and enter marks from paper.</td></tr>
+          <tr><td>📝 Diary</td><td>Private notes on each lesson and what to do next.</td></tr>
+          <tr><td>👧 Pupils</td><td>The class list, assessments, home logins, parent pages, reports, calendar and records.</td></tr>
+          <tr><td>🏫 Classes</td><td>Make classes, get the class link, and set the accent.</td></tr>
+          <tr><td>👩‍🏫 Teachers</td><td>Site admins only: invite and remove teachers.</td></tr>
+        </table>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="classes">
+        <h2>2. Set up a class</h2>
+        <ol class="help-steps">
+          <li>Open <span class="ui">🏫 Classes</span>, type a name (for example <i>Tuesday 4pm group</i>) and press <span class="ui">＋ Make class</span>.</li>
+          <li>Each class has a <b>class code</b> and a <b>class link</b>. Open the link once on each pupil's device, or have the pupil type the code on PopSpell's home page. The device stays in the class after that.</li>
+          <li>Choose the <b>accent for sounds</b>. <b>Scottish</b> (the default) treats the r as its own sound, so <i>car</i> is c·a·r. <b>English</b> treats ar, er, ir, or and ur as one sound, so <i>car</i> is c·ar. Pupils can't change it.</li>
+          <li>Tick <b>Pupils only see the work I set</b> if you'd like the class's devices to show only the work you assign, not the whole library.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/classes.webp"><img src="assets/help/classes.webp" alt="The Classes tab showing the class code, link, accent and settings" loading="lazy"></a>
+          <figcaption>The Classes tab: class code, link to open on pupils' devices, and the accent setting.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="pupils">
+        <h2>3. Add pupils</h2>
+        <ol class="help-steps">
+          <li>Open <span class="ui">👧 Pupils</span>.</li>
+          <li>Type the pupil's name <b>exactly as they'll type it on their device</b> (first name and an initial, such as <i>Ava M</i>, works well). Add a parent's email if you have one, then press <span class="ui">Add pupil</span>.</li>
+          <li>For a brand-new pupil, press <span class="ui">🌟 New pupil: profile and assessment</span> instead: it adds them and starts their assessment (see <a href="#assessment">section 4</a>).</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/pupils-top.webp"><img src="assets/help/pupils-top.webp" alt="The top of the Pupils tab with buttons for calendar, parents' night reports and new pupils, and the add pupil form" loading="lazy"></a>
+          <figcaption>The top of the Pupils tab.</figcaption></figure>
+        <h3>Each pupil's card</h3>
+        <p>Every pupil has a card with their details. After changing anything, press <span class="ui">Save details</span> at the bottom of the card.</p>
+        <ul>
+          <li><b>Parent email</b> and <b>Parent requested reminders</b>: tick this only if the parent asked for lesson reminders.</li>
+          <li><b>Next lesson</b> and <b>Time</b>: used by Next steps, reminders, the parent page and the calendar.</li>
+          <li><b>Homework list</b>: the list the pupil practises at home, also printed on their homework sheet.</li>
+          <li><b>🏠 Home login</b> and <b>👪 Parent page</b>: see <a href="#home">section 10</a>.</li>
+        </ul>
+        <figure class="help-shot narrow"><a href="assets/help/pupil-card.webp"><img src="assets/help/pupil-card.webp" alt="A pupil's card with parent email, reminders, next lesson, homework, home login and parent page" loading="lazy"></a>
+          <figcaption>A pupil's card (tap to see it full size).</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="assessment">
+        <h2>4. Starting assessment: Pip's Sound Quest</h2>
+        <p>A 15 to 25 minute assessment the child plays as a game: five short islands for listening, reading, a story, spelling and numbers. There are no marks on screen, and each island stops by itself when it gets too hard, so the child is never left struggling.</p>
+        <ol class="help-steps">
+          <li>Press <span class="ui">🌟 New pupil: profile and assessment</span> (or <span class="ui">🌟 Assessment and report</span> on an existing pupil's card).</li>
+          <li><b>About the child:</b> name, year group, parent email, anything to bear in mind (for example dyslexia or tiring quickly) and what they enjoy. Only teachers can see this.</li>
+          <li><b>Pip's Sound Quest:</b> open the link on the device the child will use. It joins your class, signs in as the child and opens Pip's map. Islands can be done across more than one lesson; press <span class="ui">↻ Check again</span> to see which are finished.</li>
+          <li><b>Report and first lessons:</b> read the findings, press <span class="ui">📄 View the assessment report</span> to print it or save a PDF, and <span class="ui">🧭 Plan the first lessons</span> to put the starting lists on the child's schedule.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/quest-step.webp"><img src="assets/help/quest-step.webp" alt="Step 2 of the new pupil window, with the quest link and island progress" loading="lazy"></a>
+          <figcaption>Step 2: the quest link and which islands are done.</figcaption></figure>
+        <figure class="help-shot"><a href="assets/help/assessment-report.webp"><img src="assets/help/assessment-report.webp" alt="The printable starting assessment report" loading="lazy"></a>
+          <figcaption>The starting assessment report, ready to print or save as a PDF.</figcaption></figure>
+        <p class="help-tip"><b>Tip:</b> CfE levels in the report are a starting guide. Confirm them with your own judgement against the benchmarks.</p>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="live">
+        <h2>5. Teaching live</h2>
+        <p>Open <span class="ui">🟢 Live</span> during a lesson. Each pupil who starts work appears straight away, with how far through they are and how many they got right first time.</p>
+        <ul>
+          <li><b>Needs help</b> (orange): the pupil pressed the help button. Press <span class="ui">Done</span> once you've helped.</li>
+          <li><b>Finding it hard</b>: several misses in a row.</li>
+          <li><b>Quiet for a while</b>: nothing for a few minutes.</li>
+        </ul>
+        <figure class="help-shot"><a href="assets/help/live.webp"><img src="assets/help/live.webp" alt="The Live tab with three pupils: one needs help, one working, one finished" loading="lazy"></a>
+          <figcaption>The Live tab during a lesson.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="next">
+        <h2>6. Next steps</h2>
+        <p><span class="ui">🧭 Next steps</span> lists each pupil's next lesson, what's planned, how they did last time, the sounds or skills to work on, and a suggestion that follows the teaching order.</p>
+        <ol class="help-steps">
+          <li>Check the suggestion (for example <i>Move on to ck: 90% right first time on wh</i>).</li>
+          <li>Keep it or choose different work, check the date, and press <span class="ui">Plan it</span>. It goes on the pupil's schedule for that date and becomes their homework list.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/next-steps.webp"><img src="assets/help/next-steps.webp" alt="Next steps cards for three pupils with suggestions and Plan it buttons" loading="lazy"></a>
+          <figcaption>A pink card means nothing is planned yet.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="assign">
+        <h2>7. Library and Assign</h2>
+        <h3>Library</h3>
+        <p><span class="ui">📚 Library</span> has every spelling list, game, reading, writing, listening and number activity, grouped by area and CfE level. Search for a word, sound or skill, and press <span class="ui">▶ Test online</span> to try anything as a pupil, or <span class="ui">👀 Preview paper sheet</span> to see its worksheet. Test runs never save results.</p>
+        <figure class="help-shot"><a href="assets/help/library.webp"><img src="assets/help/library.webp" alt="The Library tab with search and grouped activities" loading="lazy"></a>
+          <figcaption>The Library.</figcaption></figure>
+        <h3>Assign</h3>
+        <ol class="help-steps">
+          <li>Open <span class="ui">📌 Assign</span>.</li>
+          <li>Type a pupil's name (exactly as they type it) or <b>Everyone</b> for the whole class, choose the work, and add it. You can also paste a link from <span class="ui">Make a list</span> for your own words.</li>
+          <li>Use <span class="ui">▶ Test online</span> first if you'd like to check it.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/assign.webp"><img src="assets/help/assign.webp" alt="The Assign tab" loading="lazy"></a>
+          <figcaption>Assigned work appears under "Your lists today" on the pupil's device.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="plans">
+        <h2>8. Plans and worksheets</h2>
+        <ul>
+          <li><b>Schedule work:</b> choose a pupil, a list or activity and the dates it should appear. Test it first if you like.</li>
+          <li><b>Paper worksheets:</b> choose a pupil, list and sheet type, then <span class="ui">👀 Preview sheet</span> and <span class="ui">🖨️ Print / Save PDF</span>. After the child has done it, press <span class="ui">✍️ Enter marks</span> so the results join their progress.</li>
+          <li><b>Letter formation:</b> <span class="ui">Print letter formation (a–z)</span> prints handwriting sheets on four-line ruling.</li>
+          <li><b>Quick game:</b> give one pupil a game for today only.</li>
+        </ul>
+        <figure class="help-shot"><a href="assets/help/plans.webp"><img src="assets/help/plans.webp" alt="The Plans and sheets tab" loading="lazy"></a>
+          <figcaption>Plans &amp; sheets.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="diary">
+        <h2>9. Lesson diary</h2>
+        <ol class="help-steps">
+          <li>Open <span class="ui">📝 Diary</span>, choose the pupil and the lesson date.</li>
+          <li>Press <span class="ui">Use latest result as a starting note</span> if it helps, then write what they practised and what to do next.</li>
+          <li>Choose a next list and date to put it on their schedule automatically, then press <span class="ui">Save diary entry</span>.</li>
+        </ol>
+        <p>Diary notes are private: only teachers and site admins can see them.</p>
+        <figure class="help-shot"><a href="assets/help/diary.webp"><img src="assets/help/diary.webp" alt="The Diary tab" loading="lazy"></a>
+          <figcaption>The lesson diary.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="home">
+        <h2>10. Home learning and parents</h2>
+        <h3>Home login</h3>
+        <p>Each pupil's card has a <b>🏠 Home login</b> link. Opening it once on the child's own device signs it in as that child in your class, so homework, stars and review words carry on at home.</p>
+        <ol class="help-steps">
+          <li>Press <span class="ui">✉️ Email home login</span> on the pupil's card.</li>
+          <li>A ready-made PopSpell email appears. Press <span class="ui">📋 Copy email</span>, then <span class="ui">✉️ Open email app</span>: the parent's address and subject are filled in. Paste the email in and send it.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/home-login-email.webp"><img src="assets/help/home-login-email.webp" alt="The branded home login email, ready to copy" loading="lazy"></a>
+          <figcaption>The home login email. PopSpell never sends email itself, so it costs nothing.</figcaption></figure>
+        <h3>Parent page</h3>
+        <p>Press <span class="ui">Make a parent link</span> on the pupil's card for a private page showing the child's progress, the sounds to practise and your <b>note for home</b>. It updates itself as the child works. Share the link however you like. <span class="ui">Make a new link</span> stops the old one working; <span class="ui">Turn off</span> removes the page.</p>
+        <h3>Lesson reminders</h3>
+        <p>If a parent asked for reminders, tick <b>Parent requested reminders</b> and set the next lesson. The day before, the card shows <span class="ui">Prepare tomorrow's reminder</span>: it makes the email for you to send, with an <b>Add to Google Calendar</b> link for the parent. Print the homework sheet first and attach the PDF if there is one.</p>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="reports">
+        <h2>11. Progress and reports</h2>
+        <p>Further down the <span class="ui">👧 Pupils</span> tab, choose a period in <span class="ui">Show</span> (a week up to everything) to see:</p>
+        <ul>
+          <li>Each pupil's results: lists done, words right, the <b>skills to practise</b> and their recent work.</li>
+          <li>The <b>Curriculum for Excellence overview</b>: each pupil's status in each organiser. <b>Secure</b> means 85% or more right first time on 10 or more questions over 2 or more days; <b>Developing</b> means 60% or more.</li>
+          <li><span class="ui">📄 Progress report</span>: a one-page printable report for the period.</li>
+          <li><span class="ui">⬇ Download every word (spreadsheet)</span>: every word and question, for Excel or Google Sheets.</li>
+        </ul>
+        <figure class="help-shot"><a href="assets/help/results.webp"><img src="assets/help/results.webp" alt="Pupil result cards and the Curriculum for Excellence overview table" loading="lazy"></a>
+          <figcaption>Results cards and the CfE overview.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="parents-night">
+        <h2>12. Parents' night reports</h2>
+        <p>A report covering a whole year (or since the last parents' night), with month-by-month charts, the starting assessment against now, each area's trend, strengths, areas needing further support and next steps.</p>
+        <ol class="help-steps">
+          <li>For one child, press <span class="ui">📅 Parents' night report</span> on their card. For everyone, press <span class="ui">📅 Parents' night reports (whole class)</span> at the top: one child per page.</li>
+          <li>Choose what it covers: <b>this school year</b>, <b>since the last parents' night report</b>, <b>the last 12 months</b> or <b>since a date</b>.</li>
+          <li>Type a teacher's comment, or leave it blank to write by hand.</li>
+          <li>Press <span class="ui">🖨️ Print / Save PDF</span>. Leave <b>save today as the latest report</b> ticked, so next time the report shows what's changed since.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/parents-night-report.webp"><img src="assets/help/parents-night-report.webp" alt="A parents' night report with summary figures, monthly charts and what's changed since the last report" loading="lazy"></a>
+          <figcaption>Part of a parents' night report.</figcaption></figure>
+        <p class="help-tip"><b>Tip:</b> areas shaded pink in "How each area is going" need support or have slipped: a good place to start the conversation.</p>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="calendar">
+        <h2>13. Calendar</h2>
+        <ol class="help-steps">
+          <li>Set each pupil's <b>Next lesson</b> date and time on their card and save.</li>
+          <li>Press <span class="ui">🗓️ Lessons to my calendar</span> at the top of the Pupils tab (or <span class="ui">🗓️ Add to calendar</span> on one card).</li>
+          <li>Choose the lesson length and whether it repeats every week until the summer holidays.</li>
+          <li>Press <span class="ui">🔄 Sync to my Google Calendar</span>. The first time, Google asks your permission. After that, saving a lesson date updates your calendar too.</li>
+        </ol>
+        <p>For Outlook or Apple Calendar, press <span class="ui">⬇ Download</span> and open the file. If a date changes, add it again: the lesson moves instead of appearing twice.</p>
+        <figure class="help-shot"><a href="assets/help/calendar.webp"><img src="assets/help/calendar.webp" alt="The calendar window with lesson length, repeat, Google sync and download" loading="lazy"></a>
+          <figcaption>Lessons to my calendar.</figcaption></figure>
+        <p class="help-tip"><b>"Google hasn't verified this app"?</b> Until Google finishes checking PopSpell's calendar access, press <b>Advanced</b>, then <b>Go to PopSpell</b>, then allow access. This only appears for calendar sync, never for signing in.</p>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="records">
+        <h2>14. Old records and deleting a pupil</h2>
+        <p>PopSpell's <a href="privacy.html">privacy page</a> promises to delete a child's records within 12 months of their last lesson. Once a term:</p>
+        <ol class="help-steps">
+          <li>At the bottom of the Pupils tab, press <span class="ui">Check for records over 12 months old</span>.</li>
+          <li>Anyone with no lessons or results for over a year is shaded and listed first. Press <span class="ui">🗑️ Delete</span> and type the child's name to confirm.</li>
+        </ol>
+        <p>To remove a pupil at any time, press <span class="ui">🗑️ Delete pupil and records</span> on their card. This removes their results, saved progress, plans, lesson notes, parent page, roster details and calendar lesson. <b>It can't be undone.</b></p>
+        <figure class="help-shot"><a href="assets/help/old-records.webp"><img src="assets/help/old-records.webp" alt="The Old records section" loading="lazy"></a>
+          <figcaption>The Old records check.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="pupil-view">
+        <h2>15. What pupils see</h2>
+        <ul>
+          <li><b>Home page:</b> Pip welcomes them, shows their journey through the sound stages, their work for today, review words, My sounds, My bests and their stories.</li>
+          <li><b>Listening and spelling:</b> the word is shown while it's spoken, then hidden while they type it.</li>
+          <li><b>Reading aloud:</b> pupils choose 🐢 Slow, 🙂 Steady or 🐇 Normal so they can read along. Each sentence is highlighted as it's read.</li>
+          <li><b>Games</b> such as Sound Hopper, Sound Switch and Counting Canopy, with glow seeds to build <b>Pip's Forest</b>.</li>
+          <li><b>Pip's Sound Quest</b> for the starting assessment.</li>
+        </ul>
+        <figure class="help-shot"><a href="assets/help/pupil-home.webp"><img src="assets/help/pupil-home.webp" alt="A pupil's home page with Pip and the journey" loading="lazy"></a>
+          <figcaption>A pupil's home page.</figcaption></figure>
+        <figure class="help-shot"><a href="assets/help/pupil-quest.webp"><img src="assets/help/pupil-quest.webp" alt="Pip's Sound Quest island map" loading="lazy"></a>
+          <figcaption>Pip's Sound Quest.</figcaption></figure>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
+      <section class="help-sec" id="faq">
+        <h2>16. Questions and fixes</h2>
+        <dl class="help-faq">
+          <dt>A pupil's results aren't showing.</dt>
+          <dd>Check their name on the device matches the roster exactly, and that the device has joined your class (the home page says "this device has joined ✓"). Opening their <b>home login</b> link on the device fixes both.</dd>
+          <dt>A pupil's stars and progress are missing at home.</dt>
+          <dd>Send the <b>home login</b> email and open the link once on the home device. Progress then follows the child between devices.</dd>
+          <dt>"You haven't been invited yet."</dt>
+          <dd>You're signed in with a different Google account from the one invited. Sign out and choose the invited account, or ask a site admin to invite this one in <b>Teachers</b>.</dd>
+          <dt>I changed something and can't see it.</dt>
+          <dd>Refresh the page. On a pupil's device, close PopSpell and open it again.</dd>
+          <dt>The voice is too fast for reading along.</dt>
+          <dd>The pupil presses 🐢 Slow above the story. It's remembered on that device.</dd>
+          <dt>Does any of this cost anything?</dt>
+          <dd>No. PopSpell is free, emails are sent from your own account, and the calendar uses your own Google Calendar.</dd>
+          <dt>Something's wrong or confusing.</dt>
+          <dd>Use <b>Report a problem</b> at the bottom of any PopSpell page.</dd>
+        </dl>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>PopSpell by <b>onemadpunk</b> ·
+      <a href="mailto:onemadpunk+popspell@gmail.com?subject=PopSpell%20%E2%80%94%20problem%20report">Report a problem</a> ·
+      <a href="privacy.html">Privacy</a></p>
+  </footer>
+</body>
+</html>

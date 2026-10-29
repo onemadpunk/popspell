@@ -1008,7 +1008,7 @@ a.me-card:hover { border-color: var(--primary); }
 .sound-chip { display: inline-block; background: var(--oops-soft); color: var(--oops); border: 2px solid var(--oops); border-radius: 999px; padding: 0 9px; margin: 0 4px 4px 0; font-weight: 700; }
 .recent { margin: 8px 0 0; padding: 0; list-style: none; font-size: .9rem; color: var(--muted); }
 .t-code { font-size: 2rem; font-weight: 700; letter-spacing: .15em; margin: 4px 0; color: var(--primary); }
-.t-link { flex: 1; min-width: 0; font-size: .9rem !important; }
+.t-link { flex: 1 1 100%; min-width: 0; font-size: .9rem !important; } /* its own row, so the link can be read */
 .t-plancard .add-row { margin: 8px 0; }
 .t-plancard .add-row label { display: grid; gap: 2px; font-size: .85rem; color: var(--muted); }
 .t-plancard .row { flex-wrap: wrap; gap: 6px; }

@@ -1276,8 +1276,9 @@
   function awardForestClearing(s) {
     if (s.preview) return;
     s.forestRunId ||= `canopy-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-    const clearingId = `${s.forestRunId}-${s.i + 1}`;
-    saveForestState(FOREST.award(forestState(), clearingId, 1));
+    // One entry per game, counting its clearings, so saved progress stays small. Seeds from
+    // older one-per-clearing entries still count.
+    saveForestState(FOREST.award(forestState(), s.forestRunId, s.i + 1));
   }
 
   function renderForestCollection(root, preview = false, notice = "") {
@@ -1780,8 +1781,9 @@
   // Pupils choose the speed themselves, so they can read along rather than be read to.
   // It's remembered on the device.
   // Stretching the recording makes it muddy. Slow keeps Eponine at her natural pace
-  // and gives the pupil a longer pause between sentences instead.
-  const READ_SPEEDS = [["slow", 1, "🐢 Slow"], ["steady", 0.94, "🙂 Steady"], ["normal", 1, "🐇 Normal"]];
+  // and gives the pupil a longer pause between sentences instead. A device voice is made on the
+  // spot, so it can slow down cleanly: that's the last number.
+  const READ_SPEEDS = [["slow", 1, "🐢 Slow", 0.65], ["steady", 0.94, "🙂 Steady", 0.8], ["normal", 1, "🐇 Normal", 1]];
   const READ_KEY = "popspell-read-speed";
   const readSpeed = () => {
     let key = "";
@@ -1798,15 +1800,15 @@
   async function readAlong(p, box, from = 0) {
     const run = ++readRun;
     const my = phase; // moving to another screen ends the reading too
-    const [mode, speed] = readSpeed();
+    const [mode, speed, , deviceSpeed] = readSpeed();
     const parts = sentencesOf(p.text);
     const mark = n => box && box.querySelectorAll(".ra-s").forEach(el => el.classList.toggle("reading", Number(el.dataset.s) === n));
     for (let n = from; n < parts.length; n++) {
       if (run !== readRun || my !== phase) return;
       mark(n);
       const ok = !useRecorded()
-        ? await speak(parts[n], settings.rate * speed)
-        : await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * speed, speed);
+        ? await speak(parts[n], settings.rate * deviceSpeed)
+        : await orSpeak([sentenceClipOf(p, n)], parts[n], settings.rate * deviceSpeed, speed);
       if (run !== readRun || my !== phase || ok === null) return;
       await new Promise(r => setTimeout(r, mode === "slow" ? 1100 : mode === "steady" ? 450 : 300));
     }
