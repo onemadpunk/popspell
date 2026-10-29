@@ -234,9 +234,11 @@
 
   /* ---------- Recorded voice (Pocket TTS "eponine", made by tools/make_audio.py) ---------- */
 
-  const RECORDED = Object.assign({ words: [], letters: false, phrases: [], sentences: [] }, window.POPSPELL_AUDIO);
+  const RECORDED = Object.assign({ words: [], letters: false, phrases: [], sentences: [], lines: [], numbers: [], aliases: {} }, window.POPSPELL_AUDIO);
   const recWords = new Set(RECORDED.words);
   const recPhrases = new Set(RECORDED.phrases);
+  const recLines = new Set(RECORDED.lines);
+  const recNumbers = new Set(RECORDED.numbers);
   const recSentences = new Set(RECORDED.sentences);
   const RECORDED_ID = "alba"; // the saved setting's name from before; kept so devices keep their choice
   const useRecorded = () => recWords.size > 0;
@@ -291,7 +293,31 @@
   const hasLetterClips = text => useRecorded() && RECORDED.letters && /^[a-z]+$/i.test(text);
   const letterSteps = text => text.toLowerCase().split("").flatMap((c, n) => (n ? [150, `audio/letters/${c}.mp3`] : [`audio/letters/${c}.mp3`]));
 
-  const sayWord = w => (hasWordClip(w) ? orSpeak([wordClip(w)], w) : speak(w));
+  // Any line in Eponine's voice, joined from its recorded pieces (see speech-text.js): the
+  // device voice only says it if a piece hasn't been recorded (a child's name, a teacher's own word)
+  function lineSteps(text) {
+    const parts = window.PopSpeech.pieces(text);
+    if (!parts || !parts.length) return null;
+    const steps = [];
+    for (const part of parts) {
+      if (steps.length) steps.push(120);
+      if (part.text) {
+        // Its own recording, or an older one that says the same words
+        const clip = recLines.has(part.key) ? `lines/${part.key}` : RECORDED.aliases[part.key];
+        if (!clip) return null;
+        steps.push(`audio/${clip}.mp3`);
+      } else {
+        for (const [i, n] of part.number.entries()) {
+          if (!recNumbers.has(n)) return null;
+          if (i) steps.push(30);
+          steps.push(`audio/numbers/${n}.mp3`);
+        }
+      }
+    }
+    return steps;
+  }
+  const sayLine = text => { const steps = useRecorded() && lineSteps(text); return steps ? orSpeak(steps, text) : speak(text); };
+  const sayWord = w => (hasWordClip(w) ? orSpeak([wordClip(w)], w) : sayLine(w));
   const sayLetters = text => (hasLetterClips(text) ? orSpeak(letterSteps(text), letterNames(text)) : speak(letterNames(text)));
   const sayPhrase = ([key, text]) => (useRecorded() && recPhrases.has(key) ? orSpeak([`audio/phrases/${key}.mp3`], text) : speak(text));
   function saySOS(item) {
@@ -952,11 +978,10 @@
     }
     return pipKeys.get(text) || pipKeys.get(text.replace(/^Hi [^!]{1,40}! /, "Hi! "));
   }
-  // Emoji aren't read out: 🔊 becomes "the speaker", the rest are dropped
-  const forSpeech = text => text.replace(/🔊/g, "the speaker").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, "").replace(/\s+/g, " ").trim();
+  const { forSpeech, speakable } = window.PopSpeech; // shared with tools/activity_lines.mjs
   function sayPip(text) {
     const key = pipKeyFor(text);
-    return key ? sayPhrase([key, forSpeech(text)]) : speak(forSpeech(text));
+    return key ? sayPhrase([key, forSpeech(text)]) : sayLine(forSpeech(text));
   }
   const bubbleText = el => el.textContent.replace(/\s+/g, " ").trim();
   let pipSaid = "";
@@ -1829,17 +1854,10 @@
   }
 
   // Plays a question's sound: a recorded word, a recording (with the device voice as back-up), or text
-  // How a written question sounds read out: symbols become words, so "3 + ? = 10" is
-  // "3 add what equals 10"
-  const speakable = text => String(text || "")
-    .replace(/_{2,}/g, " blank ").replace(/(^|\s)\?(?=\s|$|\/)/g, "$1what")
-    .replace(/×/g, " times ").replace(/÷/g, " divided by ").replace(/−/g, " take away ").replace(/\+/g, " add ")
-    .replace(/=\s*$/, " makes what?").replace(/=/g, " equals ").replace(/(\d)\/(\d)/g, "$1 over $2")
-    .replace(/\s+/g, " ").trim();
   // Every question is read out, so a child who can't read yet can still answer it
   const questionSay = q => q.say || (q.prompt ? { text: speakable(q.prompt) } : null);
   // An answer choice read out: a recorded word where there is one
-  const sayOption = o => (/\s/.test(o) ? speak(speakable(o)) : sayWord(o));
+  const sayOption = o => (/\s/.test(o) || !hasWordClip(o) ? sayLine(speakable(o)) : sayWord(o));
 
   function sayQuestion(q) {
     if (!q.say) return Promise.resolve();
@@ -1849,7 +1867,7 @@
       return hasWordClip(q.say.word) ? orSpeak(intro.concat(wordClip(q.say.word)), q.say.word) : sayWord(q.say.word);
     }
     if (q.say.clip) return orSpeak([q.say.clip], q.say.text || "");
-    return speak(q.say.text);
+    return sayLine(q.say.text);
   }
   /* ---------- Reading aloud: one sentence at a time, at the pupil's own speed ---------- */
 
@@ -1954,7 +1972,7 @@
     if (q.kind === "canopy") return showCountingCanopy(q);
     if (!q.say) q.say = questionSay(q);
     // Answers made of words can be heard too (not bare numbers or punctuation)
-    const hearOptions = q.kind === "choice" && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
+    const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
     const wrong = [];
     let missed = [];
     const passage = act.passage;
@@ -2008,7 +2026,7 @@
       if (correct) chimeRight(); else chimeWrong();
       // Said as well as shown: praise, or the answer and why
       later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
-        : speak(forSpeech(`The answer is ${speakable(q.answer)}. ${q.kind === "dictation" ? "" : q.explain || ""}`))), 350);
+        : sayLine(window.PopSpeech.answerLine(q))), 350);
       app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
       next.className = "row center";
@@ -2809,7 +2827,7 @@
     const spelling = session.check === "spelling";
     const quest = session.quest;
     if (!spelling && !q.say) q.say = questionSay(q); // read out, as in every activity
-    const hearOptions = q.kind === "choice" && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
+    const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
     app.innerHTML = `
       <section class="panel practice activity${quest ? " quest-q" : ""}" style="--accent:${esc(session.list.accent)}">
         ${previewBanner()}

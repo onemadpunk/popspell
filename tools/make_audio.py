@@ -35,6 +35,13 @@ APPROVED = set()
 # Letter names, as the voice reads them best
 LETTERS = {c: f"{c.upper()}." for c in "abcdefghijklmnopqrstuvwxyz"}
 
+# Number words, joined to say any number: keep in step with NUMBER_WORDS in speech-text.js
+NUMBER_WORDS = dict(enumerate(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+                               "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]))
+NUMBER_WORDS.update({(i + 2) * 10: w for i, w in enumerate(["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"])})
+NUMBER_WORDS = {str(k): v for k, v in NUMBER_WORDS.items()}
+NUMBER_WORDS.update({"hundred": "hundred", "thousand": "thousand", "and": "and", "point": "point"})
+
 # Keep in step with PHRASES in app.js
 PHRASES = {
     "well-done": "Well done!",
@@ -166,6 +173,14 @@ def split_sentences(text):
     return [p.strip() for p in parts if p.strip()] or [text.strip()]
 
 
+ALIASES = {}  # lines/<key> said by an older recording: {key: "sentences/ran"}
+
+
+def said(text):
+    """The words alone, as said() in speech-text.js: capitals and punctuation don't count."""
+    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9' ]", "", text.lower())).strip()
+
+
 def plan():
     """Every recording the site needs: {"words/cake": text}."""
     jobs = {}
@@ -178,6 +193,21 @@ def plan():
     for key, text in PHRASES.items():
         jobs[f"phrases/{key}"] = text
     jobs.update(activity_phrases(ROOT / "activities.js"))
+    # Everything else the activities say (tools/activity_lines.mjs lists it), and the number
+    # words sums are built from (speech-text.js)
+    # A piece Eponine already says in another recording (a list sentence, a phrase, a story
+    # question) isn't recorded again: the site plays that recording instead (ALIASES)
+    lines = ROOT / "tools" / "lines.json"
+    already = {said(text): key for key, text in jobs.items()}
+    ALIASES.clear()
+    if lines.exists():
+        for key, text in json.loads(lines.read_text(encoding="utf-8")).items():
+            if said(text) in already:
+                ALIASES[key] = already[said(text)]
+            else:
+                jobs[f"lines/{key}"] = text
+    for key, text in NUMBER_WORDS.items():
+        jobs[f"numbers/{key}"] = text
     for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
         jobs[f"passages/{pid}"] = story
         # Read-along: each sentence on its own, so pupils can follow at their own speed
@@ -248,6 +278,14 @@ def main():
                 MADE.write_text(json.dumps(made, indent=0, sort_keys=True, ensure_ascii=False), encoding="utf-8")
         MADE.write_text(json.dumps(made, indent=0, sort_keys=True, ensure_ascii=False), encoding="utf-8")
 
+    # Pieces the activities no longer say are removed (only in lines/, which is all generated)
+    wanted_lines = {key.split("/", 1)[1] for key in plan() if key.startswith("lines/")}
+    for old in (AUDIO / "lines").glob("*.mp3"):
+        if old.stem not in wanted_lines:
+            old.unlink()
+            made.pop(f"lines/{old.stem}", None)
+    MADE.write_text(json.dumps(made, indent=0, sort_keys=True, ensure_ascii=False), encoding="utf-8")
+
     # Tell the website which recordings exist, so it never waits on a missing file
     stems = lambda folder: sorted(p.stem for p in (AUDIO / folder).glob("*.mp3"))
     manifest = {
@@ -256,6 +294,9 @@ def main():
         "letters": len(stems("letters")) == len(LETTERS),
         "phrases": stems("phrases"),
         "sentences": stems("sentences"),
+        "lines": stems("lines"),
+        "numbers": stems("numbers"),
+        "aliases": {key: target for key, target in sorted(ALIASES.items()) if (AUDIO / f"{target}.mp3").exists()},
     }
     AUDIO.mkdir(exist_ok=True)
     (AUDIO / "index.js").write_text(

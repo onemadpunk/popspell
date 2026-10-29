@@ -310,7 +310,8 @@ window.PopActivities = (() => {
       }) },
     { id: "n-big-add", title: "Adding and taking away bigger numbers", level: "Second", organiser: NUM, blurb: "Add and subtract three-digit numbers.",
       make: () => distinct(10, () => {
-        const a = rand(500) + 100, b = rand(399) + 100;
+        let a, b;
+        do { a = rand(500) + 100; b = rand(399) + 100; } while (Math.abs(a - b) < 50); // no "128 − 128"
         if (rand(2)) return typed(`${a} + ${b} =`, a + b, { label: `${a} + ${b}`, skill: "adding 3-digit numbers", explain: `Add the hundreds, tens and ones: ${a} + ${b} = ${a + b}.` });
         const [x, y] = a > b ? [a, b] : [b, a];
         return typed(`${x} − ${y} =`, x - y, { label: `${x} − ${y}`, skill: "subtracting 3-digit numbers", explain: `${x} − ${y} = ${x - y}. Check: ${x - y} + ${y} = ${x}.` });
@@ -523,11 +524,11 @@ window.PopActivities = (() => {
     { id: "w-capitals", title: "Capital letters and full stops", level: "Early", organiser: WRITE, blurb: "Which sentence is written correctly?",
       make: () => shuffle(sentencesFor()).filter(([, s]) => /\.$/.test(s) && s.split(" ").length >= 4).slice(0, 10).map(([w, s]) => {
         const lower = s[0].toLowerCase() + s.slice(1);
-        return choice("Which sentence is written correctly?", s, [lower, s.slice(0, -1)], { label: w, skill: "capital letters and full stops", explain: "A sentence starts with a capital letter and ends with a full stop." });
+        return choice("Which sentence is written correctly?", s, [lower, s.slice(0, -1)], { label: w, sayOptions: false, skill: "capital letters and full stops", explain: "A sentence starts with a capital letter and ends with a full stop." });
       }) },
     { id: "w-end-marks", title: "Full stop, question mark or exclamation mark?", level: "First", organiser: WRITE, blurb: "Choose the right mark for the end of each sentence.",
       make: () => shuffle(END_MARKS.map(([s, mark], i) => [s, mark, i + 1])).slice(0, 10).map(([s, mark, n]) => choice(`${s} ___`, mark, [".", "?", "!"].filter(m => m !== mark),
-        { label: s, skill: mark === "?" ? "question marks" : mark === "!" ? "exclamation marks" : "full stops", say: { text: s + mark, clip: `audio/phrases/end-mark-${n}.mp3` }, explain: mark === "?" ? "It asks something, so it needs a question mark." : mark === "!" ? "It's said with strong feeling, so it needs an exclamation mark." : "It tells us something, so it needs a full stop." })) },
+        { label: s, sayOptions: false, skill: mark === "?" ? "question marks" : mark === "!" ? "exclamation marks" : "full stops", say: { text: s + mark, clip: `audio/phrases/end-mark-${n}.mp3` }, explain: mark === "?" ? "It asks something, so it needs a question mark." : mark === "!" ? "It's said with strong feeling, so it needs an exclamation mark." : "It tells us something, so it needs a full stop." })) },
     { id: "w-joining", title: "Joining words: and, but, because, so", level: "First", organiser: WRITE, blurb: "Choose the best word to join the two parts.",
       make: () => shuffle(JOINING).slice(0, 10).map(([a, b, w]) => choice(`${a} ___ ${b}`, w, ["and", "but", "because", "so"].filter(x => x !== w).slice(0, 2),
         { label: `${a} … ${w}`, skill: `using "${w}"`, explain: `"${a} ${w} ${b}"` })) },

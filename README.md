@@ -189,7 +189,14 @@ pip install pocket-tts lameenc
 python tools/make_audio.py
 ```
 
-Words in **Make a list** links that aren't in any list use the device's own voice.
+**Activities are read out by Eponine too.** Every question, answer choice and explanation is recorded: lines without numbers whole, and lines with numbers joined from recorded pieces and number words (583 is *five · hundred · and · eighty · three*), following the rules in [`speech-text.js`](speech-text.js). `tools/activity_lines.mjs` lists every piece the activities can say into `tools/lines.json`, and `make_audio.py` records them; the action does both whenever `activities.js` changes. To do it by hand:
+
+```
+node tools/activity_lines.mjs
+python tools/make_audio.py
+```
+
+The device's own voice is only used for what can't be recorded in advance: a child's name, and words in **Make a list** links that aren't in any list.
 
 **Checking the recordings:** open **popspell.com/listen.html** (also linked from Settings). Play each word, sentence and letter, mark any that sound wrong with a note, then copy the list. Those words get fixed in `tools/make_audio.py`: either a new take (`--only crash`), or a different way of writing it for the voice in `WORD_FIXES`. Takes approved by ear go in `APPROVED`, so they're never replaced.
 
