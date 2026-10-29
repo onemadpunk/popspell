@@ -203,7 +203,7 @@
     fillVoiceSelect();
   }
 
-  const currentVoice = () => voices.find(v => v.voiceURI === settings.voice) || voices[0] || null;
+  const currentVoice = () => voices[0] || null;
 
   // Resolves when speaking finishes (or after a safety timeout, as some browsers never fire onend)
   function speak(text, rate = settings.rate) {
@@ -239,7 +239,7 @@
   const recPhrases = new Set(RECORDED.phrases);
   const recSentences = new Set(RECORDED.sentences);
   const RECORDED_ID = "alba"; // the saved setting's name from before; kept so devices keep their choice
-  const useRecorded = () => recWords.size > 0 && (settings.voice === RECORDED_ID || !settings.voice);
+  const useRecorded = () => recWords.size > 0;
 
   // One shared player: iPads only allow sound from an element that first played during a tap
   const player = new Audio();
@@ -3102,11 +3102,9 @@
   function fillVoiceSelect() {
     const sel = $("#setVoice");
     if (!sel) return;
-    const recorded = recWords.size ? `<option value="${RECORDED_ID}">Eponine (recorded, recommended)</option>` : "";
-    const device = voices.map(v => `<option value="${esc(v.voiceURI)}">${esc(v.name)} (${esc(v.lang)})</option>`).join("");
-    sel.innerHTML = recorded + device || `<option value="">No voices found</option>`;
-    if (useRecorded()) sel.value = RECORDED_ID;
-    else if (currentVoice()) sel.value = currentVoice().voiceURI;
+    sel.innerHTML = `<option value="${RECORDED_ID}">Eponine (recorded)</option>`;
+    sel.value = RECORDED_ID;
+    sel.disabled = true;
   }
 
   function openSettings() {
@@ -3134,7 +3132,6 @@
   }
 
   $("#settingsBtn").onclick = openSettings;
-  $("#setVoice").onchange = e => { settings.voice = e.target.value; saveSettings(); sayWord("cake"); };
   $("#setRate").onchange = e => { settings.rate = Number(e.target.value); saveSettings(); };
   $("#setTries").onchange = e => { settings.tries = Number(e.target.value); saveSettings(); };
   $("#setShuffle").onchange = e => { settings.shuffle = e.target.checked; saveSettings(); };
