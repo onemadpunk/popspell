@@ -1449,6 +1449,9 @@
 
   // Curriculum labels, tips and word counts are for teachers; pupils get Pip and one big button
   const forTeacher = () => previewMode || teacherUnlocked();
+  // Number sets run from easy to hard, so a starting check takes questions from the middle:
+  // typical of the level, not just its easiest
+  const typical = (qs, n) => { const from = Math.max(0, Math.floor((qs.length - n) / 2)); return qs.slice(from, from + n); };
   const checksFor = list => (settings.checks ? list.checks || [] : []);
 
   /* ---------- Practice ---------- */
@@ -1785,7 +1788,7 @@
         ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>` : ""}
         <h1>${act.icon ? `<span aria-hidden="true">${act.icon}</span> ` : ""}${esc(act.title)}</h1>
         ${forTeacher() ? `<p class="tip">${esc(act.blurb)}</p>` : ""}
-        ${act.id === "g-canopy-run" ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
+        ${/^g-canopy-run/.test(act.id) ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>
           <span>Catch lights ✦ · Cross rivers 🌉 · Find hidden friends 🍃 · Choose the path ↗</span>
           <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
           : /^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌟 Focused number practice with Pip</strong>
@@ -2605,8 +2608,9 @@
         <div class="canopy-choices" id="canopyChoices" role="group" aria-label="How many are hiding?"></div>`;
       choices(q.options, n => String(n), `Count on from ${q.visible} to ${q.total}. How many more?`, true);
     } else {
-      work.innerHTML = `<div class="canopy-groups compare"><div><h2>Owl's tree</h2>${canopyFrame(q.left)}</div>
-        <div><h2>Fox's tree</h2>${canopyFrame(q.right)}</div></div>
+      const frame = Math.max(q.left, q.right) > 10 ? 20 : 10; // teen numbers get a twenty-frame
+      work.innerHTML = `<div class="canopy-groups compare"><div><h2>Owl's tree</h2>${canopyFrame(q.left, frame)}</div>
+        <div><h2>Fox's tree</h2>${canopyFrame(q.right, frame)}</div></div>
         <div class="canopy-choices" id="canopyChoices" role="group" aria-label="Compare the two groups"></div>`;
       choices(q.options, v => ({ left: "Owl has more", same: "The same", right: "Fox has more" })[v],
         "Look again. Line up the fireflies in both groups and see which has extras.");
@@ -2741,7 +2745,7 @@
     let gaps = 0;
     for (const act of numberOrder()) {
       let missed = false;
-      for (const q of act.make().slice(0, 2)) {
+      for (const q of typical(act.make(), 2)) {
         yield Object.assign({ spelling: q.label, tokens: [] }, q, { from: act.id });
         if (!results[results.length - 1].correct) missed = true;
       }
@@ -2938,7 +2942,7 @@
     const A = window.PopActivities;
     for (const id of ["l-rhyme", "l-first-sound", "l-count-sounds"]) {
       const act = A && A.get(id);
-      if (act) for (const q of act.make().slice(0, 3)) yield Object.assign({ spelling: q.label, tokens: [] }, q, { from: id });
+      if (act) for (const q of typical(act.make(), 3)) yield Object.assign({ spelling: q.label, tokens: [] }, q, { from: id });
     }
   }
 

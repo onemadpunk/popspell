@@ -77,21 +77,29 @@ window.PopActivities = (() => {
     { id: "n-add-10", title: "Adding within 10", level: "Early", organiser: NUM, blurb: "Add two small numbers.",
       make: () => distinct(10, () => { const a = rand(8) + 1, b = rand(10 - a) + 1; return typed(`${a} + ${b} =`, a + b, { label: `${a} + ${b}`, skill: "adding within 10", explain: `${a} and ${b} make ${a + b}.` }); }) },
     { id: "n-sub-10", title: "Taking away within 10", level: "Early", organiser: NUM, blurb: "Take away from numbers up to 10.",
-      make: () => distinct(10, () => { const a = rand(9) + 2, b = rand(a) + 1; return typed(`${a} − ${b} =`, a - b, { label: `${a} − ${b}`, skill: "subtracting within 10", explain: `${a} take away ${b} leaves ${a - b}.` }); }) },
+      make: () => distinct(10, () => { const a = rand(9) + 2, b = rand(a - 1) + 1; return typed(`${a} − ${b} =`, a - b, { label: `${a} − ${b}`, skill: "subtracting within 10", explain: `${a} take away ${b} leaves ${a - b}.` }); }) },
     { id: "n-bonds-10", title: "Number bonds to 10", level: "First", organiser: NUM, blurb: "Which number makes 10?",
-      make: () => shuffle(range(0, 10)).slice(0, 10).map(a => typed(`${a} + ? = 10`, 10 - a, { label: `${a} + ? = 10`, skill: "bonds to 10", explain: `${a} and ${10 - a} make 10.` })) },
+      make: () => shuffle(range(1, 9)).map(a => typed(`${a} + ? = 10`, 10 - a, { label: `${a} + ? = 10`, skill: "bonds to 10", explain: `${a} and ${10 - a} make 10.` })) },
     { id: "n-bonds-20", title: "Number bonds to 20", level: "First", organiser: NUM, blurb: "Which number makes 20?",
       make: () => shuffle(range(1, 19)).slice(0, 10).map(a => typed(`${a} + ? = 20`, 20 - a, { label: `${a} + ? = 20`, skill: "bonds to 20", explain: `${a} and ${20 - a} make 20.` })) },
     { id: "n-add-20", title: "Adding within 20", level: "First", organiser: NUM, blurb: "Add numbers with answers up to 20.",
-      make: () => distinct(10, () => { const a = rand(12) + 3, b = rand(20 - a) + 1; return typed(`${a} + ${b} =`, a + b, { label: `${a} + ${b}`, skill: "adding within 20", explain: `${a} + ${b} = ${a + b}.` }); }) },
+      make: () => distinct(10, () => {
+        const bridge = rand(10) < 6;
+        const a = bridge ? rand(5) + 5 : rand(5) + 11;                    // 5–9, or 11–15
+        const b = bridge ? rand(a - 1) + (11 - a) : rand(19 - a) + 2;     // crosses ten, or stays in the teens
+        return typed(`${a} + ${b} =`, a + b, { label: `${a} + ${b}`, skill: "adding within 20", explain: `${a} + ${b} = ${a + b}.` }); }) },
     { id: "n-sub-20", title: "Taking away within 20", level: "First", organiser: NUM, blurb: "Subtract from numbers up to 20.",
-      make: () => distinct(10, () => { const a = rand(10) + 11, b = rand(a - 1) + 1; return typed(`${a} − ${b} =`, a - b, { label: `${a} − ${b}`, skill: "subtracting within 20", explain: `${a} − ${b} = ${a - b}.` }); }) },
+      make: () => distinct(10, () => {
+        const bridge = rand(10) < 6;
+        const a = bridge ? rand(8) + 11 : rand(7) + 13;                   // 11–18, or 13–19
+        const b = bridge ? rand(19 - a) + (a - 9) : rand(a - 11) + 1;     // the answer drops below ten, or stays a teen
+        return typed(`${a} − ${b} =`, a - b, { label: `${a} − ${b}`, skill: "subtracting within 20", explain: `${a} − ${b} = ${a - b}.` }); }) },
     { id: "n-doubles", title: "Doubles and halves", level: "First", organiser: NUM, blurb: "Double a number, or find half.",
-      make: () => distinct(10, () => { const n = rand(10) + 1; return rand(2) ? typed(`Double ${n} =`, n * 2, { label: `double ${n}`, skill: "doubling", explain: `${n} + ${n} = ${n * 2}.` }) : typed(`Half of ${n * 2} =`, n, { label: `half of ${n * 2}`, skill: "halving", explain: `${n} + ${n} = ${n * 2}, so half of ${n * 2} is ${n}.` }); }) },
+      make: () => distinct(10, () => { const n = rand(9) + 2; return rand(2) ? typed(`Double ${n} =`, n * 2, { label: `double ${n}`, skill: "doubling", explain: `${n} + ${n} = ${n * 2}.` }) : typed(`Half of ${n * 2} =`, n, { label: `half of ${n * 2}`, skill: "halving", explain: `${n} + ${n} = ${n * 2}, so half of ${n * 2} is ${n}.` }); }) },
     { id: "n-tables-2-5-10", title: "2, 5 and 10 times tables", level: "First", organiser: NUM, blurb: "Multiplication facts for 2, 5 and 10.",
-      make: () => distinct(10, () => { const t = pick([2, 5, 10]), n = rand(12) + 1; return typed(`${n} × ${t} =`, n * t, { label: `${n} × ${t}`, skill: `${t} times table`, explain: `${n} lots of ${t} = ${n * t}.` }); }) },
+      make: () => distinct(10, () => { const t = pick([2, 5, 10]), n = rand(11) + 2; return typed(`${n} × ${t} =`, n * t, { label: `${n} × ${t}`, skill: `${t} times table`, explain: `${n} lots of ${t} = ${n * t}.` }); }) },
     { id: "n-tables-3-4", title: "3 and 4 times tables", level: "First", organiser: NUM, blurb: "Multiplication facts for 3 and 4.",
-      make: () => distinct(10, () => { const t = pick([3, 4]), n = rand(12) + 1; return typed(`${n} × ${t} =`, n * t, { label: `${n} × ${t}`, skill: `${t} times table`, explain: `${n} lots of ${t} = ${n * t}.` }); }) },
+      make: () => distinct(10, () => { const t = pick([3, 4]), n = rand(11) + 2; return typed(`${n} × ${t} =`, n * t, { label: `${n} × ${t}`, skill: `${t} times table`, explain: `${n} lots of ${t} = ${n * t}.` }); }) },
     { id: "n-tables-6-9", title: "6, 7, 8 and 9 times tables", level: "Second", organiser: NUM, blurb: "The trickier tables.",
       make: () => distinct(10, () => { const t = pick([6, 7, 8, 9]), n = rand(11) + 2; return typed(`${n} × ${t} =`, n * t, { label: `${n} × ${t}`, skill: `${t} times table`, explain: `${n} × ${t} = ${n * t}.` }); }) },
     { id: "n-division", title: "Division facts", level: "Second", organiser: NUM, blurb: "Use your tables to divide.",
@@ -788,6 +796,20 @@ window.PopActivities = (() => {
           canopyRound("flash", canopyPick([5, 6])), canopyRound("make", canopyPick([8, 9])),
           canopyRound("hide", h2, { visible: v2 }), canopyRound("compare", Math.max(c2, d2), { left: c2, right: d2 })
         ];
+      } },
+    // The same forest, a level up: numbers to 20, getting harder clearing by clearing
+    { id: "g-canopy-run-20", title: "Counting Canopy: forest run to 20", level: "First", organiser: NUM,
+      blurb: "Guide Pip through eight harder clearings with numbers up to 20. Each one is a little trickier than the last.",
+      make: () => {
+        const [c1, d1] = canopyPick([[13, 16], [14, 11]]);
+        const [c2, d2] = canopyPick([[18, 18], [17, 19]]);
+        const [h, v] = canopyPick([[13, 9], [15, 10]]);
+        return [
+          canopyRound("flash", 6), canopyRound("make", 9),
+          canopyRound("hide", 11, { visible: 7 }), canopyRound("compare", Math.max(c1, d1), { left: c1, right: d1 }),
+          canopyRound("make", 10), canopyRound("hide", h, { visible: v }),
+          canopyRound("compare", Math.max(c2, d2), { left: c2, right: d2 }), canopyRound("hide", 20, { visible: 14 })
+        ];
       } }
   ];
 
@@ -802,6 +824,29 @@ window.PopActivities = (() => {
     { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; }));
+  function difficulty(q) {
+    if (Number.isFinite(q.difficulty)) return q.difficulty;
+    // Clock times: o'clock, then half past, then quarter past and quarter to
+    const said = String(q.label || "");
+    if (/o'clock/.test(said)) return 1;
+    if (/half past/.test(said)) return 2;
+    if (/quarter (past|to)/.test(said)) return /to/.test(said) ? 4 : 3;
+    const nums = String(q.label || q.prompt || "").match(/\d+(\.\d+)?/g);
+    const answer = Number(q.answer);
+    if (!nums || !Number.isFinite(answer)) return null;
+    const values = nums.map(Number).concat(answer);
+    const crossesTen = /[+−]/.test(q.label || "") && Math.floor(values[0] / 10) !== Math.floor(answer / 10);
+    return Math.max(...values) + answer / 10 + (crossesTen ? 6 : 0);
+  }
+  const easyFirst = qs => {
+    const scored = qs.map(q => [difficulty(q), q]);
+    return scored.every(([d]) => d !== null) ? scored.sort((x, y) => x[0] - y[0]).map(([, q]) => q) : qs;
+  };
+  AREAS.filter(area => area.id !== "games").forEach(area => area.activities.forEach(a => {
+    if (!/^Numeracy/.test(a.organiser || "")) return;
+    const make = a.make;
+    a.make = (...args) => easyFirst(make(...args));
+  }));
   const ALL = AREAS.flatMap(a => a.activities);
 
   // The organiser for a spelling list, by its stage (spelling is Tools for writing)
