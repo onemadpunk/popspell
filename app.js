@@ -1497,19 +1497,23 @@
       word.hidden = true;
       peek.hidden = false;
     };
-    // Show the word while it's said, then hide it a moment after
+    // Show the word while it's said, then hide it after 3 seconds (or at the first key press).
+    // The timer doesn't wait for the speech: not every device says when it has finished.
+    const SHOW_MS = 3000;
     const show = say => {
       if (!word) return;
       const n = ++showing;
       word.hidden = false;
       peek.hidden = true;
-      Promise.resolve(say()).then(() => later(() => { if (n === showing && my === phase) hide(); }, 1500));
+      say();
+      later(() => { if (n === showing && my === phase) hide(); }, SHOW_MS);
     };
     if (word) {
       wireSoundButtons(word, item);
       peek.onclick = () => { show(() => sayWord(item.spelling)); input.focus({ preventScroll: true }); };
     }
-    input.addEventListener("input", hide);
+    input.addEventListener("keydown", hide);
+    input.addEventListener("input", hide); // on-screen keyboards don't always send key presses
     if ($("#hearBig")) $("#hearBig").onclick = () => { sayWordInSentence(item); input.focus({ preventScroll: true }); };
 
     const wireBoxes = () => document.querySelectorAll("#boxes button.box").forEach(b => {
