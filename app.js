@@ -748,6 +748,9 @@
   /* ---------- Router ---------- */
 
   function route() {
+    // A newer PopSpell is out and nothing is part-way through: load it instead of the next page.
+    // (If a list was left part-way, its results are saved first and the update waits for the next move.)
+    if (updateReady && !busy()) { location.reload(); return; }
     newScreen();
     leaveSession(session); // left part-way through a list
     session = null;
@@ -879,6 +882,45 @@
   }
   window.addEventListener("hashchange", route);
   window.addEventListener("pagehide", () => leaveSession(session));
+
+  /* ---------- Updates: tablets left open pick up a new version by themselves ---------- */
+
+  // The version this page loaded, from app.js?v=…; the test pages have none, so they never check
+  const LOADED_VERSION = (([...document.scripts].find(s => /app\.js\?v=/.test(s.src)) || {}).src || "").split("?v=")[1] || "";
+  let updateReady = false;
+  const inTeacherArea = () => /^#\/(teacher|make)/.test(location.hash);
+  const busy = () => !!(session && !session.ended);
+  // Pupils' pages update at their next move between pages (see route) or when the tablet wakes,
+  // never in the middle of a list, game or story. Teachers get a Refresh button instead.
+  function offerUpdate() {
+    if (inTeacherArea()) {
+      if ($("#updateBar")) return;
+      const bar = document.createElement("div");
+      bar.id = "updateBar";
+      bar.className = "update-bar";
+      bar.setAttribute("role", "status");
+      bar.innerHTML = `✨ PopSpell has been updated. <button type="button" class="btn small primary">Refresh</button>`;
+      bar.querySelector("button").onclick = () => location.reload();
+      document.body.append(bar);
+    } else if (document.hidden && !busy()) location.reload();
+  }
+  async function checkForUpdate() {
+    if (!LOADED_VERSION || updateReady || !navigator.onLine) return;
+    try {
+      const html = await (await fetch(`./?version=${Date.now()}`, { cache: "no-store" })).text();
+      const live = (html.match(/app\.js\?v=([\w.-]+)/) || [])[1];
+      if (live && live !== LOADED_VERSION) { updateReady = true; offerUpdate(); }
+    } catch { /* offline: try again next time */ }
+  }
+  if (LOADED_VERSION) {
+    setTimeout(checkForUpdate, 30e3);
+    setInterval(checkForUpdate, 5 * 60e3);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) return;
+      if (updateReady && !busy() && !inTeacherArea()) location.reload();
+      else checkForUpdate();
+    });
+  }
 
   /* ---------- Home ---------- */
 

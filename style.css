@@ -1382,3 +1382,7 @@ a.me-card:hover { border-color: var(--primary); }
 .one-page .feedback { min-height: 1.6em; font-size: 1.2rem; }
 .one-page .stars-big { margin: 6px 0; }
 .next-btn { font-size: 1.6rem !important; padding: 14px 40px !important; }
+
+/* A newer PopSpell is out: teachers choose when to refresh */
+.update-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px;
+  background: var(--primary); color: #fff; font-weight: 800; padding: 10px 12px 10px 18px; border-radius: 999px; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
