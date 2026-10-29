@@ -607,6 +607,9 @@ button.switch-block, .switch-gap, .switch-choice { cursor: pointer; }
 .counting-canopy .trail-stone { width: 31px; height: 31px; border-width: 2px; font-size: .88rem; }
 .counting-canopy .feedback { min-height: 0; margin: 7px 0 0; }
 .counting-canopy .feedback + .row { margin-top: 8px; }
+.canopy-glow { display: inline-block; margin: 0 0 8px; padding: 4px 12px; border: 2px solid #e4b643;
+  border-radius: 999px; background: #fff2bd; color: #5b3d08; font-weight: 900; }
+.canopy-glow b { font-size: 1.2rem; }
 .canopy-mission { display: grid; gap: 5px; max-width: 540px; margin: 12px auto 20px; padding: 14px;
   border: 2px solid #9bd9ae; border-radius: 18px; background: #ebfff0; text-align: center; }
 .canopy-mission strong { font-size: 1.15rem; }
@@ -706,6 +709,35 @@ button.switch-block, .switch-gap, .switch-choice { cursor: pointer; }
 .canopy-victory > span { display: block; font-size: 2.2rem; }
 .canopy-victory h2 { margin: 3px 0; color: #123f73; }
 .canopy-victory p { margin: 3px 0; font-weight: 800; }
+.forest-page { text-align: center; }
+.forest-wallet { margin: 12px auto; padding: 10px 14px; border-radius: 16px; background: #fff3bf;
+  color: #543b0b; font-weight: 800; }
+.forest-wallet b { font-size: 1.35rem; }
+.forest-wallet span { font-size: .85rem; }
+.forest-notice { padding: 8px; border-radius: 12px; background: #dcf8df; color: #145b33; font-weight: 900; }
+.forest-home-scene { position: relative; height: 230px; margin: 12px auto 18px; overflow: hidden; border: 3px solid #8fcba0;
+  border-radius: 24px; background: linear-gradient(#bdefff 0 70%, #82ca79 70% 100%); }
+.forest-home-sun { position: absolute; top: 20px; right: 25%; width: 53px; height: 53px; border-radius: 50%;
+  background: #ffe388; box-shadow: 0 0 0 12px #fff3b15c; }
+.forest-home-tree { position: absolute; bottom: 32px; right: 14%; width: 30px; height: 105px; background: #946449; }
+.forest-home-tree::before { content: ""; position: absolute; left: -46px; bottom: 62px; width: 120px; height: 88px;
+  border-radius: 55%; background: #4cad6c; box-shadow: 19px -12px 0 #72c87e; }
+.forest-home-stream { position: absolute; left: 36%; right: 28%; bottom: 0; height: 32px;
+  background: repeating-linear-gradient(155deg, #46bbd0 0 15px, #8be2ed 15px 27px); }
+.forest-home-pip { position: absolute; z-index: 3; left: 10%; bottom: 25px; width: 120px; height: 120px; object-fit: contain; }
+.forest-home-owl { position: absolute; z-index: 3; right: 13%; bottom: 34px; font-size: 3rem; }
+.forest-decor { position: absolute; z-index: 2; font-size: 3rem; filter: drop-shadow(0 3px 2px #245d4260); animation: pip-bob 2s ease-in-out infinite; }
+.forest-decor.lantern { left: 34%; top: 36px; }
+.forest-decor.flowers { left: 41%; bottom: 30px; }
+.forest-decor.treehouse { right: 15%; top: 40px; }
+.forest-decor.rainbow { left: 48%; bottom: 34px; font-size: 5rem; }
+.forest-shop { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; margin: 12px auto 18px; }
+.forest-item { display: grid; justify-items: center; gap: 5px; padding: 13px 8px; border: 2px solid #bcd9c3;
+  border-radius: 18px; background: #f9fffa; }
+.forest-item.owned { border-color: #c39a39; background: #fff8d9; }
+.forest-item-icon { font-size: 2.3rem; }
+.forest-item small { min-height: 2.4em; color: #4b6678; }
+.forest-item .btn { margin-top: auto; }
 @media (max-width: 560px), (max-height: 750px) {
   .canopy-scene { height: 125px; }
   .canopy-tree { transform: scale(.65); transform-origin: bottom; }
@@ -722,6 +754,11 @@ button.switch-block, .switch-gap, .switch-choice { cursor: pointer; }
   .canopy-selected { min-width: 105px; min-height: 65px; }
   .canopy-group-card { width: 77px; min-height: 67px; }
   .canopy-group-stars { font-size: 1rem; letter-spacing: 0; }
+  .forest-home-scene { height: 180px; }
+  .forest-home-pip { width: 85px; height: 85px; }
+  .forest-home-owl { font-size: 2rem; }
+  .forest-decor { font-size: 2rem; }
+  .forest-decor.rainbow { font-size: 3.4rem; }
 }
 .tip-inline { display: block; margin-top: 6px; font-weight: 400; color: var(--ink); }
 

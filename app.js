@@ -7,6 +7,7 @@
   const SITE = Object.assign({ title: "PopSpell", subtitle: "Hear it. Map it. Spell it." }, window.SITE);
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
+  const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -499,13 +500,19 @@
     union(ab.weeks, bb.weeks).forEach(k => { weeks[k] = Math.max(ab.weeks[k] || 0, bb.weeks[k] || 0); });
     const lists = {};
     union(ab.lists, bb.lists).forEach(k => { lists[k] = pick(ab.lists[k], bb.lists[k], (x, y) => x.best >= y.best); });
-    return { words, sounds, bests: { weeks, lists } };
+    return { words, sounds, bests: { weeks, lists, forest: FOREST.merge(ab.forest, bb.forest) } };
   }
 
   // Fetches the class's copy, merges it with this device's, and saves both. Resolves true if this
   // device learned something new (so the screen can redraw). Offline, it simply waits for next time.
   let syncedFor = null;
-  async function syncProgress() {
+  let progressSyncQueue = Promise.resolve();
+  function syncProgress() {
+    const next = progressSyncQueue.then(syncProgressOnce, syncProgressOnce);
+    progressSyncQueue = next.then(() => {}, () => {});
+    return next;
+  }
+  async function syncProgressOnce() {
     const name = getPupil();
     if (!REPORTING || !name || previewMode) return false;
     syncedFor = name;
@@ -516,12 +523,20 @@
       const merged = remote ? mergeProgress(local, remote) : local;
       const learned = JSON.stringify(mergeProgress(local, local)) !== JSON.stringify(mergeProgress(merged, merged));
       saveProgress(merged);
-      if (Object.keys(merged.words).length) await cloud.saveProgress(CLASS.id, name, merged);
+      if (Object.keys(merged.words).length || FOREST.earned(merged.bests?.forest))
+        await cloud.saveProgress(CLASS.id, name, merged);
       return learned;
     } catch (err) {
       console.warn("PopSpell: progress not synced", err);
       return false;
     }
+  }
+
+  const forestState = (prog = loadProgress()) => FOREST.normalise(prog.bests?.forest);
+  function saveForestState(state) {
+    const prog = loadProgress();
+    prog.bests = Object.assign({ weeks: {}, lists: {} }, prog.bests, { forest: FOREST.normalise(state) });
+    saveProgress(prog);
   }
 
   // A sound is secure once it's been spelled right first time at least 4 times, on 2+ different
@@ -759,6 +774,7 @@
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
     else if (parts[0] === "bests") showBests();
+    else if (parts[0] === "forest") showForest();
     else if (parts[0] === "stories") showStories();
     else if (parts[0] === "check" && CHECKS[parts[1]] && (parts[1] === "spelling" || window.PopActivities)) showCheckStart(parts[1]);
     else if (parts[0] === "review" && dueItems().length) showStart(reviewList());
@@ -1028,6 +1044,7 @@
         : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span class="me-text"><b>All caught up</b><span>No review words today</span></span></div>`}
       ${tile("#/sounds", "⭐", "My sounds", plural(secure, "star", "stars"))}
       ${tile("#/bests", "🏅", "My bests", `${plural(week.thisWeek, "go", "goes")} this week`)}
+      ${tile("#/forest", "🌲", "Pip's Forest", `${FOREST.balance(forestState(prog))} glow seeds to use`)}
       ${storyActivities().length && !locked ? tile("#/stories", "📚", "My stories", `${readyStories(prog).length} ready to read`) : ""}
       ${locked ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
       ${locked ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
@@ -1252,6 +1269,64 @@
                 <td><a class="btn small" href="${href(id)}">Beat it</a></td></tr>`).join("")}</tbody>
           </table>` : `<p>Finish a list or an activity to set your first best score.</p>`}
       </section>`;
+  }
+
+  /* ---------- Counting Canopy: collect glow seeds and build Pip's Forest ---------- */
+
+  function awardForestClearing(s) {
+    if (s.preview) return;
+    s.forestRunId ||= `canopy-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    const clearingId = `${s.forestRunId}-${s.i + 1}`;
+    saveForestState(FOREST.award(forestState(), clearingId, 1));
+  }
+
+  function renderForestCollection(root, preview = false, notice = "") {
+    const state = forestState(), balance = FOREST.balance(state);
+    const owned = new Set(state.unlocked);
+    root.innerHTML = `
+      <div class="forest-wallet"><b>✨ ${balance}</b> glow seeds ready to use
+        <span>· ${FOREST.earned(state)} collected altogether</span></div>
+      ${notice ? `<p class="forest-notice" role="status">${esc(notice)}</p>` : ""}
+      <div class="forest-home-scene" role="img" aria-label="Pip's forest with ${state.unlocked.length} unlocked decorations">
+        <span class="forest-home-sun" aria-hidden="true"></span><span class="forest-home-tree" aria-hidden="true"></span>
+        <span class="forest-home-stream" aria-hidden="true"></span>
+        <img src="assets/brand/pip-hop-small.webp" alt="" class="forest-home-pip" width="120" height="120">
+        ${FOREST.ITEMS.filter(item => owned.has(item.id)).map(item =>
+          `<span class="forest-decor ${item.id}" aria-hidden="true">${item.icon}</span>`).join("")}
+        <span class="forest-home-owl" aria-hidden="true">🦉</span>
+      </div>
+      <h3>Choose what to add to your forest</h3>
+      <div class="forest-shop">${FOREST.ITEMS.map(item => {
+        const has = owned.has(item.id), need = Math.max(0, item.cost - balance);
+        return `<div class="forest-item${has ? " owned" : ""}"><span class="forest-item-icon" aria-hidden="true">${item.icon}</span>
+          <b>${esc(item.name)}</b><small>${esc(item.description)}</small>
+          <button type="button" class="btn small" data-forest-buy="${item.id}" ${has || preview || need ? "disabled" : ""}>
+            ${has ? "Built!" : preview ? `${item.cost} glow seeds` : need ? `Need ${need} more` : `Build for ${item.cost}`}</button></div>`;
+      }).join("")}</div>`;
+    root.querySelectorAll("[data-forest-buy]:not(:disabled)").forEach(button => {
+      button.onclick = () => {
+        const item = FOREST.ITEMS.find(x => x.id === button.dataset.forestBuy);
+        const current = forestState(), next = FOREST.unlock(current, item.id);
+        if (next.unlocked.length === current.unlocked.length) return;
+        saveForestState(next);
+        renderForestCollection(root, false, `${item.name} is now part of your forest!`);
+        syncProgress();
+      };
+    });
+  }
+
+  function showForest() {
+    document.title = `Pip's Forest · ${SITE.title}`;
+    if (!getPupil()) {
+      app.innerHTML = `<section class="panel start"><h1>Pip's Forest</h1><p>Save your name on the home page to keep your forest.</p><a class="btn primary" href="#/">Go home</a></section>`;
+      return;
+    }
+    app.innerHTML = `<section class="panel forest-page"><a class="back" href="#/">← Home</a>
+      <h1>🌲 ${esc(getPupil())}'s Forest</h1><p>Play Counting Canopy to collect glow seeds. Choose what Pip builds here.</p>
+      <div id="forestCollection"></div><a class="btn primary" href="#/activity/g-canopy-run">Play Counting Canopy →</a></section>`;
+    renderForestCollection($("#forestCollection"), previewMode);
+    if (REPORTING && syncedFor !== getPupil())
+      syncProgress().then(learned => { if (learned && $("#forestCollection")) renderForestCollection($("#forestCollection"), previewMode); });
   }
 
   /* ---------- Start screen ---------- */
@@ -2307,6 +2382,7 @@
         ${progressHTML()}
         <div class="game-trail" aria-label="Forest clearings">${session.items.map((round, i) =>
           `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Clearing ${i + 1}: ${sceneNames[round.mode]}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : ({ flash: "✦", make: "🌉", hide: "🍃", compare: "↗" })[round.mode]}</span>`).join("")}</div>
+        <p class="canopy-glow">✨ <b id="canopySeeds">${session.results.length}</b> glow seeds collected this run</p>
         <div class="canopy-scene ${q.mode}" id="canopyScene" role="img" aria-label="Pip at the ${sceneNames[q.mode].toLowerCase()}">
           <span class="canopy-sun" aria-hidden="true"></span><span class="canopy-tree one" aria-hidden="true"></span>
           <span class="canopy-tree two" aria-hidden="true"></span><span class="canopy-stream" aria-hidden="true"></span>
@@ -2345,6 +2421,8 @@
       const earned = wrong.length ? 1 : 2;
       session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned,
         missed: [...missed], methods, seconds: Math.max(1, Math.round((Date.now() - startedAt) / 1000)) });
+      awardForestClearing(session);
+      $("#canopySeeds").textContent = String(session.results.length);
       if (!session.preview) countGo();
       livePing(session, "word", { word: q.label, ok: !wrong.length });
       scene.classList.add("solved");
@@ -2478,6 +2556,8 @@
     const skills = {};
     r.forEach(x => x.missed.forEach(s => { skills[s] = (skills[s] || 0) + 1; }));
     const act = session.activity;
+    const canopy = String(act.id || "").startsWith("g-canopy-");
+    const glowEarned = canopy ? r.length : 0;
     const bestNotes = personalBests(session, firstGo, r.length);
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
@@ -2485,9 +2565,12 @@
         ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
-        ${String(act.id || "").startsWith("g-canopy-") ? `<div class="canopy-victory" role="status">
+        ${canopy ? `<div class="canopy-victory" role="status">
           <span aria-hidden="true">✨ 🦉 ✨</span><h2>Forest Explorer!</h2>
-          <p>Pip reached the owl and opened ${r.length} forest clearings. The whole path is glowing!</p></div>` : ""}
+          <p>Pip reached the owl and opened ${r.length} forest clearings. The whole path is glowing!</p>
+          <p>${session.preview ? "Teacher preview: no glow seeds are saved." : `You collected ${glowEarned} glow seeds to build Pip's Forest!`}</p></div>
+          <div id="forestCollection"></div>
+          ${session.preview ? "" : `<p><a class="btn small" href="#/forest">Visit my forest →</a></p>`}` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${bestsHTML(bestNotes)}
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
@@ -2503,6 +2586,7 @@
           <a class="btn" href="#/">Choose something else</a>
         </div>
       </section>`;
+    if (canopy) renderForestCollection($("#forestCollection"), session.preview);
     sayPhrase(right === r.length ? PHRASES.allDone : PHRASES.finished);
     livePing(session, "end");
     session.ended = true;
