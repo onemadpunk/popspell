@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=help-1">
+  <link rel="stylesheet" href="style.css?v=lessons-1">
   <style>
     .help { max-width: 1180px; margin: 0 auto; padding: 8px 16px 48px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
     .help-toc { position: sticky; top: 104px; background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; max-height: calc(100vh - 130px); overflow: auto; }
@@ -64,12 +64,14 @@
       <h2>Contents</h2>
       <ol>
         <li><a href="#start">Getting started</a></li>
+        <li><a href="#cfe">Curriculum for Excellence: levels, codes and expectations</a></li>
         <li><a href="#classes">Set up a class</a></li>
         <li><a href="#pupils">Add pupils</a></li>
         <li><a href="#assessment">Starting assessment</a></li>
         <li><a href="#live">Teaching live</a></li>
         <li><a href="#next">Next steps</a></li>
         <li><a href="#programme">Lesson programme</a></li>
+        <li><a href="#ready">Ready lessons for any gap</a></li>
         <li><a href="#assign">Library and Assign</a></li>
         <li><a href="#plans">Plans and worksheets</a></li>
         <li><a href="#diary">Lesson diary</a></li>
@@ -105,7 +107,7 @@
           <tr><td>📚 Library</td><td>Find any work by level, subject and strand, then test, assign or print it.</td></tr>
           <tr><td>🟢 Live</td><td>See each pupil working during a lesson, and who has asked for help.</td></tr>
           <tr><td>🧭 Next steps</td><td>Each pupil's next lesson, how they did last time, and a suggestion to plan in one click.</td></tr>
-          <tr><td>📘 Programme</td><td>A lesson-by-lesson programme for each pupil, with a plan, sheets and CfE outcomes for every lesson.</td></tr>
+          <tr><td>📘 Programme</td><td>A lesson-by-lesson programme for each pupil, with a plan, sheets and CfE outcomes for every lesson, the level expected for their year group, and ready lessons for their gaps.</td></tr>
           <tr><td>📌 Assign</td><td>Choose the work each pupil (or everyone) sees on their device.</td></tr>
           <tr><td>🗓️ Plans &amp; sheets</td><td>Schedule work for dates, print worksheets, and enter marks from paper.</td></tr>
           <tr><td>📝 Diary</td><td>Private notes on each lesson and what to do next.</td></tr>
@@ -116,8 +118,85 @@
         <a class="help-top" href="#top">↑ Back to the top</a>
       </section>
 
+      <section class="help-sec" id="cfe">
+        <h2>2. Curriculum for Excellence: levels, codes and expectations</h2>
+        <p>Everything in PopSpell is matched to Scotland's national curriculum, Curriculum for Excellence (CfE). This section sets out the official guidance from Education Scotland and the Scottish Government, so you can see what is expected of a child, where they are, and how PopSpell's work fits.</p>
+
+        <h3>The levels and when children are expected to reach them</h3>
+        <table class="help-table">
+          <tr><th>Level</th><th>Stage</th><th>Expectation</th></tr>
+          <tr><td><b>Early</b></td><td>Nursery and P1</td><td>Most children achieve it by the end of P1.</td></tr>
+          <tr><td><b>First</b></td><td>P2 to P4</td><td>Most children achieve it by the end of P4.</td></tr>
+          <tr><td><b>Second</b></td><td>P5 to P7</td><td>Most children achieve it by the end of P7.</td></tr>
+          <tr><td><b>Third</b></td><td>S1 to S3</td><td>Most young people achieve it by the end of S3.</td></tr>
+        </table>
+        <p>These are the stages most children are at. Some get there sooner and some need longer. Each level spans several years, so a P3 pupil is expected to be <i>working through</i> First level, not to have finished it.</p>
+
+        <h3>How a level is judged</h3>
+        <p>Whether a child has achieved a level is the teacher's professional judgement, using the <b>benchmarks</b> and a wide range of evidence. The evidence includes everyday work, conversations with the child, planned assessments and standardised assessment. The national guidance says a child has achieved a level when they have:</p>
+        <ul>
+          <li>shown a breadth of learning across the experiences and outcomes for the level;</li>
+          <li>responded consistently well to its level of challenge, and moved on to the next level in some aspects;</li>
+          <li>applied what they have learned in new and unfamiliar situations.</li>
+        </ul>
+        <p>They don't need to master every benchmark before moving on, but there should be no major gaps across the main areas. The guidance also says benchmarks should not be ticked off one by one.</p>
+
+        <h3>How schools report it nationally</h3>
+        <ul>
+          <li><b>Achievement of CfE Levels (ACEL):</b> each year, teachers record whether pupils in <b>P1, P4 and P7</b> (and S3) have achieved the expected level. That means Early by P1, First by P4 and Second by P7, in reading, writing, listening and talking, and numeracy. The Scottish Government publishes the national figures.</li>
+          <li><b>Scottish National Standardised Assessments (SNSA):</b> short online assessments in literacy and numeracy, taken once a year in <b>P1, P4, P7</b> and S3. They give teachers diagnostic information. They are one piece of evidence among many, not a pass or fail.</li>
+        </ul>
+
+        <h3>Reading a CfE code</h3>
+        <p>Each experience and outcome has a code, such as <b>MNU 1-03a</b>:</p>
+        <table class="help-table">
+          <tr><th>Part</th><th>Meaning</th></tr>
+          <tr><td><b>LIT</b> / <b>ENG</b></td><td>Literacy (the responsibility of all teachers) / English (taught in English lessons)</td></tr>
+          <tr><td><b>MNU</b> / <b>MTH</b></td><td>Numeracy (the responsibility of all teachers) / Mathematics</td></tr>
+          <tr><td><b>0, 1, 2, 3</b></td><td>The level: 0 Early, 1 First, 2 Second, 3 Third</td></tr>
+          <tr><td><b>03</b></td><td>The organiser (the area). For example, 02 and 03 are number and number processes, and 21 is writing tools such as spelling.</td></tr>
+          <tr><td><b>a, b, c</b></td><td>Which statement within that area</td></tr>
+        </table>
+        <p>Some statements have more than one code, such as <b>LIT 0-01a / LIT 0-11a / LIT 0-20a</b>, because the same outcome covers listening, reading and writing.</p>
+        <p>Some useful ones:</p>
+        <ul>
+          <li><b>LIT 1-21a:</b> spelling at First level.</li>
+          <li><b>LIT 1-22a:</b> punctuation and linking sentences.</li>
+          <li><b>ENG 1-17a:</b> answering questions about a text.</li>
+          <li><b>MNU 0-03a:</b> adding and taking away at Early level.</li>
+          <li><b>MNU 2-07a:</b> fractions and percentages of amounts.</li>
+        </ul>
+
+        <h3>The areas (organisers)</h3>
+        <p><b>Literacy and English:</b> listening and talking, reading and writing. Each has enjoyment and choice, tools (such as phonics, spelling, punctuation and handwriting), finding and using information, understanding and analysing texts, and creating texts.</p>
+        <p><b>Numeracy and mathematics:</b> estimation and rounding; number and number processes; multiples, factors and primes; fractions, decimals and percentages; money; time; measurement; patterns and relationships; expressions and equations; shape; angle, symmetry and position; data and analysis; chance and uncertainty.</p>
+
+        <h3>How PopSpell matches this</h3>
+        <ul>
+          <li>Every spelling list, activity, story, dictation and ready lesson shows its <b>level</b> and its <b>CfE codes</b>. In the Library you can choose a level or search for a code (type <b>MNU 1-03a</b>).</li>
+          <li><b>Ready lessons</b> are written from the benchmarks: their success criteria are the benchmark statements for that area, in "I can…" form (see <a href="#ready">Ready lessons</a>).</li>
+          <li>Every lesson plan in the <b>Programme</b> lists the codes it covers, so your planning and notes line up with what schools report.</li>
+        </ul>
+
+        <h3>Expected level against where a pupil is working</h3>
+        <p>When a pupil's year group is filled in (on their card in <span class="ui">👧 Pupils</span>), the Programme shows the level expected for their year group, next to the level of the work they're on, for literacy and maths:</p>
+        <figure class="help-shot"><a href="assets/help/expected-levels.webp"><img src="assets/help/expected-levels.webp" alt="A pupil in P3: expected First level, working at Early level in literacy and maths" loading="lazy"></a>
+          <figcaption>A P3 pupil working at Early level is below what's expected for P3.</figcaption></figure>
+        <table class="help-table">
+          <tr><th>It says</th><th>What it means</th><th>What to do</th></tr>
+          <tr><td><span class="lv-badge lv-below">Below expected</span></td><td>The work they're on is from an earlier level than their year group expects. For example, a P3 pupil still on Early level work.</td><td>Close the gaps at the level they're working at, starting from their checks. <a href="#ready">Ready lessons</a> suggests lessons for exactly those gaps.</td></tr>
+          <tr><td><span class="lv-badge lv-at">As expected</span></td><td>They're working within the level expected for their year group.</td><td>Keep going through the level. Watch for any one area falling behind.</td></tr>
+          <tr><td><span class="lv-badge lv-beyond">Beyond expected</span></td><td>They're working at a later level than expected.</td><td>Keep challenging them, and make sure there are no gaps left behind at the earlier level.</td></tr>
+        </table>
+        <p>This compares the level of the work they're on in PopSpell with the national expectation for their age. It is a guide for planning. It isn't a formal judgement that a level is achieved: that rests on the evidence described above.</p>
+
+        <h3>Changes coming</h3>
+        <p>Education Scotland's <b>Curriculum Improvement Cycle</b> is refreshing the curriculum. The refreshed curriculum is due to be adopted in schools from <b>August 2028</b>. It replaces the experiences and outcomes and benchmarks with a "Know, Do, Understand" model. PopSpell uses the current codes and benchmarks, and will be updated when the new ones are published.</p>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
       <section class="help-sec" id="classes">
-        <h2>2. Set up a class</h2>
+        <h2>3. Set up a class</h2>
         <ol class="help-steps">
           <li>Open <span class="ui">🏫 Classes</span>, type a name (for example <i>Tuesday 4pm group</i>) and press <span class="ui">＋ Make class</span>.</li>
           <li>Each class has a <b>class code</b> and a <b>class link</b>. Open the link once on each pupil's device, or have the pupil type the code on PopSpell's home page. The device stays in the class after that.</li>
@@ -130,7 +209,7 @@
       </section>
 
       <section class="help-sec" id="pupils">
-        <h2>3. Add pupils</h2>
+        <h2>4. Add pupils</h2>
         <ol class="help-steps">
           <li>Open <span class="ui">👧 Pupils</span>.</li>
           <li>Type the pupil's name <b>exactly as they'll type it on their device</b> (first name and an initial, such as <i>Ava M</i>, works well). Add a parent's email if you have one, then press <span class="ui">Add pupil</span>.</li>
@@ -152,7 +231,7 @@
       </section>
 
       <section class="help-sec" id="assessment">
-        <h2>4. Starting assessment: Pip's Sound Quest</h2>
+        <h2>5. Starting assessment: Pip's Sound Quest</h2>
         <p>A 15 to 25 minute assessment the child plays as a game: five short islands for listening, reading, a story, spelling and numbers. There are no marks on screen, and each island stops by itself when it gets too hard, so the child is never left struggling.</p>
         <ol class="help-steps">
           <li>Press <span class="ui">🌟 New pupil: profile and assessment</span> (or <span class="ui">🌟 Assessment and report</span> on an existing pupil's card).</li>
@@ -169,7 +248,7 @@
       </section>
 
       <section class="help-sec" id="live">
-        <h2>5. Teaching live</h2>
+        <h2>6. Teaching live</h2>
         <p>Open <span class="ui">🟢 Live</span> during a lesson. Each pupil who starts work appears straight away, with how far through they are and how many they got right first time.</p>
         <ul>
           <li><b>Needs help</b> (orange): the pupil pressed the help button. Press <span class="ui">Done</span> once you've helped.</li>
@@ -182,7 +261,7 @@
       </section>
 
       <section class="help-sec" id="next">
-        <h2>6. Next steps</h2>
+        <h2>7. Next steps</h2>
         <p><span class="ui">🧭 Next steps</span> lists each pupil's next lesson, what's planned, how they did last time, the sounds or skills to work on, and a suggestion that follows the teaching order.</p>
         <ol class="help-steps">
           <li>Check the suggestion (for example <i>Move on to ck: 90% right first time on wh</i>).</li>
@@ -194,7 +273,7 @@
       </section>
 
       <section class="help-sec" id="programme">
-        <h2>7. Lesson programme</h2>
+        <h2>8. Lesson programme</h2>
         <p><span class="ui">📘 Programme</span> gives each pupil a lesson-by-lesson programme. Every lesson mixes work <b>with you</b>, <b>on the device</b> and <b>on paper</b>, and the plan names its Curriculum for Excellence experiences and outcomes.</p>
         <ol class="help-steps">
           <li>Open a pupil and check the suggested start. It comes from Pip's Sound Quest, a starting check or their last results. For maths with nothing yet, it starts at their year group's level. Change the spelling list or maths if you know better, and choose <b>Literacy and maths</b>, <b>Literacy only</b> or <b>Maths only</b>. Then press <span class="ui">Start the programme</span>.</li>
@@ -209,14 +288,44 @@
           <li>a story they choose, for the joy of reading;</li>
           <li>an idea for home.</li>
         </ul>
+        <p>At the top of each pupil's programme you'll see the <b>level expected for their year group</b> next to the level they're working at (see <a href="#cfe">expected level against where a pupil is working</a>). Below that is a short list of <b>ready lessons</b> for their gaps (see <a href="#ready">Ready lessons</a>).</p>
         <p>Under <b>Coming up, and lessons so far</b> you can see the next three lessons, every lesson so far, and change or stop the programme.</p>
         <figure class="help-shot"><a href="assets/help/programme.webp"><img src="assets/help/programme.webp" alt="A pupil's lesson plan in the Programme tab" loading="lazy"></a>
           <figcaption>Lesson 2 of a pupil's programme.</figcaption></figure>
         <a class="help-top" href="#top">↑ Back to the top</a>
       </section>
 
+      <section class="help-sec" id="ready">
+        <h2>9. Ready lessons for any gap</h2>
+        <p>PopSpell has a <b>ready lesson for every area of the CfE literacy and numeracy benchmarks</b>, at Early, First and Second level: 100 lessons in all. When a pupil is behind in an area, you can teach it straight away without making up a lesson.</p>
+        <p>Each lesson is about 30 minutes and has:</p>
+        <ul>
+          <li>a learning intention;</li>
+          <li>success criteria taken from the benchmarks;</li>
+          <li>its CfE codes and the words to use;</li>
+          <li>four parts: <b>Start</b> (5 minutes), <b>Teach</b> (10), <b>Practise</b> (10, with PopSpell's online work and sheets where they fit) and <b>Check</b> (5);</li>
+          <li>an idea for home.</li>
+        </ul>
+        <figure class="help-shot"><a href="assets/help/ready-lesson-open.webp"><img src="assets/help/ready-lesson-open.webp" alt="A ready lesson open: learning intention, success criteria, codes and the four parts" loading="lazy"></a>
+          <figcaption>A ready lesson, opened from the Library.</figcaption></figure>
+        <h3>Finding a lesson</h3>
+        <ol class="help-steps">
+          <li>In <span class="ui">📚 Library</span>, choose the level and subject, and set <b>Type</b> to <b>Ready lesson</b>. Ready lessons also come first in every strand.</li>
+          <li>Or, in <span class="ui">📘 Programme</span>, open a pupil. <b>Ready lessons for …</b> lists the lessons for the gaps their Sound Quest and starting checks found, and for the work they're on now. Below it are links to every lesson at the level they're working at.</li>
+        </ol>
+        <figure class="help-shot"><a href="assets/help/ready-lessons.webp"><img src="assets/help/ready-lessons.webp" alt="The Library showing Early level literacy ready lessons" loading="lazy"></a>
+          <figcaption>Early level literacy ready lessons in the Library.</figcaption></figure>
+        <h3>Using a lesson</h3>
+        <ul>
+          <li><span class="ui">📖 Open lesson</span> shows the whole plan, with links to test each piece of online work.</li>
+          <li><span class="ui">🖨️ Print</span> prints the lesson plan with a notes box, then a sheet for each piece of work it uses, with answers. You can untick sheets you don't need.</li>
+          <li><span class="ui">📌 Assign</span> puts the lesson's online work on pupils' devices.</li>
+        </ul>
+        <a class="help-top" href="#top">↑ Back to the top</a>
+      </section>
+
       <section class="help-sec" id="assign">
-        <h2>8. Library and Assign</h2>
+        <h2>10. Library and Assign</h2>
         <h3>Library</h3>
         <p><span class="ui">📚 Library</span> has everything in PopSpell in one place, sorted the way you'd look for it:</p>
         <ol class="help-steps">
@@ -232,7 +341,7 @@
           <li><span class="ui">🖨️ Print</span> makes a paper version. Spelling lists have five sheet types. Activities, stories and dictation print a fresh set of questions with an answers page. For listening work and dictation, the adult's page has everything to read aloud. Press <span class="ui">🔀 New questions</span> for a different set. Games are online only.</li>
         </ul>
         <figure class="help-shot"><a href="assets/help/library.webp"><img src="assets/help/library.webp" alt="The Library with First level and Maths chosen" loading="lazy"></a>
-          <figcaption>The Library, showing First level maths.</figcaption></figure>
+          <figcaption>The Library, showing First level maths. Each card shows its level, type and CfE codes.</figcaption></figure>
         <figure class="help-shot"><a href="assets/help/library-print.webp"><img src="assets/help/library-print.webp" alt="A printable telling-the-time sheet with clocks and tick circles" loading="lazy"></a>
           <figcaption>Print makes a paper version of any activity, with an answers page.</figcaption></figure>
         <h3>Assign</h3>
@@ -247,7 +356,7 @@
       </section>
 
       <section class="help-sec" id="plans">
-        <h2>9. Plans and worksheets</h2>
+        <h2>11. Plans and worksheets</h2>
         <ul>
           <li><b>Schedule work:</b> choose a pupil, a list or activity and the dates it should appear. Test it first if you like.</li>
           <li><b>Paper worksheets:</b> choose a pupil, list and sheet type, then <span class="ui">👀 Preview sheet</span> and <span class="ui">🖨️ Print / Save PDF</span>. After the child has done it, press <span class="ui">✍️ Enter marks</span> so the results join their progress.</li>
@@ -260,7 +369,7 @@
       </section>
 
       <section class="help-sec" id="diary">
-        <h2>10. Lesson diary</h2>
+        <h2>12. Lesson diary</h2>
         <ol class="help-steps">
           <li>Open <span class="ui">📝 Diary</span>, choose the pupil and the lesson date.</li>
           <li>Press <span class="ui">Use latest result as a starting note</span> if it helps, then write what they practised and what to do next.</li>
@@ -273,7 +382,7 @@
       </section>
 
       <section class="help-sec" id="home">
-        <h2>11. Home learning and parents</h2>
+        <h2>13. Home learning and parents</h2>
         <h3>Home login</h3>
         <p>Each pupil's card has a <b>🏠 Home login</b> link. Opening it once on the child's own device signs it in as that child in your class, so homework, stars and review words carry on at home.</p>
         <ol class="help-steps">
@@ -290,7 +399,7 @@
       </section>
 
       <section class="help-sec" id="reports">
-        <h2>12. Progress and reports</h2>
+        <h2>14. Progress and reports</h2>
         <p>Further down the <span class="ui">👧 Pupils</span> tab, choose a period in <span class="ui">Show</span> (a week up to everything) to see:</p>
         <ul>
           <li>Each pupil's results: lists done, words right, the <b>skills to practise</b> and their recent work.</li>
@@ -304,7 +413,7 @@
       </section>
 
       <section class="help-sec" id="parents-night">
-        <h2>13. Parents' night reports</h2>
+        <h2>15. Parents' night reports</h2>
         <p>A report covering a whole year (or since the last parents' night), with month-by-month charts, the starting assessment against now, each area's trend, strengths, areas needing further support and next steps.</p>
         <ol class="help-steps">
           <li>For one child, press <span class="ui">📅 Parents' night report</span> on their card. For everyone, press <span class="ui">📅 Parents' night reports (whole class)</span> at the top: one child per page.</li>
@@ -319,7 +428,7 @@
       </section>
 
       <section class="help-sec" id="calendar">
-        <h2>14. Calendar</h2>
+        <h2>16. Calendar</h2>
         <ol class="help-steps">
           <li>Set each pupil's <b>Next lesson</b> date and time on their card and save.</li>
           <li>Press <span class="ui">🗓️ Lessons to my calendar</span> at the top of the Pupils tab (or <span class="ui">🗓️ Add to calendar</span> on one card).</li>
@@ -334,7 +443,7 @@
       </section>
 
       <section class="help-sec" id="records">
-        <h2>15. Old records and deleting a pupil</h2>
+        <h2>17. Old records and deleting a pupil</h2>
         <p>PopSpell's <a href="privacy.html">privacy page</a> promises to delete a child's records within 12 months of their last lesson. Once a term:</p>
         <ol class="help-steps">
           <li>At the bottom of the Pupils tab, press <span class="ui">Check for records over 12 months old</span>.</li>
@@ -347,7 +456,7 @@
       </section>
 
       <section class="help-sec" id="pupil-view">
-        <h2>16. What pupils see</h2>
+        <h2>18. What pupils see</h2>
         <ul>
           <li><b>Everything is read aloud:</b> Pip says what's in his speech bubble (tap Pip to hear it again), every question is read out with <b>🔊 Hear it</b> to repeat it, answers made of words have their own 🔊, and right or wrong answers are spoken. Start pages just have Pip and one big <b>▶ Start</b>; levels and tips show for teachers only.</li>
           <li><b>Home page:</b> Pip welcomes them, shows their journey through the sound stages, their work for today, review words, My sounds, My bests and their stories.</li>
@@ -364,7 +473,7 @@
       </section>
 
       <section class="help-sec" id="faq">
-        <h2>17. Questions and fixes</h2>
+        <h2>19. Questions and fixes</h2>
         <dl class="help-faq">
           <dt>A pupil's results aren't showing.</dt>
           <dd>Check their name on the device matches the roster exactly, and that the device has joined your class (the home page says "this device has joined ✓"). Opening their <b>home login</b> link on the device fixes both.</dd>

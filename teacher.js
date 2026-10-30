@@ -243,7 +243,7 @@
 
   const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"]];
   const LIB_SUBJECTS = ["Literacy", "Maths"];
-  const LIB_TYPES = { check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
+  const LIB_TYPES = { lesson: "Ready lesson", check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
     game: "Game", dictation: "Dictation", paper: "Paper sheet" };
   const FIND_LEVEL = "Find their level";
   // The strand a teacher looks for, from the CfE organiser
@@ -262,7 +262,7 @@
     return "Number";
   }
   const STRANDS = [FIND_LEVEL, "Spelling", "Reading: phonics and tricky words", "Reading: understanding stories",
-    "Writing: sentences and punctuation", "Writing: dictation", "Handwriting", "Listening and sounds",
+    "Writing: sentences and punctuation", "Writing: dictation", "Writing: creating texts", "Handwriting", "Listening and sounds", "Listening and talking",
     "Number", "Fractions, decimals and percentages", "Money", "Time", "Measurement", "Data and chance", "Shape and angles",
     "Patterns and missing numbers"];
 
@@ -293,10 +293,13 @@
       detail: "Listen to each sentence, then write it all: capital letter, spellings and full stop.", print: true })) : [];
     const paper = [{ id: "letter-formation", title: "Letter formation (a–z)", type: "paper", level: "Early", subject: "Literacy",
       strand: "Handwriting", detail: "Trace and write every lower-case letter on four-line ruling.", print: true }];
-    const all = checks.concat(spelling, activities, dictation, paper);
+    // Ready lessons (lessons.js): one for every area of the benchmarks
+    const lessons = (window.PopLessons ? window.PopLessons.all() : []).map(l => ({ id: l.id, title: l.title, type: "lesson",
+      level: l.level, subject: l.subject, strand: l.strand, detail: l.intention, lesson: l, codes: l.codes, ids: lessonOnline(l), print: true }));
+    const all = checks.concat(lessons, spelling, activities, dictation, paper);
     all.forEach((e, i) => {
       e.order = i;
-      e.codes = e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level);
+      e.codes = e.codes || (e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level));
       e.search = `${e.title} ${e.strand} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}`.toLowerCase();
     });
     return all;
@@ -335,7 +338,9 @@
         ${e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : ""}
         ${e.list ? `<details><summary>See ${e.list.items.length} words and their sound maps</summary>
           <ul class="wordlist">${e.list.items.map(item => `<li class="mini-word">${P().wordHTML(item)}</li>`).join("")}</ul></details>` : ""}
-        <div class="row">${e.type === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(e.id))}" target="_blank" rel="noopener">▶ Test</a>
+        <div class="row">${e.type === "lesson" ? `<button class="btn small primary" type="button" data-lesson="${esc(e.id)}">📖 Open lesson</button>
+          ${e.ids.length ? `<button class="btn small" type="button" data-assign="${esc(e.id)}">📌 Assign</button>` : ""}`
+          : e.type === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(e.id))}" target="_blank" rel="noopener">▶ Test</a>
           <button class="btn small" type="button" data-assign="${esc(e.id)}">📌 Assign</button>`}
           ${e.print ? `<button class="btn small" type="button" data-print="${esc(e.id)}">🖨️ Print</button>` : `<span class="lib-online">Online only</span>`}</div>
       </article>`;
@@ -352,7 +357,7 @@
       const shown = entries.filter(e => (!prefs.level || !e.level || e.level === prefs.level) && (!prefs.subject || e.subject === prefs.subject)
         && (!prefs.strand || e.strand === prefs.strand) && (!prefs.type || e.type === prefs.type) && (!query || e.search.includes(query)))
         .sort((a, b) => order.indexOf(a.strand) - order.indexOf(b.strand) || levelRank(a) - levelRank(b)
-          || (a.type === "game") - (b.type === "game") || a.order - b.order); // games after the lessons at each level
+          || (b.type === "lesson") - (a.type === "lesson") || (a.type === "game") - (b.type === "game") || a.order - b.order); // ready lessons first, games last
       const narrowed = !!(prefs.level || prefs.subject || prefs.strand || prefs.type || query);
       const groups = order.map(s => ({ name: s, items: shown.filter(e => e.strand === s) })).filter(g => g.items.length);
       $("#libResults").innerHTML = groups.length ? groups.map(g => `<details class="lib-group"${narrowed || g.name === FIND_LEVEL ? " open" : ""}>
@@ -371,8 +376,9 @@
     $("#libResults").onclick = e => {
       const button = e.target.closest("button");
       if (!button) return;
-      const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print));
-      if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; render(); }
+      const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
+      if (button.dataset.lesson) lessonDialog(entry.lesson);
+      else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; render(); }
       else if (button.dataset.assign) assignDialog(entry);
       else if (button.dataset.print) printEntry(entry);
     };
@@ -382,8 +388,80 @@
   // Print from the library: spelling lists and letter formation have their own sheets; activities,
   // stories and dictation get a paper version of their questions
   function printEntry(entry) {
+    if (entry.type === "lesson") return lessonPrintDialog(entry.lesson);
     if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "mapping");
     previewActivitySheet(entry.id, entry.level);
+  }
+
+  /* ---------- Ready lessons (lessons.js): open, print and assign ---------- */
+
+  const workTitle = id => (id === "letter-formation" ? "Letter formation sheet" : listTitle(id));
+  // A lesson's work a pupil can do on their device (not paper sheets)
+  const lessonOnline = l => l.use.filter(id => id !== "letter-formation" && previewHref(id));
+  const LESSON_STEPS = [["start", "Start"], ["teach", "Teach"], ["practise", "Practise"], ["check", "Check"]];
+  function lessonBodyHTML(l, forPrint) {
+    const M = window.PopLessons.MINUTES;
+    const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
+    return `<p><b>Learning intention:</b> ${esc(l.intention)}</p>
+      <p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>
+      ${l.vocab ? `<p><b>Words to use:</b> ${esc(l.vocab)}</p>` : ""}
+      <table class="t-table lesson-steps"><thead><tr><th>Part</th><th>Time</th><th>What to do</th></tr></thead><tbody>
+        ${LESSON_STEPS.map(([k, name]) => `<tr><td><b>${name}</b></td><td>${M[k]} min</td><td>${esc(l.steps[k])}${k === "practise" && l.use.length
+          ? `<br><span class="hint">PopSpell: ${l.use.map(work).join(", ")}</span>` : ""}</td></tr>`).join("")}</tbody></table>
+      ${l.home ? `<p><b>At home:</b> ${esc(l.home)}</p>` : ""}`;
+  }
+  function lessonDialog(l) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog lesson-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
+        <button class="btn small" type="button" data-close>Close</button></div>
+      <p class="lib-tags"><span class="lib-level lv-${l.level.toLowerCase()}">${esc(l.level)} level</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(l.strand)}</span><span class="lib-type">About 30 minutes</span></p>
+      ${lessonBodyHTML(l, false)}
+      <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the lesson and sheets</button>
+        ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l); };
+    const assign = dialog.querySelector("[data-assign]");
+    if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
+    dialog.showModal();
+  }
+  // The lesson plan, then a sheet for each piece of work it uses (games are online only)
+  function lessonPrintDialog(l, who = "") {
+    const A = window.PopActivities;
+    const pages = [{ label: "Lesson plan", html: () => `<h1>PopSpell · ${esc(l.title)}</h1>
+      <p><b>${esc(l.level)} level</b> · ${esc(l.subject)} · ${esc(l.strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}</p>
+      ${lessonBodyHTML(l, true)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` }];
+    l.use.forEach(id => {
+      if (id === "letter-formation") return pages.push({ label: "Letter formation", html: () => letterFormationHTML(who) });
+      if (catalogueList(id)) return pages.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html });
+      const act = A && A.get(id);
+      if (!act || act.area === "games") return;
+      const qs = act.make();
+      pages.push({ label: workTitle(id), html: () => activitySheetHTML(act, qs, true, l.level, who) });
+    });
+    packDialog(l.title, pages);
+  }
+  // Preview several sheets, choose which to print, and print them together
+  function packDialog(heading, pages) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>${esc(heading)}</h2>
+      ${pages.map((pg, i) => `<label class="check"><input type="checkbox" data-page="${i}" checked> ${esc(pg.label)}</label>`).join("")}
+      <button class="btn small" type="button" data-close>Close</button>
+      <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
+      <section class="sheet-preview-page ws-activity"></section>`;
+    document.body.append(dialog);
+    const html = () => pages.filter((pg, i) => dialog.querySelector(`[data-page="${i}"]`).checked).map(pg => `<div class="ws-page">${pg.html()}</div>`).join("");
+    const render = () => { dialog.querySelector(".sheet-preview-page").innerHTML = html(); };
+    dialog.querySelectorAll("[data-page]").forEach(el => { el.onchange = render; });
+    render();
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet("ws-activity", sheet); };
+    dialog.showModal();
   }
 
   // Assign one piece of work from the library to pupils in the chosen class, or to Everyone
@@ -397,12 +475,14 @@
       if (n && !sameName(n, "Everyone") && !names.some(m => sameName(m, n))) names.push(n);
     });
     names.sort((a, b) => a.localeCompare(b));
-    const has = who => !!(rowOf(who) && rowOf(who).lists.includes(entry.id));
+    const ids = entry.ids || [entry.id];
+    const has = who => !!(rowOf(who) && ids.every(id => rowOf(who).lists.includes(id)));
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog assign-dialog";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📌 Assign ${esc(entry.title)}</h2>
         <button class="btn small" type="button" data-close>Close</button></div>
       <p class="hint">Class: <b>${esc(current.name)}</b>${classes.length > 1 ? " (change it at the top of the page)" : ""}. Pupils see it the next time they open PopSpell.</p>
+      ${entry.ids ? `<p class="hint">This puts the lesson's online work on their device: ${esc(entry.ids.map(workTitle).join(", "))}.</p>` : ""}
       <div class="assign-names">${["Everyone"].concat(names).map(n => `<label class="check"><input type="checkbox" value="${esc(n)}"${has(n) ? " checked disabled" : ""}>
         ${n === "Everyone" ? "<b>Everyone</b> in the class" : esc(n)}${has(n) ? ` <span class="hint">already set</span>` : ""}</label>`).join("")}</div>
       <label class="assign-new">Someone else <input type="text" maxlength="30" placeholder="Pupil's first name" data-new></label>
@@ -420,7 +500,8 @@
       try {
         await Promise.all(chosen.map(who => {
           const row = rowOf(who);
-          return cloud.saveAssignment(current.id, row ? row.who : who, (row ? row.lists : []).concat(entry.id));
+          const lists = row ? row.lists : [];
+          return cloud.saveAssignment(current.id, row ? row.who : who, lists.concat(ids.filter(id => !lists.includes(id))));
         }));
         dialog.close();
         const who = chosen.map(n => (sameName(n, "Everyone") ? "everyone in the class" : n));
@@ -1362,12 +1443,41 @@
       ${parts.map(p => `<tr><td><b>${p.icon} ${esc(p.title)}</b><br><span class="hint">${WHERE[p.where]}</span></td><td>${p.minutes} min</td>
         <td>${esc(p.how)}${p.codes && p.codes.length ? `<br><span class="prog-codes">CfE ${esc(p.codes.join(", "))}</span>` : ""}</td>
         <td>${p.id && previewHref(p.id) ? `<a class="btn small" href="${esc(previewHref(p.id))}" target="_blank" rel="noopener">▶ Test</a>` : ""}</td></tr>`).join("")}</tbody></table>`;
+    // Ready lessons for the gaps a pupil's checks found and the work they're on now; if none
+    // match, lessons at the level they're working at
+    const readyFor = x => {
+      const L = window.PopLessons;
+      if (!L) return [];
+      const prog = x.prog || { spelling: x.start.spelling, maths: x.start.maths, focus: "both" };
+      const mine = sessions.filter(s => sameName(s.pupil, x.r.name));
+      const quest = questSessions(x.r.name, sessions);
+      const ids = [quest.spell, quest.numbers, mine.find(s => s.listId === P().CHECKS.spelling.id), mine.find(s => s.listId === P().CHECKS.numbers.id)]
+        .filter(Boolean).flatMap(s => P().checkGaps(s.words || []).slice(0, 3));
+      if (prog.focus !== "maths") ids.push(prog.spelling);
+      if (prog.focus !== "literacy") ids.push(prog.maths);
+      const out = [];
+      const addLesson = l => { if (!out.some(o => o.id === l.id)) out.push(l); };
+      // A spelling list with no lesson of its own matches the lessons for its stage's other lists
+      const sameStage = id => (stageOf(id) < 0 ? [] : P().STAGES[stageOf(id)].lists.map(l => l.id));
+      ids.forEach(id => { const direct = L.forWork(id); (direct.length ? direct : sameStage(id).flatMap(L.forWork)).forEach(addLesson); });
+      if (!out.length) levelCheck(x.r, prog).areas.forEach(a => L.forArea(a.area, a.level).slice(0, 2).forEach(addLesson));
+      return out.slice(0, 4);
+    };
+    const readyHTML = x => {
+      const list = readyFor(x);
+      const c = levelCheck(x.r, x.prog || { spelling: x.start.spelling, maths: x.start.maths, focus: "both" });
+      return `<details class="prog-more prog-ready" open><summary>📚 Ready lessons for ${esc(x.r.name)}</summary>
+        ${list.length ? `<ul>${list.map(l => `<li><b>${esc(l.title)}</b> <span class="hint">${esc(l.level)} · ${esc(l.subject)}</span>
+          <button class="linklike" type="button" data-open-lesson="${esc(l.id)}">Open</button> ·
+          <button class="linklike" type="button" data-print-lesson="${esc(l.id)}">Print</button></li>`).join("")}</ul>` : ""}
+        <p>${c.areas.map(a => `<button class="linklike" type="button" data-browse="${esc(a.area)}|${esc(a.level)}">Every ${esc(a.level)} level ${esc(a.area.toLowerCase())} lesson</button>`).join(" · ")}</p></details>`;
+    };
     const card = (x, i) => {
       const name = x.r.name;
       const date = x.r.nextLessonDate >= today ? x.r.nextLessonDate : "";
       if (!x.prog) return `<details class="lib-group prog-card" data-name="${esc(name)}"${openProgramme === name ? " open" : ""}>
         <summary><span>${esc(name)}</span><span class="hint">No programme yet</span></summary>
-        <div class="prog-body">${levelsHTML(x.r, { spelling: x.start.spelling, maths: x.start.maths, focus: "both" })}<p>Suggested start: <b>${esc(titleOf(x.start.spelling))}</b> (from ${esc(x.start.spellingWhy)}) and <b>${esc(titleOf(x.start.maths))}</b> (from ${esc(x.start.mathsWhy)}). Change either if you know better.</p>
+        <div class="prog-body">${levelsHTML(x.r, { spelling: x.start.spelling, maths: x.start.maths, focus: "both" })}${readyHTML(x)}<p>Suggested start: <b>${esc(titleOf(x.start.spelling))}</b> (from ${esc(x.start.spellingWhy)}) and <b>${esc(titleOf(x.start.maths))}</b> (from ${esc(x.start.mathsWhy)}). Change either if you know better.</p>
           ${startForm(x, i)}</div></details>`;
       const parts = lessonParts(x.prog, x.prog.lesson, length);
       const intentions = parts.filter(p => p.intention);
@@ -1378,6 +1488,7 @@
         <summary><span>${esc(name)} · Lesson ${x.prog.lesson}</span><span class="hint">${esc(lessonTopics(x.prog))}${date ? ` · ${esc(when(date))}` : ""}</span></summary>
         <div class="prog-body">
           ${levelsHTML(x.r, x.prog)}
+          ${readyHTML(x)}
           <h3>Lesson ${x.prog.lesson} · ${length} minutes${date ? ` · ${esc(when(date))}${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : ""}</h3>
           ${intentions.map(p => `<p class="prog-li"><b>${esc(p.intention)}</b> ${p.criteria.map(c => `<span class="t-chip">${esc(c)}</span>`).join(" ")}</p>`).join("")}
           ${planTable(parts)}
@@ -1402,6 +1513,17 @@
         <label>Lesson length <select id="progLength">${LESSON_LENGTHS.map(n => `<option value="${n}"${n === length ? " selected" : ""}>${n} minutes</option>`).join("")}</select></label>
       </div>
       ${rows.length ? rows.map(card).join("") : `<div class="empty">Add pupils in the <b>Pupils</b> tab first, then give each one a programme here.</div>`}`;
+    body.querySelectorAll("[data-open-lesson]").forEach(b => { b.onclick = () => lessonDialog(window.PopLessons.get(b.dataset.openLesson)); });
+    body.querySelectorAll("[data-print-lesson]").forEach(b => { b.onclick = () => {
+      lessonPrintDialog(window.PopLessons.get(b.dataset.printLesson), b.closest(".prog-card").dataset.name);
+    }; });
+    // Opens the library at every ready lesson for that subject and level
+    body.querySelectorAll("[data-browse]").forEach(b => { b.onclick = () => {
+      const [subject, level] = b.dataset.browse.split("|");
+      saveLibraryPrefs({ level, subject, strand: "", type: "lesson" });
+      tab = "library";
+      draw();
+    }; });
     $("#progLength").onchange = e => { saveCalendarPrefs(Object.assign(calendarPrefs(), { length: Number(e.target.value) })); drawProgramme(body); };
     body.querySelectorAll(".prog-card").forEach(d => d.addEventListener("toggle", () => { if (d.open) openProgramme = d.dataset.name; }));
     const save = async (x, programme) => {

@@ -1460,3 +1460,13 @@ a.me-card:hover { border-color: var(--primary); }
 /* A newer PopSpell is out: teachers choose when to refresh */
 .update-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50; display: flex; align-items: center; gap: 12px;
   background: var(--primary); color: #fff; font-weight: 800; padding: 10px 12px 10px 18px; border-radius: 999px; box-shadow: var(--shadow); max-width: calc(100vw - 32px); }
+
+/* Ready lessons: the lesson view and its plan */
+.worksheet-preview.lesson-dialog { width: min(780px, calc(100vw - 32px)); }
+.lesson-dialog .lib-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.lesson-steps td { vertical-align: top; }
+.lesson-dialog .lesson-steps { width: calc(100% - 36px); }
+.lesson-steps td:nth-child(2) { white-space: nowrap; }
+.lesson-criteria { margin: 4px 0 12px; padding-left: 1.3em; }
+.prog-ready ul { margin: 6px 0; padding-left: 1.2em; }
+.prog-ready li { margin: 4px 0; }
