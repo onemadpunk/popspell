@@ -1982,8 +1982,13 @@
     const wrong = [];
     let missed = [];
     const passage = act.passage;
+    // A story the child reads by themselves can be read again with its sound buttons, but not
+    // read to them: otherwise "I've read it" and "Read it to me" would answer it by listening
     const passageBox = passage ? (act.listen
       ? `<div class="passage listen" id="passageBox">${readControlsHTML("🔊 Play the story again")}</div>`
+      : act.decodable
+      ? `<details class="passage" id="storyBox"><summary>📖 ${esc(passage.title)} — read it again</summary>
+          <div class="story-text">${storyHTML(passage)}</div></details>`
       : `<details class="passage" id="passageBox"${session.i === 0 ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
           <p class="read-along">${readAlongHTML(passage)}</p>${readControlsHTML("🔊 Read it to me")}</details>`) : "";
     const optionHTML = (opt, i) => `
@@ -2011,6 +2016,7 @@
     wireStop();
     if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);
     const reader = $("#passageBox") ? wireReadAlong($("#passageBox"), passage) : null;
+    app.querySelectorAll("#storyBox .sw").forEach(b => { b.onclick = () => sayWord(b.dataset.word); });
     // Listening activities start with the story (first question) or the question's own sound
     if (act.listen && session.i === 0) reader.start(0).then(() => my === phase && sayQuestion(q));
     else sayQuestion(q);
@@ -2998,7 +3004,8 @@
     }
     // Too few near-misses (a tricky word): other words from the same list
     shuffle(LISTS[id].items.map(it => it.spelling.toLowerCase())).forEach(w => { if (options.size < 3) options.add(w); });
-    return { kind: "choice", prompt: "Which word did Pip say?", answer: target, options: shuffle([...options]), readWords: true,
+    // The words can't be heard: matching sounds to sounds would let a child answer without reading
+    return { kind: "choice", prompt: "Which word did Pip say?", answer: target, options: shuffle([...options]), readWords: true, sayOptions: false,
       say: { word: target }, spelling: target, tokens: item.tokens, label: target, skill: `reading: ${LISTS[id].title}`, from: id };
   }
 

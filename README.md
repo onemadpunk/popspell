@@ -60,7 +60,7 @@ The stories and their questions are in [`passages.js`](passages.js) and can be e
   - **Nearly ready:** one or two sounds still to learn.
   - **Coming later:** everything else.
 - **Tricky words count too.** Early ones (the, to, said, was, they…) are allowed from the start. A story can list others in `tricky`, and the pupil needs to have practised those first.
-- **The reader.** Pupils read the story themselves before the questions, with sound buttons under every word (dots, lines and arcs, which can be switched off) and a ♥ on tricky words. Tapping a word reads it aloud for when they're stuck. During the questions the story can be re-read or read aloud.
+- **The reader.** Pupils read the story themselves before the questions, with sound buttons under every word (dots, lines and arcs, which can be switched off) and a ♥ on tricky words. Tapping a word reads it aloud for when they're stuck. During the questions the story can be opened again with its sound buttons, but not read aloud, so the child has to read it.
 - **Adding a story.** A new story in `stories.js` is matched to pupils with no extra work. Keep it to the sounds of its stage.
 
 Stories can also be set as work from the teacher area.
