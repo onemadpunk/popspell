@@ -1204,6 +1204,12 @@ a.me-card:hover { border-color: var(--primary); }
 .assign-new { display: grid; gap: 4px; font-weight: 700; margin-bottom: 12px; }
 /* Lesson programme: one card per pupil, with the lesson plan and its actions */
 .prog-codes { font-size: .78rem; font-weight: 700; color: var(--muted); }
+.prog-levels { margin: 4px 0 12px; padding: 8px 12px; border-radius: 12px; background: var(--primary-soft); }
+.prog-levels p { margin: 2px 0; }
+.lv-badge { display: inline-block; min-width: 8.5em; text-align: center; font-size: .78rem; font-weight: 800; border-radius: 999px; padding: 1px 9px; }
+.lv-below { background: #fff1d6; color: #8a4b00; }
+.lv-at { background: #e3f6ee; color: #11683f; }
+.lv-beyond { background: #e4efff; color: #1d4fa3; }
 .library-card .prog-codes { margin: -4px 0 8px; }
 .prog-card > summary .hint { margin-left: auto; text-align: right; }
 .prog-body { padding: 0 16px 16px; }

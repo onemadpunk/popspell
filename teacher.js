@@ -1182,7 +1182,37 @@
     return area ? area.activities.slice().sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(a => a.id) : [];
   };
   const firstPct = s => { const ws = (s && s.words) || []; return ws.length ? Math.round((ws.filter(w => w.correct && w.triesUsed === 1).length / ws.length) * 100) : null; };
-  const yearLevel = year => { const n = Number(String(year || "").replace(/\D/g, "")); return !n ? "" : n <= 1 ? "Early" : n <= 4 ? "First" : "Second"; };
+  // What CfE expects for each year group: most children achieve Early level by the end of P1,
+  // First by the end of P4, Second by the end of P7 and Third in S1 to S3. Some get there sooner
+  // and some need longer; teachers judge it using the benchmarks.
+  const EXPECTED = {
+    Nursery: ["Early", "most children achieve it by the end of P1"], P1: ["Early", "to be achieved by the end of P1"],
+    P2: ["First", "working through it, to achieve it by the end of P4"], P3: ["First", "working through it, to achieve it by the end of P4"],
+    P4: ["First", "to be achieved by the end of P4"], P5: ["Second", "working through it, to achieve it by the end of P7"],
+    P6: ["Second", "working through it, to achieve it by the end of P7"], P7: ["Second", "to be achieved by the end of P7"],
+    S1: ["Third", "working through it, to achieve it by the end of S3"], S2: ["Third", "working through it, to achieve it by the end of S3"],
+    S3: ["Third", "to be achieved by the end of S3"]
+  };
+  const ALL_LEVELS = ["Early", "First", "Second", "Third"];
+  const yearLevel = year => { const e = EXPECTED[year]; return e ? (e[0] === "Third" ? "Second" : e[0]) : ""; };
+  const LEVEL_STATUS = { below: "Below expected", at: "As expected", beyond: "Beyond expected" };
+  // Where the pupil is working, against what's expected for their year group
+  function levelCheck(r, prog) {
+    const exp = EXPECTED[r.yearGroup];
+    const A = A_();
+    const areas = [prog.focus !== "maths" && ["Literacy", levelOfStage(stageOf(prog.spelling))],
+      prog.focus !== "literacy" && ["Maths", ((A && A.get(prog.maths)) || {}).level]].filter(a => a && a[1]);
+    return { year: r.yearGroup, expected: exp, areas: areas.map(([area, level]) => {
+      const gap = exp ? ALL_LEVELS.indexOf(level) - ALL_LEVELS.indexOf(exp[0]) : 0;
+      return { area, level, status: !exp ? "" : gap < 0 ? "below" : gap > 0 ? "beyond" : "at" };
+    }) };
+  }
+  function levelsHTML(r, prog) {
+    const c = levelCheck(r, prog);
+    if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see the CfE level expected for their age next to where they're working.</p>`;
+    return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}:</b> ${c.expected[0]} level (${esc(c.expected[1])}).</p>
+      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${LEVEL_STATUS[a.status]}</span> <b>${a.area}:</b> working at ${a.level} level</p>`).join("")}</div>`;
+  }
   // Sound games that practise each spelling stage (stage 1 is short vowels)
   const STAGE_GAMES = [["g-hopper-short", "g-switch-first"], ["g-hopper-digraphs", "g-switch-digraphs", "g-switch-build"],
     ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"]];
@@ -1337,7 +1367,7 @@
       const date = x.r.nextLessonDate >= today ? x.r.nextLessonDate : "";
       if (!x.prog) return `<details class="lib-group prog-card" data-name="${esc(name)}"${openProgramme === name ? " open" : ""}>
         <summary><span>${esc(name)}</span><span class="hint">No programme yet</span></summary>
-        <div class="prog-body"><p>Suggested start: <b>${esc(titleOf(x.start.spelling))}</b> (from ${esc(x.start.spellingWhy)}) and <b>${esc(titleOf(x.start.maths))}</b> (from ${esc(x.start.mathsWhy)}). Change either if you know better.</p>
+        <div class="prog-body">${levelsHTML(x.r, { spelling: x.start.spelling, maths: x.start.maths, focus: "both" })}<p>Suggested start: <b>${esc(titleOf(x.start.spelling))}</b> (from ${esc(x.start.spellingWhy)}) and <b>${esc(titleOf(x.start.maths))}</b> (from ${esc(x.start.mathsWhy)}). Change either if you know better.</p>
           ${startForm(x, i)}</div></details>`;
       const parts = lessonParts(x.prog, x.prog.lesson, length);
       const intentions = parts.filter(p => p.intention);
@@ -1347,6 +1377,7 @@
       return `<details class="lib-group prog-card" data-name="${esc(name)}"${openProgramme === name ? " open" : ""}>
         <summary><span>${esc(name)} · Lesson ${x.prog.lesson}</span><span class="hint">${esc(lessonTopics(x.prog))}${date ? ` · ${esc(when(date))}` : ""}</span></summary>
         <div class="prog-body">
+          ${levelsHTML(x.r, x.prog)}
           <h3>Lesson ${x.prog.lesson} · ${length} minutes${date ? ` · ${esc(when(date))}${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : ""}</h3>
           ${intentions.map(p => `<p class="prog-li"><b>${esc(p.intention)}</b> ${p.criteria.map(c => `<span class="t-chip">${esc(c)}</span>`).join(" ")}</p>`).join("")}
           ${planTable(parts)}
@@ -1469,8 +1500,10 @@
     const when = new Date(`${date}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
     const intentions = parts.filter(p => p.intention);
     const codes = [...new Set(parts.flatMap(p => p.codes || []))];
+    const levels = levelCheck(x.r, prog);
     return `<h1>PopSpell · ${esc(x.r.name)} · Lesson ${prog.lesson}</h1>
       <p><b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}</p>
+      ${levels.expected ? `<p><b>Expected for ${esc(levels.year)}:</b> ${levels.expected[0]} level. ${levels.areas.map(a => `<b>${a.area}:</b> working at ${a.level} level (${LEVEL_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>` : ""}
       ${intentions.map(p => `<p><b>Learning intention:</b> ${esc(p.intention)}<br><b>Success criteria:</b> ${p.criteria.map(esc).join(" ")}</p>`).join("")}
       ${codes.length ? `<p><b>CfE experiences and outcomes:</b> ${esc(codes.join(", "))}</p>` : ""}
       <table><thead><tr><th>Part</th><th>Time</th><th>Where</th><th>What to do</th><th>✓</th></tr></thead><tbody>
