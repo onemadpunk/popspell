@@ -194,6 +194,19 @@ MAP = {
   "lesson-second-planning-and-giving-a-short-talk": "en 1-6 sl 5; en 1-6 sl 9; en 1-6 sl 10",
   "lesson-second-spelling-rules-ing-plurals-and-endings": "en 2 sp 9; en 3-4 sp 1",
   "lesson-second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph": "en 2 sp 9; en 5-6 sp 2",
+  "lesson-early-choosing-and-sharing-stories-i-like": "en R comp 1; en 1 rc 2",
+  "lesson-early-asking-questions-about-stories": "en R lau 2; en 1 rc 9; en 1-6 sl 2",
+  "lesson-early-sharing-my-news-and-new-words": "en R spk 3; en R spk 1; en 1-6 sl 3",
+  "lesson-early-finding-information-in-signs-and-books": "en 1 rc 2",
+  "lesson-first-choosing-texts-and-explaining-why": "en 2 rc 2; en 3-4 rc 2; en 2 co 5",
+  "lesson-first-listening-and-talking-in-a-group": "en 1-6 sl 1; en 1-6 sl 6; en 1-6 sl 8; en 1-6 sl 10",
+  "lesson-first-notes-from-listening-then-using-them": "en 3-4 co 3; en 3-4 rc 17",
+  "lesson-first-fact-and-opinion-in-what-i-read": "en 5-6 rc 18",
+  "lesson-first-writing-to-share-information-or-an-opinion": "en 2 co 5",
+  "lesson-second-choosing-texts-and-authors-and-writing-my-own-choice": "en 5-6 rc 5; en 5-6 rc 2",
+  "lesson-second-group-discussion-building-on-others-ideas": "en 1-6 sl 11; en 1-6 sl 6; en 1-6 sl 4",
+  "lesson-second-notes-from-listening-in-my-own-words": "en 5-6 rc 19; en 3-4 co 3",
+  "lesson-second-questions-fact-and-opinion-in-what-i-hear": "en 1-6 sl 2; en 5-6 rc 18; en 1-6 sl 11",
 }
 
 # England's statutory spelling words (window.ENGLAND_LISTS in words.js), one entry per list

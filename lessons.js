@@ -695,6 +695,46 @@ window.PopLessons = (() => {
       check: "Retell the story in order, using first, then, at the end." },
     [], "Make up a story together at bedtime.", "story, beginning, middle, end, character");
 
+  add("Early", L, READ, ["LIT 0-01b", "LIT 0-11b", "LIT 0-01c"], "Choosing and sharing stories I like",
+    "We are learning to choose stories we enjoy and share what we think about them.",
+    ["I can choose a story using its cover, title, author or illustrator.", "I can share what I like and don't like about stories, songs and rhymes.",
+      "I can retell or act out a story in different ways, for example with puppets or props."],
+    { start: "Lay out three or four books. Which one would you like? What made you pick it: the cover, the title, the pictures?",
+      teach: "Read the chosen story. Stop to talk about the characters and what happens. Then retell it together with props, puppets or the pictures, and say which part was best and which part they didn't like, and why.",
+      practise: "The \"My favourite story\" sheet: draw a favourite part and colour a face for how they felt about it.",
+      check: "Ask them to choose between two books and tell you why. Can they retell one part of the story in their own way?" },
+    [], "Visit the library together and let your child choose a book. Ask what made them pick it.", "story, cover, title, author, illustrator, character, like, dislike");
+
+  add("Early", L, READ, ["LIT 0-07a", "LIT 0-16a"], "Asking questions about stories",
+    "We are learning to ask and answer questions about stories, and link them to what we already know.",
+    ["I can ask and answer questions about a story to show I understand it.", "I can make a simple prediction about what might happen.",
+      "I can link a story to something I already know or have done."],
+    { start: "Show the cover. What do you think will happen? Have you ever been somewhere like this?",
+      teach: "Read or listen to a short story. Model asking a question (\"I wonder why…\"), then let the child ask one. Stop before the end: what will happen next? Afterwards, link it to their life: has that ever happened to you?",
+      practise: "Read a story and answer its questions, then listen to a story and answer.",
+      check: "Ask one who, one what and one why question, and ask them to ask you one about the story." },
+    ["r-bus", "lc-shell-shop"], "At story time, ask your child to ask you a question about the story.", "question, ask, answer, predict, I wonder, remember");
+
+  add("Early", L, TALK, ["LIT 0-09a", "LIT 0-10a"], "Sharing my news and new words",
+    "We are learning to share our experiences, feelings and ideas, and to use new words we have learned.",
+    ["I can talk clearly to others, sharing my feelings, ideas and thoughts.", "I can tell about something that happened in the right order.",
+      "I can share ideas in play and pretend situations.", "I can use new words and phrases I have learned."],
+    { start: "Share some news of your own in three parts: first, then, at the end. How did it make you feel?",
+      teach: "The child shares their news, using first, then and at the end. Teach two or three new words that fit it (for example delighted, enormous, crowded) and use them back. Then act out a pretend situation, such as a shop or a vet, where they explain what they want.",
+      practise: "The \"My news\" sheet: draw the news in order, then tell it to an adult using a new word.",
+      check: "Ask them to tell you about something they did, in order, using at least one new word." },
+    [], "At teatime, ask about the day: what happened first, next and at the end?", "news, first, then, at the end, feeling, new word");
+
+  add("Early", L, READ, ["LIT 0-14a"], "Finding information in signs and books",
+    "We are learning to find useful information in signs, books and other texts, and use it.",
+    ["I can find information in a sign, book or other text to learn something new.", "I can tell a storybook from an information book.",
+      "I can use what I find to make a choice or a plan."],
+    { start: "Show a sign (a toilet sign, a shop sign, an exit). What does it tell us? How do you know?",
+      teach: "Put a storybook beside an information book. How are they different (photographs, labels, facts)? Find one fact in the information book together. Then read a simple poster or menu and use it to choose or plan something.",
+      practise: "The \"Find it\" sheet: read a poster and a menu with an adult, find the information and make a choice.",
+      check: "Show a new sign or a page of an information book. What does it tell us? What could we do with that?" },
+    [], "Point out signs on a walk or in a shop, and ask what each one tells you.", "sign, information, fact, label, storybook, information book");
+
   /* ===================== Literacy and English: First level ===================== */
 
   add("First", L, PHON, ["ENG 1-12a", "LIT 1-13a", "LIT 1-21a"], "Silent e: a–e, i–e, o–e, u–e",
@@ -814,7 +854,7 @@ window.PopLessons = (() => {
       check: "Point to the opening, problem and ending, and a feeling word." },
     [], "Make up stories with toys and write one down.", "character, setting, beginning, problem, ending");
 
-  add("First", L, TALK, ["LIT 1-04a", "LIT 1-07a", "LIT 1-09a"], "Listening for main ideas, and fact or opinion",
+  add("First", L, TALK, ["LIT 1-04a", "LIT 1-07a", "LIT 1-08a", "LIT 1-09a"], "Listening for main ideas, and fact or opinion",
     "We are learning to listen for main ideas and tell fact from opinion.",
     ["I can find the purpose and main ideas of something I hear.", "I can answer different types of questions about it.", "I can tell simple facts from opinions."],
     { start: "'Dogs have four legs.' 'Dogs are the best pets.' Which is a fact?",
@@ -831,6 +871,56 @@ window.PopLessons = (() => {
       practise: "Handwriting sheet for this week's spelling list.",
       check: "Copy a sentence neatly with even spacing." },
     ["handwriting-spacing"], "Write a birthday card in best handwriting.", "handwriting, spacing, size, neat, legible");
+
+  add("First", L, READ, ["LIT 1-01a", "LIT 1-11a", "LIT 1-20a"], "Choosing texts and explaining why",
+    "We are learning to choose texts we enjoy, explain why, and choose how to make our own.",
+    ["I can choose texts to listen to, watch or read, for enjoyment or to find something out.", "I can use the cover, title, author, illustrator or blurb to help me choose.",
+      "I can explain why I prefer certain texts and authors.", "I can choose my own subject, purpose and format when I create a text."],
+    { start: "What's the best book, programme or podcast you've read, watched or listened to lately? What made it good?",
+      teach: "Look at three books together. Use the cover, title, author and blurb to predict what each is like, then choose one and explain why. Talk about favourite authors and what they have in common. Then plan a text of their own choice: what will it be about, who is it for, and will it be a poster, a comic, a story or a letter?",
+      practise: "The \"My choices\" sheet: a reading and listening log with reasons, then a plan for a text of their own choosing.",
+      check: "Ask them to recommend a text to you and give two reasons. Ask why they chose the format for their own text." },
+    [], "Keep a list of books and programmes your child enjoys, and talk about why.", "choose, prefer, author, blurb, genre, format, recommend");
+
+  add("First", L, TALK, ["LIT 1-02a", "ENG 1-03a", "LIT 1-10a"], "Listening and talking in a group",
+    "We are learning when and how to listen and talk with others, and to talk clearly so others are interested.",
+    ["I can take turns and talk at the right time.", "I can listen and respond respectfully, for example by nodding, agreeing, asking and answering questions.",
+      "I can use eye contact, expression and body language to engage others.", "I can speak clearly and audibly, choosing objects or pictures to help if I need them."],
+    { start: "Say \"I like pizza\" in a bored voice, then in an excited voice. Which is more interesting to listen to? Why?",
+      teach: "Agree the rules for talking together: one speaker at a time, look at the speaker, wait for a pause, ask a question that fits. Discuss a simple question together (Should we have school on Saturdays?). Model pace, expression and gesture, then the pupil explains something to you with an object or picture to help.",
+      practise: "The \"Talking together\" sheet: a short talk about a chosen object, and a checklist for how the talk went.",
+      check: "Have a two-minute conversation. Do they wait their turn, respond to what you said and speak clearly?" },
+    [], "Play a game of \"tell me about it\" at dinner: everyone takes a turn and asks one question.", "turn, listen, respond, eye contact, expression, gesture, clearly");
+
+  add("First", L, TALK, ["LIT 1-05a", "LIT 1-06a", "LIT 1-25a"], "Notes from listening, then using them",
+    "We are learning to make notes under headings as we listen, then use them to create something new.",
+    ["I can find the purpose and main ideas of something I listen to or watch.", "I can make notes under given headings.",
+      "I can use my notes to put ideas in a logical order and create a new text."],
+    { start: "Listen to two sentences about hedgehogs. Which words are the most important to remember?",
+      teach: "Explain notes are key words, not whole sentences. Read the short talk on the adult's sheet aloud twice. The first time, just listen for the main idea. The second time, write key words under the headings. Then turn the notes into three sentences, in order, for someone who didn't hear it.",
+      practise: "The \"Notes from listening\" sheet: notes under headings while the adult reads, then sentences from the notes.",
+      check: "From their notes alone, can they tell you the main ideas in a sensible order?" },
+    [], "Listen to the weather or a short news clip and jot down three key words together.", "notes, heading, key word, main idea, purpose, order");
+
+  add("First", L, READ, ["LIT 1-18a"], "Fact and opinion in what I read",
+    "We are learning to recognise the difference between fact and opinion in what we read.",
+    ["I can tell a fact from an opinion in a text.", "I can explain how I know: a fact can be checked, an opinion is what someone thinks.",
+      "I can spot words that often show an opinion, such as best, I think and should."],
+    { start: "\"Penguins are birds.\" \"Penguins are the cutest animals.\" Which one could we check in a book?",
+      teach: "Read a short text about an animal or place. Underline the facts in one colour and the opinions in another. Collect opinion words (best, worst, I think, amazing, should). Ask: why might a writer put opinions in?",
+      practise: "The \"Fact or opinion?\" sheet: sort sentences from a short text, then write one fact and one opinion of their own.",
+      check: "Give three new sentences. Which are facts and which are opinions, and how do they know?" },
+    [], "Spot facts and opinions on food packets and adverts together.", "fact, opinion, true, check, think, believe");
+
+  add("First", L, CREATE, ["LIT 1-29a"], "Writing to share information or an opinion",
+    "We are learning to write to give information, describe something, share our opinion or persuade.",
+    ["I can choose and organise information and share it in different ways.", "I can use words that suit what I'm writing for.",
+      "I can give my own opinion and try to persuade the reader."],
+    { start: "Show a poster and an information leaflet. What is each one trying to do?",
+      teach: "Choose a topic the pupil knows well (a pet, a game, a place). First write two or three facts to inform. Then write their opinion with a reason, and add one sentence to persuade the reader (You should… because…). Talk about how the words change between informing and persuading.",
+      practise: "The \"Inform or persuade\" sheet: facts in one box, an opinion and reasons in another, then a short poster.",
+      check: "Can they tell you which sentences inform and which persuade, and why?" },
+    [], "Make a poster together for something at home: a family film night, or a room tidy rota.", "inform, describe, opinion, persuade, reason, because, should");
 
   /* ===================== Literacy and English: Second level ===================== */
 
@@ -941,6 +1031,47 @@ window.PopLessons = (() => {
       practise: "Give the talk and answer one question.",
       check: "Did it have an opening, three points and an ending? Was it clear?" },
     [], "Give your talk to the family at teatime.", "talk, audience, eye contact, volume, pace");
+
+  add("Second", L, READ, ["LIT 2-01a", "LIT 2-11a", "LIT 2-20a"], "Choosing texts and authors, and writing my own choice",
+    "We are learning to choose texts for enjoyment or information, explain our preferences with detail, and choose the right form for our own writing.",
+    ["I can choose texts to read, listen to or watch, for enjoyment or to find information for a purpose.", "I can explain my preferences for texts, authors or sources with supporting detail.",
+      "I can choose the genre, form, structure and style of my own texts to suit my purpose and audience."],
+    { start: "Which author or series would you recommend to a friend? Convince me in one sentence.",
+      teach: "Compare two texts the pupil knows: what does each author do that they like (characters, humour, facts, layout)? Talk about choosing sources for information: a website, a book, a podcast. Then choose a purpose and audience for their own text and decide the best form (a review, a blog post, a comic, a set of instructions).",
+      practise: "The \"Recommend it\" sheet: a review with evidence, then a plan for their own text with its audience and form.",
+      check: "Ask them to justify a preference with a detail from the text, and explain why the form they chose suits the audience." },
+    [], "Swap book recommendations as a family, each giving a reason.", "genre, author, source, preference, review, audience, purpose, form");
+
+  add("Second", L, TALK, ["LIT 2-02a", "ENG 2-03a"], "Group discussion: building on others' ideas",
+    "We are learning to take part in discussions, value others' ideas and build on them, and use features of spoken language well.",
+    ["I can contribute relevant ideas, information and opinions in a discussion.", "I can show respect for others' views and offer my own.",
+      "I can build on what others say by asking or answering questions, clarifying points or supporting their ideas.",
+      "I can use vocabulary, eye contact, body language, emphasis, pace and tone when I talk, and spot techniques speakers use to influence me."],
+    { start: "Agree or disagree: \"Every child should learn to cook.\" Give one reason.",
+      teach: "Teach discussion moves with sentence starters: I agree with… because…; Building on what you said…; Can you explain what you mean by…?; I see it differently because…. Discuss a question together, taking turns, and use at least three moves each. Then listen to a short persuasive speech (or perform one) and spot the techniques: emphasis, pace, tone, rhetorical questions.",
+      practise: "The \"Discussion\" sheet: plan points for a discussion, use the starters, and note techniques heard.",
+      check: "In a short discussion, do they build on what you said rather than just giving their own point?" },
+    [], "Have a family debate on something light, like the best pizza topping, with everyone building on the last speaker.", "discussion, agree, disagree, build on, clarify, viewpoint, tone, emphasis, rhetorical question");
+
+  add("Second", L, TALK, ["LIT 2-04a", "LIT 2-05a", "LIT 2-06a", "LIT 2-25a"], "Notes from listening, in my own words",
+    "We are learning to make notes in our own words as we listen, organise them, and use them to create new texts, crediting our sources.",
+    ["I can find the purpose and main ideas of something I listen to or watch, with supporting detail.", "I can make relevant notes in my own words and organise them under suitable headings.",
+      "I can use my notes to create a new text for a purpose.", "I can say where my information came from."],
+    { start: "Listen to one sentence. Write it in three words. Did you keep the meaning?",
+      teach: "Read the short talk on the adult's sheet aloud twice. First listen for the purpose and main ideas. The second time, the pupil makes notes in their own words and chooses their own headings. Then they use the notes to write a short paragraph for a younger reader, and add where the information came from.",
+      practise: "The \"Notes in my own words\" sheet: notes under their own headings, then a short paragraph with its source.",
+      check: "Compare their notes to the talk: are the main ideas there, in their own words, with the source credited?" },
+    [], "Watch a short documentary clip together and each jot down three facts in your own words.", "notes, own words, heading, purpose, main idea, detail, source");
+
+  add("Second", L, TALK, ["LIT 2-07a", "LIT 2-08a"], "Questions, fact and opinion in what I hear",
+    "We are learning to show we understand what we hear by answering and asking different kinds of questions, and to tell fact from opinion and spot when a source is trying to influence us.",
+    ["I can answer literal, inferential and evaluative questions about something I listen to or watch.", "I can ask different kinds of questions of my own.",
+      "I can tell fact from opinion and explain how I know.", "I can recognise when a source is trying to influence me, and say how useful it is."],
+    { start: "\"Our juice is the tastiest in Scotland!\" Who might say this? Why?",
+      teach: "Explain the three kinds of question: literal (it says so), inferential (clues tell you) and evaluative (what do you think, and why?). Read the radio advert on the adult's sheet aloud. The pupil answers one of each kind, sorts facts from opinions, and decides how the advert tries to influence the listener and whether it's a useful source.",
+      practise: "The \"What I heard\" sheet: questions on a spoken advert, fact and opinion, and how it tries to influence.",
+      check: "Ask them to write one literal, one inferential and one evaluative question about something they've heard." },
+    [], "When an advert comes on, ask: what is it trying to make us do? Is everything in it a fact?", "literal, inferential, evaluative, fact, opinion, influence, source, reliable");
 
   /* ===================== England: lessons for the national curriculum's own requirements ===================== */
   // Grammar by year (English Appendix 2), the statutory spelling words (Appendix 1), joined
@@ -1152,6 +1283,10 @@ window.PopLessons = (() => {
     "early-listening-taking-turns-and-following-instructions": ["What did your partner just say? Tell me in your own words.", "Repeats the main idea, showing they listened."],
     "early-forming-lowercase-letters": ["Where does this letter start? Show me with your finger.", "Starts in the right place and moves the right way without a model."],
     "early-writing-a-sentence": ["How do you know where your sentence starts and ends?", "Points to the capital letter and full stop, and reads the sentence back."],
+    "early-choosing-and-sharing-stories-i-like": ["Why did you choose that book? What did you like or not like about it?", "Gives a reason linked to the book (the cover, the characters, a funny part), not just \"it's good\"."],
+    "early-asking-questions-about-stories": ["What question would you ask the character? Why?", "Asks a real question about the story, and links it to something they know or have done."],
+    "early-sharing-my-news-and-new-words": ["Tell me your news again, using our new word.", "Tells events in order and uses the new word correctly, in a way that fits."],
+    "early-finding-information-in-signs-and-books": ["How did this sign or page help us? What can we do now we know that?", "Explains what the information tells them and uses it to choose or plan something."],
     "early-telling-and-drawing-my-own-story": ["What's the problem in your story, and how does it end?", "Tells a beginning, middle and end in order."],
     "first-silent-e-a-e-i-e-o-e-u-e": ["What does the e do in hope? Read hop and hope.", "Explains the e changes the vowel sound, and reads both correctly."],
     "first-vowel-teams-ai-ee-oa-igh": ["How do you know whether to write ai or ay?", "Knows ay usually comes at the end of a word and ai in the middle."],
@@ -1167,6 +1302,11 @@ window.PopLessons = (() => {
     "first-planning-and-writing-a-recount": ["Why does a recount need time words?", "Explains they show the order things happened in."],
     "first-writing-a-story-with-characters-and-a-setting": ["How did you show your character was scared, without saying \"scared\"?", "Points to actions, words or feelings that show it."],
     "first-listening-for-main-ideas-and-fact-or-opinion": ["Is \"dogs are the best pets\" a fact or an opinion? How do you know?", "Explains an opinion can't be proved true; a fact can be checked."],
+    "first-choosing-texts-and-explaining-why": ["Why would you recommend that book to a friend, and not this one?", "Gives reasons about the text itself (the author's style, the topic, the pictures), comparing the two."],
+    "first-listening-and-talking-in-a-group": ["What did I just say? What would be a good question to ask me about it?", "Sums up what you said and asks a question that follows on from it."],
+    "first-notes-from-listening-then-using-them": ["Why are notes just key words? Could someone else understand your notes?", "Explains notes save time and keep the main ideas; uses them to retell in order."],
+    "first-fact-and-opinion-in-what-i-read": ["Is \"Edinburgh is the best city\" a fact or an opinion? How could you check?", "Explains it's an opinion because it can't be checked; a fact can be found in a reliable book."],
+    "first-writing-to-share-information-or-an-opinion": ["Which of your sentences informs, and which persuades? How can you tell?", "Points to facts that inform and to reasons and \"you should\" that persuade."],
     "first-clear-legible-handwriting": ["Why does it matter that your letters are the right size?", "Explains it helps a reader read it easily."],
     "second-spelling-rules-ing-plurals-and-endings": ["Why does hop become hopping but jump becomes jumping?", "Explains doubling after a short vowel with one consonant."],
     "second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph": ["Why does the c in city sound like s?", "Knows c is usually soft before e, i or y."],
@@ -1179,6 +1319,10 @@ window.PopLessons = (() => {
     "second-dictation-longer-sentences": ["Which part was hardest to remember, and how did you hold it in your head?", "Uses a strategy: repeating it, chunking it, saying it while writing."],
     "second-writing-to-inform-or-persuade": ["Who is your reader, and how did that change what you wrote?", "Links word choice and tone to the audience and purpose."],
     "second-writing-a-story-plot-character-and-setting": ["How does the setting add to the mood of your story?", "Points to description that creates atmosphere and fits what happens."],
+    "second-choosing-texts-and-authors-and-writing-my-own-choice": ["Why did you choose that form for your own text?", "Links the form and style to the audience and purpose, for example a comic for younger readers."],
+    "second-group-discussion-building-on-others-ideas": ["How did what I said change your thinking?", "Refers to your point and builds on it or disagrees respectfully with a reason."],
+    "second-notes-from-listening-in-my-own-words": ["Why does it matter to say where your information came from?", "Explains it shows the information can be checked and gives credit to the source."],
+    "second-questions-fact-and-opinion-in-what-i-hear": ["Was the advert a useful source? Why or why not?", "Weighs it up: it wants to sell, so it chooses facts and adds opinions, so check elsewhere."],
     "second-planning-and-giving-a-short-talk": ["What did you do to keep your audience interested?", "Names techniques: a question, an example, eye contact, changing their voice."],
     "england-year-1-grammar-plurals-un-and-capital-letters": ["Why does box need -es but cat only -s?", "Hears the extra beat (boxes), or knows -es comes after s, x, z, sh and ch."],
     "england-year-2-grammar-apostrophes-suffixes-and-sentence-types": ["Why is there an apostrophe in can't?", "Explains it shows where letters are missed out (cannot)."],
