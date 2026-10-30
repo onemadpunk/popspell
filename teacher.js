@@ -283,11 +283,12 @@
     const spelling = ALL_STAGES().flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
       return { id: item.id, title: list.title, type: "spelling", level: tag(item.id).level, subject: "Literacy", strand: "Spelling",
-        stage: stage.england ? "England statutory words" : stage.stage.split(" · ")[0], detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
+        stage: stage.england ? "England statutory words" : stage.stage.split(" · ")[0], england: !!stage.england, detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
     }));
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
       strand: strandOf(act.organiser), organiser: act.organiser, type: area.id === "games" ? "game" : act.passage ? "story" : "activity",
+      england: area.id === "grammar" || area.id === "england-checks",
       detail: act.blurb || "", print: area.id !== "games"
     })));
     // Dictation needs sentences, which the phonics lists have
@@ -298,7 +299,7 @@
       strand: "Handwriting", detail: "Trace and write every lower-case letter on four-line ruling.", print: true }];
     // Ready lessons (lessons.js): one for every area of the benchmarks
     const lessons = (window.PopLessons ? window.PopLessons.all() : []).map(l => ({ id: l.id, title: l.title, type: "lesson",
-      level: l.level, subject: l.subject, strand: l.strand, detail: l.intention, lesson: l, codes: l.codes, ids: lessonOnline(l), print: true }));
+      level: l.level, subject: l.subject, strand: l.strand, detail: l.intention, lesson: l, codes: l.codes, ids: lessonOnline(l), print: true, england: !!l.england }));
     const all = checks.concat(lessons, spelling, activities, dictation, paper);
     all.forEach((e, i) => {
       e.order = i;
@@ -327,9 +328,10 @@
   function drawLibrary(body) {
     const prefs = libraryPrefs();
     // Scotland (CfE levels and organisers) or England (national curriculum years and domains).
-    // England's own lessons (grammar by year, statutory words, the national checks) are England only.
+    // England's own work (grammar by year, statutory words, the national checks, its lessons) shows in
+    // both, placed by CfE level and strand in Scotland's view and tagged as from England's curriculum.
     const en = prefs.cur === "england" && Boolean(E_());
-    const entries = libraryEntries().filter(e => en || !(e.lesson && e.lesson.england));
+    const entries = libraryEntries();
     const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
     const strandOfEntry = e => (en ? e.enStrand : e.strand);
     const levelOfEntry = e => (en ? e.band : e.level);
@@ -358,7 +360,8 @@
       : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
     const card = e => `<article class="pcard library-card">
         <p class="lib-tags">${tagOf(e)}
-          <span class="lib-type">${LIB_TYPES[e.type]}</span>${e.stage ? `<span class="lib-type">${esc(e.stage)}</span>` : ""}</p>
+          <span class="lib-type">${LIB_TYPES[e.type]}</span>${e.stage && !(e.england && !en) ? `<span class="lib-type">${esc(e.stage)}</span>` : ""}
+          ${e.england && !en ? `<span class="lib-type lib-from-en">From England's curriculum</span>` : ""}</p>
         <h3>${esc(e.title)}</h3>
         <p>${esc(e.detail)}</p>
         ${codesLine(e)}
@@ -448,8 +451,12 @@
     const M = window.PopLessons.MINUTES;
     const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
     const en = cur === "england" ? enWork(l.id) : null;
-    const curriculum = !en ? `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`
+    const curriculum = !en ? (l.england
+      ? `<p class="hint">Written for England's national curriculum. In CfE terms it's ${esc(l.level)} level work.</p>
+        <p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+        <p><b>CfE experiences and outcomes it supports:</b> ${esc(l.codes.join(", "))}</p>`
+      : `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`)
       : en.statements.length ? `${l.england ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
         ${en.hi === 0 ? "Children at the expected level of development will:" : en.lo === 0 ? "What children are expected to do (Reception) and be taught (Year 1 on):" : "Pupils should be taught to:"}</p>
         <ul class="lesson-criteria">${lessonStatements(en).slice(0, 6).map(s => `<li>${esc(s.wording)} <span class="hint">(${esc(E_().yearLabel(s.year))} · ${esc(E_().domainLabel(s.domain))})</span></li>`).join("")}</ul>`
@@ -468,7 +475,7 @@
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
         <button class="btn small" type="button" data-close>Close</button></div>
-      <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span></p>
+      <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">From England's curriculum</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
       <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the lesson and sheets</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
@@ -1549,8 +1556,7 @@
       if (prog.focus !== "maths") ids.push(prog.spelling);
       if (prog.focus !== "literacy") ids.push(prog.maths);
       const out = [];
-      // England's own lessons (statutory words, the national checks) are only for pupils in England
-      const addLesson = l => { if ((!l.england || inEngland(x.r)) && !out.some(o => o.id === l.id)) out.push(l); };
+      const addLesson = l => { if (!out.some(o => o.id === l.id)) out.push(l); };
       // A spelling list with no lesson of its own matches the lessons for its stage's other lists
       const sameStage = id => (stageOf(id) < 0 ? [] : P().STAGES[stageOf(id)].lists.map(l => l.id));
       ids.forEach(id => { const direct = L.forWork(id); (direct.length ? direct : sameStage(id).flatMap(L.forWork)).forEach(addLesson); });

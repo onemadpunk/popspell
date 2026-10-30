@@ -944,9 +944,9 @@ window.PopLessons = (() => {
 
   /* ===================== England: lessons for the national curriculum's own requirements ===================== */
   // Grammar by year (English Appendix 2), the statutory spelling words (Appendix 1), joined
-  // handwriting, and the Year 1 phonics and Year 4 multiplication tables checks. They show for
-  // pupils with an England year group and in the Library's England view; the national curriculum
-  // statements they cover are in england.js.
+  // handwriting, and the Year 1 phonics and Year 4 multiplication tables checks. "level" and "codes"
+  // place each one in CfE too (England's Year 1 is about P2), so Scottish pupils can use them; the
+  // national curriculum statements they cover are in england.js.
   function addEngland(level, subject, strand, codes, title, intention, criteria, steps, use = [], home = "", vocab = "") {
     lessons.push({ id: `lesson-england-${slug(title)}`, england: true, level, subject, strand, codes, title, intention, criteria, steps, use, home, vocab });
   }
@@ -1041,7 +1041,7 @@ window.PopLessons = (() => {
       check: "Spell five words from today, then look up one in a dictionary and one in a thesaurus." },
     ["wl-y56-1", "wl-y56-2"], "Find two of the words in a newspaper or online article.", "morphology, etymology, root word, prefix, suffix, thesaurus");
 
-  addEngland("Second", L, HAND, ["LIT 2-24a"], "Joined handwriting (Years 3 and 4)",
+  addEngland("First", L, HAND, ["LIT 1-24a"], "Joined handwriting (Years 3 and 4)",
     "We are learning to join letters with diagonal and horizontal strokes, and keep our writing even.",
     ["I can join letters with diagonal and horizontal strokes.", "I know which letters are best left unjoined.", "I keep my letters the same size and my lines parallel."],
     { start: "Write your name your best way. Which letters already join?",
@@ -1083,8 +1083,8 @@ window.PopLessons = (() => {
     get: id => lessons.find(l => l.id === id) || null,
     // Lessons that use a piece of PopSpell work, for suggesting them when a pupil finds it hard
     forWork: id => lessons.filter(l => l.use.includes(id)),
-    // Lessons for an area and CfE level, in teaching order (England's own lessons aren't CfE lessons)
-    forArea: (subject, level) => lessons.filter(l => !l.england && l.subject === subject && (!level || l.level === level)),
+    // Lessons for an area and CfE level, in teaching order (England's own lessons come last)
+    forArea: (subject, level) => lessons.filter(l => l.subject === subject && (!level || l.level === level)),
     LEVELS,
     MINUTES: { start: 5, teach: 10, practise: 10, check: 5 }
   };
