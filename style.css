@@ -1249,7 +1249,7 @@ a.me-card:hover { border-color: var(--primary); }
 .sheet-preview-page h1 { font-size: 18pt; margin: 0 0 10px; }
 .sheet-preview-page p { margin: 8px 0 14px; }
 .sheet-preview-page table { width: 100%; border-collapse: collapse; }
-.sheet-preview-page th, .sheet-preview-page td { border: 1px solid #777; padding: 8px; height: 28px; }
+.sheet-preview-page th, .sheet-preview-page td { border: 1px solid #777; padding: 5px 8px; height: 28px; }
 .sheet-preview-page th { text-align: left; background: #eee; }
 .sheet-preview-page .write-line { width: 58%; }
 .sheet-preview-page .check-box { width: 10%; text-align: center; }
@@ -1257,7 +1257,7 @@ a.me-card:hover { border-color: var(--primary); }
 .sheet-preview-page .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
 .sheet-preview-page.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
 .sheet-preview-page .ws-literacy h1, .sheet-preview-page.ws-literacy h1 { font-family: var(--font); }
-.sheet-preview-page .ws-row { display: block; width: 100%; height: auto; margin: 2px 0 10px; }
+.sheet-preview-page .ws-row { display: block; width: 100%; height: auto; margin: 0 0 4px; }
 .sheet-preview-page .ws-row text { font-family: var(--reading-font); }
 .sheet-preview-page .ws-row .ws-model { fill: #111; }
 .sheet-preview-page .ws-row .ws-grey { fill: #c9c9c9; }
@@ -1266,20 +1266,20 @@ a.me-card:hover { border-color: var(--primary); }
 .sheet-preview-page .ws-row .ws-mid { stroke: #3d7bd6; stroke-width: 1.4; stroke-dasharray: 4 4; }
 .sheet-preview-page .ws-row .ws-base { stroke: #333; stroke-width: 1.6; }
 .sheet-preview-page .ws-row .ws-sep { stroke: #ddd; stroke-width: 1; }
-.sheet-preview-page .ws-sentence { margin-bottom: 8px; }
-.sheet-preview-page .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
+.sheet-preview-page .ws-sentence { margin-bottom: 4px; }
+.sheet-preview-page .ws-sentence p { margin: 2px 0 0; font-size: 13.5pt; }
 /* Paper versions of activities (preview and print): questions, tick circles, then the adult's page */
 .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
-.ws-q { break-inside: avoid; margin: 0 0 16px; }
-.ws-q > p { margin: 0 0 6px; font-size: 13pt; }
+.ws-q { break-inside: avoid; margin: 0 0 10px; }
+.ws-q > p { margin: 0 0 4px; font-size: 12.5pt; }
 .ws-q .q-pic { margin: 4px 0 8px 1.4em; max-height: 130px; width: auto; }
 .ws-q .q-table { margin: 4px 0 8px 1.4em; font-size: 11pt; }
-.ws-options { display: flex; flex-wrap: wrap; gap: 8px 26px; margin-left: 1.4em; font-size: 13pt; }
+.ws-options { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-left: 1.4em; font-size: 12.5pt; }
 .ws-options span { display: inline-flex; align-items: center; gap: 8px; }
 .ws-options i { display: inline-block; width: 18px; height: 18px; border: 2px solid #222; border-radius: 50%; }
 .ws-answer { margin-left: 1.4em; }
 .ws-answer .ws-blank { width: 9em; height: 1.6em; }
-.ws-passage { margin: 0 0 18px; padding: 10px 14px; border: 1px solid #999; border-radius: 8px; font-family: var(--reading-font); font-size: 14pt; line-height: 1.6; }
+.ws-passage { margin: 0 0 12px; padding: 8px 14px; border: 1px solid #999; border-radius: 8px; font-family: var(--reading-font); font-size: 14pt; line-height: 1.5; }
 .ws-passage h2 { margin: 0 0 6px; font-family: var(--font); font-size: 15pt; }
 .ws-key { break-before: page; }
 .ws-key h2 { font-size: 15pt; }
@@ -1387,6 +1387,7 @@ a.me-card:hover { border-color: var(--primary); }
 /* ---------- Print (results sheet or a child's worksheet) ---------- */
 
 @media print {
+  @page { size: A4; margin: 12mm; }
   body { background: #fff; }
   .topbar, .no-print { display: none !important; }
   .panel { box-shadow: none; border: 0; }
@@ -1395,7 +1396,7 @@ a.me-card:hover { border-color: var(--primary); }
   .worksheet-print h1 { font-size: 18pt; margin: 0 0 10px; }
   .worksheet-print p { margin: 8px 0 14px; }
   .worksheet-print table { width: 100%; border-collapse: collapse; }
-  .worksheet-print th, .worksheet-print td { border: 1px solid #777; padding: 8px; height: 28px; }
+  .worksheet-print th, .worksheet-print td { border: 1px solid #777; padding: 5px 8px; height: 28px; }
   .worksheet-print th { text-align: left; background: #eee; }
   .worksheet-print .write-line { width: 58%; }
   .worksheet-print .check-box { width: 10%; text-align: center; }
@@ -1405,7 +1406,7 @@ a.me-card:hover { border-color: var(--primary); }
   /* Handwriting, sentence and letter-formation sheets: in the reading font, on four-line ruling */
   body.printing-worksheet .worksheet-print.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
   .ws-literacy h1 { font-family: var(--font); }
-  .ws-row { display: block; width: 100%; height: auto; margin: 2px 0 10px; break-inside: avoid; }
+  .ws-row { display: block; width: 100%; height: auto; margin: 0 0 4px; break-inside: avoid; }
   .ws-row text { font-family: var(--reading-font); }
   .ws-row .ws-model { fill: #111; }
   .ws-row .ws-grey { fill: #c9c9c9; }
@@ -1414,8 +1415,8 @@ a.me-card:hover { border-color: var(--primary); }
   .ws-row .ws-mid { stroke: #3d7bd6; stroke-width: 1.4; stroke-dasharray: 4 4; }
   .ws-row .ws-base { stroke: #333; stroke-width: 1.6; }
   .ws-row .ws-sep { stroke: #ddd; stroke-width: 1; }
-  .ws-sentence { break-inside: avoid; margin-bottom: 8px; }
-  .ws-sentence p { margin: 4px 0 0; font-size: 15pt; }
+  .ws-sentence { break-inside: avoid; margin-bottom: 4px; }
+  .ws-sentence p { margin: 2px 0 0; font-size: 13.5pt; }
   .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
   .ws-report td, .ws-report th { font-size: 10.5pt; height: auto; }
   .ws-comment { height: 90px; border: 1px solid #777; }
@@ -1496,3 +1497,22 @@ a.me-card:hover { border-color: var(--primary); }
 .phonics-share .phonics-word { font-size: clamp(4rem, 18vw, 9rem); }
 .phonics-dialog .btn.big small { font-weight: 600; opacity: .8; }
 .t-link-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+
+/* Printed sheets: the PopSpell header and footer on every page, and the answers under a cut line
+   when they fit on the same page (fitPages in teacher.js decides) */
+.ws-brand { display: flex; align-items: center; gap: 12px; border-bottom: 3px solid #ffc837; padding-bottom: 6px; margin: 0 0 10px;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.ws-brand .ws-logo { width: 22mm; height: 18.7mm; object-fit: contain; flex: none; }
+.ws-brand .ws-pip { width: 13mm; height: 13mm; flex: none; }
+.ws-brand-text { flex: 1; min-width: 0; }
+.ws-brand h1, .worksheet-print .ws-brand h1, .sheet-preview-page .ws-brand h1 { margin: 0; font: 700 16pt var(--font); color: #0b2e6b; }
+.ws-brand p, .worksheet-print .ws-brand p, .sheet-preview-page .ws-brand p { margin: 3px 0 0; font: 10.5pt Arial, sans-serif; color: #111; }
+.ws-foot, .worksheet-print .ws-foot, .sheet-preview-page .ws-foot { margin: 10px 0 0; padding-top: 4px; border-top: 1px solid #dde6f2; text-align: center; font: 8.5pt Arial, sans-serif; color: #5b6b8c; }
+.ws-key.ws-key-inline { break-before: auto; margin-top: 14px; padding-top: 8px; border-top: 2px dashed #999; }
+.ws-key.ws-key-inline::before { content: "✂  Answers for the adult: fold back or cut along the line"; display: block; font: 9pt Arial, sans-serif; color: #5b6b8c; margin-bottom: 4px; }
+.ws-key.ws-key-inline h2 { font-size: 12pt; margin: 2px 0 4px; }
+.ws-key.ws-key-inline ol { margin: 0; padding-left: 1.4em; columns: 2; column-gap: 24px; font-size: 10pt; }
+.ws-key.ws-key-inline li { margin-bottom: 2px; break-inside: avoid; }
+.ws-qs.ws-cols { columns: 2; column-gap: 28px; }
+.ws-qs.ws-cols .ws-q { break-inside: avoid; }
+.ws-qs.ws-cols .q-pic { max-width: 100%; max-height: 110px; }

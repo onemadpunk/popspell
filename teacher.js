@@ -491,8 +491,7 @@
   function lessonPrintDialog(l, who = "", cur = "") {
     const A = window.PopActivities;
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
-    const pages = [{ label: "Lesson plan", html: () => `<h1>PopSpell · ${esc(l.title)}</h1>
-      <p><b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}</p>
+    const pages = [{ label: "Lesson plan", html: () => `${brandHead(l.title, `<b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}`)}
       ${lessonBodyHTML(l, true, cur)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` }];
     l.use.forEach(id => {
       if (id === "letter-formation") return pages.push({ label: "Letter formation", html: () => letterFormationHTML(who) });
@@ -516,7 +515,7 @@
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const html = () => pages.filter((pg, i) => dialog.querySelector(`[data-page="${i}"]`).checked).map(pg => `<div class="ws-page">${pg.html()}</div>`).join("");
-    const render = () => { dialog.querySelector(".sheet-preview-page").innerHTML = html(); };
+    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelectorAll("[data-page]").forEach(el => { el.onchange = render; });
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
@@ -586,6 +585,9 @@
       return `<div class="ws-q"><p><b>${i + 1}.</b> ${esc(prompt)}</p>${q.html || ""}${answer}</div>`;
     };
     const story = act.passage ? `<div class="ws-passage"><h2>${esc(act.passage.title)}</h2><p>${esc(act.passage.text)}</p></div>` : "";
+    // Short questions (most maths) sit in two columns, so a sheet fits one page
+    const short = !act.passage && qs.every(q => q.kind !== "dictation" && String(q.prompt || "").length <= 60
+      && (!q.options || q.options.every(o => String(o).length <= 24)));
     const keyLine = q => [heard && spoken(q) ? `<b>Say:</b> “${esc(spoken(q))}”` : "",
       q.kind === "dictation" ? "" : `<b>${esc(q.answer)}</b>${q.explain ? ` · ${esc(q.explain)}` : ""}`].filter(Boolean).join("<br>");
     const adult = heard || withAnswers ? `<div class="ws-key"><h2>${heard ? "For the adult: read aloud, and the answers" : "Answers"} · ${esc(act.title)}</h2>
@@ -596,7 +598,7 @@
       <p>${qs.some(q => q.kind === "dictation") ? "Your adult reads each sentence to you. Listen, then write it." :
         heard ? "Your adult reads each one to you. Listen, then answer." : act.passage ? "Read the story. Then answer the questions." : "Answer each question."}</p>
       ${act.passage && !act.listen ? story : ""}
-      ${qs.map(question).join("")}${adult}`;
+      <div class="ws-qs${short ? " ws-cols" : ""}"${act.passage || qs.some(q => q.kind === "dictation") ? ` data-cols="no"` : ""}>${qs.map(question).join("")}</div>${adult}`;
   }
 
   function previewActivitySheet(id, level) {
@@ -614,7 +616,7 @@
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const html = () => activitySheetHTML(act, qs, dialog.querySelector("[data-answers]").checked, level || act.level);
-    const render = () => { dialog.querySelector(".sheet-preview-page").innerHTML = html(); };
+    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelector("[data-answers]").onchange = render;
     const fresh = dialog.querySelector("[data-new]");
     if (fresh) fresh.onclick = () => { qs = act.make(); render(); };
@@ -900,13 +902,78 @@
     dialog.showModal();
   }
 
+  // A4 with 12 mm margins (see @page in style.css), in CSS pixels
+  const MM = 96 / 25.4, PAGE_W = 186 * MM, PAGE_H = 273 * MM;
+  const FOOT = `<p class="ws-foot">PopSpell · free literacy and numeracy practice · popspell.com</p>`;
+  // Lays each page out to waste as little paper as possible: a footer on each, the answers on the
+  // same page under a cut line when they fit (otherwise on their own page), and a sheet that's only
+  // a little over a page shrunk to fit on one. Measured on a copy laid out like the printed page.
+  function fitPages(root, className = "") {
+    const parts = root.querySelectorAll(":scope > .ws-page, :scope > .pn-page").length
+      ? [...root.querySelectorAll(":scope > .ws-page, :scope > .pn-page")] : [root];
+    // Shrinking stops at 76%, so the print stays easy to read; 3% is kept spare for the printer
+    const fits = h => h <= PAGE_H * 0.97 / 0.76;
+    parts.forEach(part => {
+      part.style.zoom = "";
+      const key = part.querySelector(".ws-key");
+      if (key) key.classList.remove("ws-key-inline");
+      if (!part.querySelector(":scope > .ws-foot")) part.insertAdjacentHTML("beforeend", FOOT);
+      const measure = () => {
+        const box = document.createElement("section");
+        box.className = `sheet-preview-page ws-measure ${className}`;
+        box.innerHTML = part.innerHTML;
+        Object.assign(box.style, { position: "absolute", left: "-10000px", top: "0", width: `${PAGE_W}px`, padding: "0", margin: "0", minHeight: "0", boxShadow: "none" });
+        document.body.append(box);
+        const k = box.querySelector(".ws-key");
+        const keyH = k ? k.getBoundingClientRect().height : 0;
+        const main = box.scrollHeight - keyH;
+        // The answers under a cut line are smaller, in two columns
+        if (k) k.classList.add("ws-key-inline");
+        const inlineH = k ? k.getBoundingClientRect().height : 0;
+        box.remove();
+        return { main, keyH, both: main + (k ? inlineH + 16 : 0) };
+      };
+      let m = measure();
+      // Questions that overflow try two columns, and keep them if that's shorter
+      const qsBox = part.querySelector(".ws-qs");
+      if (qsBox && !qsBox.classList.contains("ws-cols") && qsBox.dataset.cols !== "no" && m.both > PAGE_H * 0.97) {
+        qsBox.classList.add("ws-cols");
+        const m2 = measure();
+        if (m2.main < m.main * 0.9) m = m2; else qsBox.classList.remove("ws-cols");
+      }
+      // Still too long for one page: leave off questions from the end (and their answers), down to 6
+      const questions = () => part.querySelectorAll(".ws-qs > .ws-q");
+      while (qsBox && !fits(m.main) && questions().length > 6) {
+        const last = [...questions()].pop();
+        last.remove();
+        const answers = key ? key.querySelectorAll("ol > li") : [];
+        if (answers.length > questions().length) answers[answers.length - 1].remove();
+        m = measure();
+      }
+      // And a question or two fewer (down to 8) if that brings the answers onto the same page
+      while (qsBox && key && fits(m.main) && !fits(m.both) && questions().length > 8) {
+        [...questions()].pop().remove();
+        const answers = key.querySelectorAll("ol > li");
+        if (answers.length > questions().length) answers[answers.length - 1].remove();
+        m = measure();
+      }
+      // The answers go on the same page, under a cut line, when everything fits
+      let h = m.main;
+      if (key && fits(m.both)) { key.classList.add("ws-key-inline"); h = m.both; }
+      if (h > PAGE_H * 0.97 && fits(h)) part.style.zoom = String(Math.floor((PAGE_H * 0.97 / h) * 100) / 100);
+    });
+    return root;
+  }
   // Puts a sheet on the page just for printing (or saving as PDF), then removes it
-  function printSheet(className, html) {
+  async function printSheet(className, html) {
     const sheet = document.createElement("section");
     sheet.className = `worksheet-print ${className}`;
     sheet.innerHTML = html;
     document.body.append(sheet);
     document.body.classList.add("printing-worksheet");
+    // The logo and Pip have to be loaded before the page is printed
+    await Promise.all([...sheet.querySelectorAll("img")].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
+    fitPages(sheet, className);
     const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
     window.addEventListener("afterprint", clean, { once: true });
     window.print();
@@ -917,19 +984,24 @@
   function handwritingRow(text, cells = ["model", "grey", "dots", "blank"]) {
     const width = 1000 / cells.length;
     const size = Math.min(62, (width - 26) / (Math.max(text.length, 2) * 0.56));
-    const base = 78, mid = base - size * 0.5, top = base - size * 0.74, tail = base + size * 0.26;
+    const base = 70, mid = base - size * 0.5, top = base - size * 0.74, tail = base + size * 0.26;
     const line = (y, style) => `<line x1="0" x2="1000" y1="${y}" y2="${y}" class="${style}"/>`;
     const word = (x, kind) => kind === "blank" ? "" :
       `<text x="${x + 12}" y="${base}" font-size="${size}" class="ws-${kind}">${esc(text)}</text>`;
-    return `<svg class="ws-row" viewBox="0 0 1000 108" role="img" aria-label="${esc(text)}">
+    return `<svg class="ws-row" viewBox="0 0 1000 92" role="img" aria-label="${esc(text)}">
       ${line(top, "ws-top")}${line(mid, "ws-mid")}${line(base, "ws-base")}${line(tail, "ws-tail")}
       ${cells.map((kind, i) => (i ? `<line x1="${i * width}" x2="${i * width}" y1="${top - 6}" y2="${tail + 4}" class="ws-sep"/>` : "") + word(i * width, kind)).join("")}
     </svg>`;
   }
   const dotPattern = `<svg width="0" height="0" style="position:absolute"><defs>
     <pattern id="wsDots" width="3.2" height="3.2" patternUnits="userSpaceOnUse"><circle cx="1.6" cy="1.6" r="0.95" fill="#555"/></pattern></defs></svg>`;
-  const sheetHead = (title, who, extra = "") => `<h1>PopSpell · ${esc(title)}</h1>
-    <p><b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}</p>`;
+  // Every printed sheet starts the same way: the PopSpell logo, its title, a line for the name and
+  // date (or the details given), and Pip
+  const brandHead = (title, line = "") => `<header class="ws-brand"><img class="ws-logo" src="assets/brand/wordmark-print.webp" alt="PopSpell">
+    <div class="ws-brand-text"><h1>${esc(title)}</h1>${line ? `<p>${line}</p>` : ""}</div>
+    <img class="ws-pip" src="assets/brand/pip-mascot-small.webp" alt=""></header>`;
+  const sheetHead = (title, who, extra = "") => brandHead(title,
+    `<b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}`);
 
   function handwritingHTML(who, list) {
     return `${dotPattern}${sheetHead(`${list.title} · handwriting`, who)}
@@ -973,9 +1045,8 @@
         ? `<tr><td>${i + 1}</td><td class="write-line"></td><td class="check-box">□</td></tr>`
         : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
           <td class="check-box">□</td></tr>`).join("");
-    const html = `<h1>PopSpell · ${esc(list.title)}${mode === "key" ? " · teacher key" : ""}</h1>
-      <p><b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
-        ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}</p>
+    const html = `${brandHead(`${list.title}${mode === "key" ? " · teacher key" : ""}`, `<b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
+        ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)}
       <p>${mode === "key" ? "Read each word aloud. One box represents one sound; the letters shown are the matching grapheme." :
         mode === "dictation" ? "Listen, say the sounds, then write the word your teacher or adult says." :
         "Listen to the word. Say it, stretch it, tap one box for each sound, then write the letters for each sound in its box."}</p>
@@ -1009,6 +1080,7 @@
       const page = dialog.querySelector(".sheet-preview-page");
       page.className = `sheet-preview-page ${sheet.className}`;
       page.innerHTML = sheet.html;
+      fitPages(page, sheet.className);
     };
     if (picker) picker.onchange = render;
     render();
@@ -1745,8 +1817,7 @@
     // England: each part's year, domain and the official statement it practises
     const ncParts = levels.england ? parts.filter(p => p.codes && enWork(p.id) && enWork(p.id).statements.length)
       .map(p => { const w = enWork(p.id); return `${w.label} · ${w.domain}: ${w.statements[0].wording}`; }) : [];
-    return `<h1>PopSpell · ${esc(x.r.name)} · Lesson ${prog.lesson}</h1>
-      <p><b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}</p>
+    return `${brandHead(`${x.r.name} · Lesson ${prog.lesson}`, `<b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}`)}
       ${!levels.expected ? "" : levels.england
         ? `<p><b>Expected for ${esc(levels.year)}:</b> ${esc(levels.expected.text)}. ${levels.areas.map(a => `<b>${a.area}:</b> ${esc(a.level)} work (${yearStatus(levels.year, a.status).toLowerCase()}).`).join(" ")}</p>`
         : `<p><b>Expected for ${esc(levels.year)}:</b> ${levels.expected[0]} level. ${levels.areas.map(a => `<b>${a.area}:</b> working at ${a.level} level (${LEVEL_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>`}
@@ -1779,7 +1850,7 @@
     const chosen = key => dialog.querySelector(`[data-sheet="${key}"]`).checked;
     const html = () => [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""].concat(sheets.map((s, i) => (chosen(i) ? sheetHTML(s) : "")))
       .filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("");
-    const render = () => { dialog.querySelector(".sheet-preview-page").innerHTML = html(); };
+    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelectorAll("[data-sheet]").forEach(el => { el.onchange = render; });
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
@@ -1945,7 +2016,7 @@
   function printReport(pupilName, sessions, en = false) {
     const rows = cfeRows(sessions, pupilName, en);
     const period = (PERIODS.find(([d]) => d === days) || [0, ""])[1];
-    printSheet("ws-report", `<h1>PopSpell progress report</h1>
+    printSheet("ws-report", `${brandHead("Progress report")}
       <p><b>Pupil:</b> ${esc(pupilName)} &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Period:</b> ${esc(period)} &nbsp; <b>Printed:</b> ${esc(new Date().toLocaleDateString("en-GB"))}</p>
       <p>Grouped by ${en ? "national curriculum (England) strand, with the years the work comes from" : "Curriculum for Excellence organiser"}. “Right first time” counts questions answered correctly without help.
         Secure means 85% or more right first time, on at least 10 questions over two or more days.</p>
