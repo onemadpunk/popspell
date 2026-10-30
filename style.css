@@ -1498,8 +1498,7 @@ a.me-card:hover { border-color: var(--primary); }
 .phonics-dialog .btn.big small { font-weight: 600; opacity: .8; }
 .t-link-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
 
-/* Printed sheets: the PopSpell header and footer on every page, and the answers under a cut line
-   when they fit on the same page (fitPages in teacher.js decides) */
+/* Printed sheets: the PopSpell header and footer on every page. The answers are a separate page for the adult. */
 .ws-brand { display: flex; align-items: center; gap: 12px; border-bottom: 3px solid #ffc837; padding-bottom: 6px; margin: 0 0 10px;
   -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .ws-brand .ws-logo { width: 22mm; height: 18.7mm; object-fit: contain; flex: none; }
@@ -1508,11 +1507,11 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-brand h1, .worksheet-print .ws-brand h1, .sheet-preview-page .ws-brand h1 { margin: 0; font: 700 16pt var(--font); color: #0b2e6b; }
 .ws-brand p, .worksheet-print .ws-brand p, .sheet-preview-page .ws-brand p { margin: 3px 0 0; font: 10.5pt Arial, sans-serif; color: #111; }
 .ws-foot, .worksheet-print .ws-foot, .sheet-preview-page .ws-foot { margin: 10px 0 0; padding-top: 4px; border-top: 1px solid #dde6f2; text-align: center; font: 8.5pt Arial, sans-serif; color: #5b6b8c; }
-.ws-key.ws-key-inline { break-before: auto; margin-top: 14px; padding-top: 8px; border-top: 2px dashed #999; }
-.ws-key.ws-key-inline::before { content: "✂  Answers for the adult: fold back or cut along the line"; display: block; font: 9pt Arial, sans-serif; color: #5b6b8c; margin-bottom: 4px; }
-.ws-key.ws-key-inline h2 { font-size: 12pt; margin: 2px 0 4px; }
-.ws-key.ws-key-inline ol { margin: 0; padding-left: 1.4em; columns: 2; column-gap: 24px; font-size: 10pt; }
-.ws-key.ws-key-inline li { margin-bottom: 2px; break-inside: avoid; }
+.ws-answers { padding-left: 1.4em; font-size: 11pt; }
+.ws-answers li { margin-bottom: 6px; break-inside: avoid; }
+.pack-choices { display: flex; flex-wrap: wrap; gap: 6px 28px; padding: 8px 18px 0; }
+.pack-choices > div { display: grid; gap: 2px; }
+.pack-choices .hint { flex-basis: 100%; margin: 4px 0 0; }
 .ws-qs.ws-cols { columns: 2; column-gap: 28px; }
 .ws-qs.ws-cols .ws-q { break-inside: avoid; }
 .ws-qs.ws-cols .q-pic { max-width: 100%; max-height: 110px; }
