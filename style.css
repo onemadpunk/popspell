@@ -1529,3 +1529,51 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-row .ws-join-grey { stroke: #8a8a8a; stroke-width: 3.5; stroke-dasharray: 1 6; }
 .ws-sub, .worksheet-print .ws-sub, .sheet-preview-page .ws-sub { font: 700 11.5pt var(--font); margin: 8px 0 2px; color: #0b2e6b; }
 .ws-check, .worksheet-print .ws-check, .sheet-preview-page .ws-check { font: 11pt Arial, sans-serif; margin-top: 10px; }
+/* Worksheets for lessons taught with objects, talk or writing (paper-sheets.js) */
+.ws-lines span { display: block; height: 9mm; border-bottom: 1px solid #8a8a8a; }
+.pp-pic { display: block; max-width: 100%; height: auto; margin: 4px 0; }
+.pp-wide { display: block; width: 100%; height: auto; }
+.pp-frame { fill: none; stroke: #222; stroke-width: 2; }
+.pp-dot { fill: #333; }
+.pp-apple { fill: #e05a47; }
+.pp-shape { fill: none; stroke: #222; stroke-width: 2.5; }
+.pp-cut { stroke: #222; stroke-width: 2; stroke-dasharray: 5 4; }
+.pp-grid { stroke: #b9c4d3; stroke-width: 1; }
+.pp-fill { fill: #9db7dc; stroke: #3c5b86; stroke-width: 1; }
+.pp-mirror { stroke: #d14; stroke-width: 2.5; stroke-dasharray: 6 4; }
+.pp-beam { stroke: #333; stroke-width: 3; fill: none; }
+.pp-ribbon { fill: #f2a7c6; stroke: #333; stroke-width: 1.5; }
+.pp-pencil { fill: #ffd34d; stroke: #333; stroke-width: 1.5; }
+.pp-cube { fill: #cfe0f6; stroke: #333; stroke-width: 1.5; }
+.pp-water { fill: #8cc8f0; }
+.pp-mountain { fill: none; stroke: #333; stroke-width: 3; }
+.pp-lab { font: 700 14px Arial, sans-serif; fill: #222; }
+.pp-mark { font: 22px Arial, sans-serif; fill: #222; }
+.pp-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 14px; }
+.pp-cell p { margin: 2px 0 !important; }
+.pp-row4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+.pp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; }
+.pp-cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pp-side { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; }
+.pp-q { break-inside: avoid; margin: 0 0 6px; }
+.pp-q p, .pp-cols p { margin: 4px 0 !important; }
+.pp-box { display: block; border: 1.5px solid #8a9ab4; border-radius: 8px; padding: 4px 10px 6px; margin: 0 0 8px; break-inside: avoid; }
+.pp-box > b { display: block; font: 700 11pt var(--font); color: #0b2e6b; }
+.pp-box p { margin: 4px 0 !important; }
+.pp-draw { height: 34mm; border: 1.5px dashed #8a9ab4; border-radius: 8px; margin: 4px 0; }
+.pp-draw.pp-short { height: 26mm; }
+.pp-track { display: flex; flex-wrap: wrap; gap: 0; margin: 4px 0 8px; }
+.pp-num { width: 9.5%; height: 11mm; border: 1.5px solid #333; display: grid; place-items: center; font: 700 14pt Arial, sans-serif; margin: -1px 0 0 -1px; }
+.pp-num.pp-gap { background: #fff; }
+.pp-next { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 4px 0 8px; font-size: 13pt; }
+.pp-table { width: 100%; border-collapse: collapse; margin: 4px 0 8px; }
+.pp-table th, .pp-table td { border: 1px solid #777; padding: 6px 8px; height: 26px; text-align: left; font-size: 11pt; }
+.pp-table .pp-c { text-align: center; width: 12%; font-size: 14pt; }
+.pp-bank { font-size: 11pt; border-top: 1px dashed #999; padding-top: 6px; }
+.pp-tick { display: inline-block; margin: 2px 14px 2px 0; font-size: 11pt; }
+.pp-card { height: 30mm; border: 1.5px dashed #555; border-radius: 6px; padding: 4px 8px; }
+.pp-passage { font-family: var(--reading-font); font-size: 14pt; border-left: 4px solid #ffc837; padding: 4px 10px; }
+.pp-words { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 4px 0 10px; }
+.pp-word { border: 2px solid #333; border-radius: 10px; padding: 10px 4px; text-align: center; font: 700 22pt var(--reading-font); }
+.pp-word i { display: block; font-style: normal; font-size: 14pt; }
+.pp-halo { paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }

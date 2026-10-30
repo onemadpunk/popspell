@@ -992,6 +992,9 @@
       const lo = list && list.length ? Math.max(1, span(byId[list[0]].year)[0]) : 1;
       return [DICTATION.find(([max]) => lo <= max)[1]];
     }
+    // A paper worksheet made for a lesson covers what its lesson covers
+    const paper = window.PopPaper && window.PopPaper.get(id);
+    if (paper) return idsFor(paper.lesson);
     const lesson = window.PopLessons && window.PopLessons.get(id);
     if (lesson) {
       const own = FOR_ID[id] || [];

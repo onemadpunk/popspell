@@ -295,8 +295,8 @@
     const dictation = A ? spelling.filter(item => item.list.items.some(it => it.sentence)).map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`, type: "dictation",
       level: item.level, subject: "Literacy", strand: "Writing: dictation",
       detail: "Listen to each sentence, then write it all: capital letter, spellings and full stop.", print: true })) : [];
-    const paper = Object.entries(PAPER).map(([id, sheet]) => ({ id, title: sheet.title, type: "paper", level: sheet.level, subject: "Literacy",
-      strand: "Handwriting", detail: sheet.detail, print: true }));
+    const paper = Object.entries(PAPER).map(([id, sheet]) => ({ id, title: sheet.title, type: "paper", level: sheet.level, subject: sheet.subject,
+      strand: sheet.strand, detail: sheet.detail, print: true, england: sheet.england }));
     // Ready lessons (lessons.js): one for every area of the benchmarks
     const lessons = (window.PopLessons ? window.PopLessons.all() : []).map(l => ({ id: l.id, title: l.title, type: "lesson",
       level: l.level, subject: l.subject, strand: l.strand, detail: l.intention, lesson: l, codes: l.codes, ids: lessonOnline(l), print: true, england: !!l.england }));
@@ -492,8 +492,15 @@
     const A = window.PopActivities;
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     const pupil = [], adult = [];
+    lessonPapers(l).forEach(id => {
+      let made = null;
+      const pages = () => (made = made || PAPER[id].build(who));
+      pupil.push({ label: PAPER[id].title, html: () => pages().pupil, checked: true });
+      if (PAPER[id].build === undefined) return;
+      adult.push({ label: `${PAPER[id].needsAdult ? "For you" : "Answers"}: ${PAPER[id].title}`, html: () => pages().answers || "", checked: PAPER[id].needsAdult, adult: true, has: () => Boolean(pages().answers) });
+    });
     l.use.forEach(id => {
-      if (isPaper(id)) return pupil.push({ label: PAPER[id].title, html: () => PAPER[id].html(who), checked: true });
+      if (isPaper(id)) return;
       if (catalogueList(id)) {
         adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
         return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, checked: true });
@@ -515,6 +522,8 @@
   // Preview sheets, choose which to print, and print them together: the pupil's sheets, then any
   // pages for the tutor (answers, lesson plan), each on its own page
   function packDialog(heading, pupilPages, adultPages = [], note = "") {
+    // A page for the tutor only shows when there is one (a sheet with no right answers has no answers page)
+    adultPages = adultPages.filter(pg => !pg.has || pg.has());
     const pages = pupilPages.concat(adultPages);
     const box = (pg, i) => `<label class="check"><input type="checkbox" data-page="${i}"${pg.checked ? " checked" : ""}> ${esc(pg.label)}</label>`;
     const dialog = document.createElement("dialog");
@@ -1122,7 +1131,19 @@
     "handwriting-joins": { title: "Joining letters", level: "First", html: who => joinsHTML(who),
       detail: "Trace the join between letter pairs (diagonal and horizontal), then write them and some words joined." }
   };
+  Object.values(PAPER).forEach(sheet => { sheet.build = who => ({ pupil: sheet.html(who) }); sheet.subject = "Literacy"; sheet.strand = "Handwriting"; });
+  // The worksheets for lessons taught with objects, talk or writing (paper-sheets.js), placed by their lesson
+  const PAPER_KIT = { sheetHead: (...a) => sheetHead(...a), brandHead: (...a) => brandHead(...a), handwritingRow: (...a) => handwritingRow(...a), esc,
+    phonicsWords: () => phonicsCheckWords() };
+  Object.values((window.PopPaper && window.PopPaper.sheets) || {}).forEach(sh => {
+    const l = window.PopLessons && window.PopLessons.get(sh.lesson);
+    PAPER[sh.id] = { title: sh.title, detail: sh.detail, lesson: sh.lesson, needsAdult: !!sh.needsAdult,
+      level: l ? l.level : "", subject: l ? l.subject : "Literacy", strand: l ? l.strand : "Writing: creating texts", england: !!(l && l.england),
+      build: who => sh.build(who, PAPER_KIT), html: who => sh.build(who, PAPER_KIT).pupil };
+  });
   const isPaper = id => Boolean(PAPER[id]);
+  // The paper sheets a lesson hands out: any in its own work, and any made for it
+  const lessonPapers = l => [...new Set(l.use.filter(isPaper).concat(Object.values(PAPER).filter(p => p.lesson === l.id).map(p => Object.keys(PAPER).find(k => PAPER[k] === p))))];
 
   function printLetters() {
     printSheet("ws-literacy", letterFormationHTML(""));
@@ -1153,7 +1174,14 @@
   }
   // The pupil can't do these without someone reading the words out, so the words come too, on their own page
   const needsWords = (plan, mode) => !isPaper(plan.list) && (mode === "mapping" || mode === "dictation");
-  const withWords = (who, plan, mode, words = needsWords(plan, mode)) => {
+  // cache keeps a paper sheet the same while its preview is open, so what prints is what was seen
+  const withWords = (who, plan, mode, words = needsWords(plan, mode), cache = null) => {
+    if (isPaper(plan.list)) {
+      const b = (cache && cache.paper) || PAPER[plan.list].build(who);
+      if (cache) cache.paper = b;
+      const adult = b.answers && (words || PAPER[plan.list].needsAdult);
+      return { className: "ws-literacy", html: `<div class="ws-page">${b.pupil}</div>${adult ? `<div class="ws-page ws-adult">${b.answers}</div>` : ""}` };
+    }
     const sheet = worksheetSpec(who, plan, mode);
     return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
   };
@@ -1171,7 +1199,8 @@
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
       ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
         <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
-      <label class="check" data-words-box><input type="checkbox" data-words checked> The words to say, on a separate page for you</label>
+      <label class="check" data-words-box><input type="checkbox" data-words${isPaper(plan.list) && !PAPER[plan.list].needsAdult ? "" : " checked"}${isPaper(plan.list) && PAPER[plan.list].needsAdult ? " disabled" : ""}> ${isPaper(plan.list)
+        ? (PAPER[plan.list].needsAdult ? "A page for you to mark from (needed)" : "Also print the answers, on a separate page for you") : "The words to say, on a separate page for you"}</label>
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page"></section>`;
@@ -1179,10 +1208,13 @@
     const picker = dialog.querySelector("[data-mode]");
     if (picker) picker.value = mode;
     const chosenMode = () => (picker ? picker.value : mode);
-    const words = () => needsWords(plan, chosenMode()) && dialog.querySelector("[data-words]").checked;
+    // Paper sheets with answers show the tick for an answers page; spelling sheets the read-out ones show the words tick
+    const cache = {};
+    const offers = () => (isPaper(plan.list) ? Boolean((cache.paper = cache.paper || PAPER[plan.list].build(who)).answers) : needsWords(plan, chosenMode()));
+    const words = () => offers() && dialog.querySelector("[data-words]").checked;
     const render = () => {
-      dialog.querySelector("[data-words-box]").style.display = needsWords(plan, chosenMode()) ? "" : "none";
-      const sheet = withWords(who, plan, chosenMode(), words());
+      dialog.querySelector("[data-words-box]").style.display = offers() ? "" : "none";
+      const sheet = withWords(who, plan, chosenMode(), words(), cache);
       const page = dialog.querySelector(".sheet-preview-page");
       page.className = `sheet-preview-page ${sheet.className}`;
       page.innerHTML = sheet.html;
@@ -1194,7 +1226,7 @@
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     dialog.querySelector("[data-print]").onclick = () => {
-      const sheet = withWords(who, plan, chosenMode(), words());
+      const sheet = withWords(who, plan, chosenMode(), words(), cache);
       dialog.close(); printSheet(sheet.className, sheet.html);
     };
     dialog.showModal();
