@@ -341,7 +341,7 @@
     const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
     const strandOfEntry = e => (en ? e.enStrand : e.strand);
     const levelOfEntry = e => (en ? e.band : e.level);
-    const levels = en ? E_().BANDS.map(([b]) => [b, b, BAND_AGES[b]]) : LIB_LEVELS.map(([l, years]) => [l, l, years]);
+    const levels = en ? E_().BANDS.map(([b]) => [b, b, BAND_AGES[b]]) : LIB_LEVELS.map(([l, years]) => [l, `${l} level`, years]);
     const segment = (name, label, options, cls = "") => `<div class="lib-seg${cls}" role="group" aria-label="${label}">${options.map(([value, text, small]) =>
       `<button type="button" data-${name}="${esc(value)}" aria-pressed="${prefs[name] === value}"><span>${esc(text).replace(/^All (.+)/, "All<span class=\"lib-wide\"> $1</span>")}</span>${small ? `<small>${esc(small)}</small>` : ""}</button>`).join("")}</div>`;
     body.innerHTML = `<div class="work-flow lib-find">
