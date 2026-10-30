@@ -56,9 +56,9 @@
           <ul class="parent-list">${s.recent.map(r => `<li>${esc(day(r.at))} · ${esc(r.title)}${r.worksheet ? " (worksheet)" : ""}${r.score ? ` · ${esc(r.score)}` : ""}</li>`).join("")}</ul>` : ""}
 
         ${(s.cfe || []).length ? `
-          <h2>Curriculum for Excellence</h2>
+          <h2>${s.curriculum === "england" ? "National curriculum (England)" : "Curriculum for Excellence"}</h2>
           <div class="t-scroll"><table class="t-table cfe-table">
-            <thead><tr><th>Area</th><th>Level</th><th>Progress</th></tr></thead>
+            <thead><tr><th>Area</th><th>${s.curriculum === "england" ? "Year" : "Level"}</th><th>Progress</th></tr></thead>
             <tbody>${s.cfe.map(c => `<tr><td>${esc(c.organiser)}</td><td>${esc(c.level)}</td>
               <td><span class="cfe ${STATUS[c.status] || ""}">${esc(c.status)}</span></td></tr>`).join("")}</tbody>
           </table></div>

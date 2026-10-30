@@ -276,7 +276,7 @@
     { id: "check-spelling", title: P().CHECKS.spelling.title, subject: "Literacy",
       detail: "Words get harder until the pupil finds them tricky. It shows which spelling stage to start on." }]
       .concat(A ? [{ id: "check-numbers", title: P().CHECKS.numbers.title, subject: "Maths",
-        detail: "Questions from Early to Second level. It shows where to start in maths." }] : [])
+        detail: "Questions from first counting to upper primary (CfE Early to Second level, or Reception to Year 6 in England). It shows where to start in maths." }] : [])
       .map(c => Object.assign(c, { type: "check", strand: FIND_LEVEL, level: "" }));
     const spelling = P().STAGES.flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
@@ -300,28 +300,45 @@
     all.forEach((e, i) => {
       e.order = i;
       e.codes = e.codes || (e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level));
-      e.search = `${e.title} ${e.strand} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}`.toLowerCase();
+      // England: the national curriculum year, band and strand for the same work
+      const w = e.type === "check" ? null : enWork(e.id);
+      e.en = w;
+      e.band = w ? E_().bandOf(w) || EN_NONE : "";
+      e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
+      e.search = `${e.title} ${e.strand} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+        ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""}`.toLowerCase();
     });
     return all;
   }
+  const EN_NONE = "Beyond England's primary curriculum";
 
   const LIB_KEY = "popspell-library";
+  const LIB_BLANK = { cur: "", level: "", subject: "", strand: "", type: "" };
   function libraryPrefs() {
-    try { return Object.assign({ level: "", subject: "", strand: "", type: "" }, JSON.parse(localStorage.getItem(LIB_KEY))); }
-    catch { return { level: "", subject: "", strand: "", type: "" }; }
+    try { return Object.assign({}, LIB_BLANK, JSON.parse(localStorage.getItem(LIB_KEY))); }
+    catch { return Object.assign({}, LIB_BLANK); }
   }
   const saveLibraryPrefs = p => { try { localStorage.setItem(LIB_KEY, JSON.stringify(p)); } catch { /* fine */ } };
 
+  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11" };
   function drawLibrary(body) {
     const entries = libraryEntries();
-    const order = STRANDS;
     const prefs = libraryPrefs();
-    const segment = (name, label, options) => `<div class="lib-seg" role="group" aria-label="${label}">${options.map(([value, text, small]) =>
+    // Scotland (CfE levels and organisers) or England (national curriculum years and domains)
+    const en = prefs.cur === "england" && Boolean(E_());
+    const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
+    const strandOfEntry = e => (en ? e.enStrand : e.strand);
+    const levelOfEntry = e => (en ? e.band : e.level);
+    const levels = en ? E_().BANDS.map(([b]) => [b, b, BAND_AGES[b]]) : LIB_LEVELS.map(([l, years]) => [l, l, years]);
+    const segment = (name, label, options, cls = "") => `<div class="lib-seg${cls}" role="group" aria-label="${label}">${options.map(([value, text, small]) =>
       `<button type="button" data-${name}="${esc(value)}" aria-pressed="${prefs[name] === value}"><span>${esc(text).replace(/^All (.+)/, "All<span class=\"lib-wide\"> $1</span>")}</span>${small ? `<small>${esc(small)}</small>` : ""}</button>`).join("")}</div>`;
     body.innerHTML = `<div class="work-flow lib-find">
       <h2>Find work</h2>
-      <p class="hint">Choose a level and a subject, then test, assign or print anything. Not sure of a pupil's level? Start with <b>${FIND_LEVEL}</b>. Test runs do not save pupil results.</p>
-      ${segment("level", "Level", [["", "All levels"]].concat(LIB_LEVELS.map(([l, years]) => [l, l, years])))}
+      <p class="hint">Choose a curriculum, a ${en ? "year" : "level"} and a subject, then test, assign or print anything. Not sure of a pupil's level? Start with <b>${FIND_LEVEL}</b>. Test runs do not save pupil results.</p>
+      ${E_() ? `<div class="lib-seg lib-cur" role="group" aria-label="Curriculum">
+        <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
+        <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
+      ${segment("level", en ? "Year" : "Level", [["", en ? "All years" : "All levels"]].concat(levels), en ? " lib-years" : "")}
       ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s])))}
       <div class="add-row lib-more">
         <label>Strand <select id="libStrand"></select></label>
@@ -330,12 +347,17 @@
       </div>
       <p class="hint" id="libraryCount"></p></div>
       <div id="libResults"></div>`;
+    const tagOf = e => (en
+      ? `<span class="lib-level lv-${(e.band || "any").toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(e.type === "check" ? "Any year" : e.en ? e.en.label : "Any year")}</span>`
+      : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? `${esc(e.level)} level` : "Any level"}</span>`);
+    const codesLine = e => (en ? (e.en && e.en.statements.length ? `<p class="prog-codes">${esc(ncSource(e.en))}: ${esc(e.en.label)} · ${esc(e.en.domain)}</p>` : "")
+      : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
     const card = e => `<article class="pcard library-card">
-        <p class="lib-tags"><span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? `${esc(e.level)} level` : "Any level"}</span>
+        <p class="lib-tags">${tagOf(e)}
           <span class="lib-type">${LIB_TYPES[e.type]}</span>${e.stage ? `<span class="lib-type">${esc(e.stage)}</span>` : ""}</p>
         <h3>${esc(e.title)}</h3>
         <p>${esc(e.detail)}</p>
-        ${e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : ""}
+        ${codesLine(e)}
         ${e.list ? `<details><summary>See ${e.list.items.length} words and their sound maps</summary>
           <ul class="wordlist">${e.list.items.map(item => `<li class="mini-word">${P().wordHTML(item)}</li>`).join("")}</ul></details>` : ""}
         <div class="row">${e.type === "lesson" ? `<button class="btn small primary" type="button" data-lesson="${esc(e.id)}">📖 Open lesson</button>
@@ -344,9 +366,9 @@
           <button class="btn small" type="button" data-assign="${esc(e.id)}">📌 Assign</button>`}
           ${e.print ? `<button class="btn small" type="button" data-print="${esc(e.id)}">🖨️ Print</button>` : `<span class="lib-online">Online only</span>`}</div>
       </article>`;
-    const levelRank = e => (e.level ? LIB_LEVELS.findIndex(([l]) => l === e.level) : -1);
+    const levelRank = e => (levelOfEntry(e) ? levels.findIndex(([l]) => l === levelOfEntry(e)) : -1);
     const render = () => {
-      const strands = order.filter(s => entries.some(e => e.strand === s && (!prefs.subject || e.subject === prefs.subject)));
+      const strands = order.filter(s => entries.some(e => strandOfEntry(e) === s && (!prefs.subject || e.subject === prefs.subject)));
       if (prefs.strand && !strands.includes(prefs.strand)) prefs.strand = "";
       $("#libStrand").innerHTML = `<option value="">All strands</option>${strands.map(s => `<option${s === prefs.strand ? " selected" : ""}>${esc(s)}</option>`).join("")}`;
       $("#libType").value = prefs.type;
@@ -354,12 +376,16 @@
       body.querySelectorAll("[data-subject]").forEach(b => b.setAttribute("aria-pressed", b.dataset.subject === prefs.subject));
       const query = $("#librarySearch").value.trim().toLowerCase();
       // Starting checks show at every level: they're how a teacher finds the level
-      const shown = entries.filter(e => (!prefs.level || !e.level || e.level === prefs.level) && (!prefs.subject || e.subject === prefs.subject)
-        && (!prefs.strand || e.strand === prefs.strand) && (!prefs.type || e.type === prefs.type) && (!query || e.search.includes(query)))
-        .sort((a, b) => order.indexOf(a.strand) - order.indexOf(b.strand) || levelRank(a) - levelRank(b)
+      // Starting checks have no level, so they show at every one; in England, work beyond the
+      // primary curriculum shows only under "All years"
+      const levelFits = e => !prefs.level || (e.type === "check" ? true : en ? e.band === prefs.level : !e.level || e.level === prefs.level);
+      const shown = entries.filter(e => levelFits(e) && (!prefs.subject || e.subject === prefs.subject)
+        && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && (!query || e.search.includes(query)))
+        .sort((a, b) => order.indexOf(strandOfEntry(a)) - order.indexOf(strandOfEntry(b)) || levelRank(a) - levelRank(b)
+          || (en && a.en && b.en ? (a.en.lo ?? 99) - (b.en.lo ?? 99) : 0)
           || (b.type === "lesson") - (a.type === "lesson") || (a.type === "game") - (b.type === "game") || a.order - b.order); // ready lessons first, games last
       const narrowed = !!(prefs.level || prefs.subject || prefs.strand || prefs.type || query);
-      const groups = order.map(s => ({ name: s, items: shown.filter(e => e.strand === s) })).filter(g => g.items.length);
+      const groups = order.map(s => ({ name: s, items: shown.filter(e => strandOfEntry(e) === s) })).filter(g => g.items.length);
       $("#libResults").innerHTML = groups.length ? groups.map(g => `<details class="lib-group"${narrowed || g.name === FIND_LEVEL ? " open" : ""}>
           <summary><span>${esc(g.name)}</span><span class="lib-count">${g.items.length}</span></summary>
           <div class="library-grid">${g.items.map(card).join("")}</div></details>`).join("")
@@ -368,6 +394,12 @@
         : `${entries.length} resources in ${groups.length} strands. Choose a level and subject, or open a strand.`;
       saveLibraryPrefs(prefs);
     };
+    // Switching curriculum changes the year or level buttons and the strands, so it redraws
+    body.querySelectorAll("[data-cur]").forEach(b => { b.onclick = () => {
+      if (b.dataset.cur === prefs.cur) return;
+      saveLibraryPrefs(Object.assign(prefs, { cur: b.dataset.cur, level: "", strand: "" }));
+      drawLibrary(body);
+    }; });
     body.querySelectorAll("[data-level]").forEach(b => { b.onclick = () => { prefs.level = b.dataset.level; render(); }; });
     body.querySelectorAll("[data-subject]").forEach(b => { b.onclick = () => { prefs.subject = b.dataset.subject; render(); }; });
     $("#libStrand").onchange = e => { prefs.strand = e.target.value; render(); };
@@ -377,20 +409,20 @@
       const button = e.target.closest("button");
       if (!button) return;
       const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
-      if (button.dataset.lesson) lessonDialog(entry.lesson);
+      if (button.dataset.lesson) lessonDialog(entry.lesson, prefs.cur);
       else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; render(); }
       else if (button.dataset.assign) assignDialog(entry);
-      else if (button.dataset.print) printEntry(entry);
+      else if (button.dataset.print) printEntry(entry, en ? "england" : "");
     };
     render();
   }
 
   // Print from the library: spelling lists and letter formation have their own sheets; activities,
   // stories and dictation get a paper version of their questions
-  function printEntry(entry) {
-    if (entry.type === "lesson") return lessonPrintDialog(entry.lesson);
+  function printEntry(entry, cur = "") {
+    if (entry.type === "lesson") return lessonPrintDialog(entry.lesson, "", cur);
     if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "mapping");
-    previewActivitySheet(entry.id, entry.level);
+    previewActivitySheet(entry.id, cur === "england" ? (entry.en ? entry.en.label : "") : entry.level);
   }
 
   /* ---------- Ready lessons (lessons.js): open, print and assign ---------- */
@@ -399,48 +431,66 @@
   // A lesson's work a pupil can do on their device (not paper sheets)
   const lessonOnline = l => l.use.filter(id => id !== "letter-formation" && previewHref(id));
   const LESSON_STEPS = [["start", "Start"], ["teach", "Teach"], ["practise", "Practise"], ["check", "Check"]];
-  function lessonBodyHTML(l, forPrint) {
+  // A lesson in Scotland's terms (CfE benchmarks and outcomes) or England's (the national curriculum's
+  // statutory statements for the years it covers)
+  const lessonLevel = (l, cur) => (cur === "england" ? (enWork(l.id) || {}).label || "" : `${l.level} level`);
+  const lessonBand = (l, cur) => (cur === "england" ? (E_().bandOf(enWork(l.id)) || "none").toLowerCase().replace(/[^a-z0-9]+/g, "-") : l.level.toLowerCase());
+  // The statements within the lesson's own years (the work it uses can reach further back)
+  const lessonStatements = en => {
+    const inside = en.statements.filter(s => { if (s.year === "1-6") return en.hi >= 1; const [lo, hi] = E_().span(s.year); return hi >= en.lo && lo <= en.hi; });
+    return inside.length ? inside : en.statements;
+  };
+  function lessonBodyHTML(l, forPrint, cur = "") {
     const M = window.PopLessons.MINUTES;
     const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
+    const en = cur === "england" ? enWork(l.id) : null;
+    const curriculum = !en ? `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`
+      : en.statements.length ? `<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
+        ${en.hi === 0 ? "Children at the expected level of development will:" : en.lo === 0 ? "What children are expected to do (Reception) and be taught (Year 1 on):" : "Pupils should be taught to:"}</p>
+        <ul class="lesson-criteria">${lessonStatements(en).slice(0, 6).map(s => `<li>${esc(s.wording)} <span class="hint">(${esc(E_().yearLabel(s.year))} · ${esc(E_().domainLabel(s.domain))})</span></li>`).join("")}</ul>`
+      : `<p><b>National curriculum (England):</b> ${esc(en.label)}. This lesson goes beyond what England's primary curriculum sets out, so use it as enrichment.</p>`;
     return `<p><b>Learning intention:</b> ${esc(l.intention)}</p>
-      <p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>
+      ${curriculum}
       ${l.vocab ? `<p><b>Words to use:</b> ${esc(l.vocab)}</p>` : ""}
       <table class="t-table lesson-steps"><thead><tr><th>Part</th><th>Time</th><th>What to do</th></tr></thead><tbody>
         ${LESSON_STEPS.map(([k, name]) => `<tr><td><b>${name}</b></td><td>${M[k]} min</td><td>${esc(l.steps[k])}${k === "practise" && l.use.length
           ? `<br><span class="hint">PopSpell: ${l.use.map(work).join(", ")}</span>` : ""}</td></tr>`).join("")}</tbody></table>
       ${l.home ? `<p><b>At home:</b> ${esc(l.home)}</p>` : ""}`;
   }
-  function lessonDialog(l) {
+  function lessonDialog(l, cur = "") {
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog lesson-dialog";
+    const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
         <button class="btn small" type="button" data-close>Close</button></div>
-      <p class="lib-tags"><span class="lib-level lv-${l.level.toLowerCase()}">${esc(l.level)} level</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(l.strand)}</span><span class="lib-type">About 30 minutes</span></p>
-      ${lessonBodyHTML(l, false)}
+      <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span></p>
+      ${lessonBodyHTML(l, false, cur)}
       <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the lesson and sheets</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l); };
+    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
     const assign = dialog.querySelector("[data-assign]");
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.showModal();
   }
   // The lesson plan, then a sheet for each piece of work it uses (games are online only)
-  function lessonPrintDialog(l, who = "") {
+  function lessonPrintDialog(l, who = "", cur = "") {
     const A = window.PopActivities;
+    const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     const pages = [{ label: "Lesson plan", html: () => `<h1>PopSpell · ${esc(l.title)}</h1>
-      <p><b>${esc(l.level)} level</b> · ${esc(l.subject)} · ${esc(l.strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}</p>
-      ${lessonBodyHTML(l, true)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` }];
+      <p><b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}</p>
+      ${lessonBodyHTML(l, true, cur)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` }];
     l.use.forEach(id => {
       if (id === "letter-formation") return pages.push({ label: "Letter formation", html: () => letterFormationHTML(who) });
       if (catalogueList(id)) return pages.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html });
       const act = A && A.get(id);
       if (!act || act.area === "games") return;
       const qs = act.make();
-      pages.push({ label: workTitle(id), html: () => activitySheetHTML(act, qs, true, l.level, who) });
+      const level = cur === "england" ? (enWork(id) || {}).label || "" : l.level;
+      pages.push({ label: workTitle(id), html: () => activitySheetHTML(act, qs, true, level, who) });
     });
     packDialog(l.title, pages);
   }
@@ -530,7 +580,8 @@
     const adult = heard || withAnswers ? `<div class="ws-key"><h2>${heard ? "For the adult: read aloud, and the answers" : "Answers"} · ${esc(act.title)}</h2>
         ${act.listen ? `<p>Read this story aloud, then read each question.</p>${story}` : ""}
         <ol>${qs.map(q => `<li>${keyLine(q)}</li>`).join("")}</ol></div>` : "";
-    return `${dotPattern}${sheetHead(act.title, who, `&nbsp; <b>${esc(level)} level</b>`)}
+    // A CfE level ("First") or an England year ("Year 3", "Reception")
+    return `${dotPattern}${sheetHead(act.title, who, level ? `&nbsp; <b>${esc(level)}${/^(Year|Reception|Not )/.test(level) ? "" : " level"}</b>` : "")}
       <p>${qs.some(q => q.kind === "dictation") ? "Your adult reads each sentence to you. Listen, then write it." :
         heard ? "Your adult reads each one to you. Listen, then answer." : act.passage ? "Read the story. Then answer the questions." : "Answer each question."}</p>
       ${act.passage && !act.listen ? story : ""}
@@ -1272,13 +1323,34 @@
     P4: ["First", "to be achieved by the end of P4"], P5: ["Second", "working through it, to achieve it by the end of P7"],
     P6: ["Second", "working through it, to achieve it by the end of P7"], P7: ["Second", "to be achieved by the end of P7"],
     S1: ["Third", "working through it, to achieve it by the end of S3"], S2: ["Third", "working through it, to achieve it by the end of S3"],
-    S3: ["Third", "to be achieved by the end of S3"]
+    S3: ["Third", "to be achieved by the end of S3"],
+    // S4 to S6 are the senior phase, after the broad general education, so they're compared with Third level
+    S4: ["Third", "the senior phase: compared with Third level, the end of the broad general education"],
+    S5: ["Third", "the senior phase: compared with Third level, the end of the broad general education"],
+    S6: ["Third", "the senior phase: compared with Third level, the end of the broad general education"]
   };
   const ALL_LEVELS = ["Early", "First", "Second", "Third"];
   const yearLevel = year => { const e = EXPECTED[year]; return e ? (e[0] === "Third" ? "Second" : e[0]) : ""; };
   const LEVEL_STATUS = { below: "Below expected", at: "As expected", beyond: "Beyond expected" };
+  const YEAR_STATUS = { below: "Below their year", at: "In line with their year", beyond: "Beyond their year" };
+  // England (england.js): the year and statements a piece of work covers
+  const E_ = () => window.PopEngland;
+  const inEngland = r => Boolean(r && E_() && E_().isEngland(r.yearGroup));
+  const enWork = id => (E_() ? E_().forWork(id) : null);
+  // "National curriculum: Year 3 · Number – multiplication and division"
+  const ncLine = id => { const w = enWork(id); return !w ? "" : w.statements.length ? `${w.label} · ${w.domain}` : w.label; };
+  // Reception follows the EYFS framework rather than the national curriculum
+  const ncSource = w => (w && w.statements.length && w.statements[0].year === "R" ? "EYFS" : "National curriculum");
+  const ncRef = id => (ncLine(id) ? `${ncSource(enWork(id))}: ${ncLine(id)}` : "");
   // Where the pupil is working, against what's expected for their year group
   function levelCheck(r, prog) {
+    if (inEngland(r)) {
+      const exp = E_().expected(r.yearGroup);
+      const areas = [prog.focus !== "maths" && ["Literacy", prog.spelling], prog.focus !== "literacy" && ["Maths", prog.maths]].filter(Boolean)
+        .map(([area, id]) => ({ area, id, work: enWork(id) })).filter(a => a.work && a.work.lo !== null);
+      return { england: true, year: r.yearGroup, expected: exp,
+        areas: areas.map(a => ({ area: a.area, level: a.work.label, domain: a.work.domain, status: E_().status(r.yearGroup, a.work) })) };
+    }
     const exp = EXPECTED[r.yearGroup];
     const A = A_();
     const areas = [prog.focus !== "maths" && ["Literacy", levelOfStage(stageOf(prog.spelling))],
@@ -1290,7 +1362,9 @@
   }
   function levelsHTML(r, prog) {
     const c = levelCheck(r, prog);
-    if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see the CfE level expected for their age next to where they're working.</p>`;
+    if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see what's expected for their age next to where they're working: a CfE level for P1–S6, or a national curriculum year for Reception–Year 11.</p>`;
+    if (c.england) return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}</b> (${esc(c.expected.stage)}): ${esc(c.expected.text)}.</p>
+      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${YEAR_STATUS[a.status]}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}</div>`;
     return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}:</b> ${c.expected[0]} level (${esc(c.expected[1])}).</p>
       ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${LEVEL_STATUS[a.status]}</span> <b>${a.area}:</b> working at ${a.level} level</p>`).join("")}</div>`;
   }
@@ -1321,11 +1395,16 @@
       { s: mathsCheck, list: mathsCheck && (gap(mathsCheck) || mOrder[mOrder.length - 1]), why: "the numbers starting check" },
       { s: mathsPractice, list: mathsPractice && nextAfter(mOrder, mathsPractice), why: "their last maths result" }]);
     const level = yearLevel(r.yearGroup);
-    const mathsByYear = level && mOrder.find(id => window.PopActivities.get(id).level === level);
+    // England: the first activity from their year's programme (or the nearest year before it)
+    const enYear = inEngland(r) ? E_().expected(r.yearGroup).compare : null;
+    const enStart = enYear === null ? null : mOrder.map(id => [id, enWork(id)]).filter(([, w]) => w && w.lo !== null && w.lo <= enYear)
+      .sort((a, b) => b[1].lo - a[1].lo || mOrder.indexOf(a[0]) - mOrder.indexOf(b[0]))[0];
+    const mathsByYear = enStart ? enStart[0] : level && mOrder.find(id => window.PopActivities.get(id).level === level);
+    const yearWhy = enStart ? `${enStart[1].label} work, for ${r.yearGroup}` : `the start of ${level} level, for ${r.yearGroup}`;
     return {
       spelling: spelling ? spelling.list : sOrder[0], spellingWhy: spelling ? spelling.why : "the first spelling list",
       maths: maths ? maths.list : mathsByYear || mOrder[0],
-      mathsWhy: maths ? maths.why : mathsByYear ? `the start of ${level} level, for ${r.yearGroup}` : "the first maths activity"
+      mathsWhy: maths ? maths.why : mathsByYear ? yearWhy : "the first maths activity"
     };
   }
 
@@ -1439,9 +1518,11 @@
         <label>Covers <select data-start-focus>${focusOptions(x.prog ? x.prog.focus : "both")}</select></label>
         <button class="btn primary" type="button" data-start="${i}">${x.prog ? "Save changes" : "Start the programme"}</button>
         ${x.prog ? `<button class="btn" type="button" data-stop="${i}">Stop the programme</button>` : ""}</div>`;
-    const planTable = parts => `<table class="t-table prog-plan"><thead><tr><th>Part</th><th>Time</th><th>What to do</th><th></th></tr></thead><tbody>
+    const partCodes = (p, x) => (!p.codes ? "" : inEngland(x.r) ? (ncRef(p.id) ? `<br><span class="prog-codes">${esc(ncRef(p.id))}</span>` : "")
+      : p.codes.length ? `<br><span class="prog-codes">CfE ${esc(p.codes.join(", "))}</span>` : "");
+    const planTable = (parts, x) => `<table class="t-table prog-plan"><thead><tr><th>Part</th><th>Time</th><th>What to do</th><th></th></tr></thead><tbody>
       ${parts.map(p => `<tr><td><b>${p.icon} ${esc(p.title)}</b><br><span class="hint">${WHERE[p.where]}</span></td><td>${p.minutes} min</td>
-        <td>${esc(p.how)}${p.codes && p.codes.length ? `<br><span class="prog-codes">CfE ${esc(p.codes.join(", "))}</span>` : ""}</td>
+        <td>${esc(p.how)}${partCodes(p, x)}</td>
         <td>${p.id && previewHref(p.id) ? `<a class="btn small" href="${esc(previewHref(p.id))}" target="_blank" rel="noopener">▶ Test</a>` : ""}</td></tr>`).join("")}</tbody></table>`;
     // Ready lessons for the gaps a pupil's checks found and the work they're on now; if none
     // match, lessons at the level they're working at
@@ -1460,17 +1541,34 @@
       // A spelling list with no lesson of its own matches the lessons for its stage's other lists
       const sameStage = id => (stageOf(id) < 0 ? [] : P().STAGES[stageOf(id)].lists.map(l => l.id));
       ids.forEach(id => { const direct = L.forWork(id); (direct.length ? direct : sameStage(id).flatMap(L.forWork)).forEach(addLesson); });
-      if (!out.length) levelCheck(x.r, prog).areas.forEach(a => L.forArea(a.area, a.level).slice(0, 2).forEach(addLesson));
+      if (!out.length) {
+        const c = levelCheck(x.r, prog);
+        // England: lessons covering the year of the work they're on
+        if (c.england) [[prog.focus !== "maths" && "Literacy", prog.spelling], [prog.focus !== "literacy" && "Maths", prog.maths]].forEach(([area, id]) => {
+          const w = area && enWork(id);
+          if (w && w.lo !== null) L.all().filter(l => l.subject === area && enWork(l.id) && enWork(l.id).lo !== null
+            && enWork(l.id).lo <= w.lo && enWork(l.id).hi >= w.lo).slice(0, 2).forEach(addLesson);
+        });
+        else c.areas.forEach(a => L.forArea(a.area, a.level).slice(0, 2).forEach(addLesson));
+      }
       return out.slice(0, 4);
     };
     const readyHTML = x => {
       const list = readyFor(x);
-      const c = levelCheck(x.r, x.prog || { spelling: x.start.spelling, maths: x.start.maths, focus: "both" });
+      const prog = x.prog || { spelling: x.start.spelling, maths: x.start.maths, focus: "both" };
+      const c = levelCheck(x.r, prog);
+      const where = l => (c.england ? (enWork(l.id) || {}).label || "" : `${l.level}`);
+      // England: browse the library at the band of the work they're on (Reception, Year 1, Year 2, Years 3–4, Years 5–6)
+      const browse = c.england
+        ? [[prog.focus !== "maths" && "Literacy", prog.spelling], [prog.focus !== "literacy" && "Maths", prog.maths]].filter(([a]) => a)
+          .map(([area, id]) => [area, E_().bandOf(enWork(id))]).filter(([, band]) => band)
+          .map(([area, band]) => `<button class="linklike" type="button" data-browse="${esc(area)}|${esc(band)}|england">Every ${esc(band)} ${esc(area.toLowerCase())} lesson</button>`)
+        : c.areas.map(a => `<button class="linklike" type="button" data-browse="${esc(a.area)}|${esc(a.level)}">Every ${esc(a.level)} level ${esc(a.area.toLowerCase())} lesson</button>`);
       return `<details class="prog-more prog-ready" open><summary>📚 Ready lessons for ${esc(x.r.name)}</summary>
-        ${list.length ? `<ul>${list.map(l => `<li><b>${esc(l.title)}</b> <span class="hint">${esc(l.level)} · ${esc(l.subject)}</span>
+        ${list.length ? `<ul>${list.map(l => `<li><b>${esc(l.title)}</b> <span class="hint">${esc(where(l))} · ${esc(l.subject)}</span>
           <button class="linklike" type="button" data-open-lesson="${esc(l.id)}">Open</button> ·
           <button class="linklike" type="button" data-print-lesson="${esc(l.id)}">Print</button></li>`).join("")}</ul>` : ""}
-        <p>${c.areas.map(a => `<button class="linklike" type="button" data-browse="${esc(a.area)}|${esc(a.level)}">Every ${esc(a.level)} level ${esc(a.area.toLowerCase())} lesson</button>`).join(" · ")}</p></details>`;
+        <p>${browse.join(" · ")}</p></details>`;
     };
     const card = (x, i) => {
       const name = x.r.name;
@@ -1491,7 +1589,7 @@
           ${readyHTML(x)}
           <h3>Lesson ${x.prog.lesson} · ${length} minutes${date ? ` · ${esc(when(date))}${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : ""}</h3>
           ${intentions.map(p => `<p class="prog-li"><b>${esc(p.intention)}</b> ${p.criteria.map(c => `<span class="t-chip">${esc(c)}</span>`).join(" ")}</p>`).join("")}
-          ${planTable(parts)}
+          ${planTable(parts, x)}
           <div class="row prog-actions">
             <label>Lesson date <input type="date" data-date="${i}" value="${esc(date || today)}" min="${today}"></label>
             <button class="btn primary small" type="button" data-schedule="${i}">📌 Put on ${esc(name)}'s device</button>
@@ -1509,18 +1607,20 @@
     };
     body.innerHTML = `<div class="work-flow">
         <h2>📘 Lesson programme</h2>
-        <p class="hint">A lesson-by-lesson programme for each pupil, starting from their Sound Quest, starting checks or practice. Each lesson mixes work with you, on the device and on paper, and names its CfE outcomes. At the end of a lesson, press <b>Lesson done</b> and choose whether they move on.</p>
+        <p class="hint">A lesson-by-lesson programme for each pupil, starting from their Sound Quest, starting checks or practice. Each lesson mixes work with you, on the device and on paper, and names its CfE outcomes, or for a pupil with an England year group, its national curriculum year and statements. At the end of a lesson, press <b>Lesson done</b> and choose whether they move on.</p>
         <label>Lesson length <select id="progLength">${LESSON_LENGTHS.map(n => `<option value="${n}"${n === length ? " selected" : ""}>${n} minutes</option>`).join("")}</select></label>
       </div>
       ${rows.length ? rows.map(card).join("") : `<div class="empty">Add pupils in the <b>Pupils</b> tab first, then give each one a programme here.</div>`}`;
-    body.querySelectorAll("[data-open-lesson]").forEach(b => { b.onclick = () => lessonDialog(window.PopLessons.get(b.dataset.openLesson)); });
+    // A lesson opened for a pupil follows their curriculum
+    const curOf = el => { const x = rows.find(y => y.r.name === el.closest(".prog-card").dataset.name); return x && inEngland(x.r) ? "england" : ""; };
+    body.querySelectorAll("[data-open-lesson]").forEach(b => { b.onclick = () => lessonDialog(window.PopLessons.get(b.dataset.openLesson), curOf(b)); });
     body.querySelectorAll("[data-print-lesson]").forEach(b => { b.onclick = () => {
-      lessonPrintDialog(window.PopLessons.get(b.dataset.printLesson), b.closest(".prog-card").dataset.name);
+      lessonPrintDialog(window.PopLessons.get(b.dataset.printLesson), b.closest(".prog-card").dataset.name, curOf(b));
     }; });
-    // Opens the library at every ready lesson for that subject and level
+    // Opens the library at every ready lesson for that subject and level (or England band)
     body.querySelectorAll("[data-browse]").forEach(b => { b.onclick = () => {
-      const [subject, level] = b.dataset.browse.split("|");
-      saveLibraryPrefs({ level, subject, strand: "", type: "lesson" });
+      const [subject, level, cur = ""] = b.dataset.browse.split("|");
+      saveLibraryPrefs({ cur, level, subject, strand: "", type: "lesson" });
       tab = "library";
       draw();
     }; });
@@ -1623,11 +1723,17 @@
     const intentions = parts.filter(p => p.intention);
     const codes = [...new Set(parts.flatMap(p => p.codes || []))];
     const levels = levelCheck(x.r, prog);
+    // England: each part's year, domain and the official statement it practises
+    const ncParts = levels.england ? parts.filter(p => p.codes && enWork(p.id) && enWork(p.id).statements.length)
+      .map(p => { const w = enWork(p.id); return `${w.label} · ${w.domain}: ${w.statements[0].wording}`; }) : [];
     return `<h1>PopSpell · ${esc(x.r.name)} · Lesson ${prog.lesson}</h1>
       <p><b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}</p>
-      ${levels.expected ? `<p><b>Expected for ${esc(levels.year)}:</b> ${levels.expected[0]} level. ${levels.areas.map(a => `<b>${a.area}:</b> working at ${a.level} level (${LEVEL_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>` : ""}
+      ${!levels.expected ? "" : levels.england
+        ? `<p><b>Expected for ${esc(levels.year)}:</b> ${esc(levels.expected.text)}. ${levels.areas.map(a => `<b>${a.area}:</b> ${esc(a.level)} work (${YEAR_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>`
+        : `<p><b>Expected for ${esc(levels.year)}:</b> ${levels.expected[0]} level. ${levels.areas.map(a => `<b>${a.area}:</b> working at ${a.level} level (${LEVEL_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>`}
       ${intentions.map(p => `<p><b>Learning intention:</b> ${esc(p.intention)}<br><b>Success criteria:</b> ${p.criteria.map(esc).join(" ")}</p>`).join("")}
-      ${codes.length ? `<p><b>CfE experiences and outcomes:</b> ${esc(codes.join(", "))}</p>` : ""}
+      ${levels.england ? (ncParts.length ? `<p><b>${ncParts.some(t => t.startsWith("Reception")) ? "EYFS and national curriculum (England)" : "National curriculum (England)"}:</b></p><ul>${[...new Set(ncParts)].map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "")
+        : codes.length ? `<p><b>CfE experiences and outcomes:</b> ${esc(codes.join(", "))}</p>` : ""}
       <table><thead><tr><th>Part</th><th>Time</th><th>Where</th><th>What to do</th><th>✓</th></tr></thead><tbody>
         ${parts.map(p => `<tr><td><b>${esc(p.title)}</b></td><td>${p.minutes} min</td><td>${WHERE[p.where].replace(/^\S+ /, "")}</td><td>${esc(p.how)}</td><td class="check-box">□</td></tr>`).join("")}</tbody></table>
       <p><b>Notes</b> (what went well, sounds or facts to revisit):</p><div class="ws-comment"></div>`;
@@ -1639,8 +1745,9 @@
       const label = { sounds: "Sound map", read: "Story", maths: "Maths sheet", dictation: "Dictation" }[p.key];
       return { title: `${label}: ${p.title.replace(/^[^:]+: /, "")}`, kind: p.sheet.kind, id: p.sheet.id, act, qs: act ? act.make() : null };
     });
+    const sheetLevel = s => (inEngland(x.r) ? (enWork(s.id) || {}).label || "" : s.id.startsWith("dictate:") ? levelOfStage(stageOf(s.id.slice(8))) : s.act.level);
     const sheetHTML = s => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date }, "mapping").html
-      : activitySheetHTML(s.act, s.qs, true, s.id.startsWith("dictate:") ? levelOfStage(stageOf(s.id.slice(8))) : s.act.level, x.r.name));
+      : activitySheetHTML(s.act, s.qs, true, sheetLevel(s), x.r.name));
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
@@ -1785,15 +1892,20 @@
     return { key: "support", text: "Needs support" };
   }
 
-  function cfeRows(sessions, pupilName) {
+  // England pupils' rows are national curriculum strands with the years of the work done in them
+  const enStrandOf = id => { const w = enWork(id); return w && w.strand ? w.strand : "Other work"; };
+  function cfeRows(sessions, pupilName, en = false) {
     const A = window.PopActivities;
     const rows = {};
     // Starting checks deliberately go past what a pupil can do, so they'd drag the status down
     sessions.filter(s => !P().isAssessment(s.listId))
       .filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
       const tag = (A && A.tag(s.listId)) || { organiser: "Other work", level: "" };
-      const r = rows[tag.organiser] = rows[tag.organiser] || { organiser: tag.organiser, levels: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
+      const key = en ? enStrandOf(s.listId) : tag.organiser;
+      const r = rows[key] = rows[key] || { organiser: key, levels: new Set(), years: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
       if (tag.level) r.levels.add(tag.level);
+      const w = en ? enWork(s.listId) : null;
+      if (w && w.lo !== null) r.years.add(w.lo);
       r.work.add(s.list);
       r.days.add(new Date(s.at).toDateString());
       (s.words || []).forEach(w => {
@@ -1805,19 +1917,20 @@
     const levelOrder = ["Early", "First", "Second"];
     return Object.values(rows).map(r => Object.assign(r, {
       status: cfeStatus(r), pct: r.items ? Math.round((r.first / r.items) * 100) : 0,
-      levelText: levelOrder.filter(l => r.levels.has(l)).join(", "),
+      levelText: en ? (r.years.size ? E_().rangeLabel(Math.min(...r.years), Math.max(...r.years)) : "")
+        : levelOrder.filter(l => r.levels.has(l)).join(", "),
       topSkills: Object.entries(r.skills).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([s]) => s)
-    })).sort((a, b) => a.organiser.localeCompare(b.organiser));
+    })).sort((a, b) => (en ? E_().STRAND_ORDER.indexOf(a.organiser) - E_().STRAND_ORDER.indexOf(b.organiser) : 0) || a.organiser.localeCompare(b.organiser));
   }
 
-  function printReport(pupilName, sessions) {
-    const rows = cfeRows(sessions, pupilName);
+  function printReport(pupilName, sessions, en = false) {
+    const rows = cfeRows(sessions, pupilName, en);
     const period = (PERIODS.find(([d]) => d === days) || [0, ""])[1];
     printSheet("ws-report", `<h1>PopSpell progress report</h1>
       <p><b>Pupil:</b> ${esc(pupilName)} &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Period:</b> ${esc(period)} &nbsp; <b>Printed:</b> ${esc(new Date().toLocaleDateString("en-GB"))}</p>
-      <p>Grouped by Curriculum for Excellence organiser. “Right first time” counts questions answered correctly without help.
+      <p>Grouped by ${en ? "national curriculum (England) strand, with the years the work comes from" : "Curriculum for Excellence organiser"}. “Right first time” counts questions answered correctly without help.
         Secure means 85% or more right first time, on at least 10 questions over two or more days.</p>
-      <table><thead><tr><th>Organiser</th><th>Level</th><th>Work done</th><th>Questions</th><th>Right first time</th><th>Status</th><th>To work on</th></tr></thead>
+      <table><thead><tr><th>${en ? "Strand" : "Organiser"}</th><th>${en ? "Year" : "Level"}</th><th>Work done</th><th>Questions</th><th>Right first time</th><th>Status</th><th>To work on</th></tr></thead>
       <tbody>${rows.map(r => `<tr><td>${esc(r.organiser)}</td><td>${esc(r.levelText)}</td><td>${esc([...r.work].slice(0, 6).join(", "))}${r.work.size > 6 ? "…" : ""}</td>
         <td>${r.items}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
         || `<tr><td colspan="7">No work recorded in this period.</td></tr>`}</tbody></table>
@@ -1826,7 +1939,12 @@
 
   /* ---------- New pupil: profile, Pip's Sound Quest, and the starting assessment report ---------- */
 
-  const YEAR_GROUPS = ["Nursery", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "S1", "S2", "S3"];
+  // A pupil's year group also says which curriculum they follow: P1 to S6 are Scotland's,
+  // Reception and Year 1 to Year 11 are England's
+  const YEAR_GROUPS = ["Nursery", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "S1", "S2", "S3", "S4", "S5", "S6"];
+  const ENGLAND_YEARS = () => (E_() ? E_().YEARS.map(y => y[0]) : []);
+  const yearOptions = chosen => `<optgroup label="Scotland (Curriculum for Excellence)">${YEAR_GROUPS.map(y => `<option${chosen === y ? " selected" : ""}>${y}</option>`).join("")}</optgroup>
+    ${ENGLAND_YEARS().length ? `<optgroup label="England (national curriculum)">${ENGLAND_YEARS().map(y => `<option${chosen === y ? " selected" : ""}>${y}</option>`).join("")}</optgroup>` : ""}`;
   const NEED_CHIPS = ["Dyslexia (or suspected)", "English as an additional language", "ADHD", "Speech and language", "Hearing", "Sight", "Anxious about learning", "Needs short tasks"];
   // The quest's link: joins the class, signs the device in as the child, and opens the quest
   const assessLink = name => `${homeLink(name)}&then=assess`;
@@ -1840,7 +1958,7 @@
   }
 
   // What each island shows: a CfE level (where it can say), a plain-English finding, and a next step
-  function questFindings(found) {
+  function questFindings(found, en = false) {
     const A = window.PopActivities;
     const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
     const status = p => (p >= 80 ? "Secure" : p >= 50 ? "Developing" : "Needs support");
@@ -1851,7 +1969,7 @@
       words.forEach(w => { const k = w.from || "other"; by[k] = by[k] || [0, 0]; by[k][1]++; if (w.correct) by[k][0]++; });
       const name = { "l-rhyme": "Rhyme", "l-first-sound": "First sounds", "l-count-sounds": "Counting sounds" };
       const right = words.filter(w => w.correct).length;
-      out.listen = { area: "Listening for sounds (phonological awareness)", level: "Early", status: status(pct(right, words.length)),
+      out.listen = { area: "Listening for sounds (phonological awareness)", level: "Early", id: "l-count-sounds", status: status(pct(right, words.length)),
         detail: Object.entries(by).map(([k, [r, n]]) => `${name[k] || k} ${r} of ${n}`).join(" · "),
         next: pct(right, words.length) >= 80 ? "Secure: no extra sound games needed." : "Short daily sound games: rhyme, first sounds and tapping out sounds." };
     }
@@ -1859,11 +1977,12 @@
     const phonics = (s, area, verb) => {
       if (!s) return null;
       const gaps = P().checkGaps(s.words || []);
-      if (!gaps.length) return { area, level: "Second", status: "Secure", gap: null,
-        detail: `${verb} every stage tested, through Stage 6 (endings and tricky words).`, next: "Move on to Second-level spelling rules and longer texts." };
+      if (!gaps.length) return { area, level: "Second", top: "kn-wr", status: "Secure", gap: null,
+        detail: `${verb} every stage tested, through Stage 6 (endings and tricky words).`,
+        next: en ? "Move on to the Years 3–4 spelling rules and word list, and longer texts." : "Move on to Second-level spelling rules and longer texts." };
       const g = stageOf(gaps[0]);
       const st = P().STAGES[g];
-      return { area, level: levelOfStage(g), status: g === 0 ? "Needs support" : "Developing", gap: gaps[0],
+      return { area, level: levelOfStage(g), id: gaps[0], status: g === 0 ? "Needs support" : "Developing", gap: gaps[0],
         detail: `${g ? `Secure up to ${P().STAGES[g - 1].stage}. ` : ""}Starts to find it tricky at ${st.stage}: ${gaps.map(titleOf).slice(0, 3).join(", ")}.`,
         next: `Start ${verb === "Read" ? "reading" : "spelling"} practice at ${titleOf(gaps[0])}.` };
     };
@@ -1875,42 +1994,53 @@
       const story = (window.STORIES || []).find(s => s.id === id) || (window.PASSAGES || []).find(p => p.id === id);
       const level = story ? story.level || levelOfStage((story.stage || 1) - 1) : "";
       const right = words.filter(w => w.correct).length;
-      out.story = { area: "Reading: understanding a story", level, status: status(pct(right, words.length)),
+      const storyAct = story ? `${(window.STORIES || []).includes(story) ? "s" : "r"}-${story.id}` : "";
+      out.story = { area: "Reading: understanding a story", level, id: storyAct, status: status(pct(right, words.length)),
         detail: `${story ? `"${story.title}"` : "A story"} read alone: ${right} of ${words.length} questions right.`,
         next: pct(right, words.length) >= 80 ? "Understanding is secure at this level: build up to longer texts." : "Talk about stories together: who, where, what happened, and why." };
     }
     if (found.numbers) {
       const gaps = P().checkGaps(found.numbers.words || []);
       const act = gaps.length && A ? A.get(gaps[0]) : null;
-      out.numbers = { area: "Numeracy: number and number processes", level: act ? act.level : "Second", status: act ? (act.level === "Early" ? "Needs support" : "Developing") : "Secure",
-        detail: act ? `Starts to find it tricky at ${act.title} (${act.level} level)${gaps.length > 1 ? `; also ${gaps.slice(1, 3).map(id => (A.get(id) || {}).title || id).join(", ")}` : ""}.` : "Answered every number question tested, through Second level.",
-        next: act ? `Start number practice at ${act.title}.` : "Move on to Second-level measurement, fractions and data." };
+      out.numbers = { area: en ? "Maths: number and calculation" : "Numeracy: number and number processes", level: act ? act.level : "Second", id: act ? act.id : "", top: act ? "" : "n-percent", status: act ? (act.level === "Early" ? "Needs support" : "Developing") : "Secure",
+        detail: act ? `Starts to find it tricky at ${act.title} (${en ? ncLine(act.id) || act.level : `${act.level} level`})${gaps.length > 1 ? `; also ${gaps.slice(1, 3).map(id => (A.get(id) || {}).title || id).join(", ")}` : ""}.` : `Answered every number question tested, through ${en ? "Year 5 and 6 work" : "Second level"}.`,
+        next: act ? `Start number practice at ${act.title}.` : en ? "Move on to Year 5 and 6 measurement, fractions and statistics." : "Move on to Second-level measurement, fractions and data." };
     }
     return out;
   }
 
   function assessmentReport(pupil, sessions) {
     const found = questSessions(pupil.name, sessions);
-    const f = questFindings(found);
+    const f = questFindings(found, inEngland(pupil));
     const rows = ["listen", "read", "story", "spell", "numbers"].filter(k => f[k]);
     const dates = Object.values(found).filter(Boolean).map(s => s.at);
     const lower = (...ls) => ls.filter(Boolean).sort((a, b) => LEVEL_ORDER.indexOf(a) - LEVEL_ORDER.indexOf(b))[0];
     const literacy = lower(f.read && f.read.level, f.spell && f.spell.level);
     const badge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/\s+/g, "-")}">${esc(s)}</span>`;
     const strengths = rows.filter(k => f[k].status === "Secure").map(k => f[k].area);
+    // England: national curriculum years instead of CfE levels
+    const en = inEngland(pupil);
+    const enLabel = x => { const w = enWork(x.id || x.top); return !w || w.lo === null ? "—" : x.top && !x.id ? `Secure through ${w.label}` : w.label; };
+    const enLow = (...xs) => xs.filter(x => x && enWork(x.id || x.top)).map(x => enWork(x.id || x.top)).sort((a, b) => a.lo - b.lo)[0];
+    const exp = en ? E_().expected(pupil.yearGroup) : null;
+    const lit = en ? enLow(f.read, f.spell) : null, num = en && f.numbers ? enWork(f.numbers.id || f.numbers.top) : null;
     return `<div class="ar">
       <div class="ar-head"><img src="assets/brand/wordmark.png" alt="PopSpell" width="96">
         <div><h1>Starting assessment</h1><p class="ar-sub">Pip's Sound Quest · ${esc(current.name)}</p></div>
         <img src="assets/brand/pip-mascot.png" alt="" width="70"></div>
       <table class="ar-facts"><tr><th>Pupil</th><td>${esc(pupil.name)}</td><th>Year group</th><td>${esc(pupil.yearGroup || "—")}</td></tr>
         <tr><th>Assessed</th><td>${dates.length ? esc([...new Set(dates.sort().map(day))].join(", ")) : "—"}</td><th>Teacher</th><td>${esc(current.teacherName || me.name || "")}</td></tr></table>
-      ${literacy || f.numbers ? `<div class="ar-summary">
+      ${en ? (lit || num ? `<div class="ar-summary">
+        ${lit ? `<div><span>Literacy</span><b>Working on ${esc(lit.label)} work</b>${exp ? `<small>${esc(YEAR_STATUS[E_().status(pupil.yearGroup, lit)] || "")}</small>` : ""}</div>` : ""}
+        ${num ? `<div><span>Maths</span><b>Working on ${esc(num.label)} work</b>${exp ? `<small>${esc(YEAR_STATUS[E_().status(pupil.yearGroup, num)] || "")}</small>` : ""}</div>` : ""}
+      </div>${exp ? `<p class="hint">Expected for ${esc(pupil.yearGroup)}: ${esc(exp.text)}.</p>` : ""}` : "")
+      : literacy || f.numbers ? `<div class="ar-summary">
         ${literacy ? `<div><span>Literacy</span><b>Working within ${esc(literacy)} level</b></div>` : ""}
         ${f.numbers ? `<div><span>Numeracy</span><b>Working within ${esc(f.numbers.level)} level</b></div>` : ""}
       </div>` : ""}
       <h2>What we found</h2>
-      ${rows.length ? `<table class="ar-table"><thead><tr><th>Area</th><th>CfE level</th><th>Status</th><th>What we found</th><th>Next step</th></tr></thead><tbody>
-        ${rows.map(k => `<tr><td><b>${esc(f[k].area)}</b></td><td>${esc(f[k].level || "—")}</td><td>${badge(f[k].status)}</td><td>${esc(f[k].detail)}</td><td>${esc(f[k].next)}</td></tr>`).join("")}
+      ${rows.length ? `<table class="ar-table"><thead><tr><th>Area</th><th>${en ? "Curriculum year" : "CfE level"}</th><th>Status</th><th>What we found</th><th>Next step</th></tr></thead><tbody>
+        ${rows.map(k => `<tr><td><b>${esc(f[k].area)}</b></td><td>${esc(en ? enLabel(f[k]) : f[k].level || "—")}</td><td>${badge(f[k].status)}</td><td>${esc(f[k].detail)}</td><td>${esc(f[k].next)}</td></tr>`).join("")}
       </tbody></table>` : `<p>No islands finished yet.</p>`}
       ${strengths.length ? `<h2>Strengths</h2><ul>${strengths.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
       <h2>Recommended starting points</h2><ul>
@@ -1923,7 +2053,9 @@
         ${pupil.needs ? `<p><b>Things to bear in mind:</b> ${esc(pupil.needs)}</p>` : ""}
         ${pupil.likes ? `<p><b>Enjoys:</b> ${esc(pupil.likes)}</p>` : ""}` : ""}
       <h2>Teacher's comments</h2><div class="ws-comment"></div>
-      <p class="ar-note"><b>About this assessment.</b> Pip's Sound Quest is a short, adaptive check played as a game. Each part stops as soon as the work becomes too hard, so the child is never left struggling, and it shows a starting point rather than everything they can do. CfE levels are indicative: they should be confirmed by the teacher's own judgement against the Curriculum for Excellence benchmarks.</p>
+      <p class="ar-note"><b>About this assessment.</b> Pip's Sound Quest is a short, adaptive check played as a game. Each part stops as soon as the work becomes too hard, so the child is never left struggling, and it shows a starting point rather than everything they can do. ${en
+      ? "Curriculum years are indicative: they show which year of England's national curriculum (or, for Reception, the Early Learning Goals) the work comes from, and should be confirmed by the teacher's own judgement against the programmes of study."
+      : "CfE levels are indicative: they should be confirmed by the teacher's own judgement against the Curriculum for Excellence benchmarks."}</p>
     </div>`;
   }
 
@@ -1946,9 +2078,12 @@
 
   const DAY_MS = 864e5;
   const longDay = ms => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-  // Scottish school years start in August
-  const schoolYearStart = (now = new Date()) => new Date(now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1, 7, 1).getTime();
-  const REPORT_PERIODS = [["year", "This school year (since 1 August)"], ["last", "Since the last parents' night report"],
+  // Scottish school years start in August, English ones in September
+  const schoolYearStart = (now = new Date(), en = false) => {
+    const m = en ? 8 : 7;
+    return new Date(now.getMonth() >= m ? now.getFullYear() : now.getFullYear() - 1, m, 1).getTime();
+  };
+  const REPORT_PERIODS = [["year", "This school year (from 1 August in Scotland, 1 September in England)"], ["last", "Since the last parents' night report"],
     ["12m", "The last 12 months"], ["date", "Since a date I choose"]];
   let reportPeriod = "year", reportDate = "";
   const lastReportOf = r => Math.max(0, ...((r && r.reports) || []));
@@ -1956,7 +2091,7 @@
     if (reportPeriod === "12m") return Date.now() - 365 * DAY_MS;
     if (reportPeriod === "date" && reportDate) return new Date(`${reportDate}T00:00:00`).getTime();
     if (reportPeriod === "last" && lastReportOf(r)) return lastReportOf(r);
-    return schoolYearStart();
+    return schoolYearStart(new Date(), inEngland(r));
   }
   const firstTimePct = ws => (ws.length ? Math.round((ws.filter(w => w.correct && w.triesUsed === 1).length / ws.length) * 100) : null);
   const weekOf = ms => { const d = new Date(ms); return new Date(d.getFullYear(), d.getMonth(), d.getDate() - (d.getDay() + 6) % 7).getTime(); };
@@ -1985,6 +2120,10 @@
     return Object.keys(a).filter(x => a[x].missed >= 2 && b[x] && b[x].seen >= 3 && !b[x].missed);
   };
   // Which CfE organisers each part of the starting assessment belongs to
+  const QUEST_STRAND = {
+    listen: o => o === "Spoken language", read: o => o === "Word reading", story: o => o === "Comprehension", spell: o => o === "Spelling",
+    numbers: o => ["Number and place value", "Addition and subtraction", "Multiplication and division"].includes(o)
+  };
   const QUEST_ORGANISER = {
     listen: o => o.startsWith("Literacy · Listening"), read: o => o.startsWith("Literacy · Reading"),
     story: o => o.startsWith("Literacy · Reading"), spell: o => o.includes("(spelling)"),
@@ -1992,13 +2131,13 @@
   };
 
   // Everything the report says, worked out from the pupil's results. "Now" means the last 8 weeks.
-  function yearProgress(name, sessions, from, to, lastReport) {
+  function yearProgress(name, sessions, from, to, lastReport, en = false) {
     const A = window.PopActivities;
     const all = sessions.filter(s => sameName(s.pupil, name) && !P().isAssessment(s.listId)).sort((a, b) => a.at - b.at);
     const mine = all.filter(s => s.at >= from && s.at <= to);
     const recentCut = Math.max(from, to - 56 * DAY_MS);
     const recent = mine.filter(s => s.at > recentCut);
-    const organiserOf = s => ((A && A.tag(s.listId)) || { organiser: "Other work" }).organiser;
+    const organiserOf = s => (en ? enStrandOf(s.listId) : ((A && A.tag(s.listId)) || { organiser: "Other work" }).organiser);
 
     const months = [];
     const first = new Date(from);
@@ -2015,8 +2154,8 @@
     let run = 0, bestRun = 0, totalWeeks = 0;
     for (let w = weekOf(from); w <= to; w = weekOf(w + 8 * DAY_MS)) { totalWeeks++; run = weeks.has(w) ? run + 1 : 0; bestRun = Math.max(bestRun, run); }
 
-    const nowRows = cfeRows(recent, name);
-    const areas = cfeRows(mine, name).map(row => {
+    const nowRows = cfeRows(recent, name, en);
+    const areas = cfeRows(mine, name, en).map(row => {
       const now = nowRows.find(x => x.organiser === row.organiser);
       const ws = wordsOf(mine.filter(s => organiserOf(s) === row.organiser));
       const useNow = now && now.status.key !== "none";
@@ -2093,8 +2232,9 @@
 
   function parentsNightReport(pupil, sessions, assessments, { from, to, comment }) {
     const last = lastReportOf(pupil);
-    const y = yearProgress(pupil.name, sessions, from, to, last);
-    const start = questFindings(questSessions(pupil.name, assessments));
+    const en = inEngland(pupil);
+    const y = yearProgress(pupil.name, sessions, from, to, last, en);
+    const start = questFindings(questSessions(pupil.name, assessments), inEngland(pupil));
     const startAt = Math.min(...Object.values(questSessions(pupil.name, assessments)).filter(Boolean).map(s => s.at));
     const name = esc(pupil.name);
     const change = (a, b) => (a == null || b == null ? "" : b > a ? `up from ${a}%` : b < a ? `down from ${a}%` : `same as ${a}%`);
@@ -2121,9 +2261,10 @@
       ...(!y.mine.length ? ["Start with a few short PopSpell sessions so progress can be tracked."] : [])
     ];
     const startRows = ["listen", "read", "story", "spell", "numbers"].filter(k => start[k]).map(k => {
-      const now = y.areas.filter(a => QUEST_ORGANISER[k](a.organiser)).sort((a, b) => b.items - a.items)[0];
+      const now = y.areas.filter(a => (en ? QUEST_STRAND : QUEST_ORGANISER)[k](a.organiser)).sort((a, b) => b.items - a.items)[0];
       const stage = (k === "spell" || k === "read") && y.stageNow >= 0 ? `Now practising ${P().STAGES[y.stageNow].stage}. ` : "";
-      return `<tr><td><b>${esc(start[k].area)}</b></td><td>${statusBadge(start[k].status)} <span class="meta">${esc(start[k].level || "")}</span><br>${esc(start[k].detail)}</td>
+      const startLevel = en ? ((enWork(start[k].id || start[k].top) || {}).label || "") : start[k].level || "";
+      return `<tr><td><b>${esc(start[k].area)}</b></td><td>${statusBadge(start[k].status)} <span class="meta">${esc(startLevel)}</span><br>${esc(start[k].detail)}</td>
         <td>${now ? `${statusBadge(now.statusNow.text)} ${(now.now || now).pct}% right first time<br>` : ""}${esc(stage)}${!now && !stage ? `<span class="meta">No practice in this area yet</span>` : ""}</td></tr>`;
     });
 
@@ -2153,7 +2294,7 @@
       ${startRows.length ? `<h2>Starting point and now</h2>
         <table class="ar-table"><thead><tr><th>Area</th><th>At the start (${esc(longDay(startAt))})</th><th>Now</th></tr></thead><tbody>${startRows.join("")}</tbody></table>` : ""}
       ${y.areas.length ? `<h2>How each area is going</h2>
-        <table class="ar-table"><thead><tr><th>Area</th><th>CfE level</th><th>Questions</th><th>Trend over the period</th><th>Now</th><th>To work on</th></tr></thead><tbody>
+        <table class="ar-table"><thead><tr><th>Area</th><th>${en ? "Curriculum year" : "CfE level"}</th><th>Questions</th><th>Trend over the period</th><th>Now</th><th>To work on</th></tr></thead><tbody>
         ${y.areas.map(a => `<tr class="${a.statusNow.key === "support" || (a.trend && a.trend.key === "down") ? "pn-flag" : ""}"><td><b>${esc(shortArea(a.organiser))}</b></td><td>${esc(a.levelText || "—")}</td>
           <td>${a.items}</td><td>${trendCell(a.trend)}</td><td>${statusBadge(a.statusNow.text)}${a.now ? `<br><span class="meta">${a.now.pct}%, last 8 weeks</span>` : ""}</td>
           <td>${esc(a.focus.slice(0, 5).join(", ") || "—")}</td></tr>`).join("")}</tbody></table>` : ""}
@@ -2165,7 +2306,8 @@
       <h2>Teacher's comment</h2>${comment ? `<p class="pn-comment">${esc(comment).replace(/\n/g, "<br>")}</p>` : `<div class="ws-comment"></div>`}
       <p class="ar-note"><b>About this report.</b> It is worked out from ${name}'s PopSpell results. “Right first time” counts questions answered correctly without help.
         Secure means 85% or more right first time, on at least 10 questions over two or more days; “Now” uses the last 8 weeks. Trends compare the first half of the period's questions in an area with the second half.
-        CfE levels are indicative and should be confirmed by the teacher's own judgement against the benchmarks.</p>
+        ${en ? "Curriculum years show which year of England's national curriculum the work comes from. They are indicative and should be confirmed by the teacher's own judgement against the programmes of study."
+          : "CfE levels are indicative and should be confirmed by the teacher's own judgement against the benchmarks."}</p>
     </div>`;
   }
 
@@ -2257,7 +2399,7 @@
       frame(`<p class="hint">A few details help PopSpell (and you) plan for this child. Only teachers can see them.</p>
         <form class="t-diary-form" id="flowAbout">
           <label>First name, as the child will type it ${r ? `<input type="text" value="${esc(r.name)}" disabled>` : `<input type="text" id="flowName" maxlength="40" required>`}</label>
-          <label>Year group <select id="flowYear"><option value="">Choose…</option>${YEAR_GROUPS.map(y => `<option${r && r.yearGroup === y ? " selected" : ""}>${y}</option>`).join("")}</select></label>
+          <label>Year group <select id="flowYear"><option value="">Choose…</option>${yearOptions(r && r.yearGroup)}</select></label>
           <label>Parent email (optional) <input type="email" id="flowEmail" value="${esc(r ? r.parentEmail || "" : "")}" placeholder="parent@example.com"></label>
           <label>Things to bear in mind <textarea id="flowNeeds" rows="2" maxlength="500" placeholder="e.g. diagnosed dyslexia, gets tired quickly">${esc(r ? r.needs || "" : "")}</textarea></label>
           <div class="chips">${NEED_CHIPS.map(c => `<button type="button" class="t-chip need-chip" data-need="${esc(c)}">＋ ${esc(c)}</button>`).join("")}</div>
@@ -2308,9 +2450,11 @@
       frame(`<div class="empty">Loading…</div>`);
       let sessions = [];
       try { sessions = await cloud.sessions(current.id, 365); } catch (err) { return fail(err); }
-      const f = questFindings(questSessions(r.name, sessions));
+      const en = inEngland(r);
+      const f = questFindings(questSessions(r.name, sessions), en);
       const keys = Object.keys(f).filter(k => f[k]);
-      frame(`${keys.length ? `<ul class="flow-findings">${keys.map(k => `<li><b>${esc(f[k].area)}</b> · ${f[k].level ? `${esc(f[k].level)} level · ` : ""}${esc(f[k].status)}<br><span class="meta">${esc(f[k].detail)}</span></li>`).join("")}</ul>`
+      const levelOf = x => (en ? ((enWork(x.id || x.top) || {}).label || "") : x.level ? `${x.level} level` : "");
+      frame(`${keys.length ? `<ul class="flow-findings">${keys.map(k => `<li><b>${esc(f[k].area)}</b> · ${levelOf(f[k]) ? `${esc(levelOf(f[k]))} · ` : ""}${esc(f[k].status)}<br><span class="meta">${esc(f[k].detail)}</span></li>`).join("")}</ul>`
           : `<div class="empty">No islands finished yet. Go back a step to start the quest.</div>`}
         <div class="row">
           <button class="btn primary" type="button" data-report ${keys.length ? "" : "disabled"}>📄 View the assessment report</button>
@@ -2461,7 +2605,8 @@
       nextLesson: r && r.nextLessonDate >= today ? r.nextLessonDate : "",
       upcoming: (assignment ? assignment.plans : []).filter(p => p.until >= today)
         .sort((a, b) => a.from.localeCompare(b.from)).slice(0, 3).map(p => ({ title: titleOf(p.list), from: p.from })),
-      cfe: cfeRows(sessions, name).filter(x => x.status.key !== "none")
+      curriculum: inEngland(r) ? "england" : "scotland",
+      cfe: cfeRows(sessions, name, inEngland(r)).filter(x => x.status.key !== "none")
         .map(x => ({ organiser: x.organiser, level: x.levelText, status: x.status.text }))
     };
   }
@@ -2562,13 +2707,22 @@
                ${(w.wrong || []).length ? `<br><span class="meta">Tried: ${esc(w.wrong.join(", "))}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
         </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}
       ${pupils.length ? (() => {
-        const organisers = [...new Set(cfeRows(sessions).map(r => r.organiser))];
-        return `<h2 class="t-h2">Curriculum for Excellence overview</h2>
-          <p class="hint">Each pupil's status for each organiser in this period. Secure = 85%+ right first time on 10+ questions over 2+ days; Developing = 60%+.</p>
-          <div class="t-scroll"><table class="t-table cfe-table"><thead><tr><th>Pupil</th>${organisers.map(o => `<th>${esc(o.replace(/^(Literacy|Numeracy) · /, ""))}</th>`).join("")}</tr></thead>
-          <tbody>${pupils.map(p => { const rows = cfeRows(sessions, p.pupil);
-            return `<tr><td class="who">${esc(p.pupil)}</td>${organisers.map(o => { const r = rows.find(x => x.organiser === o);
+        // Scottish pupils by CfE organiser, English pupils by national curriculum strand
+        const isEn = p => inEngland(roster.find(r => sameName(r.name, p.pupil)));
+        const table = (group, en) => {
+          const names = new Set(group.map(p => p.pupil.trim().toLowerCase()));
+          const areas = [...new Set(cfeRows(sessions.filter(s => names.has(String(s.pupil || "").trim().toLowerCase())), "", en).map(r => r.organiser))];
+          return `<div class="t-scroll"><table class="t-table cfe-table"><thead><tr><th>Pupil</th>${areas.map(o => `<th>${esc(o.replace(/^(Literacy|Numeracy) · /, ""))}</th>`).join("")}</tr></thead>
+          <tbody>${group.map(p => { const rows = cfeRows(sessions, p.pupil, en);
+            return `<tr><td class="who">${esc(p.pupil)}</td>${areas.map(o => { const r = rows.find(x => x.organiser === o);
               return `<td>${r ? `<span class="cfe ${r.status.key}">${esc(r.status.text)}</span><br><span class="meta">${r.pct}% · ${r.items} q</span>` : "—"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>`;
+        };
+        const scots = pupils.filter(p => !isEn(p)), english = pupils.filter(isEn);
+        const key = "Secure = 85%+ right first time on 10+ questions over 2+ days; Developing = 60%+.";
+        return `${scots.length ? `<h2 class="t-h2">Curriculum for Excellence overview</h2>
+          <p class="hint">Each pupil's status for each organiser in this period. ${key}</p>${table(scots, false)}` : ""}
+          ${english.length ? `<h2 class="t-h2">National curriculum (England) overview</h2>
+          <p class="hint">Pupils with an England year group, by national curriculum strand, in this period. ${key}</p>${table(english, true)}` : ""}`;
       })() : ""}
       <h2 class="t-h2">🧹 Old records</h2>
       <p class="hint">PopSpell's privacy page promises to delete a child's records within 12 months of their last lesson.
@@ -2576,7 +2730,7 @@
       <button class="btn" id="checkOld">Check for records over 12 months old</button>
       <div id="oldRecords"></div>`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
-    body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions); });
+    body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions, inEngland(roster.find(r => sameName(r.name, b.dataset.report)))); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
     $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
     // Roster pupils, plus anyone with results who isn't on the roster yet
