@@ -99,6 +99,7 @@ MAP = {
   "eg-y6-synonyms": "en 5-6 vgp 8", "eg-y6-punctuation": "en 5-6 vgp 13; en 5-6 vgp 14; en 5-6 vgp 11",
   "eg-terms-ks1": "en 1 vgp 7; en 2 vgp 10", "eg-terms-ks2a": "en 3-4 vgp 12", "eg-terms-ks2b": "en 5-6 vgp 16",
   "n-mtc": "ma 4 md 1",
+  "phonics-check": "en 1 wr 1; en 1 wr 2; en 1 wr 3",
   # Spelling lists (Appendix 1 places each pattern in a year)
   "short-a": "en R wri 2; en 1 sp 2", "short-e": "en R wri 2; en 1 sp 2", "short-i": "en R wri 2; en 1 sp 2",
   "short-o": "en R wri 2; en 1 sp 2", "short-u": "en R wri 2; en 1 sp 2",

@@ -2082,6 +2082,123 @@
     dialog.showModal();
   }
 
+  /* ---------- Phonics check practice, marked live (England's Year 1 phonics screening check) ---------- */
+
+  // Like the real check: 40 words in two sections, a mix of real words and pseudo-words (shown with
+  // an alien), read aloud by the child and marked by the teacher. Section 2 has harder graphemes and
+  // more letters. Real words come from PopSpell's phonics stages; the pseudo-words follow the same
+  // patterns but aren't English words.
+  const PSEUDO_1 = ["vot", "jat", "fep", "zid", "yop", "keb", "shum", "thig", "chab", "quen", "zell", "vock", "gax", "thep", "shob",
+    "nump", "jeck", "lom", "wib", "chiv", "zang"];
+  const PSEUDO_2 = ["zort", "thurk", "prowt", "fleak", "skoid", "glurn", "trime", "zoam", "strom", "blurd", "thrail", "splog", "dright",
+    "glaim", "snoath", "frelp", "jeest", "scrund", "whid", "koil", "vurt", "plew", "quaib", "sporl", "jound", "chaib"];
+  function phonicsCheckWords() {
+    const realFrom = stages => shuffle([...new Set(stages.flatMap(i => (P().STAGES[i] || { lists: [] }).lists)
+      .flatMap(l => (catalogueList(l.id) || { items: [] }).items).filter(it => !it.whole && /^[a-z]{3,6}$/.test(it.spelling))
+      .map(it => it.spelling))]);
+    const section = (n, real, pseudo) => shuffle(real.slice(0, 10).map(word => ({ word, alien: false }))
+      .concat(shuffle(pseudo).slice(0, 10).map(word => ({ word, alien: true })))).map(w => Object.assign(w, { section: n }));
+    return section(1, realFrom([0, 1]), PSEUDO_1).concat(section(2, realFrom([2, 3, 4]), PSEUDO_2));
+  }
+  const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  function phonicsCheckDialog(r) {
+    const words = phonicsCheckWords();
+    const marks = [];   // { correct, missed: [graphemes] } per word
+    let i = -1, onMyScreen = false, saved = false;
+    const link = `${homeLink(r.name)}&then=phonics`;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog phonics-dialog";
+    document.body.append(dialog);
+    const push = () => cloud.setDrive(current.id, r.name, i >= 0 && i < words.length
+      ? { word: words[i].word, n: i + 1, total: words.length, alien: words[i].alien, section: words[i].section } : null)
+      .catch(err => showError(err));
+    const close = () => { if (i >= 0 && !saved) cloud.setDrive(current.id, r.name, null).catch(() => {}); dialog.close(); };
+    const head = title => `<div class="worksheet-preview-actions"><h2>🔤 ${esc(title)}</h2><button class="btn small" type="button" data-close>Close</button></div>`;
+
+    const intro = () => {
+      dialog.innerHTML = `${head(`Phonics check practice: ${r.name}`)}
+        <p>Practice for England's Year 1 <b>phonics screening check</b>: 40 words in two sections, a mix of real words and pseudo-words (made-up words, shown with an alien). ${esc(r.name)} reads each word aloud and you mark it. Section 2 is harder.</p>
+        <ol class="help-steps">
+          <li>On ${esc(r.name)}'s device, open this link. It shows each word as you move through: <span class="t-link-row"><input class="t-link" readonly value="${esc(link)}"> <button class="btn small" type="button" data-copy>Copy</button></span></li>
+          <li>Or, if they're not on a device, share your screen and press <b>Show on my screen</b> during the check.</li>
+          <li>Mark each word: <b>✓ Right</b> (key 1) or <b>✗ Not right</b> (key 2). If you like, tap the sound they got wrong first, so it shows in their results.</li>
+        </ol>
+        <p class="hint">Mark a word right if it's read correctly, sounded out and blended or not. A pseudo-word is right for any reading that fits its letters' sounds.</p>
+        <div class="row end"><button class="btn primary" type="button" data-start>▶ Start the check</button></div>`;
+      dialog.querySelector("[data-copy]").onclick = async e => { try { await navigator.clipboard.writeText(link); e.target.textContent = "✓ Copied"; } catch { dialog.querySelector(".t-link").select(); } };
+      dialog.querySelector("[data-start]").onclick = () => { i = 0; push(); word(); };
+      dialog.querySelector("[data-close]").onclick = close;
+    };
+
+    const word = () => {
+      const w = words[i];
+      const item = P().analyse(w.word);
+      const missed = new Set((marks[i] && marks[i].missed) || []);
+      dialog.innerHTML = `${head(`Phonics check: ${r.name}`)}
+        <p class="meta">Word ${i + 1} of ${words.length} · Section ${w.section} · ${w.alien ? "👽 Pseudo-word" : "Real word"}</p>
+        <div class="phonics-mark"><div class="phonics-word">${P().wordHTML(item, new Set([...missed].map(g => item.tokens.indexOf(g))))}</div>
+          <p class="hint">Tap a sound they got wrong (optional).</p></div>
+        <div class="row center"><button class="btn primary big" type="button" data-mark="1">✓ Right <small>(1)</small></button>
+          <button class="btn big" type="button" data-mark="0">✗ Not right <small>(2)</small></button></div>
+        <div class="row"><button class="btn small" type="button" data-back${i ? "" : " disabled"}>← Back</button>
+          <button class="btn small" type="button" data-screen>${onMyScreen ? "Hide from my screen" : "🖥️ Show on my screen"}</button>
+          <span class="meta">${marks.filter(m => m && m.correct).length} right so far</span></div>
+        ${onMyScreen ? `<div class="phonics-share">${w.alien ? `<div class="phonics-alien">👽</div>` : ""}<div class="phonics-word">${esc(w.word)}</div>
+          <button class="btn small" type="button" data-screen>Hide</button></div>` : ""}`;
+      dialog.querySelector("[data-close]").onclick = close;
+      dialog.querySelectorAll(".phonics-mark .g").forEach(el => { el.onclick = () => {
+        const g = item.tokens[Number(el.dataset.g)];
+        if (missed.has(g)) missed.delete(g); else missed.add(g);
+        marks[i] = Object.assign({ correct: false }, marks[i], { missed: [...missed] });
+        el.classList.toggle("missed");
+      }; });
+      const mark = correct => {
+        marks[i] = { correct, missed: correct ? [] : [...missed] };
+        i++;
+        if (i >= words.length) return finish();
+        push(); word();
+      };
+      dialog.querySelectorAll("[data-mark]").forEach(b => { b.onclick = () => mark(b.dataset.mark === "1"); });
+      dialog.querySelector("[data-back]").onclick = () => { if (i) { i--; push(); word(); } };
+      dialog.querySelectorAll("[data-screen]").forEach(b => { b.onclick = () => { onMyScreen = !onMyScreen; word(); }; });
+    };
+    dialog.addEventListener("keydown", e => {
+      if (i < 0 || i >= words.length || e.target.closest("input")) return;
+      if (e.key === "1") dialog.querySelector('[data-mark="1"]').click();
+      if (e.key === "2") dialog.querySelector('[data-mark="0"]').click();
+    });
+
+    const finish = async () => {
+      push(); // clears the child's screen
+      const results = words.map((w, k) => {
+        const item = P().analyse(w.word);
+        return { word: w.word, correct: !!marks[k].correct, triesUsed: 1, sounds: item.tokens.join(" · "), missed: marks[k].missed || [],
+          wrong: marks[k].correct ? [] : ["read wrongly"], from: w.alien ? "pseudo" : "real", section: w.section };
+      });
+      const right = results.filter(x => x.correct);
+      const of = f => `${results.filter(x => f(x) && x.correct).length} of ${results.filter(f).length}`;
+      const sounds = [...new Set(results.flatMap(x => x.missed))];
+      try { await cloud.recordPhonicsCheck(current.id, r.name, results); saved = true; } catch (err) { showError(err); }
+      dialog.innerHTML = `${head(`Phonics check: ${r.name}`)}
+        <div class="ar-summary"><div><span>Words read correctly</span><b>${right.length} of ${results.length}</b></div>
+          <div><span>Section 1</span><b>${of(x => x.section === 1)}</b></div><div><span>Section 2</span><b>${of(x => x.section === 2)}</b></div>
+          <div><span>Real words / pseudo-words</span><b>${of(x => x.from === "real")} · ${of(x => x.from === "pseudo")}</b></div></div>
+        ${right.length < results.length ? `<p><b>Not read correctly:</b> ${results.filter(x => !x.correct).map(x => `${esc(x.word)}${x.from === "pseudo" ? " 👽" : ""}`).join(", ")}</p>` : `<p>Every word read correctly. 🎉</p>`}
+        ${sounds.length ? `<p><b>Sounds to practise:</b> ${sounds.map(g => `<span class="sound-chip">${esc(g)}</span>`).join(" ")}</p>` : ""}
+        <p class="hint">${saved ? `Saved to ${esc(r.name)}'s results as a phonics check you marked.` : "Not saved."} The Department for Education sets the national pass mark each year and publishes it after the check in June, so this practice gives a score, not a pass or fail.</p>
+        <div class="row end"><button class="btn" type="button" data-again>Do another</button><button class="btn primary" type="button" data-done>Done</button></div>`;
+      dialog.querySelector("[data-close]").onclick = () => dialog.close();
+      dialog.querySelector("[data-done]").onclick = () => dialog.close();
+      dialog.querySelector("[data-again]").onclick = () => { dialog.close(); phonicsCheckDialog(r); };
+    };
+
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.addEventListener("cancel", e => { e.preventDefault(); close(); });
+    intro();
+    dialog.showModal();
+  }
+
   /* ---------- Parents' night: a year of progress, trends, and what's changed since the last report ---------- */
 
   const DAY_MS = 864e5;
@@ -2659,7 +2776,8 @@
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
           <div class="row"><button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
-            <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button></div></div>
+            <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button>
+            <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button></div></div>
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
@@ -2750,6 +2868,7 @@
       if (!everyone.length) return showError(new Error("Add pupils first: each one gets a page."));
       parentsNight(everyone);
     };
+    body.querySelectorAll("[data-phonics]").forEach(b => { b.onclick = () => phonicsCheckDialog(roster.find(r => r.key === b.dataset.phonics)); });
     body.querySelectorAll("[data-assess]").forEach(b => {
       b.onclick = () => newPupilFlow(roster.find(r => r.key === b.dataset.assess), roster, () => drawPupils(body), 2);
     });

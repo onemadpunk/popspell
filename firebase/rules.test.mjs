@@ -118,6 +118,24 @@ await check("pupil can't forge teacher worksheet marks", assertFails(addDoc(coll
 await check("other teacher can't mark this class", assertFails(addDoc(collection(other, "classes/ABC234/sessions"), { ...worksheet, markedBy: "other@example.com" })));
 await check("site admin marks any class", assertSucceeds(addDoc(collection(admin, "classes/ABC234/sessions"), { ...worksheet, markedBy: "admin@example.com" })));
 
+const phonics = { ...session, list: "Phonics check practice", listId: "phonics-check", source: "phonics-check", markedBy: "tutor@example.com" };
+await check("teacher records a phonics check for their class", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/sessions"), phonics)));
+await check("pupil can't forge a phonics check", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), phonics)));
+await check("results can't claim another kind of marking", assertFails(addDoc(collection(tutor, "classes/ABC234/sessions"), { ...phonics, source: "exam" })));
+
+console.log("Phonics check on the pupil's screen");
+const drive = { kind: "phonics", word: "vot", n: 1, total: 40, alien: true, section: 1, at: serverTimestamp() };
+await check("teacher puts a word on their pupil's screen", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/drive/abc"), drive)));
+await check("the pupil's device reads its own word", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/drive/abc"))));
+await check("a pupil's device can't list every pupil's word", assertFails(getDocs(collection(pupil, "classes/ABC234/drive"))));
+await check("a pupil's device can't set the word", assertFails(setDoc(doc(pupil, "classes/ABC234/drive/abc"), drive)));
+await check("another teacher can't set the word", assertFails(setDoc(doc(other, "classes/ABC234/drive/abc"), drive)));
+await check("the word can't carry other fields", assertFails(setDoc(doc(tutor, "classes/ABC234/drive/abc"), { ...drive, note: "hi" })));
+await check("the word must be short", assertFails(setDoc(doc(tutor, "classes/ABC234/drive/abc"), { ...drive, word: "x".repeat(31) })));
+await check("only two sections", assertFails(setDoc(doc(tutor, "classes/ABC234/drive/abc"), { ...drive, section: 3 })));
+await check("a pupil's device can't clear the word", assertFails(deleteDoc(doc(pupil, "classes/ABC234/drive/abc"))));
+await check("teacher clears the word at the end", assertSucceeds(deleteDoc(doc(tutor, "classes/ABC234/drive/abc"))));
+
 console.log("Assignments");
 await check("a pupil's device fetches its lists", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/assign/everyone"))));
 await check("a pupil's device can't list everyone's assignments", assertFails(getDocs(collection(pupil, "classes/ABC234/assign"))));

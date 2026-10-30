@@ -90,8 +90,23 @@ service cloud.firestore {
           && (request.resource.data.keys().hasOnly(['pupil', 'list', 'listId', 'finished', 'words', 'at'])
             || (canSee(c) && request.resource.data.keys().hasOnly([
                 'pupil', 'list', 'listId', 'finished', 'words', 'at', 'source', 'markedBy'])
-              && request.resource.data.source == 'worksheet'
+              && request.resource.data.source in ['worksheet', 'phonics-check']
               && request.resource.data.markedBy == email()));
+      }
+
+      // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
+      // pupil's device (which only knows its own key, as with assign) reads it. Nothing else is in it.
+      match /drive/{p} {
+        allow get: if signedIn();
+        allow delete: if canSee(c);
+        allow create, update: if canSee(c)
+          && request.resource.data.keys().hasOnly(['kind', 'word', 'n', 'total', 'alien', 'section', 'at'])
+          && request.resource.data.kind == 'phonics'
+          && shortText(request.resource.data.word, 30)
+          && request.resource.data.n is int && request.resource.data.n >= 1 && request.resource.data.n <= 40
+          && request.resource.data.total is int && request.resource.data.total <= 40
+          && request.resource.data.alien is bool
+          && request.resource.data.section in [1, 2];
       }
 
       // Lists set for each pupil, keyed by a fingerprint of their name (or "everyone").

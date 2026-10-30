@@ -730,9 +730,11 @@
   let timers = [];
   let phase = 0; // bumps on every screen change so old timers/speech callbacks do nothing
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+  let stopDrive = null; // the phonics check's word watcher, while that screen is open
   function newScreen() {
     timers.forEach(clearTimeout);
     timers = [];
+    if (stopDrive) { stopDrive(); stopDrive = null; }
     document.body.classList.remove("playing-game");
     if (synth) synth.cancel();
     stopRecorded();
@@ -808,9 +810,12 @@
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
     // A home login link (#/join/CODE?pupil=Ava) also signs this device in as that pupil
-    // then=assess (the teacher's New pupil link) goes straight on to Pip's Sound Quest
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), params.get("then") === "assess" ? "#/assess" : "#/");
+    // then=assess (the teacher's New pupil link) goes straight on to Pip's Sound Quest, and
+    // then=phonics (the phonics check link) to the screen that shows the teacher's word
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""),
+      { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/");
     else if (parts[0] === "assess") showQuest();
+    else if (parts[0] === "phonics") showPhonicsLive();
     else if (parts[0] === "teacher" && window.PopTeacher) window.PopTeacher.show(app, decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
@@ -844,7 +849,37 @@
     if (!onDone) history.replaceState(null, "", then);
     if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    if (then === "#/assess") showQuest(); else showHome();
+    if (then === "#/assess") showQuest(); else if (then === "#/phonics") showPhonicsLive(); else showHome();
+  }
+
+  /* ---------- Phonics check practice, marked live: the word the teacher has put on screen ---------- */
+
+  // The child reads each word aloud to their teacher (on a video call or beside them), who marks it
+  // on the teacher's screen and moves on. Made-up words come with an alien, as in England's check.
+  async function showPhonicsLive() {
+    const my = newScreen();
+    document.title = `Reading with my teacher · ${SITE.title}`;
+    const pupil = getPupil();
+    const frame = inner => { app.innerHTML = `<section class="panel practice phonics-live">${inner}</section>`; };
+    if (!CLASS || !pupil) return frame(`<h1>Reading with my teacher</h1><p>Ask your teacher for your phonics check link.</p><a class="btn primary" href="#/">Home</a>`);
+    frame(`<p class="hint">Getting ready…</p>`);
+    const api = await window.PopCloudReady;
+    if (my !== phase) return;
+    if (!api || !api.watchDrive) return frame(`<h1>Reading with my teacher</h1><p>This needs the internet. Check you're online, then try again.</p>`);
+    const show = state => {
+      if (my !== phase) return;
+      if (!state) return frame(`<div class="quest-pip">${pipHTML("small", "bob", "", "listen")}</div><h1>Reading with my teacher</h1>
+        <p class="phase">Waiting for your teacher…</p><p class="hint">Read each word aloud. Some are made-up alien names!</p>`);
+      frame(`<div class="progress"><span>Word ${state.n} of ${state.total}</span><span>Section ${state.section}</span></div>
+        ${state.alien ? `<div class="phonics-alien" aria-hidden="true">👽</div><p class="hint">An alien's name: sound it out.</p>` : `<p class="hint">Read the word aloud.</p>`}
+        <div class="phonics-word" lang="en-GB">${esc(state.word)}</div>`);
+    };
+    const stop = await api.watchDrive(CLASS.id, pupil, (state, err) => {
+      if (err) return frame(`<h1>Reading with my teacher</h1><p>We lost the connection. Refresh the page to carry on.</p>`);
+      show(state);
+    });
+    if (my !== phase) return stop();
+    stopDrive = stop;
   }
   let justJoined = false;
 

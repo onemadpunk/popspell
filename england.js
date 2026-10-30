@@ -644,6 +644,7 @@
     "eg-terms-ks2a":["en-y3-4-writing-vocabulary-grammar-and-punctuation-12"],
     "eg-terms-ks2b":["en-y5-6-writing-vocabulary-grammar-and-punctuation-16"],
     "n-mtc":["ma-y4-number-multiplication-and-division-1"],
+    "phonics-check":["en-y1-reading-word-reading-1","en-y1-reading-word-reading-2","en-y1-reading-word-reading-3"],
     "short-a":["en-yR-writing-2","en-y1-writing-transcription-spelling-2"],
     "short-e":["en-yR-writing-2","en-y1-writing-transcription-spelling-2"],
     "short-i":["en-yR-writing-2","en-y1-writing-transcription-spelling-2"],

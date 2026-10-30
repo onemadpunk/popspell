@@ -1484,3 +1484,13 @@ a.me-card:hover { border-color: var(--primary); }
 @keyframes mtc-time { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 .mtc-q { font-size: clamp(2rem, 7vw, 3rem); }
 .mtc-up { text-align: center; font-weight: 700; color: var(--oops); margin: 4px 0 0; }
+
+/* Phonics check practice: the word, big, on the teacher's screen and the pupil's */
+.phonics-word { font-family: var(--reading-font); font-size: clamp(3rem, 12vw, 5.5rem); font-weight: 700; color: var(--ink); text-align: center; letter-spacing: .03em; padding-bottom: .3em; }
+.phonics-mark .g { cursor: pointer; }
+.phonics-alien { font-size: 3.5rem; text-align: center; line-height: 1; }
+.phonics-live { text-align: center; }
+.phonics-share { position: fixed; inset: 0; z-index: 10; display: grid; place-content: center; gap: 12px; background: var(--surface); }
+.phonics-share .phonics-word { font-size: clamp(4rem, 18vw, 9rem); }
+.phonics-dialog .btn.big small { font-weight: 600; opacity: .8; }
+.t-link-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; }

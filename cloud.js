@@ -266,6 +266,28 @@ async function start() {
       });
     },
 
+    // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
+    // pupil's device (which only knows its own key, as with assigned work) shows it
+    async setDrive(classId, pupil, state) {
+      const ref = doc(store, "classes", classId, "drive", await fingerprint(pupil));
+      if (!state) return deleteDoc(ref);
+      await setDoc(ref, { kind: "phonics", word: String(state.word).slice(0, 30), n: state.n, total: state.total,
+        alien: !!state.alien, section: state.section, at: serverTimestamp() });
+    },
+    async watchDrive(classId, pupil, fn) {
+      await pupilAuth();
+      return onSnapshot(doc(store, "classes", classId, "drive", await fingerprint(pupil)),
+        snap => fn(snap.exists() ? snap.data() : null), err => fn(null, err));
+    },
+    async recordPhonicsCheck(classId, pupil, words) {
+      const p = await api.me();
+      if (!p || !p.role) throw new Error("Sign in as a teacher first.");
+      await addDoc(collection(store, "classes", classId, "sessions"), {
+        pupil: String(pupil).trim().slice(0, 40), list: "Phonics check practice", listId: "phonics-check",
+        finished: true, words: words.slice(0, 60), source: "phonics-check", markedBy: p.email, at: serverTimestamp()
+      });
+    },
+
     async diary(classId) {
       const snap = await getDocs(query(collection(store, "classes", classId, "diary"),
         orderBy("at", "desc"), limit(100)));
