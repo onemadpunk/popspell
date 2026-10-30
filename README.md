@@ -184,6 +184,8 @@ Press **Make a list** on the site, type the words, check the sound buttons in th
 
 ## The font: Sassoon
 
+**Curriculum wording:** the CfE Experiences and Outcomes and Benchmarks (Education Scotland) and England's national curriculum, EYFS and assessment documents (Department for Education) are Crown copyright, reused under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/), which allows commercial use. The footer of the site and the help page carries the required attribution and says PopSpell isn't endorsed by either body. Everything else on the site (lessons, sheets, word lists, stories, questions) is PopSpell's own.
+
 The site uses **Sassoon Primary / Sassoon Infant** wherever it's installed — many school computers already have it. Sassoon is a paid font, so it can't be included in a public website without a web-font licence. Without it, the site uses **Andika**, a free font also designed for early readers (single-storey *a* and *g*).
 
 To use Sassoon for everyone (including pupils at home), buy a **web-font** licence, put the `.woff2` file in a `fonts` folder, and in `words.js` set:
