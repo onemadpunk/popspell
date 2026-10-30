@@ -7,6 +7,10 @@
   const SITE = Object.assign({ title: "PopSpell", subtitle: "Hear it. Map it. Spell it." }, window.SITE);
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
+  // The words on the Tricky words list. Their tricky part doesn't make its usual sound, so they're
+  // always shown whole with a heart, never with dots and lines that would point to the wrong sounds.
+  const TRICKY_WORDS = new Set(STAGES.flatMap(s => s.lists).filter(l => l.id === "tricky")
+    .flatMap(l => l.words).map(w => w.replace(/-/g, "").toLowerCase()));
   const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
@@ -69,7 +73,8 @@
   function analyse(entry) {
     const raw = String(entry).trim();
     const hasDashes = raw.includes("-");
-    const tokens = hasDashes ? raw.toLowerCase().split("-").filter(Boolean) : autoSplit(raw.toLowerCase());
+    const tricky = !hasDashes && TRICKY_WORDS.has(raw.toLowerCase());
+    const tokens = hasDashes ? raw.toLowerCase().split("-").filter(Boolean) : tricky ? [raw.toLowerCase()] : autoSplit(raw.toLowerCase());
     const chunks = [];
     let pendingE = null;
     tokens.forEach((tok, g) => {
@@ -89,7 +94,7 @@
     chunks.forEach(ch => { for (let k = 0; k < ch.text.length; k++) charG.push(ch.g); });
     return {
       entry: raw, spelling, tokens, chunks, charG,
-      whole: hasDashes && tokens.length === 1,
+      whole: tokens.length === 1 && (hasDashes || tricky),
       sentence: SENTENCES[spelling.toLowerCase()] || ""
     };
   }
@@ -754,9 +759,10 @@
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 
   // The word with sound buttons: a dot under one-letter sounds, a line under
-  // two- or three-letter sounds, and an arc joining a split digraph
+  // two- or three-letter sounds, and an arc joining a split digraph. A word kept whole is a
+  // tricky word: it gets a heart instead, as buttons would point to the wrong sounds.
   function wordHTML(item, missed = new Set()) {
-    if (item.whole) return `<span class="g whole">${esc(item.spelling)}</span>`;
+    if (item.whole) return `<span class="g whole heart">${esc(item.spelling)}</span>`;
     const g = ch => `<span class="g ${ch.split ? "sv" : ch.text.length > 1 ? "multi" : "single"}${missed.has(ch.g) ? " missed" : ""}" data-g="${ch.g}">${esc(ch.text)}</span>`;
     let html = "";
     for (let k = 0; k < item.chunks.length; k++) {
@@ -1307,7 +1313,7 @@
       const [, before, word, poss, after] = m;
       const lower = word.toLowerCase();
       // "a" and "I" are tricky-word list members but sound out fine, so they keep their dot
-      const tricky = (STARTER_TRICKY.has(lower) && lower !== "a" && lower !== "i") || (story.tricky || []).includes(lower);
+      const tricky = (STARTER_TRICKY.has(lower) && lower !== "a" && lower !== "i") || (story.tricky || []).includes(lower) || TRICKY_WORDS.has(lower);
       let inner;
       const it = tricky ? null : analyse(lower);
       if (!it || it.whole) inner = `<span class="g whole">${esc(word)}</span>`;

@@ -164,10 +164,12 @@ Open `words.js` on GitHub, click the ✏️ pencil icon, make your changes and p
 The site splits words into sounds by itself, and gets the common patterns right. Open a list and click **Words in this list** to check the sound buttons. If a word is split wrongly (usually tricky words), write its sounds with dashes, and a split digraph as `a_e`, `i_e`, `o_e`, `u_e` or `e_e`:
 
 ```
-"h-a-ve"   "c-oul-d"   "p-eo-p-le"   "sc-e_e-n"   "one-"
+"sc-e_e-n"   "one-"
 ```
 
-A dash at the end (`"one-"`) keeps the whole word as one chunk with no sound buttons.
+A dash at the end (`"one-"`) keeps the whole word as one chunk with a ♥ and no sound buttons.
+
+**Tricky words never get sound buttons.** The words on the Tricky words list (the, said, was, they, have, come, some, one, do, you, were, there, could, would, people) are shown whole with a ♥ wherever they appear: in lists, the spelling screen, made lists and stories. Their tricky part doesn't make its usual sound, so a dot or line under it would teach the wrong sound (a line under the *ai* in *said*, say). Every other word keeps its dots, lines and arcs. To add a tricky word, add it to that list in `words.js`, or type it with a dash at the end in your own list.
 
 ## Lists for a single lesson
 

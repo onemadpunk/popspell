@@ -394,6 +394,7 @@ body {
 .g.multi::after { width: 80%; height: .09em; border-radius: 99px; bottom: -.24em; }
 .g.whole { cursor: default; }
 .g.whole::after, .g.sv::after { display: none; }
+.g.heart::before { content: "♥"; position: absolute; top: -.7em; left: 50%; transform: translateX(-50%); font-size: .6em; line-height: 1; color: var(--oops); }
 .split { position: relative; display: inline-block; }
 .split::after {
   content: ""; position: absolute; left: .18em; right: .18em; bottom: -.38em; height: .34em;

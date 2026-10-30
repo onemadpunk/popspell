@@ -232,7 +232,8 @@ window.SPELLING_LISTS = [
         words: ["phone", "photo", "graph", "dolphin", "elephant", "alphabet", "phonics", "trophy", "sphere", "nephew", "orphan", "microphone"],
         check: ["photograph"] },
       { id: "tricky", title: "Tricky words", tip: "These words have a tricky part that doesn't follow the usual rules.", focus: [],
-        words: ["the", "said", "was", "th-ey", "h-a-ve", "c-o-me", "s-o-me", "one-", "do", "you", "were", "there", "c-oul-d", "w-oul-d", "p-eo-p-le"] }
+        // Wherever these words appear they're kept whole, with a heart instead of sound buttons
+        words: ["the", "said", "was", "they", "have", "come", "some", "one", "do", "you", "were", "there", "could", "would", "people"] }
     ]
   }
 ];
