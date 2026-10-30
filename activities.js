@@ -1695,11 +1695,11 @@ window.PopActivities = (() => {
       const stages = window.SPELLING_LISTS || [];
       const s = stages.findIndex(st => st.lists.some(l => l.id === id));
       if (s >= 0) return { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) };
-      // England's statutory words: common exception words are First level spelling in CfE terms, the
-      // Years 3 to 6 word lists Second level (spelling the most commonly used words, LIT 1-21a / 2-21a)
+      // England's statutory words: common exception words and the Year 1 days of the week are First level
+      // spelling in CfE terms, the Years 3 to 6 word lists Second level (LIT 1-21a / 2-21a)
       const extra = (window.ENGLAND_LISTS || []).some(st => st.lists.some(l => l.id === id));
       if (!extra) return null;
-      const level = /^cew-/.test(id) ? "First" : "Second";
+      const level = /^(cew|y1)-/.test(id) ? "First" : "Second";
       return { level, organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, level, id) };
     }
   };
