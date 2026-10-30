@@ -532,7 +532,119 @@
     ["ma-y6-geometry-position-and-direction-1","6","ma","Geometry – position and direction","describe positions on the full coordinate grid (all four quadrants)",""],
     ["ma-y6-geometry-position-and-direction-2","6","ma","Geometry – position and direction","draw and translate simple shapes on the coordinate plane, and reflect them in the axes.",""],
     ["ma-y6-statistics-1","6","ma","Statistics","interpret and construct pie charts and line graphs and use these to solve problems",""],
-    ["ma-y6-statistics-2","6","ma","Statistics","calculate and interpret the mean as an average.",""]];
+    ["ma-y6-statistics-2","6","ma","Statistics","calculate and interpret the mean as an average.",""],
+    ["en-y7-9-reading-1","7-9","en","Reading","develop an appreciation and love of reading, and read increasingly challenging material independently through:",""],
+    ["en-y7-9-reading-2","7-9","en","Reading","reading a wide range of fiction and non-fiction, including in particular whole books, short stories, poems and plays with a wide coverage of genres, historical periods, forms and authors. The range will include high-quality works from: • English literature, both pre-1914 and contemporary, including prose, poetry and drama • Shakespeare (two plays) • seminal world literature","develop an appreciation and love of reading, and read increasingly challenging material independently through:"],
+    ["en-y7-9-reading-3","7-9","en","Reading","choosing and reading books independently for challenge, interest and enjoyment.","develop an appreciation and love of reading, and read increasingly challenging material independently through:"],
+    ["en-y7-9-reading-4","7-9","en","Reading","re-reading books encountered earlier to increase familiarity with them and provide a basis for making comparisons.","develop an appreciation and love of reading, and read increasingly challenging material independently through:"],
+    ["en-y7-9-reading-5","7-9","en","Reading","understand increasingly challenging texts through:",""],
+    ["en-y7-9-reading-6","7-9","en","Reading","learning new vocabulary, relating it explicitly to known vocabulary and understanding it with the help of context and dictionaries","understand increasingly challenging texts through:"],
+    ["en-y7-9-reading-7","7-9","en","Reading","making inferences and referring to evidence in the text","understand increasingly challenging texts through:"],
+    ["en-y7-9-reading-8","7-9","en","Reading","knowing the purpose, audience for and context of the writing and drawing on this knowledge to support comprehension","understand increasingly challenging texts through:"],
+    ["en-y7-9-reading-9","7-9","en","Reading","checking their understanding to make sure that what they have read makes sense.","understand increasingly challenging texts through:"],
+    ["en-y7-9-reading-10","7-9","en","Reading","read critically through:",""],
+    ["en-y7-9-reading-11","7-9","en","Reading","knowing how language, including figurative language, vocabulary choice, grammar, text structure and organisational features, presents meaning","read critically through:"],
+    ["en-y7-9-reading-12","7-9","en","Reading","recognising a range of poetic conventions and understanding how these have been used","read critically through:"],
+    ["en-y7-9-reading-13","7-9","en","Reading","studying setting, plot, and characterisation, and the effects of these","read critically through:"],
+    ["en-y7-9-reading-14","7-9","en","Reading","understanding how the work of dramatists is communicated effectively through performance and how alternative staging allows for different interpretations of a play","read critically through:"],
+    ["en-y7-9-reading-15","7-9","en","Reading","making critical comparisons across texts","read critically through:"],
+    ["en-y7-9-reading-16","7-9","en","Reading","studying a range of authors, including at least two authors in depth each year.","read critically through:"],
+    ["en-y7-9-writing-1","7-9","en","Writing","write accurately, fluently, effectively and at length for pleasure and information through:",""],
+    ["en-y7-9-writing-2","7-9","en","Writing","writing for a wide range of purposes and audiences, including: • well-structured formal expository and narrative essays • stories, scripts, poetry and other imaginative writing • notes and polished scripts for talks and presentations • a range of other narrative and non-narrative texts, including arguments, and personal and formal letters","write accurately, fluently, effectively and at length for pleasure and information through:"],
+    ["en-y7-9-writing-3","7-9","en","Writing","summarising and organising material, and supporting ideas and arguments with any necessary factual detail","write accurately, fluently, effectively and at length for pleasure and information through:"],
+    ["en-y7-9-writing-4","7-9","en","Writing","applying their growing knowledge of vocabulary, grammar and text structure to their writing and selecting the appropriate form","write accurately, fluently, effectively and at length for pleasure and information through:"],
+    ["en-y7-9-writing-5","7-9","en","Writing","drawing on knowledge of literary and rhetorical devices from their reading and listening to enhance the impact of their writing","write accurately, fluently, effectively and at length for pleasure and information through:"],
+    ["en-y7-9-writing-6","7-9","en","Writing","plan, draft, edit and proof-read through:",""],
+    ["en-y7-9-writing-7","7-9","en","Writing","considering how their writing reflects the audiences and purposes for which it was intended","plan, draft, edit and proof-read through:"],
+    ["en-y7-9-writing-8","7-9","en","Writing","amending the vocabulary, grammar and structure of their writing to improve its coherence and overall effectiveness","plan, draft, edit and proof-read through:"],
+    ["en-y7-9-writing-9","7-9","en","Writing","paying attention to accurate grammar, punctuation and spelling; applying the spelling patterns and rules set out in English Appendix 1 to the key stage 1 and 2 programmes of study for English.","plan, draft, edit and proof-read through:"],
+    ["en-y7-9-grammar-and-vocabulary-1","7-9","en","Grammar and vocabulary","consolidate and build on their knowledge of grammar and vocabulary through:",""],
+    ["en-y7-9-grammar-and-vocabulary-2","7-9","en","Grammar and vocabulary","extending and applying the grammatical knowledge set out in English Appendix 2 to the key stage 1 and 2 programmes of study to analyse more challenging texts","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-grammar-and-vocabulary-3","7-9","en","Grammar and vocabulary","studying the effectiveness and impact of the grammatical features of the texts they read","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-grammar-and-vocabulary-4","7-9","en","Grammar and vocabulary","drawing on new vocabulary and grammatical constructions from their reading and listening, and using these consciously in their writing and speech to achieve particular effects","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-grammar-and-vocabulary-5","7-9","en","Grammar and vocabulary","knowing and understanding the differences between spoken and written language, including differences associated with formal and informal registers, and between Standard English and other varieties of English","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-grammar-and-vocabulary-6","7-9","en","Grammar and vocabulary","using Standard English confidently in their own writing and speech","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-grammar-and-vocabulary-7","7-9","en","Grammar and vocabulary","discussing reading, writing and spoken language with precise and confident use of linguistic and literary terminology.","consolidate and build on their knowledge of grammar and vocabulary through:"],
+    ["en-y7-9-spoken-english-1","7-9","en","Spoken English","speak confidently and effectively, including through:",""],
+    ["en-y7-9-spoken-english-2","7-9","en","Spoken English","using Standard English confidently in a range of formal and informal contexts, including classroom discussion","speak confidently and effectively, including through:"],
+    ["en-y7-9-spoken-english-3","7-9","en","Spoken English","giving short speeches and presentations, expressing their own ideas and keeping to the point","speak confidently and effectively, including through:"],
+    ["en-y7-9-spoken-english-4","7-9","en","Spoken English","participating in formal debates and structured discussions, summarising and/or building on what has been said","speak confidently and effectively, including through:"],
+    ["en-y7-9-spoken-english-5","7-9","en","Spoken English","improvising, rehearsing and performing play scripts and poetry in order to generate language and discuss language use and meaning, using role, intonation, tone, volume, mood, silence, stillness and action to add impact.","speak confidently and effectively, including through:"],
+    ["ma-y7-9-number-1","7-9","ma","Number","understand and use place value for decimals, measures and integers of any size",""],
+    ["ma-y7-9-number-2","7-9","ma","Number","order positive and negative integers, decimals and fractions; use the number line as a model for ordering of the real numbers; use the symbols =, ≠, <, >, ≤, ≥",""],
+    ["ma-y7-9-number-3","7-9","ma","Number","use the concepts and vocabulary of prime numbers, factors (or divisors), multiples, common factors, common multiples, highest common factor, lowest common multiple, prime factorisation, including using product notation and the unique factorisation property",""],
+    ["ma-y7-9-number-4","7-9","ma","Number","use the four operations, including formal written methods, applied to integers, decimals, proper and improper fractions, and mixed numbers, all both positive and negative",""],
+    ["ma-y7-9-number-5","7-9","ma","Number","use conventional notation for the priority of operations, including brackets, powers, roots and reciprocals",""],
+    ["ma-y7-9-number-6","7-9","ma","Number","recognise and use relationships between operations including inverse operations",""],
+    ["ma-y7-9-number-7","7-9","ma","Number","use integer powers and associated real roots (square, cube and higher), recognise powers of 2, 3, 4, 5 and distinguish between exact representations of roots and their decimal approximations",""],
+    ["ma-y7-9-number-8","7-9","ma","Number","interpret and compare numbers in standard form A x 10 n 1≤A<10, where n is a positive or negative integer or zero",""],
+    ["ma-y7-9-number-9","7-9","ma","Number","work interchangeably with terminating decimals and their corresponding fractions (such as 3.5 and 7/2 or 0.375 and 3/8)",""],
+    ["ma-y7-9-number-10","7-9","ma","Number","define percentage as ‘number of parts per hundred’, interpret percentages and percentage changes as a fraction or a decimal, interpret these multiplicatively, express one quantity as a percentage of another, compare two quantities using percentages, and work with percentages greater than 100%",""],
+    ["ma-y7-9-number-11","7-9","ma","Number","interpret fractions and percentages as operators",""],
+    ["ma-y7-9-number-12","7-9","ma","Number","use standard units of mass, length, time, money and other measures, including with decimal quantities",""],
+    ["ma-y7-9-number-13","7-9","ma","Number","round numbers and measures to an appropriate degree of accuracy [for example, to a number of decimal places or significant figures]",""],
+    ["ma-y7-9-number-14","7-9","ma","Number","use approximation through rounding to estimate answers and calculate possible resulting errors expressed using inequality notation a<x≤b",""],
+    ["ma-y7-9-number-15","7-9","ma","Number","use a calculator and other technologies to calculate results accurately and then interpret them appropriately",""],
+    ["ma-y7-9-number-16","7-9","ma","Number","appreciate the infinite nature of the sets of integers, real and rational numbers.",""],
+    ["ma-y7-9-algebra-1","7-9","ma","Algebra","use and interpret algebraic notation, including:",""],
+    ["ma-y7-9-algebra-2","7-9","ma","Algebra","ab in place of a × b","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-3","7-9","ma","Algebra","3y in place of y + y + y and 3 × y","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-4","7-9","ma","Algebra","a2 in place of a × a, a3 in place of a × a × a; a2b in place of a × a × b","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-5","7-9","ma","Algebra","b a in place of a ÷ b","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-6","7-9","ma","Algebra","coefficients written as fractions rather than as decimals","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-7","7-9","ma","Algebra","brackets","use and interpret algebraic notation, including:"],
+    ["ma-y7-9-algebra-8","7-9","ma","Algebra","substitute numerical values into formulae and expressions, including scientific formulae",""],
+    ["ma-y7-9-algebra-9","7-9","ma","Algebra","understand and use the concepts and vocabulary of expressions, equations, inequalities, terms and factors",""],
+    ["ma-y7-9-algebra-10","7-9","ma","Algebra","simplify and manipulate algebraic expressions to maintain equivalence by:",""],
+    ["ma-y7-9-algebra-11","7-9","ma","Algebra","collecting like terms","simplify and manipulate algebraic expressions to maintain equivalence by:"],
+    ["ma-y7-9-algebra-12","7-9","ma","Algebra","multiplying a single term over a bracket","simplify and manipulate algebraic expressions to maintain equivalence by:"],
+    ["ma-y7-9-algebra-13","7-9","ma","Algebra","taking out common factors","simplify and manipulate algebraic expressions to maintain equivalence by:"],
+    ["ma-y7-9-algebra-14","7-9","ma","Algebra","expanding products of two or more binomials","simplify and manipulate algebraic expressions to maintain equivalence by:"],
+    ["ma-y7-9-algebra-15","7-9","ma","Algebra","understand and use standard mathematical formulae; rearrange formulae to change the subject",""],
+    ["ma-y7-9-algebra-16","7-9","ma","Algebra","model situations or procedures by translating them into algebraic expressions or formulae and by using graphs",""],
+    ["ma-y7-9-algebra-17","7-9","ma","Algebra","use algebraic methods to solve linear equations in one variable (including all forms that require rearrangement)",""],
+    ["ma-y7-9-algebra-18","7-9","ma","Algebra","work with coordinates in all four quadrants",""],
+    ["ma-y7-9-algebra-19","7-9","ma","Algebra","recognise, sketch and produce graphs of linear and quadratic functions of one variable with appropriate scaling, using equations in x and y and the Cartesian plane",""],
+    ["ma-y7-9-algebra-20","7-9","ma","Algebra","interpret mathematical relationships both algebraically and graphically",""],
+    ["ma-y7-9-algebra-21","7-9","ma","Algebra","reduce a given linear equation in two variables to the standard form y = mx + c; calculate and interpret gradients and intercepts of graphs of such linear equations numerically, graphically and algebraically",""],
+    ["ma-y7-9-algebra-22","7-9","ma","Algebra","use linear and quadratic graphs to estimate values of y for given values of x and vice versa and to find approximate solutions of simultaneous linear equations",""],
+    ["ma-y7-9-algebra-23","7-9","ma","Algebra","find approximate solutions to contextual problems from given graphs of a variety of functions, including piece-wise linear, exponential and reciprocal graphs",""],
+    ["ma-y7-9-algebra-24","7-9","ma","Algebra","generate terms of a sequence from either a term-to-term or a position-to-term rule",""],
+    ["ma-y7-9-algebra-25","7-9","ma","Algebra","recognise arithmetic sequences and find the nth term",""],
+    ["ma-y7-9-algebra-26","7-9","ma","Algebra","recognise geometric sequences and appreciate other sequences that arise.",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-1","7-9","ma","Ratio, proportion and rates of change","change freely between related standard units [for example time, length, area, volume/capacity, mass]",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-2","7-9","ma","Ratio, proportion and rates of change","use scale factors, scale diagrams and maps",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-3","7-9","ma","Ratio, proportion and rates of change","express one quantity as a fraction of another, where the fraction is less than 1 and greater than 1",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-4","7-9","ma","Ratio, proportion and rates of change","use ratio notation, including reduction to simplest form",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-5","7-9","ma","Ratio, proportion and rates of change","divide a given quantity into two parts in a given part:part or part:whole ratio; express the division of a quantity into two parts as a ratio",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-6","7-9","ma","Ratio, proportion and rates of change","understand that a multiplicative relationship between two quantities can be expressed as a ratio or a fraction",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-7","7-9","ma","Ratio, proportion and rates of change","relate the language of ratios and the associated calculations to the arithmetic of fractions and to linear functions",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-8","7-9","ma","Ratio, proportion and rates of change","solve problems involving percentage change, including: percentage increase, decrease and original value problems and simple interest in financial mathematics",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-9","7-9","ma","Ratio, proportion and rates of change","solve problems involving direct and inverse proportion, including graphical and algebraic representations",""],
+    ["ma-y7-9-ratio-proportion-and-rates-of-change-10","7-9","ma","Ratio, proportion and rates of change","use compound units such as speed, unit pricing and density to solve problems.",""],
+    ["ma-y7-9-geometry-and-measures-1","7-9","ma","Geometry and measures","derive and apply formulae to calculate and solve problems involving: perimeter and area of triangles, parallelograms, trapezia, volume of cuboids (including cubes) and other prisms (including cylinders)",""],
+    ["ma-y7-9-geometry-and-measures-2","7-9","ma","Geometry and measures","calculate and solve problems involving: perimeters of 2-D shapes (including circles), areas of circles and composite shapes",""],
+    ["ma-y7-9-geometry-and-measures-3","7-9","ma","Geometry and measures","draw and measure line segments and angles in geometric figures, including interpreting scale drawings",""],
+    ["ma-y7-9-geometry-and-measures-4","7-9","ma","Geometry and measures","derive and use the standard ruler and compass constructions (perpendicular bisector of a line segment, constructing a perpendicular to a given line from/at a given point, bisecting a given angle); recognise and use the perpendicular distance from a point to a line as the shortest distance to the line",""],
+    ["ma-y7-9-geometry-and-measures-5","7-9","ma","Geometry and measures","describe, sketch and draw using conventional terms and notations: points, lines, parallel lines, perpendicular lines, right angles, regular polygons, and other polygons that are reflectively and rotationally symmetric",""],
+    ["ma-y7-9-geometry-and-measures-6","7-9","ma","Geometry and measures","use the standard conventions for labelling the sides and angles of triangle ABC, and know and use the criteria for congruence of triangles",""],
+    ["ma-y7-9-geometry-and-measures-7","7-9","ma","Geometry and measures","derive and illustrate properties of triangles, quadrilaterals, circles, and other plane figures [for example, equal lengths and angles] using appropriate language and technologies",""],
+    ["ma-y7-9-geometry-and-measures-8","7-9","ma","Geometry and measures","identify properties of, and describe the results of, translations, rotations and reflections applied to given figures",""],
+    ["ma-y7-9-geometry-and-measures-9","7-9","ma","Geometry and measures","identify and construct congruent triangles, and construct similar shapes by enlargement, with and without coordinate grids",""],
+    ["ma-y7-9-geometry-and-measures-10","7-9","ma","Geometry and measures","apply the properties of angles at a point, angles at a point on a straight line, vertically opposite angles",""],
+    ["ma-y7-9-geometry-and-measures-11","7-9","ma","Geometry and measures","understand and use the relationship between parallel lines and alternate and corresponding angles",""],
+    ["ma-y7-9-geometry-and-measures-12","7-9","ma","Geometry and measures","derive and use the sum of angles in a triangle and use it to deduce the angle sum in any polygon, and to derive properties of regular polygons",""],
+    ["ma-y7-9-geometry-and-measures-13","7-9","ma","Geometry and measures","apply angle facts, triangle congruence, similarity and properties of quadrilaterals to derive results about angles and sides, including Pythagoras’ Theorem, and use known results to obtain simple proofs",""],
+    ["ma-y7-9-geometry-and-measures-14","7-9","ma","Geometry and measures","use Pythagoras’ Theorem and trigonometric ratios in similar triangles to solve problems involving right-angled triangles",""],
+    ["ma-y7-9-geometry-and-measures-15","7-9","ma","Geometry and measures","use the properties of faces, surfaces, edges and vertices of cubes, cuboids, prisms, cylinders, pyramids, cones and spheres to solve problems in 3-D",""],
+    ["ma-y7-9-geometry-and-measures-16","7-9","ma","Geometry and measures","interpret mathematical relationships both algebraically and geometrically.",""],
+    ["ma-y7-9-probability-1","7-9","ma","Probability","record, describe and analyse the frequency of outcomes of simple probability experiments involving randomness, fairness, equally and unequally likely outcomes, using appropriate language and the 0-1 probability scale",""],
+    ["ma-y7-9-probability-2","7-9","ma","Probability","understand that the probabilities of all possible outcomes sum to 1",""],
+    ["ma-y7-9-probability-3","7-9","ma","Probability","enumerate sets and unions/intersections of sets systematically, using tables, grids and Venn diagrams",""],
+    ["ma-y7-9-probability-4","7-9","ma","Probability","generate theoretical sample spaces for single and combined events with equally likely, mutually exclusive outcomes and use these to calculate theoretical probabilities.",""],
+    ["ma-y7-9-statistics-1","7-9","ma","Statistics","describe, interpret and compare observed distributions of a single variable through: appropriate graphical representation involving discrete, continuous and grouped data; and appropriate measures of central tendency (mean, mode, median) and spread (range, consideration of outliers)",""],
+    ["ma-y7-9-statistics-2","7-9","ma","Statistics","construct and interpret appropriate tables, charts, and diagrams, including frequency tables, bar charts, pie charts, and pictograms for categorical data, and vertical line (or bar) charts for ungrouped and grouped numerical data",""],
+    ["ma-y7-9-statistics-3","7-9","ma","Statistics","describe simple mathematical relationships between two variables (bivariate data) in observational and experimental contexts and illustrate using scatter graphs.",""]];
   const FOR_ID = {"g-canopy-flash":["ma-yR-number-2"],
     "g-canopy-make":["ma-yR-number-1","ma-yR-number-3"],
     "g-canopy-hidden":["ma-yR-number-3","ma-y1-number-addition-and-subtraction-2"],
@@ -576,7 +688,7 @@
     "n-tally":["ma-y2-statistics-1","ma-y2-statistics-2"],
     "n-bar":["ma-y3-statistics-1","ma-y3-statistics-2","ma-y2-statistics-1"],
     "n-table":["ma-y5-statistics-2","ma-y3-statistics-1"],
-    "n-chance":[],
+    "n-chance":["ma-y7-9-probability-1","ma-y7-9-probability-2"],
     "m-shapes-2d":["ma-y1-geometry-properties-of-shapes-2","ma-y2-geometry-properties-of-shapes-1"],
     "m-shapes-3d":["ma-y1-geometry-properties-of-shapes-3","ma-y2-geometry-properties-of-shapes-2"],
     "m-angles":["ma-y3-geometry-properties-of-shapes-3","ma-y3-geometry-properties-of-shapes-2","ma-y4-geometry-properties-of-shapes-2","ma-y5-geometry-properties-of-shapes-2"],
@@ -693,6 +805,20 @@
     "kn-wr":["en-y2-writing-transcription-spelling-9"],
     "ph":["en-y1-writing-transcription-spelling-12"],
     "tricky":["en-y1-writing-transcription-spelling-3","en-y2-writing-transcription-spelling-4","en-y1-reading-word-reading-4"],
+    "lesson-england-year-1-grammar-plurals-un-and-capital-letters":["en-y1-writing-vocabulary-grammar-and-punctuation-6","en-y1-writing-vocabulary-grammar-and-punctuation-5","en-y1-writing-transcription-spelling-9","en-y1-writing-transcription-spelling-10"],
+    "lesson-england-year-2-grammar-apostrophes-suffixes-and-sentence-types":["en-y2-writing-vocabulary-grammar-and-punctuation-4","en-y2-writing-vocabulary-grammar-and-punctuation-2","en-y2-writing-transcription-spelling-5","en-y2-writing-transcription-spelling-6","en-y2-writing-transcription-spelling-8"],
+    "lesson-england-year-3-grammar-a-or-an-prefixes-and-words-for-time-and-cause":["en-y3-4-writing-vocabulary-grammar-and-punctuation-5","en-y3-4-writing-vocabulary-grammar-and-punctuation-7","en-y3-4-writing-vocabulary-grammar-and-punctuation-3","en-y3-4-writing-vocabulary-grammar-and-punctuation-11"],
+    "lesson-england-year-4-grammar-fronted-adverbials-possessive-apostrophes-and-standard-english":["en-y3-4-writing-vocabulary-grammar-and-punctuation-6","en-y3-4-writing-vocabulary-grammar-and-punctuation-9","en-y3-4-writing-vocabulary-grammar-and-punctuation-10"],
+    "lesson-england-year-5-grammar-relative-clauses-possibility-and-parenthesis":["en-y5-6-writing-vocabulary-grammar-and-punctuation-7","en-y5-6-writing-vocabulary-grammar-and-punctuation-6","en-y5-6-writing-vocabulary-grammar-and-punctuation-12"],
+    "lesson-england-year-6-grammar-passive-formal-language-and-punctuation-between-clauses":["en-y5-6-writing-vocabulary-grammar-and-punctuation-3","en-y5-6-writing-vocabulary-grammar-and-punctuation-2","en-y5-6-writing-vocabulary-grammar-and-punctuation-13","en-y5-6-writing-vocabulary-grammar-and-punctuation-11"],
+    "lesson-england-year-1-common-exception-words":["en-y1-reading-word-reading-4","en-y1-writing-transcription-spelling-3"],
+    "lesson-england-year-2-common-exception-words":["en-y2-reading-word-reading-5","en-y2-writing-transcription-spelling-4"],
+    "lesson-england-years-3-and-4-word-list-roots-prefixes-and-suffixes":["en-y3-4-writing-transcription-spelling-3","en-y3-4-reading-word-reading-1","en-y3-4-reading-word-reading-2","en-y3-4-writing-transcription-spelling-5"],
+    "lesson-england-years-5-and-6-word-list-morphology-and-etymology":["en-y5-6-writing-transcription-spelling-4","en-y5-6-reading-word-reading-1","en-y5-6-writing-transcription-spelling-5","en-y5-6-writing-transcription-spelling-7"],
+    "lesson-england-joined-handwriting-years-3-and-4":["en-y3-4-writing-transcription-handwriting-1","en-y3-4-writing-transcription-handwriting-2"],
+    "lesson-england-writing-legibly-fluently-and-at-speed-years-5-and-6":["en-y5-6-writing-transcription-handwriting-and-presentation-2","en-y5-6-writing-transcription-handwriting-and-presentation-3"],
+    "lesson-england-getting-ready-for-the-times-tables-check-year-4":["ma-y4-number-multiplication-and-division-1","ma-y4-number-multiplication-and-division-3"],
+    "lesson-england-getting-ready-for-the-phonics-check-year-1":["en-y1-reading-word-reading-1","en-y1-reading-word-reading-2","en-y1-reading-word-reading-3"],
     "lesson-early-copying-and-continuing-patterns":["ma-yR-numerical-patterns-3","ma-y1-number-number-and-place-value-2"],
     "lesson-first-multiplication-facts-2-3-4-5-and-10":["ma-y2-number-multiplication-and-division-1","ma-y3-number-multiplication-and-division-1"],
     "lesson-first-division-sharing-and-grouping":["ma-y2-number-multiplication-and-division-2","ma-y2-number-multiplication-and-division-4","ma-y3-number-multiplication-and-division-2"],
@@ -724,11 +850,11 @@
     "lesson-first-solving-two-step-problems":["ma-y4-number-addition-and-subtraction-3"],
     "lesson-first-turns-right-angles-and-compass-points":["ma-y2-geometry-position-and-direction-2"],
     "lesson-first-numbers-in-life-work-and-history":[],
-    "lesson-first-how-likely-is-it":[],
+    "lesson-first-how-likely-is-it":["ma-y7-9-probability-1"],
     "lesson-second-order-of-operations":["ma-y6-number-addition-subtraction-multiplication-and-division-6"],
     "lesson-second-lines-of-symmetry":["ma-y4-geometry-properties-of-shapes-3","ma-y4-geometry-properties-of-shapes-4"],
     "lesson-second-maths-in-inventions-life-and-work":[],
-    "lesson-second-probability-and-chance-experiments":[],
+    "lesson-second-probability-and-chance-experiments":["ma-y7-9-probability-1","ma-y7-9-probability-2","ma-y7-9-probability-4"],
     "lesson-second-shape-properties-nets-and-circles":["ma-y6-geometry-properties-of-shapes-2","ma-y6-geometry-properties-of-shapes-4"],
     "lesson-second-compass-points-scale-and-coordinates":["ma-y6-geometry-position-and-direction-1"],
     "lesson-second-solving-simple-equations":["ma-y6-algebra-3","ma-y6-algebra-4"],
@@ -805,10 +931,11 @@
 
   // A statement's year, e.g. "R", "2", "3-4" or "1-6", as its first and last year (Reception is 0)
   const span = key => (key === "R" ? [0, 0] : key.split("-").map(Number).concat(key.includes("-") ? [] : [Number(key)]).slice(0, 2));
-  const yearLabel = key => (key === "R" ? "Reception" : key.includes("-") ? `Years ${key.replace("-", "–")}` : `Year ${key}`);
+  const yearLabel = key => (key === "R" ? "Reception" : key === "7-9" ? "Key stage 3" : key.includes("-") ? `Years ${key.replace("-", "–")}` : `Year ${key}`);
   const rangeLabel = (lo, hi) => {
     const one = n => (n === 0 ? "Reception" : `Year ${n}`);
-    return lo === hi ? one(lo) : lo === 0 ? `Reception to Year ${hi}` : `Years ${lo}–${hi}`;
+    if (lo >= 7) return "Key stage 3";
+    return lo === hi ? one(lo) : lo === 0 ? `Reception to Year ${hi}` : hi >= 7 ? `${one(lo)} to key stage 3` : `Years ${lo}–${hi}`;
   };
 
   const byId = {};
@@ -821,9 +948,14 @@
   // The strand a teacher looks for, from a statement's domain
   const STRAND_ORDER = ["Spoken language", "Word reading", "Comprehension", "Spelling", "Handwriting", "Composition",
     "Grammar and punctuation", "Number and place value", "Addition and subtraction", "Multiplication and division",
-    "Fractions, decimals and percentages", "Ratio and proportion", "Algebra", "Measurement", "Shape", "Position and direction", "Statistics"];
+    "Fractions, decimals and percentages", "Ratio and proportion", "Algebra", "Measurement", "Shape", "Position and direction", "Statistics", "Probability"];
+  // Key stage 3's own domains, matched to the same strands
+  const KS3_STRANDS = { "Spoken English": "Spoken language", Reading: "Comprehension", Writing: "Composition", "Grammar and vocabulary": "Grammar and punctuation",
+    Number: "Number and place value", Algebra: "Algebra", "Ratio, proportion and rates of change": "Ratio and proportion",
+    "Geometry and measures": "Shape", Probability: "Probability", Statistics: "Statistics" };
   function strandOf(domain) {
     const d = domain || "";
+    if (KS3_STRANDS[d]) return KS3_STRANDS[d];
     if (/Spoken language|Listening|Speaking/.test(d)) return "Spoken language";
     if (/word reading|Word Reading/.test(d)) return "Word reading";
     if (/comprehension|Comprehension/.test(d)) return "Comprehension";
@@ -874,7 +1006,7 @@
     const ids = idsFor(id);
     if (!ids) return null;
     const statements = ids.map(i => byId[i]).filter(Boolean);
-    if (!statements.length) return { lo: null, hi: null, label: "Not in England's primary curriculum", strand: "", domain: "", statements };
+    if (!statements.length) return { lo: null, hi: null, label: "Not in England's curriculum", strand: "", domain: "", statements };
     const main = statements[0];
     // The main statement sets the year. A lesson covers the years of its own statements, or if it
     // has none of its own, the main statement of each piece of work it uses
@@ -898,7 +1030,7 @@
       text: "the Early Learning Goals, judged at the end of Reception as the expected level of development or emerging" };
     if (n <= 6) return { year: n, compare: n, label: yearGroup, stage: y[2], text: `the ${yearGroup} programme of study` };
     return { year: n, compare: 6, label: yearGroup, stage: y[2],
-      text: `the ${y[2].toLowerCase()} programme of study. PopSpell's work goes up to Year 6, so this shows where they are against the end of key stage 2` };
+      text: `the ${y[2].toLowerCase()} programme of study. PopSpell's work is mostly primary, so this shows where they are against the end of key stage 2` };
   }
 
   // Below, in line with or beyond their year: work covering Years 3–4 is in line for Year 3 and Year 4
@@ -911,7 +1043,7 @@
   }
 
   // Library bands: the national curriculum's own groupings (English is set out for Years 3–4 and 5–6 together)
-  const BANDS = [["Reception", 0, 0], ["Year 1", 1, 1], ["Year 2", 2, 2], ["Years 3–4", 3, 4], ["Years 5–6", 5, 6]];
+  const BANDS = [["Reception", 0, 0], ["Year 1", 1, 1], ["Year 2", 2, 2], ["Years 3–4", 3, 4], ["Years 5–6", 5, 6], ["Key stage 3", 7, 9]];
   const bandOf = work => (work && work.lo !== null ? (BANDS.find(([, lo, hi]) => work.lo >= lo && work.lo <= hi) || [""])[0] : "");
 
   window.PopEngland = {

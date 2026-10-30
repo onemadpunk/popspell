@@ -4839,5 +4839,941 @@
   "level": 1,
   "text": "calculate and interpret the mean as an average.",
   "x": 60
+ },
+ {
+  "id": "en-y7-9-reading-1",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 1,
+  "text": "develop an appreciation and love of reading, and read increasingly challenging material independently through:"
+ },
+ {
+  "id": "en-y7-9-reading-2",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "reading a wide range of fiction and non-fiction, including in particular whole books, short stories, poems and plays with a wide coverage of genres, historical periods, forms and authors. The range will include high-quality works from: • English literature, both pre-1914 and contemporary, including prose, poetry and drama • Shakespeare (two plays) • seminal world literature",
+  "parent": "develop an appreciation and love of reading, and read increasingly challenging material independently through:"
+ },
+ {
+  "id": "en-y7-9-reading-3",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "choosing and reading books independently for challenge, interest and enjoyment.",
+  "parent": "develop an appreciation and love of reading, and read increasingly challenging material independently through:"
+ },
+ {
+  "id": "en-y7-9-reading-4",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "re-reading books encountered earlier to increase familiarity with them and provide a basis for making comparisons.",
+  "parent": "develop an appreciation and love of reading, and read increasingly challenging material independently through:"
+ },
+ {
+  "id": "en-y7-9-reading-5",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 1,
+  "text": "understand increasingly challenging texts through:"
+ },
+ {
+  "id": "en-y7-9-reading-6",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "learning new vocabulary, relating it explicitly to known vocabulary and understanding it with the help of context and dictionaries",
+  "parent": "understand increasingly challenging texts through:"
+ },
+ {
+  "id": "en-y7-9-reading-7",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "making inferences and referring to evidence in the text",
+  "parent": "understand increasingly challenging texts through:"
+ },
+ {
+  "id": "en-y7-9-reading-8",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "knowing the purpose, audience for and context of the writing and drawing on this knowledge to support comprehension",
+  "parent": "understand increasingly challenging texts through:"
+ },
+ {
+  "id": "en-y7-9-reading-9",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "checking their understanding to make sure that what they have read makes sense.",
+  "parent": "understand increasingly challenging texts through:"
+ },
+ {
+  "id": "en-y7-9-reading-10",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 1,
+  "text": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-11",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "knowing how language, including figurative language, vocabulary choice, grammar, text structure and organisational features, presents meaning",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-12",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "recognising a range of poetic conventions and understanding how these have been used",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-13",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "studying setting, plot, and characterisation, and the effects of these",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-14",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "understanding how the work of dramatists is communicated effectively through performance and how alternative staging allows for different interpretations of a play",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-15",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "making critical comparisons across texts",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-reading-16",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Reading",
+  "level": 2,
+  "text": "studying a range of authors, including at least two authors in depth each year.",
+  "parent": "read critically through:"
+ },
+ {
+  "id": "en-y7-9-writing-1",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 1,
+  "text": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y7-9-writing-2",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "writing for a wide range of purposes and audiences, including: • well-structured formal expository and narrative essays • stories, scripts, poetry and other imaginative writing • notes and polished scripts for talks and presentations • a range of other narrative and non-narrative texts, including arguments, and personal and formal letters",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y7-9-writing-3",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "summarising and organising material, and supporting ideas and arguments with any necessary factual detail",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y7-9-writing-4",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "applying their growing knowledge of vocabulary, grammar and text structure to their writing and selecting the appropriate form",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y7-9-writing-5",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "drawing on knowledge of literary and rhetorical devices from their reading and listening to enhance the impact of their writing",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y7-9-writing-6",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 1,
+  "text": "plan, draft, edit and proof-read through:"
+ },
+ {
+  "id": "en-y7-9-writing-7",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "considering how their writing reflects the audiences and purposes for which it was intended",
+  "parent": "plan, draft, edit and proof-read through:"
+ },
+ {
+  "id": "en-y7-9-writing-8",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "amending the vocabulary, grammar and structure of their writing to improve its coherence and overall effectiveness",
+  "parent": "plan, draft, edit and proof-read through:"
+ },
+ {
+  "id": "en-y7-9-writing-9",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Writing",
+  "level": 2,
+  "text": "paying attention to accurate grammar, punctuation and spelling; applying the spelling patterns and rules set out in English Appendix 1 to the key stage 1 and 2 programmes of study for English.",
+  "parent": "plan, draft, edit and proof-read through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-1",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 1,
+  "text": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-2",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "extending and applying the grammatical knowledge set out in English Appendix 2 to the key stage 1 and 2 programmes of study to analyse more challenging texts",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-3",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "studying the effectiveness and impact of the grammatical features of the texts they read",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-4",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "drawing on new vocabulary and grammatical constructions from their reading and listening, and using these consciously in their writing and speech to achieve particular effects",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-5",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "knowing and understanding the differences between spoken and written language, including differences associated with formal and informal registers, and between Standard English and other varieties of English",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-6",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "using Standard English confidently in their own writing and speech",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-grammar-and-vocabulary-7",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "discussing reading, writing and spoken language with precise and confident use of linguistic and literary terminology.",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y7-9-spoken-english-1",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Spoken English",
+  "level": 1,
+  "text": "speak confidently and effectively, including through:"
+ },
+ {
+  "id": "en-y7-9-spoken-english-2",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "using Standard English confidently in a range of formal and informal contexts, including classroom discussion",
+  "parent": "speak confidently and effectively, including through:"
+ },
+ {
+  "id": "en-y7-9-spoken-english-3",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "giving short speeches and presentations, expressing their own ideas and keeping to the point",
+  "parent": "speak confidently and effectively, including through:"
+ },
+ {
+  "id": "en-y7-9-spoken-english-4",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "participating in formal debates and structured discussions, summarising and/or building on what has been said",
+  "parent": "speak confidently and effectively, including through:"
+ },
+ {
+  "id": "en-y7-9-spoken-english-5",
+  "subject": "en",
+  "year": "7-9",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "improvising, rehearsing and performing play scripts and poetry in order to generate language and discuss language use and meaning, using role, intonation, tone, volume, mood, silence, stillness and action to add impact.",
+  "parent": "speak confidently and effectively, including through:"
+ },
+ {
+  "id": "ma-y7-9-number-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "understand and use place value for decimals, measures and integers of any size"
+ },
+ {
+  "id": "ma-y7-9-number-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "order positive and negative integers, decimals and fractions; use the number line as a model for ordering of the real numbers; use the symbols =, ≠, <, >, ≤, ≥"
+ },
+ {
+  "id": "ma-y7-9-number-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use the concepts and vocabulary of prime numbers, factors (or divisors), multiples, common factors, common multiples, highest common factor, lowest common multiple, prime factorisation, including using product notation and the unique factorisation property"
+ },
+ {
+  "id": "ma-y7-9-number-4",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use the four operations, including formal written methods, applied to integers, decimals, proper and improper fractions, and mixed numbers, all both positive and negative"
+ },
+ {
+  "id": "ma-y7-9-number-5",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use conventional notation for the priority of operations, including brackets, powers, roots and reciprocals"
+ },
+ {
+  "id": "ma-y7-9-number-6",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "recognise and use relationships between operations including inverse operations"
+ },
+ {
+  "id": "ma-y7-9-number-7",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use integer powers and associated real roots (square, cube and higher), recognise powers of 2, 3, 4, 5 and distinguish between exact representations of roots and their decimal approximations"
+ },
+ {
+  "id": "ma-y7-9-number-8",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "interpret and compare numbers in standard form A x 10 n 1≤A<10, where n is a positive or negative integer or zero"
+ },
+ {
+  "id": "ma-y7-9-number-9",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "work interchangeably with terminating decimals and their corresponding fractions (such as 3.5 and 2 or 0.375 and 8 )"
+ },
+ {
+  "id": "ma-y7-9-number-10",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "define percentage as ‘number of parts per hundred’, interpret percentages and percentage changes as a fraction or a decimal, interpret these multiplicatively, express one quantity as a percentage of another, compare two quantities using percentages, and work with percentages greater than 100%"
+ },
+ {
+  "id": "ma-y7-9-number-11",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "interpret fractions and percentages as operators"
+ },
+ {
+  "id": "ma-y7-9-number-12",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use standard units of mass, length, time, money and other measures, including with decimal quantities"
+ },
+ {
+  "id": "ma-y7-9-number-13",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "round numbers and measures to an appropriate degree of accuracy [for example, to a number of decimal places or significant figures]"
+ },
+ {
+  "id": "ma-y7-9-number-14",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use approximation through rounding to estimate answers and calculate possible resulting errors expressed using inequality notation a<x≤b"
+ },
+ {
+  "id": "ma-y7-9-number-15",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "use a calculator and other technologies to calculate results accurately and then interpret them appropriately"
+ },
+ {
+  "id": "ma-y7-9-number-16",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Number",
+  "level": 1,
+  "text": "appreciate the infinite nature of the sets of integers, real and rational numbers."
+ },
+ {
+  "id": "ma-y7-9-algebra-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "ab in place of a × b",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "3y in place of y + y + y and 3 × y",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-4",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "a2 in place of a × a, a3 in place of a × a × a; a2b in place of a × a × b",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-5",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "b a in place of a ÷ b",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-6",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "coefficients written as fractions rather than as decimals",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-7",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "brackets",
+  "parent": "use and interpret algebraic notation, including:"
+ },
+ {
+  "id": "ma-y7-9-algebra-8",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "substitute numerical values into formulae and expressions, including scientific formulae"
+ },
+ {
+  "id": "ma-y7-9-algebra-9",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "understand and use the concepts and vocabulary of expressions, equations, inequalities, terms and factors"
+ },
+ {
+  "id": "ma-y7-9-algebra-10",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "simplify and manipulate algebraic expressions to maintain equivalence by:"
+ },
+ {
+  "id": "ma-y7-9-algebra-11",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "collecting like terms",
+  "parent": "simplify and manipulate algebraic expressions to maintain equivalence by:"
+ },
+ {
+  "id": "ma-y7-9-algebra-12",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "multiplying a single term over a bracket",
+  "parent": "simplify and manipulate algebraic expressions to maintain equivalence by:"
+ },
+ {
+  "id": "ma-y7-9-algebra-13",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "taking out common factors",
+  "parent": "simplify and manipulate algebraic expressions to maintain equivalence by:"
+ },
+ {
+  "id": "ma-y7-9-algebra-14",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "expanding products of two or more binomials",
+  "parent": "simplify and manipulate algebraic expressions to maintain equivalence by:"
+ },
+ {
+  "id": "ma-y7-9-algebra-15",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "understand and use standard mathematical formulae; rearrange formulae to change the subject"
+ },
+ {
+  "id": "ma-y7-9-algebra-16",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "model situations or procedures by translating them into algebraic expressions or formulae and by using graphs"
+ },
+ {
+  "id": "ma-y7-9-algebra-17",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "use algebraic methods to solve linear equations in one variable (including all forms that require rearrangement)"
+ },
+ {
+  "id": "ma-y7-9-algebra-18",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "work with coordinates in all four quadrants"
+ },
+ {
+  "id": "ma-y7-9-algebra-19",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "recognise, sketch and produce graphs of linear and quadratic functions of one variable with appropriate scaling, using equations in x and y and the Cartesian plane"
+ },
+ {
+  "id": "ma-y7-9-algebra-20",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "interpret mathematical relationships both algebraically and graphically"
+ },
+ {
+  "id": "ma-y7-9-algebra-21",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "reduce a given linear equation in two variables to the standard form y = mx + c; calculate and interpret gradients and intercepts of graphs of such linear equations numerically, graphically and algebraically"
+ },
+ {
+  "id": "ma-y7-9-algebra-22",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "use linear and quadratic graphs to estimate values of y for given values of x and vice versa and to find approximate solutions of simultaneous linear equations"
+ },
+ {
+  "id": "ma-y7-9-algebra-23",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "find approximate solutions to contextual problems from given graphs of a variety of functions, including piece-wise linear, exponential and reciprocal graphs"
+ },
+ {
+  "id": "ma-y7-9-algebra-24",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "generate terms of a sequence from either a term-to-term or a position-to-term rule"
+ },
+ {
+  "id": "ma-y7-9-algebra-25",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "recognise arithmetic sequences and find the nth term"
+ },
+ {
+  "id": "ma-y7-9-algebra-26",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "recognise geometric sequences and appreciate other sequences that arise."
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "change freely between related standard units [for example time, length, area, volume/capacity, mass]"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "use scale factors, scale diagrams and maps"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "express one quantity as a fraction of another, where the fraction is less than 1 and greater than 1"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-4",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "use ratio notation, including reduction to simplest form"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-5",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "divide a given quantity into two parts in a given part:part or part:whole ratio; express the division of a quantity into two parts as a ratio"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-6",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "understand that a multiplicative relationship between two quantities can be expressed as a ratio or a fraction"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-7",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "relate the language of ratios and the associated calculations to the arithmetic of fractions and to linear functions"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-8",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "solve problems involving percentage change, including: percentage increase, decrease and original value problems and simple interest in financial mathematics"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-9",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "solve problems involving direct and inverse proportion, including graphical and algebraic representations"
+ },
+ {
+  "id": "ma-y7-9-ratio-proportion-and-rates-of-change-10",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "use compound units such as speed, unit pricing and density to solve problems."
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "derive and apply formulae to calculate and solve problems involving: perimeter and area of triangles, parallelograms, trapezia, volume of cuboids (including cubes) and other prisms (including cylinders)"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "calculate and solve problems involving: perimeters of 2-D shapes (including circles), areas of circles and composite shapes"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "draw and measure line segments and angles in geometric figures, including interpreting scale drawings"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-4",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "derive and use the standard ruler and compass constructions (perpendicular bisector of a line segment, constructing a perpendicular to a given line from/at a given point, bisecting a given angle); recognise and use the perpendicular distance from a point to a line as the shortest distance to the line"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-5",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "describe, sketch and draw using conventional terms and notations: points, lines, parallel lines, perpendicular lines, right angles, regular polygons, and other polygons that are reflectively and rotationally symmetric"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-6",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "use the standard conventions for labelling the sides and angles of triangle ABC, and know and use the criteria for congruence of triangles"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-7",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "derive and illustrate properties of triangles, quadrilaterals, circles, and other plane figures [for example, equal lengths and angles] using appropriate language and technologies"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-8",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "identify properties of, and describe the results of, translations, rotations and reflections applied to given figures"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-9",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "identify and construct congruent triangles, and construct similar shapes by enlargement, with and without coordinate grids"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-10",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "apply the properties of angles at a point, angles at a point on a straight line, vertically opposite angles"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-11",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "understand and use the relationship between parallel lines and alternate and corresponding angles"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-12",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "derive and use the sum of angles in a triangle and use it to deduce the angle sum in any polygon, and to derive properties of regular polygons"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-13",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "apply angle facts, triangle congruence, similarity and properties of quadrilaterals to derive results about angles and sides, including Pythagoras’ Theorem, and use known results to obtain simple proofs"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-14",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "use Pythagoras’ Theorem and trigonometric ratios in similar triangles to solve problems involving right-angled triangles"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-15",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "use the properties of faces, surfaces, edges and vertices of cubes, cuboids, prisms, cylinders, pyramids, cones and spheres to solve problems in 3-D"
+ },
+ {
+  "id": "ma-y7-9-geometry-and-measures-16",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "interpret mathematical relationships both algebraically and geometrically."
+ },
+ {
+  "id": "ma-y7-9-probability-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Probability",
+  "level": 1,
+  "text": "record, describe and analyse the frequency of outcomes of simple probability experiments involving randomness, fairness, equally and unequally likely outcomes, using appropriate language and the 0-1 probability scale"
+ },
+ {
+  "id": "ma-y7-9-probability-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Probability",
+  "level": 1,
+  "text": "understand that the probabilities of all possible outcomes sum to 1"
+ },
+ {
+  "id": "ma-y7-9-probability-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Probability",
+  "level": 1,
+  "text": "enumerate sets and unions/intersections of sets systematically, using tables, grids and Venn diagrams"
+ },
+ {
+  "id": "ma-y7-9-probability-4",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Probability",
+  "level": 1,
+  "text": "generate theoretical sample spaces for single and combined events with equally likely, mutually exclusive outcomes and use these to calculate theoretical probabilities."
+ },
+ {
+  "id": "ma-y7-9-statistics-1",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "describe, interpret and compare observed distributions of a single variable through: appropriate graphical representation involving discrete, continuous and grouped data; and appropriate measures of central tendency (mean, mode, median) and spread (range, consideration of outliers)"
+ },
+ {
+  "id": "ma-y7-9-statistics-2",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "construct and interpret appropriate tables, charts, and diagrams, including frequency tables, bar charts, pie charts, and pictograms for categorical data, and vertical line (or bar) charts for ungrouped and grouped numerical data"
+ },
+ {
+  "id": "ma-y7-9-statistics-3",
+  "subject": "ma",
+  "year": "7-9",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "describe simple mathematical relationships between two variables (bivariate data) in observational and experimental contexts and illustrate using scatter graphs."
  }
 ]

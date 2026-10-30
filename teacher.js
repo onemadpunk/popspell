@@ -313,7 +313,7 @@
     });
     return all;
   }
-  const EN_NONE = "Beyond England's primary curriculum";
+  const EN_NONE = "Not in England's curriculum";
 
   const LIB_KEY = "popspell-library";
   const LIB_BLANK = { cur: "", level: "", subject: "", strand: "", type: "" };
@@ -323,12 +323,13 @@
   }
   const saveLibraryPrefs = p => { try { localStorage.setItem(LIB_KEY, JSON.stringify(p)); } catch { /* fine */ } };
 
-  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11" };
+  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14" };
   function drawLibrary(body) {
-    const entries = libraryEntries();
     const prefs = libraryPrefs();
-    // Scotland (CfE levels and organisers) or England (national curriculum years and domains)
+    // Scotland (CfE levels and organisers) or England (national curriculum years and domains).
+    // England's own lessons (grammar by year, statutory words, the national checks) are England only.
     const en = prefs.cur === "england" && Boolean(E_());
+    const entries = libraryEntries().filter(e => en || !(e.lesson && e.lesson.england));
     const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
     const strandOfEntry = e => (en ? e.enStrand : e.strand);
     const levelOfEntry = e => (en ? e.band : e.level);
@@ -449,7 +450,7 @@
     const en = cur === "england" ? enWork(l.id) : null;
     const curriculum = !en ? `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
       <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`
-      : en.statements.length ? `<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
+      : en.statements.length ? `${l.england ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
         ${en.hi === 0 ? "Children at the expected level of development will:" : en.lo === 0 ? "What children are expected to do (Reception) and be taught (Year 1 on):" : "Pupils should be taught to:"}</p>
         <ul class="lesson-criteria">${lessonStatements(en).slice(0, 6).map(s => `<li>${esc(s.wording)} <span class="hint">(${esc(E_().yearLabel(s.year))} · ${esc(E_().domainLabel(s.domain))})</span></li>`).join("")}</ul>`
       : `<p><b>National curriculum (England):</b> ${esc(en.label)}. This lesson goes beyond what England's primary curriculum sets out, so use it as enrichment.</p>`;
@@ -1341,6 +1342,9 @@
   const yearLevel = year => { const e = EXPECTED[year]; return e ? (e[0] === "Third" ? "Second" : e[0]) : ""; };
   const LEVEL_STATUS = { below: "Below expected", at: "As expected", beyond: "Beyond expected" };
   const YEAR_STATUS = { below: "Below their year", at: "In line with their year", beyond: "Beyond their year" };
+  // Years 7 to 11 are compared with the end of key stage 2, as PopSpell's work is mostly primary
+  const SECONDARY_STATUS = { below: "Below the end of key stage 2", at: "At the end of key stage 2", beyond: "Key stage 3 work" };
+  const yearStatus = (yearGroup, status) => ((E_() && E_().pupilYear(yearGroup) >= 7 ? SECONDARY_STATUS : YEAR_STATUS)[status] || "");
   // England (england.js): the year and statements a piece of work covers
   const E_ = () => window.PopEngland;
   const inEngland = r => Boolean(r && E_() && E_().isEngland(r.yearGroup));
@@ -1372,7 +1376,7 @@
     const c = levelCheck(r, prog);
     if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see what's expected for their age next to where they're working: a CfE level for P1–S6, or a national curriculum year for Reception–Year 11.</p>`;
     if (c.england) return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}</b> (${esc(c.expected.stage)}): ${esc(c.expected.text)}.</p>
-      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${YEAR_STATUS[a.status]}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}</div>`;
+      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${yearStatus(c.year, a.status)}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}</div>`;
     return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}:</b> ${c.expected[0]} level (${esc(c.expected[1])}).</p>
       ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${LEVEL_STATUS[a.status]}</span> <b>${a.area}:</b> working at ${a.level} level</p>`).join("")}</div>`;
   }
@@ -1545,7 +1549,8 @@
       if (prog.focus !== "maths") ids.push(prog.spelling);
       if (prog.focus !== "literacy") ids.push(prog.maths);
       const out = [];
-      const addLesson = l => { if (!out.some(o => o.id === l.id)) out.push(l); };
+      // England's own lessons (statutory words, the national checks) are only for pupils in England
+      const addLesson = l => { if ((!l.england || inEngland(x.r)) && !out.some(o => o.id === l.id)) out.push(l); };
       // A spelling list with no lesson of its own matches the lessons for its stage's other lists
       const sameStage = id => (stageOf(id) < 0 ? [] : P().STAGES[stageOf(id)].lists.map(l => l.id));
       ids.forEach(id => { const direct = L.forWork(id); (direct.length ? direct : sameStage(id).flatMap(L.forWork)).forEach(addLesson); });
@@ -1737,7 +1742,7 @@
     return `<h1>PopSpell · ${esc(x.r.name)} · Lesson ${prog.lesson}</h1>
       <p><b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}</p>
       ${!levels.expected ? "" : levels.england
-        ? `<p><b>Expected for ${esc(levels.year)}:</b> ${esc(levels.expected.text)}. ${levels.areas.map(a => `<b>${a.area}:</b> ${esc(a.level)} work (${YEAR_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>`
+        ? `<p><b>Expected for ${esc(levels.year)}:</b> ${esc(levels.expected.text)}. ${levels.areas.map(a => `<b>${a.area}:</b> ${esc(a.level)} work (${yearStatus(levels.year, a.status).toLowerCase()}).`).join(" ")}</p>`
         : `<p><b>Expected for ${esc(levels.year)}:</b> ${levels.expected[0]} level. ${levels.areas.map(a => `<b>${a.area}:</b> working at ${a.level} level (${LEVEL_STATUS[a.status].toLowerCase()}).`).join(" ")}</p>`}
       ${intentions.map(p => `<p><b>Learning intention:</b> ${esc(p.intention)}<br><b>Success criteria:</b> ${p.criteria.map(esc).join(" ")}</p>`).join("")}
       ${levels.england ? (ncParts.length ? `<p><b>${ncParts.some(t => t.startsWith("Reception")) ? "EYFS and national curriculum (England)" : "National curriculum (England)"}:</b></p><ul>${[...new Set(ncParts)].map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "")
@@ -2039,8 +2044,8 @@
       <table class="ar-facts"><tr><th>Pupil</th><td>${esc(pupil.name)}</td><th>Year group</th><td>${esc(pupil.yearGroup || "—")}</td></tr>
         <tr><th>Assessed</th><td>${dates.length ? esc([...new Set(dates.sort().map(day))].join(", ")) : "—"}</td><th>Teacher</th><td>${esc(current.teacherName || me.name || "")}</td></tr></table>
       ${en ? (lit || num ? `<div class="ar-summary">
-        ${lit ? `<div><span>Literacy</span><b>Working on ${esc(lit.label)} work</b>${exp ? `<small>${esc(YEAR_STATUS[E_().status(pupil.yearGroup, lit)] || "")}</small>` : ""}</div>` : ""}
-        ${num ? `<div><span>Maths</span><b>Working on ${esc(num.label)} work</b>${exp ? `<small>${esc(YEAR_STATUS[E_().status(pupil.yearGroup, num)] || "")}</small>` : ""}</div>` : ""}
+        ${lit ? `<div><span>Literacy</span><b>Working on ${esc(lit.label)} work</b>${exp ? `<small>${esc(yearStatus(pupil.yearGroup, E_().status(pupil.yearGroup, lit)))}</small>` : ""}</div>` : ""}
+        ${num ? `<div><span>Maths</span><b>Working on ${esc(num.label)} work</b>${exp ? `<small>${esc(yearStatus(pupil.yearGroup, E_().status(pupil.yearGroup, num)))}</small>` : ""}</div>` : ""}
       </div>${exp ? `<p class="hint">Expected for ${esc(pupil.yearGroup)}: ${esc(exp.text)}.</p>` : ""}` : "")
       : literacy || f.numbers ? `<div class="ar-summary">
         ${literacy ? `<div><span>Literacy</span><b>Working within ${esc(literacy)} level</b></div>` : ""}

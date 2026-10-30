@@ -5,6 +5,7 @@
 #      EYFS statutory framework (eyfs.pdf, its text extracted to eyfs.txt) from gov.uk into a folder.
 #   2. python -I tools/england_extract.py <folder> tools/england-statements.json
 #   3. python -I tools/england_elg.py <folder>/eyfs.txt tools/england-statements.json
+#      python -I tools/england_ks3.py <folder> tools/england-statements.json   (ks3en.pdf, ks3ma.pdf)
 #   4. python -I tools/build_england.py   (writes the data section of england.js)
 # Check any statement FIX below against the PDF: stacked fractions don't survive text extraction.
 import json, re, sys
@@ -26,6 +27,7 @@ FIX = {
   "ma-y5-geometry-properties-of-shapes-6": "angles at a point on a straight line and 1/2 a turn (total 180°)",
   "ma-y6-number-fractions-including-decimals-and-percentages-4": "multiply simple pairs of proper fractions, writing the answer in its simplest form [for example, 1/4 × 1/2 = 1/8]",
   "ma-y6-number-fractions-including-decimals-and-percentages-5": "divide proper fractions by whole numbers [for example, 1/3 ÷ 2 = 1/6]",
+  "ma-y7-9-number-9": "work interchangeably with terminating decimals and their corresponding fractions (such as 3.5 and 7/2 or 0.375 and 3/8)",
   "ma-y6-number-fractions-including-decimals-and-percentages-6": "associate a fraction with division and calculate decimal fraction equivalents [for example, 0.375] for a simple fraction [for example, 3/8]",
 }
 
@@ -39,7 +41,7 @@ ABBR = {
   "sp": "writing-transcription-spelling", "hw": "writing-transcription-handwriting",
   "hwp": "writing-transcription-handwriting-and-presentation", "co": "writing-composition",
   "vgp": "writing-vocabulary-grammar-and-punctuation", "lau": "listening-attention-and-understanding",
-  "spk": "speaking", "fms": "fine-motor-skills", "comp": "comprehension", "wread": "word-reading", "wri": "writing",
+  "spk": "speaking", "prob": "probability", "fms": "fine-motor-skills", "comp": "comprehension", "wread": "word-reading", "wri": "writing",
 }
 def ref(s):  # "ma 3 md 1" -> ma-y3-number-multiplication-and-division-1
     subj, year, dom, n = s.split()
@@ -67,7 +69,7 @@ MAP = {
   "n-time-digital": "ma 3 me 4; ma 4 me 5", "n-time-24": "ma 4 me 5; ma 3 me 4", "n-durations": "ma 2 me 6; ma 3 me 7; ma 4 me 6",
   "n-measure": "ma 2 me 1; ma 1 me 7; ma 1 me 8; ma 1 me 9", "n-units": "ma 4 me 1; ma 5 me 1",
   "n-area": "ma 4 me 3; ma 3 me 2; ma 4 me 2; ma 5 me 4", "n-tally": "ma 2 st 1; ma 2 st 2", "n-bar": "ma 3 st 1; ma 3 st 2; ma 2 st 1",
-  "n-table": "ma 5 st 2; ma 3 st 1", "n-chance": "",
+  "n-table": "ma 5 st 2; ma 3 st 1", "n-chance": "ma 7-9 prob 1; ma 7-9 prob 2",
   "m-shapes-2d": "ma 1 gs 2; ma 2 gs 1", "m-shapes-3d": "ma 1 gs 3; ma 2 gs 2", "m-angles": "ma 3 gs 3; ma 3 gs 2; ma 4 gs 2; ma 5 gs 2",
   "m-patterns": "ma 2 npv 1; ma 1 npv 2; ma 3 npv 1; ma 6 al 2", "m-equations": "ma 2 as 11; ma 1 as 4; ma 3 as 7; ma 6 al 3",
   # Literacy: games and activities
@@ -112,6 +114,21 @@ MAP = {
   "ar": "en 1 sp 2", "or": "en 1 sp 2", "er-ir-ur": "en 1 sp 2", "air-are": "en 1 sp 2", "ear-eer": "en 1 sp 2",
   "ing": "en 1 sp 11; en 2 sp 9", "s-es": "en 1 sp 9", "y-ee": "en 1 sp 12", "le": "en 2 sp 9", "soft-c-g": "en 2 sp 9",
   "kn-wr": "en 2 sp 9", "ph": "en 1 sp 12", "tricky": "en 1 sp 3; en 2 sp 4; en 1 wr 4",
+  # England's own ready lessons (lessons.js, addEngland)
+  "lesson-england-year-1-grammar-plurals-un-and-capital-letters": "en 1 vgp 6; en 1 vgp 5; en 1 sp 9; en 1 sp 10",
+  "lesson-england-year-2-grammar-apostrophes-suffixes-and-sentence-types": "en 2 vgp 4; en 2 vgp 2; en 2 sp 5; en 2 sp 6; en 2 sp 8",
+  "lesson-england-year-3-grammar-a-or-an-prefixes-and-words-for-time-and-cause": "en 3-4 vgp 5; en 3-4 vgp 7; en 3-4 vgp 3; en 3-4 vgp 11",
+  "lesson-england-year-4-grammar-fronted-adverbials-possessive-apostrophes-and-standard-english": "en 3-4 vgp 6; en 3-4 vgp 9; en 3-4 vgp 10",
+  "lesson-england-year-5-grammar-relative-clauses-possibility-and-parenthesis": "en 5-6 vgp 7; en 5-6 vgp 6; en 5-6 vgp 12",
+  "lesson-england-year-6-grammar-passive-formal-language-and-punctuation-between-clauses": "en 5-6 vgp 3; en 5-6 vgp 2; en 5-6 vgp 13; en 5-6 vgp 11",
+  "lesson-england-year-1-common-exception-words": "en 1 wr 4; en 1 sp 3",
+  "lesson-england-year-2-common-exception-words": "en 2 wr 5; en 2 sp 4",
+  "lesson-england-years-3-and-4-word-list-roots-prefixes-and-suffixes": "en 3-4 sp 3; en 3-4 wr 1; en 3-4 wr 2; en 3-4 sp 5",
+  "lesson-england-years-5-and-6-word-list-morphology-and-etymology": "en 5-6 sp 4; en 5-6 wr 1; en 5-6 sp 5; en 5-6 sp 7",
+  "lesson-england-joined-handwriting-years-3-and-4": "en 3-4 hw 1; en 3-4 hw 2",
+  "lesson-england-writing-legibly-fluently-and-at-speed-years-5-and-6": "en 5-6 hwp 2; en 5-6 hwp 3",
+  "lesson-england-getting-ready-for-the-times-tables-check-year-4": "ma 4 md 1; ma 4 md 3",
+  "lesson-england-getting-ready-for-the-phonics-check-year-1": "en 1 wr 1; en 1 wr 2; en 1 wr 3",
   # Ready lessons: extra statements on top of the work each lesson uses
   # Lessons whose own statements set their year (Second-level maths is mostly Years 5 and 6 in England)
   "lesson-early-copying-and-continuing-patterns": "ma R pat 3; ma 1 npv 2",
@@ -140,9 +157,9 @@ MAP = {
   "lesson-first-area-by-counting-squares": "ma 4 me 3", "lesson-first-grid-references-and-symmetry": "ma 4 gp 1; ma 4 gs 3",
   "lesson-first-calendars-dates-and-how-long": "ma 1 me 13; ma 3 me 6", "lesson-first-solving-two-step-problems": "ma 4 as 3",
   "lesson-first-turns-right-angles-and-compass-points": "ma 2 gp 2", "lesson-first-numbers-in-life-work-and-history": "",
-  "lesson-first-how-likely-is-it": "",
+  "lesson-first-how-likely-is-it": "ma 7-9 prob 1",
   "lesson-second-order-of-operations": "ma 6 asmd 6", "lesson-second-lines-of-symmetry": "ma 4 gs 3; ma 4 gs 4",
-  "lesson-second-maths-in-inventions-life-and-work": "", "lesson-second-probability-and-chance-experiments": "",
+  "lesson-second-maths-in-inventions-life-and-work": "", "lesson-second-probability-and-chance-experiments": "ma 7-9 prob 1; ma 7-9 prob 2; ma 7-9 prob 4",
   "lesson-second-shape-properties-nets-and-circles": "ma 6 gs 2; ma 6 gs 4", "lesson-second-compass-points-scale-and-coordinates": "ma 6 gp 1",
   "lesson-second-solving-simple-equations": "ma 6 al 3; ma 6 al 4", "lesson-second-square-triangular-and-fibonacci-numbers": "ma 5 md 8; ma 6 al 2",
   "lesson-second-budgets-best-value-profit-and-loss": "ma 4 frd 10; ma 6 asmd 8", "lesson-second-multiplying-by-2-digits-and-dividing-with-decimal-answers": "ma 6 asmd 1; ma 6 asmd 2",

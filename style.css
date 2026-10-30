@@ -1204,6 +1204,7 @@ a.me-card:hover { border-color: var(--primary); }
 .lib-level.lv-year-1, .lib-level.lv-year-2 { background: #e3f6ee; color: #11683f; }
 .lib-level.lv-years-3-4 { background: #e4efff; color: #1d4fa3; }
 .lib-level.lv-years-5-6 { background: #f3e8ff; color: #6b2fb3; }
+.lib-level.lv-key-stage-3 { background: #fde7ef; color: #9d174d; }
 .lib-online { align-self: center; font-size: .85rem; color: var(--muted); }
 .assign-names { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 12px; max-height: 300px; overflow: auto; margin-bottom: 12px; }
 .assign-names .check { margin-top: 8px; }
