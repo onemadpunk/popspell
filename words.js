@@ -254,6 +254,8 @@ window.ENGLAND_LISTS = [
         words: ["you", "your", "they", "be", "he", "me", "she", "we", "no", "go", "so", "by", "my", "here", "there"], tricky: ["you", "your", "they", "be", "he", "me", "she", "we", "no", "go", "so", "by", "my", "here", "there"] },
       { id: "cew-y1-3", title: "Year 1 common exception words (3 of 3)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
         words: ["where", "love", "come", "some", "one", "once", "ask", "friend", "school", "put", "push", "pull", "full", "house", "our"], tricky: ["where", "love", "come", "some", "one", "once", "friend", "school", "put", "push", "pull", "full", "our"] },
+      { id: "y1-days", title: "Year 1: the days of the week", tip: "English Appendix 1 asks Year 1 to spell the days of the week. Each starts with a capital letter. Sound out the regular parts and learn the tricky part (♥): the o in Monday, the d in Wednesday.", focus: [],
+        words: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], tricky: ["Monday", "Wednesday"] },
       { id: "cew-y2-1", title: "Year 2 common exception words (1 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
         words: ["door", "floor", "poor", "because", "find", "kind", "mind", "behind", "child", "children", "wild", "climb", "most"], tricky: ["door", "floor", "poor", "because", "find", "kind", "mind", "behind", "child", "wild", "climb", "most"] },
       { id: "cew-y2-2", title: "Year 2 common exception words (2 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],

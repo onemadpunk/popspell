@@ -1244,6 +1244,353 @@ window.PopActivities = (() => {
     }
     return shuffle(range(2, 12)).slice(0, 25).map(b => [pick([6, 7, 8, 9, 12]), b]);
   }
+  /* ---------- England's curriculum: maths it asks for that the CfE activities don't reach ---------- */
+
+  const UNITS_W = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
+    "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+  const TENS_W = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+  const inWords = n => (n === 100 ? "one hundred" : n < 20 ? UNITS_W[n] : TENS_W[Math.floor(n / 10)] + (n % 10 ? `-${UNITS_W[n % 10]}` : ""));
+  const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+  const frac = (n, d) => { const g = gcd(n, d); return `${n / g}/${d / g}`; };
+  const mixed = (n, d) => { const g = gcd(n, d); n /= g; d /= g; const w = Math.floor(n / d), r = n % d; return w ? (r ? `${w} ${r}/${d}` : `${w}`) : `${r}/${d}`; };
+  const pounds2 = n => `£${n.toFixed(2)}`;
+  const big = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const ROMAN = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+  const roman = n => ROMAN.reduce((s, [v, r]) => { while (n >= v) { s += r; n -= v; } return s; }, "");
+  const three = (answer, wrong) => [...new Set(wrong.map(String).filter(w => w !== String(answer)))].slice(0, 2);
+  const linesSVG = kind => {
+    const L = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>`;
+    const body = { parallel: L(20, 30, 180, 30) + L(20, 80, 180, 80), perpendicular: L(40, 90, 170, 90) + L(100, 15, 100, 90),
+      neither: L(20, 30, 180, 55) + L(30, 95, 170, 75), horizontal: L(20, 55, 180, 55), vertical: L(100, 10, 100, 100), diagonal: L(30, 95, 170, 15) }[kind];
+    return `<svg class="q-pic" viewBox="0 0 200 110" width="200" height="110" role="img" aria-label="Lines">${body}</svg>`;
+  };
+
+  const englandMaths = [
+    { id: "en-numbers-words", title: "Numbers in words (Years 1 and 2)", level: "First", organiser: NUM, blurb: "Read and write numbers to 100 in numerals and in words.",
+      make: () => distinct(10, () => {
+        const n = rand(90) + 11, swap = (n % 10) * 10 + Math.floor(n / 10);
+        if (rand(2)) return choice(`Which is ${n} written in words?`, inWords(n), three(inWords(n), [inWords(swap > 10 && swap !== n ? swap : n + 10 > 100 ? n - 10 : n + 10), inWords(n % 10 ? n - 1 : n + 1), inWords(n + 1 > 100 ? n - 2 : n + 1)]),
+          { label: `${n} in words`, skill: "numbers in words", explain: `${n} is ${inWords(n)}: the tens first, then the ones.` });
+        return typed(`What number is “${inWords(n)}”?`, n, { label: `${inWords(n)} as a number`, skill: "numbers in words", explain: `${inWords(n)} is ${n}.` });
+      }) },
+    { id: "en-add-2digit", title: "Adding and taking away two-digit numbers (Year 2)", level: "First", organiser: NUM, blurb: "Add and subtract a two-digit number and ones, a two-digit number and tens, two two-digit numbers, and three one-digit numbers.",
+      make: () => distinct(10, () => {
+        const k = rand(6);
+        if (k === 0) { const a = rand(80) + 11, b = rand(9) + 1; return typed(`${a} + ${b} =`, a + b, { label: `${a}+${b}`, skill: "two-digit number and ones", explain: `Add the ones: ${a} + ${b} = ${a + b}.` }); }
+        if (k === 1) { const a = rand(60) + 11, b = (rand(3) + 1) * 10; return typed(`${a} + ${b} =`, a + b, { label: `${a}+${b}`, skill: "two-digit number and tens", explain: `Add the tens: ${a} + ${b} = ${a + b}. The ones stay the same.` }); }
+        if (k === 2) { const a = rand(40) + 11, b = rand(40) + 11; return typed(`${a} + ${b} =`, a + b, { label: `${a}+${b}`, skill: "two two-digit numbers", explain: `Tens first, then ones: ${a} + ${b} = ${a + b}.` }); }
+        if (k === 3) { const [a, b, c] = [rand(8) + 2, rand(8) + 2, rand(8) + 2]; return typed(`${a} + ${b} + ${c} =`, a + b + c, { label: `${a}+${b}+${c}`, skill: "three one-digit numbers", explain: `Look for a pair that's easy to add first: ${a} + ${b} + ${c} = ${a + b + c}.` }); }
+        if (k === 4) { const a = rand(70) + 21, b = rand(9) + 1; return typed(`${a} − ${b} =`, a - b, { label: `${a}-${b}`, skill: "two-digit number and ones", explain: `${a} − ${b} = ${a - b}. Check: ${a - b} + ${b} = ${a}.` }); }
+        const [a, b] = [rand(8) + 2, rand(8) + 2]; if (a === b) return { label: "same" };
+        const op = pick(["+", "×", "−", "÷"]), same = op === "+" || op === "×";
+        return choice(`Is ${a} ${op} ${b} the same as ${b} ${op} ${a}?`, same ? "yes" : "no", [same ? "no" : "yes"], { label: `${a}${op}${b} order`, skill: "order of adding and multiplying",
+          explain: same ? `Adding and multiplying can be done in any order: ${a} ${op} ${b} = ${b} ${op} ${a}.` : `Taking away and dividing can't be done in any order.` });
+      }) },
+    { id: "en-compare-measures", title: "Comparing measures, and quicker or later (Years 1 and 2)", level: "First", organiser: MEAS, blurb: "Compare lengths, masses and capacities with <, > and =, and use words such as quicker, slower, earlier and later.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k < 2) {
+          const [unit, max] = pick([["cm", 99], ["m", 50], ["kg", 40], ["g", 900], ["ml", 900], ["litres", 20]]);
+          const a = rand(max) + 1, b = rand(3) === 0 ? a : rand(max) + 1, sign = a < b ? "<" : a > b ? ">" : "=";
+          const say = { "<": "< (is less than)", ">": "> (is more than)", "=": "= (is equal to)" };
+          return choice(`${a} ${unit} ☐ ${b} ${unit}. Which sign goes in the box?`, say[sign], Object.values(say).filter(x => x !== say[sign]),
+            { label: `${a}${unit} ${b}`, skill: "comparing measures", explain: `${a} ${unit} ${sign === "=" ? "is the same as" : sign === "<" ? "is less than" : "is more than"} ${b} ${unit}, so ${sign}.` });
+        }
+        const [q, ans, other, why] = pick([["Which takes longer: brushing your teeth or a night's sleep?", "a night's sleep", "brushing your teeth", "Sleep lasts hours; brushing takes minutes."],
+          ["Which is quicker: a snail or a cheetah?", "a cheetah", "a snail", "A cheetah runs fast; a snail moves slowly."],
+          ["Which happens earlier in the day: breakfast or tea?", "breakfast", "tea", "Breakfast is in the morning; tea is later."],
+          ["Which happens later: going to bed or getting up?", "going to bed", "getting up", "We go to bed at night, after getting up in the morning."],
+          ["Which is slower: walking or running?", "walking", "running", "Running covers the same distance in less time."],
+          ["Which takes longer: a school day or a school year?", "a school year", "a school day", "A year is made of many days."]]);
+        return choice(q, ans, [other], { label: q, skill: "words for time", explain: why });
+      }) },
+    { id: "en-mental-3digit", title: "Three-digit numbers in your head (Year 3)", level: "First", organiser: NUM, blurb: "Add and subtract ones, tens or hundreds to a three-digit number mentally.",
+      make: () => distinct(10, () => {
+        const a = rand(700) + 101, [part, b] = pick([["ones", rand(9) + 1], ["tens", (rand(9) + 1) * 10], ["hundreds", (rand(2) + 1) * 100]]), add = rand(2) === 1 || a - b < 100;
+        return typed(`${a} ${add ? "+" : "−"} ${b} =`, add ? a + b : a - b, { label: `${a}${add ? "+" : "-"}${b}`, skill: `three-digit number and ${part}`,
+          explain: `Only the ${part} change${part === "ones" ? " (or carry into the tens)" : ""}: ${a} ${add ? "+" : "−"} ${b} = ${add ? a + b : a - b}.` });
+      }) },
+    { id: "en-money-pounds", title: "Pounds and pence: adding and change (Year 3)", level: "First", organiser: "Numeracy · Money", blurb: "Add and subtract amounts using £ and p, and give change.",
+      make: () => distinct(10, () => {
+        const price = () => (rand(8) + 1) + pick([0, 0.15, 0.25, 0.4, 0.5, 0.75, 0.99]), k = rand(3);
+        if (k === 0) { const a = price(), b = price(); return typed(`A book costs ${pounds2(a)} and a pen costs ${pounds2(b)}. How much altogether? (in £)`, dec(a + b),
+          { input: "decimal", accept: [pounds2(a + b), (a + b).toFixed(2)], label: `${a}+${b}`, skill: "adding money", explain: `${pounds2(a)} + ${pounds2(b)} = ${pounds2(a + b)}.` }); }
+        const a = price(), paid = a < 5 ? 5 : 10;
+        if (k === 1) return typed(`You buy something for ${pounds2(a)} and pay with a £${paid} note. How much change? (in £)`, dec(paid - a),
+          { input: "decimal", accept: [pounds2(paid - a), (paid - a).toFixed(2)], label: `${paid}-${a}`, skill: "giving change", explain: `Count on from ${pounds2(a)} to £${paid}: ${pounds2(paid - a)}.` });
+        const p = (rand(8) + 1) * 10 + 5;
+        return typed(`How many pence is ${pounds2(p / 100 + 1)}?`, 100 + p, { label: `${p} p`, skill: "pounds and pence", explain: `£1 is 100p, so ${pounds2(p / 100 + 1)} is ${100 + p}p.` });
+      }) },
+    { id: "en-fractions-add", title: "Tenths, and adding fractions (Years 3 and 4)", level: "First", organiser: FDP, blurb: "Count in tenths, and add and subtract fractions with the same denominator.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const s = rand(6) + 1; return choice(`What comes next? ${s}/10, ${s + 1}/10, ${s + 2}/10, …`, `${s + 3}/10`, [`${s + 3}/30`, `${s + 4}/10`],
+          { label: `tenths from ${s}`, skill: "counting in tenths", explain: `It goes up one tenth each time: ${s + 3}/10.` }); }
+        if (k === 1) { const n = (rand(9) + 1) * 10; return typed(`What is one tenth of ${n}?`, n / 10, { label: `tenth of ${n}`, skill: "dividing by 10", explain: `Divide by 10: ${n} ÷ 10 = ${n / 10}.` }); }
+        const d = pick([5, 6, 7, 8, 9, 10, 12]), a = rand(d - 2) + 1, b = rand(d - a - 1) + 1;
+        if (k === 2) return choice(`${a}/${d} + ${b}/${d} =`, `${a + b}/${d}`, [`${a + b}/${d * 2}`, `${a + b + 1}/${d}`], { label: `${a}/${d}+${b}/${d}`, skill: "adding fractions",
+          explain: `The parts are the same size, so add the tops: ${a} + ${b} = ${a + b}, giving ${a + b}/${d}.` });
+        const t = a + b;
+        return choice(`Ella has ${t}/${d} of a cake. She gives away ${b}/${d}. How much is left?`, `${a}/${d}`, [`${a}/${d * 2}`, `${t + b}/${d}`], { label: `${t}/${d}-${b}/${d}`, skill: "taking away fractions",
+          explain: `Take away the tops: ${t} − ${b} = ${a}, so ${a}/${d} is left.` });
+      }) },
+    { id: "en-lines-shapes", title: "Lines and shapes: parallel, perpendicular, quadrilaterals (Years 3 and 4)", level: "First", organiser: SHAPE, blurb: "Horizontal, vertical, parallel and perpendicular lines, and sorting quadrilaterals and triangles by their properties.",
+      make: () => distinct(10, () => {
+        if (rand(2)) { const kind = pick(["parallel", "perpendicular", "neither", "horizontal", "vertical", "diagonal"]);
+          const pair = ["parallel", "perpendicular", "neither"].includes(kind), pool = pair ? ["parallel", "perpendicular", "neither"] : ["horizontal", "vertical", "diagonal"];
+          return choice(pair ? "Are these lines parallel, perpendicular, or neither?" : "Is this line horizontal, vertical or diagonal?", kind, pool.filter(x => x !== kind),
+            { html: linesSVG(kind), label: kind, skill: "types of lines", explain: { parallel: "Parallel lines stay the same distance apart and never meet.", perpendicular: "Perpendicular lines meet at a right angle.",
+              neither: "They aren't the same distance apart, and they don't meet at a right angle.", horizontal: "Horizontal lines go straight across, like the horizon.", vertical: "Vertical lines go straight up and down.", diagonal: "It slopes, so it's diagonal." }[kind] }); }
+        const [clue, ans] = pick([["4 equal sides and 4 right angles", "square"], ["4 right angles, and opposite sides equal but not all four", "rectangle"], ["exactly one pair of parallel sides", "trapezium"],
+          ["4 equal sides but no right angles", "rhombus"], ["2 pairs of parallel sides, no right angles, and sides not all equal", "parallelogram"],
+          ["3 equal sides", "equilateral triangle"], ["exactly 2 equal sides", "isosceles triangle"], ["no equal sides", "scalene triangle"], ["one right angle and 3 sides", "right-angled triangle"]]);
+        const pool = ans.includes("triangle") ? ["equilateral triangle", "isosceles triangle", "scalene triangle", "right-angled triangle"] : ["square", "rectangle", "trapezium", "rhombus", "parallelogram"];
+        return choice(`Which shape has ${clue}?`, ans, others2(ans, pool), { label: clue, skill: "classifying shapes", explain: `A ${ans} has ${clue}.` });
+      }) },
+    { id: "en-angles-rectangles", title: "Right angles, turns and rectangles (Year 5)", level: "Second", organiser: ANGLE, blurb: "Multiples of 90°, angles on a line and round a point, and missing lengths and angles in rectangles.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const n = rand(4) + 1, name = ["one right angle", "two right angles", "three right angles", "four right angles"][n - 1];
+          return typed(`How many degrees are in ${name}?`, n * 90, { label: `${n} right angles`, skill: "multiples of 90°", explain: `Each right angle is 90°, so ${n} × 90 = ${n * 90}°.` }); }
+        if (k === 1) { const a = (rand(15) + 2) * 10, line = rand(2) === 1, total = line ? 180 : 360;
+          return typed(`Angles ${line ? "on a straight line" : "around a point"} add up to ${total}°. One angle is ${a}°${line ? "" : " and the other two are 90° each"}. What is the missing angle?`, line ? total - a : total - a - 180,
+            { label: `${line ? "line" : "point"} ${a}`, skill: "angles on a line and at a point", explain: `${total}° − ${line ? a : `${a}° − 180°`} = ${line ? total - a : total - a - 180}°.` }); }
+        const l = rand(9) + 4, w = rand(l - 2) + 2;
+        if (k === 2) return typed(`A rectangle is ${l} cm long and ${w} cm wide. What is its perimeter? (in cm)`, 2 * (l + w), { label: `per ${l}x${w}`, skill: "properties of rectangles",
+          explain: `Opposite sides are equal: ${l} + ${w} + ${l} + ${w} = ${2 * (l + w)} cm.` });
+        return typed(`A rectangle has a perimeter of ${2 * (l + w)} cm. One side is ${l} cm. How long is the shorter side? (in cm)`, w, { label: `missing ${l}x${w}`, skill: "missing lengths in rectangles",
+          explain: `Half the perimeter is ${l + w} cm, which is one long side and one short side: ${l + w} − ${l} = ${w} cm.` });
+      }) },
+    { id: "en-count-steps", title: "Counting in steps, and 1000 more or less (Years 4 and 5)", level: "Second", organiser: NUM, blurb: "Count in 6s, 7s, 9s, 25s and 1000s, find 1000 more or less, and count in powers of 10.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const step = pick([6, 7, 9, 25, 1000]), s = step * (rand(5) + 1), seq = range(0, 3).map(i => s + i * step);
+          return typed(`What comes next? ${seq.map(big).join(", ")}, …`, s + 4 * step, { label: `step ${step} from ${s}`, skill: `counting in ${step}s`, explain: `It goes up ${step} each time: ${big(s + 4 * step)}.` }); }
+        if (k === 1) { const n = rand(8000) + 1000, more = rand(2) === 1; return typed(`What is 1000 ${more ? "more" : "less"} than ${big(n)}?`, more ? n + 1000 : n - 1000,
+          { label: `1000 ${more} ${n}`, skill: "1000 more or less", explain: `Change the thousands digit by one: ${big(more ? n + 1000 : n - 1000)}.` }); }
+        const p = pick([10, 100, 1000, 10000, 100000]), n = rand(800000) + 100000, more = rand(2) === 1;
+        return typed(`What is ${big(p)} ${more ? "more" : "less"} than ${big(n)}?`, more ? n + p : n - p, { label: `${p} ${more} ${n}`, skill: "counting in powers of 10",
+          explain: `Only the digit worth ${big(p)}s changes (unless it carries): ${big(more ? n + p : n - p)}.` });
+      }) },
+    { id: "en-roman", title: "Roman numerals to 1000 (Years 4 and 5)", level: "Second", organiser: NUM, blurb: "Read Roman numerals to 100, then to 1000, and years written in Roman numerals.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const n = rand(99) + 1; return typed(`What number is ${roman(n)}?`, n, { label: `read ${n}`, skill: "reading Roman numerals",
+          explain: `${roman(n)}: I = 1, V = 5, X = 10, L = 50, C = 100. A smaller numeral before a bigger one is taken away. So ${roman(n)} = ${n}.` }); }
+        if (k === 1) { const n = rand(900) + 100; return choice(`Which is ${n} in Roman numerals?`, roman(n), three(roman(n), [roman(n + 10), roman(n - 9 > 0 ? n - 9 : n + 1), roman(n + 100 > 999 ? n - 100 : n + 100)]),
+          { label: `write ${n}`, skill: "writing Roman numerals", explain: `${n} = ${roman(n)}. D = 500, M = 1000.` }); }
+        const y = rand(80) + 1950; return typed(`A building has the year ${roman(y)} carved on it. What year is that?`, y, { label: `year ${y}`, skill: "years in Roman numerals",
+          explain: `M = 1000, CM = 900, then the rest: ${roman(y)} = ${y}.` });
+      }) },
+    { id: "en-millions", title: "Numbers to ten million (Year 6)", level: "Second", organiser: NUM, blurb: "Read, write, order and compare numbers up to 10 000 000, and say what each digit is worth.",
+      make: () => distinct(10, () => {
+        const n = rand(8999999) + 1000000, k = rand(3);
+        if (k === 0) { const digits = String(n), i = rand(4), d = Number(digits[i]); if (!d || digits.split("").filter(x => x === digits[i]).length > 1) return { label: "unclear" };
+          const val = d * 10 ** (6 - i); return choice(`What is the ${d} worth in ${big(n)}?`, big(val), [big(val / 10), big(val * 10)], { label: `${d} in ${n}`, skill: "value of each digit", explain: `The ${d} is in the ${["millions", "hundred thousands", "ten thousands", "thousands"][i]} place: ${big(val)}.` }); }
+        if (k === 1) { const opts = shuffle([n, n + 900000 > 9999999 ? n - 900000 : n + 900000, Number(String(n).split("").reverse().join("")) % 10000000]);
+          if (new Set(opts).size < 3) return { label: "same" };
+          const top = Math.max(...opts); return choice(`Which number is biggest: ${opts.map(big).join(", ")}?`, big(top), opts.filter(o => o !== top).map(big), { label: `order ${opts.join(",")}`, skill: "ordering large numbers", explain: `Compare from the millions digit first: ${big(top)} is biggest.` }); }
+        const add = (rand(9) + 1) * 100000; return typed(`A city has ${big(n)} people. ${big(add)} more move there. How many people live there now?`, n + add,
+          { label: `city ${n}+${add}`, skill: "problems with large numbers", explain: `${big(n)} + ${big(add)} = ${big(n + add)}.` });
+      }) },
+    { id: "en-mult-reasoning", title: "Multiplying: facts, the distributive law, scaling and combinations (Years 3 to 6)", level: "Second", organiser: NUM,
+      blurb: "Multiply by 0 and 1, multiply three numbers, split numbers to multiply, scale up and down, and count combinations.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const a = rand(90) + 10, [q, ans, why] = pick([[`${a} × 1 =`, a, "Anything times 1 stays the same."], [`${a} × 0 =`, 0, "Anything times 0 is 0."], [`${a} ÷ 1 =`, a, "Dividing by 1 leaves a number the same."]]);
+          return typed(q, ans, { label: q, skill: "multiplying by 0 and 1", explain: why }); }
+        if (k === 1) { const [a, b, c] = [rand(4) + 2, 5, 2]; return typed(`${a} × ${b} × ${c} =`, a * b * c, { label: `${a}x5x2`, skill: "multiplying three numbers", explain: `Do ${b} × ${c} = 10 first, then × ${a} = ${a * b * c}.` }); }
+        if (k === 2) { const t = (rand(4) + 1) * 10, o = rand(8) + 1, m = rand(6) + 3; return typed(`${t + o} × ${m} = ${t} × ${m} + ${o} × ${m} =`, (t + o) * m,
+          { label: `${t + o}x${m}`, skill: "the distributive law", explain: `${t} × ${m} = ${t * m} and ${o} × ${m} = ${o * m}, so ${t * m} + ${o * m} = ${(t + o) * m}.` }); }
+        if (k === 3) { const a = rand(4) + 2, b = rand(4) + 2, [x, y] = pick([["tops", "skirts"], ["sandwiches", "drinks"], ["hats", "scarves"]]);
+          return typed(`There are ${a} ${x} and ${b} ${y}. How many different pairs of one of each can you make?`, a * b, { label: `pairs ${a}x${b}`, skill: "combinations",
+            explain: `Each of the ${a} ${x} goes with each of the ${b} ${y}: ${a} × ${b} = ${a * b}.` }); }
+        const [q, ans, why] = pick([
+          (() => { const p = pick([2, 4, 5]), g = (rand(3) + 1) * 100, n = p * (rand(3) + 2); return [`A recipe uses ${g} g of flour for ${p} people. How much flour is needed for ${n} people? (in g)`, g * n / p, `${n} people is ${n / p} times as many, so ${g} × ${n / p} = ${g * n / p} g.`]; })(),
+          (() => { const s = pick([30, 40, 50, 60]), h = rand(3) + 2; return [`A train goes ${s} km in one hour. How far does it go in ${h} hours? (in km)`, s * h, `${s} × ${h} = ${s * h} km.`]; })(),
+          (() => { const f = pick([2, 3, 4]), n = f * (rand(6) + 2); return [`Scale ${n} by 1/${f}: what is 1/${f} of ${n}?`, n / f, `1/${f} of ${n} is ${n} ÷ ${f} = ${n / f}.`]; })()]);
+        return typed(q, ans, { label: q, skill: "scaling and rates", explain: why });
+      }) },
+    { id: "en-fractions-y5", title: "Mixed numbers and calculating with fractions (Year 5)", level: "Second", organiser: FDP,
+      blurb: "Mixed numbers and improper fractions, adding and subtracting fractions with related denominators, and multiplying fractions by whole numbers.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const d = pick([3, 4, 5, 6, 8]), n = d + rand(d - 1) + 1; return choice(`Write ${n}/${d} as a mixed number.`, mixed(n, d), three(mixed(n, d), [`${n - d} ${d}/${n}`, mixed(n + 1, d), `1 ${n}/${d}`]),
+          { label: `${n}/${d} mixed`, skill: "improper fractions to mixed numbers", explain: `${d}/${d} makes 1 whole, with ${n - d}/${d} left: ${mixed(n, d)}.` }); }
+        if (k === 1) { const d = pick([2, 3, 4, 5]), w = rand(3) + 1, r = rand(d - 1) + 1; return choice(`Write ${w} ${r}/${d} as an improper fraction.`, `${w * d + r}/${d}`, three(`${w * d + r}/${d}`, [`${w + r}/${d}`, `${w * d}/${d}`, `${w * r + d}/${d}`]),
+          { label: `${w} ${r}/${d} improper`, skill: "mixed numbers to improper fractions", explain: `${w} wholes is ${w * d}/${d}; add ${r}/${d} to make ${w * d + r}/${d}.` }); }
+        if (k === 2) { const d = pick([2, 3, 4]), D = d * 2, a = rand(d - 1) + 1, b = rand(D - 2 * a > 1 ? D - 2 * a - 1 : 1) + 1, sum = 2 * a + b;
+          return choice(`${a}/${d} + ${b}/${D} =`, frac(sum, D), three(frac(sum, D), [`${a + b}/${d + D}`, `${a + b}/${D}`, frac(sum + 1, D)]),
+            { label: `${a}/${d}+${b}/${D}`, skill: "adding fractions with related denominators", explain: `${a}/${d} = ${2 * a}/${D}, so ${2 * a}/${D} + ${b}/${D} = ${sum}/${D}${frac(sum, D) !== `${sum}/${D}` ? ` = ${frac(sum, D)}` : ""}.` }); }
+        const d = pick([3, 4, 5, 6]), n = rand(d - 1) + 1, m = rand(4) + 2;
+        return choice(`${m} × ${n}/${d} =`, mixed(m * n, d), three(mixed(m * n, d), [`${m * n}/${m * d}`, mixed(n, m * d), mixed(m + n, d)]),
+          { label: `${m}x${n}/${d}`, skill: "multiplying fractions by whole numbers", explain: `${m} lots of ${n}/${d} is ${m * n}/${d}${mixed(m * n, d) !== `${m * n}/${d}` ? ` = ${mixed(m * n, d)}` : ""}.` });
+      }) },
+    { id: "en-fractions-y6", title: "Calculating with fractions and decimals (Year 6)", level: "Second", organiser: FDP,
+      blurb: "Compare fractions over 1, add with different denominators, multiply and divide fractions, fractions as division, and multiplying decimals.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const [a, b] = shuffle([[7, 4], [5, 3], [9, 5], [11, 6], [8, 3]]).slice(0, 2), va = a[0] / a[1], vb = b[0] / b[1], top = va > vb ? a : b;
+          return choice(`Which is bigger: ${a[0]}/${a[1]} or ${b[0]}/${b[1]}?`, `${top[0]}/${top[1]}`, [`${(top === a ? b : a)[0]}/${(top === a ? b : a)[1]}`], { label: `${a}v${b}`, skill: "comparing fractions over 1",
+            explain: `As mixed numbers: ${a[0]}/${a[1]} = ${mixed(a[0], a[1])} and ${b[0]}/${b[1]} = ${mixed(b[0], b[1])}.` }); }
+        if (k === 1) { const [p, q] = pick([[2, 3], [3, 4], [2, 5], [4, 5], [3, 5]]); return choice(`1/${p} + 1/${q} =`, frac(p + q, p * q), three(frac(p + q, p * q), [`2/${p + q}`, `1/${p * q}`, `2/${p * q}`]),
+          { label: `1/${p}+1/${q}`, skill: "adding fractions with different denominators", explain: `Use ${p * q}ths: 1/${p} = ${q}/${p * q} and 1/${q} = ${p}/${p * q}, so the total is ${p + q}/${p * q}.` }); }
+        if (k === 2) { const [a, b] = [pick([2, 3, 4]), pick([2, 3, 5])]; return choice(`1/${a} × 1/${b} =`, `1/${a * b}`, three(`1/${a * b}`, [`2/${a + b}`, `1/${a + b}`, `${a * b}`]),
+          { label: `1/${a}x1/${b}`, skill: "multiplying fractions", explain: `Multiply the tops and the bottoms: 1 × 1 = 1 and ${a} × ${b} = ${a * b}, so 1/${a * b}.` }); }
+        if (k === 3) { const [a, b] = [pick([2, 3, 4]), pick([2, 3])]; return choice(`1/${a} ÷ ${b} =`, `1/${a * b}`, three(`1/${a * b}`, [`${b}/${a}`, `1/${a + b}`, `${b}/${a * b}`]),
+          { label: `1/${a}/${b}`, skill: "dividing fractions by whole numbers", explain: `Sharing 1/${a} into ${b} equal parts makes each part 1/${a * b}.` }); }
+        if (rand(2)) { const [n, d] = pick([[3, 8], [1, 8], [5, 8], [1, 4], [3, 4], [2, 5], [7, 20]]); return typed(`Write ${n}/${d} as a decimal.`, dec3(n / d),
+          { input: "decimal", accept: [dec3(n / d).replace(/^0/, "")], label: `${n}/${d} dec`, skill: "fractions as division", explain: `${n}/${d} means ${n} ÷ ${d} = ${dec3(n / d)}.` }); }
+        const x = (rand(800) + 101) / 100, m = rand(7) + 2; return typed(`${x.toFixed(2)} × ${m} =`, dec(x * m), { input: "decimal", accept: [(x * m).toFixed(2)], label: `${x}x${m}`, skill: "multiplying decimals",
+          explain: `${x.toFixed(2)} × ${m}: multiply as whole numbers, ${Math.round(x * 100)} × ${m} = ${Math.round(x * 100) * m}, then put back two decimal places: ${dec(x * m)}.` });
+      }) },
+    { id: "en-imperial", title: "Imperial units, and miles and kilometres (Years 5 and 6)", level: "Second", organiser: MEAS, blurb: "Approximate equivalences between metric and imperial units, and converting between miles and kilometres.",
+      make: () => distinct(8, () => {
+        const k = rand(4);
+        if (k === 0) { const n = (rand(5) + 1) * 2; return typed(`1 inch is about 2.5 cm. About how many centimetres is ${n} inches?`, n * 2.5, { input: "decimal", label: `in ${n}`, skill: "inches and centimetres", explain: `${n} × 2.5 = ${n * 2.5} cm.` }); }
+        if (k === 1) { const n = rand(5) + 1; return typed(`1 kg is about 2.2 pounds. About how many pounds is ${n} kg?`, dec(n * 2.2), { input: "decimal", label: `kg ${n}`, skill: "kilograms and pounds", explain: `${n} × 2.2 = ${dec(n * 2.2)} pounds.` }); }
+        if (k === 2) return choice("Which is closest to 1 pint?", "about 570 ml", ["about 5 litres", "about 50 ml"], { label: "pint", skill: "pints and millilitres", explain: "A pint is a little more than half a litre: about 570 ml." });
+        const m = (rand(6) + 1) * 5, toKm = rand(2) === 1;
+        return typed(toKm ? `5 miles is about 8 km. About how many kilometres is ${m} miles?` : `5 miles is about 8 km. About how many miles is ${m / 5 * 8} km?`, toKm ? m / 5 * 8 : m,
+          { label: `miles ${m} ${toKm}`, skill: "miles and kilometres", explain: toKm ? `${m} ÷ 5 = ${m / 5}, and ${m / 5} × 8 = ${m / 5 * 8} km.` : `${m / 5 * 8} ÷ 8 = ${m / 5}, and ${m / 5} × 5 = ${m} miles.` });
+      }) },
+    { id: "en-area-formulae", title: "Area of triangles and parallelograms, and formulae (Year 6)", level: "Second", organiser: MEAS, blurb: "Area of triangles and parallelograms, when to use a formula, and simple formulae.",
+      make: () => distinct(10, () => {
+        const k = rand(4), b = (rand(6) + 2) * 2, h = rand(8) + 3;
+        if (k === 0) return typed(`A triangle has a base of ${b} cm and a height of ${h} cm. What is its area? (in cm²)`, b * h / 2, { label: `tri ${b}x${h}`, skill: "area of a triangle", explain: `A triangle is half a rectangle: ${b} × ${h} ÷ 2 = ${b * h / 2} cm².` });
+        if (k === 1) return typed(`A parallelogram has a base of ${b} cm and a height of ${h} cm. What is its area? (in cm²)`, b * h, { label: `par ${b}x${h}`, skill: "area of a parallelogram", explain: `Base × height: ${b} × ${h} = ${b * h} cm². (The height is straight up, not the slanted side.)` });
+        if (k === 2) { const [l, w, d] = [rand(5) + 2, rand(4) + 2, rand(4) + 2]; return typed(`Volume = length × width × height. What is the volume of a cuboid ${l} cm by ${w} cm by ${d} cm? (in cm³)`, l * w * d,
+          { label: `vol ${l}${w}${d}`, skill: "using a formula for volume", explain: `${l} × ${w} × ${d} = ${l * w * d} cm³.` }); }
+        const [f, a, m, x, unit] = pick([["C = 2 + 3m", 2, 3, rand(6) + 2, "£"], ["P = 4s", 0, 4, rand(9) + 2, "cm"], ["C = 5 + 2n", 5, 2, rand(8) + 2, "£"]]);
+        return typed(`${f}. What is ${f[0]} when ${f.slice(-1)} = ${x}?`, a + m * x, { label: `${f} ${x}`, skill: "simple formulae", explain: `Put ${x} in place of ${f.slice(-1)}: ${a ? `${a} + ` : ""}${m} × ${x} = ${a + m * x}${unit === "cm" ? " cm" : ""}.` });
+      }) },
+    { id: "en-ratio", title: "Ratio and proportion (Year 6)", level: "Second", organiser: FDP, blurb: "Relative sizes, unequal sharing, and similar shapes with a scale factor.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const [r, b] = pick([[2, 3], [1, 4], [3, 5], [2, 5]]), n = r * (rand(4) + 2); return typed(`For every ${r} red beads there are ${b} blue beads. If there are ${n} red beads, how many blue beads are there?`, n / r * b,
+          { label: `beads ${r}:${b} ${n}`, skill: "relative sizes", explain: `${n} red is ${n / r} lots of ${r}, so ${n / r} lots of ${b} blue = ${n / r * b}.` }); }
+        if (k === 1) { const t = pick([2, 3, 4]), s = rand(6) + 3; return typed(`Ali has ${t} times as many stickers as Sam. Together they have ${s * (t + 1)}. How many does Sam have?`, s,
+          { label: `share ${t} ${s}`, skill: "unequal sharing", explain: `Sam has 1 part and Ali ${t} parts: ${t + 1} parts make ${s * (t + 1)}, so 1 part = ${s}.` }); }
+        if (k === 2) { const [a, b] = pick([[2, 3], [1, 3], [3, 4], [2, 5]]), u = rand(5) + 2; return typed(`Share ${u * (a + b)} sweets in the ratio ${a} : ${b}. How many are in the bigger share?`, u * b,
+          { label: `ratio ${a}:${b} ${u}`, skill: "sharing in a ratio", explain: `${a + b} parts make ${u * (a + b)}, so one part is ${u}. The bigger share is ${b} × ${u} = ${u * b}.` }); }
+        const [w, l] = [rand(4) + 2, rand(4) + 6], f = pick([2, 3, 4]);
+        return typed(`A rectangle ${w} cm by ${l} cm is enlarged by a scale factor of ${f}. How long is its longer side now? (in cm)`, l * f, { label: `scale ${w}x${l} ${f}`, skill: "similar shapes",
+          explain: `Every length is multiplied by ${f}: ${l} × ${f} = ${l * f} cm.` });
+      }) },
+    { id: "en-mean", title: "The mean (Year 6)", level: "Second", organiser: DATA, blurb: "Calculate and interpret the mean as an average.",
+      make: () => distinct(8, () => {
+        const n = rand(3) + 3, m = rand(8) + 4, vals = Array.from({ length: n - 1 }, () => m + rand(7) - 3), last = m * n - vals.reduce((a, b) => a + b, 0);
+        if (last < 1) return { label: "neg" };
+        const all = shuffle(vals.concat(last));
+        if (rand(3)) return typed(`What is the mean of ${all.join(", ")}?`, m, { label: `mean ${all.join(",")}`, skill: "calculating the mean", explain: `Add them (${m * n}) and divide by how many there are (${n}): ${m * n} ÷ ${n} = ${m}.` });
+        return typed(`The mean of ${n} numbers is ${m}. ${n - 1} of them are ${all.slice(0, -1).join(", ")}. What is the last number?`, all[n - 1], { label: `missing ${all.join(",")}`, skill: "using the mean",
+          explain: `The total must be ${m} × ${n} = ${m * n}. ${m * n} − ${all.slice(0, -1).reduce((a, b) => a + b, 0)} = ${all[n - 1]}.` });
+      }) },
+    { id: "en-multistep", title: "Multi-step problems, and long division (Years 5 and 6)", level: "Second", organiser: NUM, blurb: "Multi-step problems with large numbers, mental calculations with mixed operations, and dividing by a two-digit number.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const a = (rand(30) + 10) * 50, b = (rand(30) + 10) * 25, goal = Math.ceil((a + b + 500) / 1000) * 1000;
+          return typed(`A school raises £${big(a)} on Monday and £${big(b)} on Tuesday. It needs £${big(goal)}. How much more does it need? (in £)`, goal - a - b,
+            { label: `raise ${a} ${b}`, skill: "multi-step problems", explain: `£${big(a)} + £${big(b)} = £${big(a + b)}, then £${big(goal)} − £${big(a + b)} = £${big(goal - a - b)}.` }); }
+        if (k === 1) { const a = rand(8) + 2, b = rand(9) + 11, c = (rand(9) + 1) * 10; return typed(`${a} × ${b} + ${c} =`, a * b + c, { label: `${a}x${b}+${c}`, skill: "mental calculation with mixed operations", explain: `Multiply first: ${a} × ${b} = ${a * b}, then + ${c} = ${a * b + c}.` }); }
+        if (k === 2) { const d = rand(14) + 12, q = rand(300) + 100; return typed(`${big(d * q)} ÷ ${d} =`, q, { label: `${d * q}/${d}`, skill: "dividing by a two-digit number", explain: `${d} × ${q} = ${big(d * q)}, so ${big(d * q)} ÷ ${d} = ${q}.` }); }
+        const seats = pick([48, 52, 53, 57]), people = seats * (rand(5) + 3) + rand(seats - 2) + 1;
+        return typed(`A coach holds ${seats} people. How many coaches are needed for ${people} people?`, Math.ceil(people / seats), { label: `coach ${seats} ${people}`, skill: "interpreting remainders",
+          explain: `${people} ÷ ${seats} = ${Math.floor(people / seats)} remainder ${people % seats}. The people left over still need a coach, so ${Math.ceil(people / seats)}.` });
+      }) },
+    { id: "en-coordinates", title: "Coordinates: plotting, translating and reflecting (Years 4 to 6)", level: "Second", organiser: ANGLE, blurb: "Plot points to complete a shape, describe translations, and reflect points in the axes.",
+      make: () => distinct(10, () => {
+        const pt = (x, y) => `(${x}, ${y})`, k = rand(3);
+        if (k === 0) { const [x, y, r, u] = [rand(5) + 1, rand(5) + 1, rand(4) + 1, rand(4) + 1]; return choice(`A point at ${pt(x, y)} moves ${r} squares right and ${u} squares up. Where is it now?`, pt(x + r, y + u),
+          three(pt(x + r, y + u), [pt(x + u, y + r), pt(x + r, y - u), pt(x - r, y + u)]), { label: `move ${x}${y}${r}${u}`, skill: "translations", explain: `Right adds to the first number, up adds to the second: ${pt(x + r, y + u)}.` }); }
+        if (k === 1) { const [x, y, s] = [rand(4) + 1, rand(4) + 1, rand(3) + 2]; return choice(`Three corners of a square are ${pt(x, y)}, ${pt(x + s, y)} and ${pt(x + s, y + s)}. Where is the fourth corner?`, pt(x, y + s),
+          three(pt(x, y + s), [pt(y + s, x), pt(x + s, y + s + 1), pt(x - s, y)]), { label: `square ${x}${y}${s}`, skill: "plotting to complete a shape", explain: `The missing corner is above ${pt(x, y)}, level with ${pt(x + s, y + s)}: ${pt(x, y + s)}.` }); }
+        const [x, y] = [rand(6) + 1, rand(6) + 1], xAxis = rand(2) === 1, ans = xAxis ? pt(x, -y) : pt(-x, y);
+        return choice(`Reflect the point ${pt(x, y)} in the ${xAxis ? "x-axis" : "y-axis"}. Where does it go?`, ans, three(ans, [xAxis ? pt(-x, y) : pt(x, -y), pt(-x, -y), pt(y, x)]),
+          { label: `reflect ${x}${y}${xAxis}`, skill: "reflecting in the axes", explain: `Reflecting in the ${xAxis ? "x-axis changes the sign of the second number" : "y-axis changes the sign of the first number"}: ${ans}.` });
+      }) }
+  ];
+
+  /* ---------- England's curriculum: spelling and grammar it asks for that the CfE activities don't reach ---------- */
+  const SPELL_ORG = "Literacy · Writing · Tools for writing (spelling)";
+  const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
+  const englandEnglish = [
+    { id: "en-alphabet", title: "The alphabet and letter names (Year 1)", level: "First", organiser: SPELL_ORG, blurb: "Name the letters in order, and use letter names to tell spellings of the same sound apart.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const i = rand(24) + 1, after = rand(2) === 1, ans = ALPHABET[after ? i + 1 : i - 1];
+          return choice(`Which letter comes ${after ? "after" : "before"} ${ALPHABET[i]}?`, ans, others2(ans, ALPHABET.filter(c => c !== ALPHABET[i])), { label: `${after ? "after" : "before"} ${ALPHABET[i]}`, skill: "the alphabet in order", explain: `In the alphabet: ${ALPHABET[i - 1]}, ${ALPHABET[i]}, ${ALPHABET[i + 1]}.` }); }
+        if (k === 1) { const words = shuffle(["apple", "bed", "cat", "dog", "egg", "fish", "goat", "hat", "jam", "kite", "leg", "mop", "nut", "pig", "sun", "van"]).slice(0, 3), first = words.slice().sort()[0];
+          return choice(`Which word comes first in alphabetical order: ${words.join(", ")}?`, first, words.filter(w => w !== first), { label: `abc ${words.join(",")}`, skill: "alphabetical order", explain: `Look at the first letters: ${first[0]} comes first in the alphabet.` }); }
+        const [word, sound, ans, wrong] = pick([["rain", "ai", "a-i", ["a-y", "a-e"]], ["play", "ai", "a-y", ["a-i", "a-e"]], ["boat", "oa", "o-a", ["o-w", "o-e"]], ["snow", "oa", "o-w", ["o-a", "o-e"]],
+          ["tree", "ee", "e-e", ["e-a", "e-y"]], ["leaf", "ee", "e-a", ["e-e", "y"]], ["night", "igh", "i-g-h", ["i-e", "y"]], ["cake", "ai", "a, then e at the end", ["a-i", "a-y"]]]);
+        return choice(`In the word “${word}”, which letters spell the ${sound} sound?`, ans, wrong, { label: `letters ${word}`, skill: "letter names for spellings", explain: `“${word}” uses ${ans} for the ${sound} sound.` });
+      }) },
+    g("eg-homophones-y2", "Year 2: homophones and near-homophones", "First", "Words that sound the same but are spelled differently: there, their and they're, see and sea, to, too and two.", bank([
+      ["I can ___ the boats from here.", "see", ["sea", "si"], "See is what your eyes do; the sea is water."], ["We swam in the ___.", "sea", ["see", "si"], "The sea is the salty water; see is looking."],
+      ["___ coats are on the floor.", "Their", ["There", "They're"], "Their means belonging to them."], ["Put the box over ___.", "there", ["their", "they're"], "There is a place."],
+      ["___ going to the park.", "They're", ["There", "Their"], "They're is short for they are."], ["I have ___ hands.", "two", ["to", "too"], "Two is the number 2."],
+      ["I want to come ___.", "too", ["two", "to"], "Too means as well."], ["We walked ___ school.", "to", ["two", "too"], "To shows where you're going."],
+      ["Did you ___ that noise?", "hear", ["here", "heer"], "You hear with your ear: hear has ear in it."], ["Come over ___.", "here", ["hear", "heer"], "Here is a place, like there."],
+      ["The ___ ate honey in the woods.", "bear", ["bare", "bair"], "A bear is the animal; bare means with nothing on."], ["The ___ shone all day.", "sun", ["son", "sunn"], "The sun is in the sky; a son is a boy in a family."],
+      ["Please be ___ in the library.", "quiet", ["quite", "quit"], "Quiet means not loud; quite means fairly."], ["Our team ___ the match.", "won", ["one", "wun"], "Won is the past of win; one is the number 1."]
+    ], "homophones")),
+    g("eg-homophones-y34", "Years 3 and 4: further homophones", "Second", "Homophones from the Years 3 and 4 spelling list: accept and except, break and brake, whether and weather and more.", bank([
+      ["I ___ your apology.", "accept", ["except", "axept"], "Accept means to take or agree to."], ["Everyone came ___ Ben.", "except", ["accept", "exsept"], "Except means leaving out."],
+      ["Be careful not to ___ the glass.", "break", ["brake", "braik"], "Break means to smash; a brake slows a bike."], ["Pull the ___ to stop the bike.", "brake", ["break", "braik"], "A brake stops a bike or car."],
+      ["The ___ is sunny today.", "weather", ["whether", "wether"], "Weather is rain or sun."], ["I don't know ___ to go.", "whether", ["weather", "wether"], "Whether means if."],
+      ["Can I have a ___ of cake?", "piece", ["peace", "peice"], "A piece is a part: a piece of pie."], ["We want ___ and quiet.", "peace", ["piece", "peese"], "Peace is calm, with no fighting."],
+      ["The ___ flew over the clouds.", "plane", ["plain", "plaen"], "A plane flies; plain means simple."], ["Let's ___ at the station.", "meet", ["meat", "mete"], "Meet is to get together; meat is food."],
+      ["The ___ is in the post.", "mail", ["male", "mayl"], "Mail is letters; male is a boy or man."], ["The lion shook its ___.", "mane", ["main", "mayn"], "A mane is a lion's hair; main means most important."],
+      ["That was a ___ film!", "great", ["grate", "grait"], "Great means very good; a grate is for a fire."], ["___ coat is this?", "Whose", ["Who's", "Hoos"], "Whose asks who owns it; who's means who is."]
+    ], "homophones")),
+    g("eg-homophones-y56", "Years 5 and 6: homophones and words often confused", "Second", "Homophones and words often confused from the Years 5 and 6 list: affect and effect, stationary and stationery, principal and principle.", bank([
+      ["The rain will ___ the match.", "affect", ["effect", "afect"], "Affect is usually the verb (to change something)."], ["The medicine had a good ___.", "effect", ["affect", "efect"], "Effect is usually the noun (the result)."],
+      ["The car was ___ at the lights.", "stationary", ["stationery", "stationry"], "Stationary means standing still (a for parked car)."], ["Pens and paper are ___.", "stationery", ["stationary", "stationry"], "Stationery is paper and pens (e for envelopes)."],
+      ["The ___ of the school gave a talk.", "principal", ["principle", "princeple"], "A principal is the head of a school."], ["Honesty is an important ___.", "principle", ["principal", "princeple"], "A principle is a rule or belief."],
+      ["We had ice cream for ___.", "dessert", ["desert", "dezert"], "Dessert is pudding: two s's, like strawberry shortcake."], ["Camels live in the ___.", "desert", ["dessert", "dezert"], "A desert is dry, sandy land."],
+      ["She ___ the ball to me.", "passed", ["past", "parsed"], "Passed is a verb: she passed it."], ["We walked ___ the shop.", "past", ["passed", "parst"], "Past means beyond or before now."],
+      ["We saw a ___ of cows in the field.", "herd", ["heard", "hurd"], "A herd is a group of animals; heard is the past of hear."], ["I ___ a strange noise.", "heard", ["herd", "hurd"], "Heard is the past of hear, and has ear in it."],
+      ["You are not ___ to run in the corridor.", "allowed", ["aloud", "alowed"], "Allowed means permitted."], ["Read the poem ___.", "aloud", ["allowed", "alowd"], "Aloud means so that others can hear."]
+    ], "homophones")),
+    g("eg-noun-phrases", "Expanded noun phrases (Years 2 and 5 to 6)", "First", "Add words to describe and specify a noun: the blue butterfly, the old man with a stick.", bank([
+      ["Which is an expanded noun phrase?", "the tiny, spotted beetle", ["the beetle", "the beetle ran"], "It adds describing words to the noun beetle."],
+      ["Which describes the dog most clearly?", "the shaggy dog with muddy paws", ["the dog", "a dog"], "Adjectives and a phrase after the noun tell us more."],
+      ["Choose the best words for the gap: the ___ castle", "dark, crumbling", ["very very", "ran"], "Two adjectives describe the castle."],
+      ["Which noun phrase tells you which house?", "the house at the end of the street", ["the house", "a house"], "The phrase after the noun specifies which one."],
+      ["Which gives the most information in the fewest words?", "a cold, wet October morning", ["a morning that was cold and was wet and in October", "a morning"], "An expanded noun phrase packs the detail in concisely."],
+      ["Which is an expanded noun phrase?", "the girl in the red coat", ["the girl smiled", "she"], "The girl is described by 'in the red coat'."],
+      ["Which is the noun in 'the enormous, hungry crocodile'?", "crocodile", ["enormous", "hungry"], "The noun is the thing being described."],
+      ["Which phrase best describes a scientist's tool?", "a powerful microscope with three lenses", ["a microscope", "it"], "It describes and specifies the microscope."],
+      ["Choose the best words for the gap: the ___ butterfly", "blue", ["quickly", "flew"], "An adjective describes the butterfly."],
+      ["Which is more concise?", "the ancient oak tree by the river", ["the tree, which was an oak, which was very old, which was by the river", "the tree"], "One noun phrase says it all without repeating 'which was'."]
+    ], "expanded noun phrases")),
+    g("eg-pronouns", "Nouns or pronouns for clarity (Years 3 and 4)", "Second", "Choose a noun or a pronoun so the meaning is clear and the writing doesn't repeat itself.", bank([
+      ["Mia and Jack went swimming. ___ had a great time.", "They", ["He", "She"], "They means Mia and Jack together."],
+      ["Tom lost his hat. ___ looked everywhere for it.", "He", ["They", "It"], "He refers back to Tom."],
+      ["The cat chased the mouse until ___ hid.", "the mouse", ["it", "they"], "'It' could mean the cat or the mouse, so the noun is clearer."],
+      ["Gran gave Ella a book. ___ loved it.", "Ella", ["She", "They"], "'She' could be Gran or Ella; the name makes it clear."],
+      ["The children ate lunch, then ___ played outside.", "they", ["the children", "she"], "'They' avoids repeating 'the children'."],
+      ["My bike is old, but I love ___.", "it", ["him", "her"], "It refers to the bike."],
+      ["Sam and I went to the shop. The shopkeeper smiled at ___.", "us", ["we", "them"], "Us is the pronoun for Sam and me when someone does something to us."],
+      ["Which is clearer? ", "Ben told Raj that Raj had won.", ["Ben told Raj that he had won.", "He told him he had won."], "Using the name shows who won."]
+    ], "nouns and pronouns")),
+    g("eg-tense-perfect", "Keeping tense consistent, and the perfect form (Years 5 and 6)", "Second", "Keep the same tense through a piece of writing, and use the perfect form of verbs to show time and cause.", bank([
+      ["Which sentence keeps the same tense?", "We walked to the beach and swam in the sea.", ["We walked to the beach and swim in the sea.", "We walk to the beach and swam in the sea."], "Walked and swam are both past."],
+      ["She ___ her homework, so now she can play.", "has finished", ["finish", "finishing"], "The present perfect (has finished) links something done to now."],
+      ["By the time we arrived, the film ___ started.", "had", ["has", "have"], "The past perfect (had started) shows it happened before we arrived."],
+      ["I ___ to Spain twice.", "have been", ["am", "be"], "Have been (present perfect) talks about experience up to now."],
+      ["Which sentence keeps the same tense?", "The dog barks and runs to the gate.", ["The dog barked and runs to the gate.", "The dog barks and ran to the gate."], "Barks and runs are both present."],
+      ["He was tired because he ___ all night.", "had worked", ["works", "has work"], "Had worked explains the cause, from before he was tired."],
+      ["They ___ the bus, so they walked home.", "had missed", ["miss", "have miss"], "The past perfect shows the earlier event that caused walking home."],
+      ["Fix the tense: 'Yesterday I go to the park and played football.'", "Yesterday I went to the park and played football.", ["Yesterday I go to the park and play football.", "Yesterday I goes to the park and played football."], "Yesterday needs the past: went and played."],
+      ["We ___ our tickets already, so we can go in.", "have bought", ["buy", "buying"], "Have bought shows it's done and matters now."],
+      ["Which sentence keeps the same tense?", "Ella opened the door and stepped outside.", ["Ella opens the door and stepped outside.", "Ella opened the door and steps outside."], "Opened and stepped are both past."]
+    ], "tense and the perfect form"))
+  ];
+  // Homophones are spelling, so they sit with the spelling outcomes
+  englandEnglish.forEach(a => { if (/homophones/.test(a.id)) a.organiser = SPELL_ORG; });
+
   const englandChecks = [
     { id: "n-mtc", title: "Times tables check practice (Year 4)", level: "Second", organiser: "Numeracy · Number and number processes",
       blurb: "25 questions, 6 seconds each, like England's Year 4 multiplication tables check. Type the answer and press Enter.",
@@ -1257,8 +1604,11 @@ window.PopActivities = (() => {
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames) },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     // England's grammar by year: found by teachers in the Library and set as work, not shown on every pupil's home page
-    { id: "grammar", title: "Grammar and punctuation by year (England)", colour: "#7C3AED", icon: "🔤", activities: grammarByYear, assignedOnly: true },
-    { id: "england-checks", title: "Practice for England's national checks", colour: "#B45309", icon: "⏱️", activities: englandChecks, assignedOnly: true },
+    { id: "grammar", title: "Grammar and punctuation by year (England)", colour: "#7C3AED", icon: "🔤", activities: grammarByYear, assignedOnly: true, england: true },
+    { id: "england-checks", title: "Practice for England's national checks", colour: "#B45309", icon: "⏱️", activities: englandChecks, assignedOnly: true, england: true },
+    // More of England's curriculum, beyond what the CfE activities reach: set by the teacher, like the grammar
+    { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
+    { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },

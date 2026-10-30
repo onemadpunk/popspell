@@ -1219,6 +1219,188 @@ window.PopLessons = (() => {
       check: "Read ten words, a mix of real and alien. Which graphemes caused trouble?" },
     ["g-switch-first", "g-switch-build"], "Make up alien names together and read them aloud.", "sound, grapheme, blend, real word, alien word");
 
+  /* ----- England: lessons for the rest of the national curriculum's statements (October 2026) ----- */
+
+  addEngland("First", M, NUM, ["MNU 1-02a"], "Numbers in words (Years 1 and 2)",
+    "We are learning to read and write numbers to 100 in numerals and in words.",
+    ["I can read and write numbers to 20 in words.", "I can read and write numbers to 100 in words.", "I can match a number in words to its numerals."],
+    {"start": "Show 14 and fourteen on cards. Which part of the word tells you the ones?", "teach": "Build tens words (twenty, thirty… ninety), then add ones with a hyphen: thirty-seven. Point out the tricky ones: eleven, twelve, fifteen, forty (no u).", "practise": "Numbers in words on PopSpell.", "check": "Write 19, 40 and 63 in words, and read 'seventy-two' as a number."},
+    ["en-numbers-words"], "Read numbers on signs, cheques or price tags in words.", "numeral, digit, tens, ones, hyphen");
+
+  addEngland("First", M, NUM, ["MNU 1-03a"], "Adding and subtracting two-digit numbers in your head (Year 2)",
+    "We are learning to add and subtract two-digit numbers in our heads, and to know which calculations can be done in any order.",
+    ["I can add and subtract a two-digit number and ones, and a two-digit number and tens.", "I can add two two-digit numbers and three one-digit numbers.", "I know adding and multiplying can be done in any order, but taking away and dividing can't."],
+    {"start": "Quick-fire: 34 + 5, 34 + 50, 6 + 3 + 4. Which was easiest, and why?", "teach": "Use a hundred square or bead string: add tens by jumping down a row, ones by moving along. For two two-digit numbers, add tens then ones. For three numbers, find a pair that makes 10 first. Show 3 + 5 = 5 + 3 but 8 − 3 isn't 3 − 8.", "practise": "Two-digit numbers on PopSpell.", "check": "Ask for 47 + 30, 28 + 35 and 7 + 5 + 3, explaining one method aloud."},
+    ["en-add-2digit"], "Add prices or scores in your head in the car or at the shop.", "tens, ones, add, subtract, any order, commutative");
+
+  addEngland("First", M, MEAS, ["MNU 1-11a", "MNU 1-10a"], "Comparing measures, and quicker or later (Years 1 and 2)",
+    "We are learning to compare lengths, masses and capacities using <, > and =, and to use words for time such as quicker and later.",
+    ["I can compare and order lengths, masses and capacities.", "I can record a comparison with <, > or =.", "I can use quicker, slower, earlier and later."],
+    {"start": "Hold up two pencils: which is longer? How could we write that with a sign?", "teach": "Measure pairs of objects, then record: 23 cm > 15 cm. Show the sign 'eats' the bigger number. Order three containers by how much they hold. Talk about events in the day using earlier and later, and which takes longer.", "practise": "Comparing measures on PopSpell.", "check": "Give three lengths to order and write with signs, and ask which is quicker: a snail or a horse."},
+    ["en-compare-measures"], "Compare two cups or two shoes at home and say which is bigger with a sign.", "longer, shorter, heavier, lighter, more than, less than, equal, quicker, slower, earlier, later");
+
+  addEngland("First", M, NUM, ["MNU 1-03a"], "Three-digit numbers in your head (Year 3)",
+    "We are learning to add and subtract ones, tens and hundreds to a three-digit number in our heads.",
+    ["I can add and subtract ones to a three-digit number.", "I can add and subtract tens and hundreds to a three-digit number.", "I can say which digit changes and why."],
+    {"start": "Show 452 with place value cards. What happens if we add 3? 30? 300?", "teach": "Model each kind on a place value chart: only the column you add to changes, unless it goes past 9 and carries. Practise crossing a hundred, such as 395 + 10.", "practise": "Three-digit numbers on PopSpell.", "check": "Ask 527 + 40, 683 − 200 and 395 + 7, and which digit changed each time."},
+    ["en-mental-3digit"], "Add 10s and 100s to door numbers or page numbers.", "hundreds, tens, ones, add, subtract, digit");
+
+  addEngland("First", M, MONEY, ["MNU 1-09a"], "Pounds and pence: adding and change (Year 3)",
+    "We are learning to add and subtract amounts of money in pounds and pence, and to give change.",
+    ["I can add two amounts using £ and p.", "I can work out change from £5 or £10.", "I know £1 is 100p, and can change between pounds and pence."],
+    {"start": "Lay out £2.35 in coins. How many pence is that?", "teach": "Add prices by adding pounds, then pence, regrouping 100p as £1. Find change by counting on from the price to the next pound, then to the note.", "practise": "Pounds and pence on PopSpell.", "check": "Ask the total of £2.45 and £1.70, and the change from £5."},
+    ["en-money-pounds"], "Let your child work out the change at the shop before the cashier does.", "pounds, pence, total, change, count on");
+
+  addEngland("First", M, FDP, ["MNU 1-07a"], "Tenths, and adding fractions with the same denominator (Years 3 and 4)",
+    "We are learning to count in tenths, and to add and subtract fractions with the same denominator.",
+    ["I can count up and down in tenths.", "I know tenths come from dividing into 10 equal parts, or dividing by 10.", "I can add and subtract fractions with the same denominator, and solve problems with them."],
+    {"start": "Fold a strip into 10 equal parts. How many tenths is half?", "teach": "Count in tenths on a number line from 0 to 1. Add 2/7 + 3/7 with a bar model: the parts are the same size, so add the tops. Take away the same way. Solve a cake or pizza problem.", "practise": "Tenths and adding fractions on PopSpell.", "check": "Ask 3/8 + 4/8, 9/10 − 3/10 and one tenth of 60."},
+    ["en-fractions-add"], "Cut a pizza or a bar of chocolate into equal parts and add the pieces eaten.", "tenth, numerator, denominator, equal parts, fraction");
+
+  addEngland("First", M, SHAPE, ["MTH 1-16a", "MTH 2-16a"], "Lines and shapes: parallel, perpendicular and quadrilaterals (Years 3 and 4)",
+    "We are learning to spot horizontal, vertical, parallel and perpendicular lines, and to sort shapes by their properties.",
+    ["I can find horizontal, vertical, parallel and perpendicular lines.", "I can sort quadrilaterals and triangles by their sides and angles.", "I can draw 2D shapes and make 3D shapes, and recognise them turned round."],
+    {"start": "Look round the room: where are lines that never meet? Lines that meet at a right angle?", "teach": "Name horizontal and vertical, then parallel and perpendicular, with a right-angle checker. Sort quadrilaterals (square, rectangle, rhombus, parallelogram, trapezium) and triangles (equilateral, isosceles, scalene, right-angled) by their properties. Make a cube and a pyramid from straws or modelling clay, and turn them to show they're the same shape.", "practise": "Lines and shapes on PopSpell, then the \"Draw and make shapes\" sheet.", "check": "Ask for a shape with one pair of parallel sides, and a triangle with two equal sides."},
+    ["en-lines-shapes"], "Spot parallel lines on roads, doors and books.", "horizontal, vertical, parallel, perpendicular, quadrilateral, trapezium, rhombus, isosceles");
+
+  addEngland("Second", M, SHAPE, ["MTH 2-17a", "MTH 2-16a"], "Angles, rectangles and accurate drawing (Years 5 and 6)",
+    "We are learning to use multiples of 90°, angles on a line and round a point, the properties of rectangles, and to draw shapes accurately.",
+    ["I know a right angle is 90°, and use multiples of 90°.", "I can find missing angles on a line and round a point.", "I can use the properties of rectangles to find missing lengths and angles.", "I can draw 2D shapes with given lengths and angles."],
+    {"start": "Turn on the spot: quarter, half, three-quarters, whole. How many degrees each time?", "teach": "Show 90°, 180°, 270° and 360° as turns. Angles on a straight line add to 180° and round a point to 360°. Use a rectangle's equal opposite sides and right angles to find missing lengths. Draw a rectangle and a triangle with a ruler and protractor to exact measurements.", "practise": "Angles and rectangles on PopSpell, then the \"Draw it accurately\" sheet.", "check": "Ask the missing angle on a line with 125°, and the short side of a rectangle with perimeter 26 cm and long side 9 cm."},
+    ["en-angles-rectangles"], "Look for right angles at home and count how many in a room.", "right angle, degrees, straight line, perimeter, protractor, rectangle");
+
+  addEngland("Second", M, NUM, ["MNU 2-02a"], "Counting in steps and Roman numerals (Years 4 and 5)",
+    "We are learning to count in steps of 6, 7, 9, 25, 1000 and powers of 10, and to read Roman numerals to 1000.",
+    ["I can count in multiples of 6, 7, 9, 25 and 1000.", "I can find 1000 more or less, and count in steps of powers of 10.", "I can read Roman numerals to 1000 and years written in them.", "I know the Roman system had no zero, and place value changed how we write numbers."],
+    {"start": "Count in 25s from 0 to 200. Where have you seen 25s before?", "teach": "Count forwards and back in each step, spotting patterns. Find 1000 and 10 000 more or less on a place value chart. Read Roman numerals by adding (VI) and subtracting (IV), then years on buildings and films. Talk about how Roman numerals have no zero, and why our system with place value is easier for calculating.", "practise": "Counting in steps and Roman numerals on PopSpell.", "check": "Ask the next two numbers after 63, 70, 77, and what MCMXCV means."},
+    ["en-count-steps", "en-roman"], "Look for Roman numerals on clocks, buildings and at the end of TV programmes.", "multiple, step, thousand, Roman numeral, place value, zero");
+
+  addEngland("Second", M, NUM, ["MNU 2-02a"], "Numbers to ten million (Year 6)",
+    "We are learning to read, write, order and compare numbers up to 10 000 000 and say what each digit is worth.",
+    ["I can read and write numbers up to 10 000 000.", "I can order and compare them.", "I can say what each digit is worth.", "I can solve problems with large numbers."],
+    {"start": "Read the population of Scotland or England from a news report. How do you say it?", "teach": "Use a place value chart with millions, hundred thousands and so on. Group digits in threes to read them. Order numbers by comparing from the left. Solve population and distance problems.", "practise": "Numbers to ten million on PopSpell.", "check": "Ask the value of the 4 in 6 482 105, and to order three seven-digit numbers."},
+    ["en-millions"], "Find big numbers in the news and read them together.", "million, place value, digit, order, compare");
+
+  addEngland("Second", M, NUM, ["MNU 2-03a"], "Multiplication reasoning: facts, splitting, scaling and combinations (Years 3 to 6)",
+    "We are learning to use known facts, the distributive law, scaling and combinations to solve multiplication problems.",
+    ["I know what happens when multiplying by 0 and 1, and can multiply three numbers.", "I can split a number to multiply, as in 23 × 4 = 20 × 4 + 3 × 4.", "I can solve scaling, rate and correspondence problems."],
+    {"start": "How many outfits can you make with 3 tops and 2 pairs of trousers? Draw them.", "teach": "Show × 1 and × 0 with arrays. Multiply three numbers in an easy order. Split a two-digit number to multiply. Scale a recipe up and down, use rates (60 km in 1 hour), and count combinations with a table.", "practise": "Multiplication reasoning on PopSpell.", "check": "Ask 34 × 6 by splitting, how much flour for 12 people if 4 people need 200 g, and how many sandwich and drink pairs from 4 and 3."},
+    ["en-mult-reasoning"], "Double or halve a recipe together.", "multiply, distributive, scale, rate, combination, correspondence");
+
+  addEngland("Second", M, FDP, ["MNU 2-07a", "MTH 2-07c"], "Mixed numbers and calculating with fractions (Years 5 and 6)",
+    "We are learning to use mixed numbers and improper fractions, and to add, subtract, multiply and divide fractions.",
+    ["I can change between mixed numbers and improper fractions.", "I can add and subtract fractions, using equivalent fractions when the denominators are different.", "I can multiply fractions by whole numbers and by other fractions, and divide fractions by whole numbers.", "I can write a fraction as a division and as a decimal."],
+    {"start": "Draw 7 quarters. How many wholes is that?", "teach": "Use bar models for each step: mixed and improper, then common denominators (1/3 + 1/4 = 4/12 + 3/12). Multiply by a whole number as repeated addition, and fraction by fraction as a part of a part. Divide a fraction by a whole number by sharing. Show 3/8 = 3 ÷ 8 = 0.375.", "practise": "Fractions on PopSpell: Year 5, then Year 6.", "check": "Ask 2 3/4 as an improper fraction, 1/2 + 1/3, 1/4 × 1/2 and 3/8 as a decimal."},
+    ["en-fractions-y5", "en-fractions-y6"], "Cook with fractions: half of three quarters of a cup.", "mixed number, improper fraction, numerator, denominator, equivalent, common denominator");
+
+  addEngland("Second", M, MEAS, ["MNU 2-11a", "MNU 2-11c"], "Imperial units, area of triangles and simple formulae (Years 5 and 6)",
+    "We are learning to use approximate imperial equivalents, convert miles and kilometres, find the area of triangles and parallelograms, and use simple formulae.",
+    ["I know rough equivalents for inches, pounds and pints.", "I can convert between miles and kilometres.", "I can find the area of triangles and parallelograms.", "I can use a simple formula and know when a formula helps."],
+    {"start": "Your height in feet and inches, or in centimetres: which do you know? Why are there two systems?", "teach": "Use 1 inch ≈ 2.5 cm, 1 kg ≈ 2.2 pounds, 1 pint ≈ 570 ml and 5 miles ≈ 8 km. Cut a rectangle diagonally to show a triangle is half: base × height ÷ 2. Cut and slide a parallelogram into a rectangle: base × height. Write formulae in words, then letters, and substitute.", "practise": "Imperial units and area and formulae on PopSpell.", "check": "Ask the area of a triangle with base 10 cm and height 6 cm, and 25 miles in kilometres."},
+    ["en-imperial", "en-area-formulae"], "Compare road signs in miles with distances in km on a map.", "inch, pound, pint, mile, kilometre, base, height, formula");
+
+  addEngland("Second", M, FDP, [], "Ratio and proportion (Year 6)",
+    "We are learning to solve problems with relative sizes, unequal sharing and similar shapes.",
+    ["I can solve problems where one quantity is a multiple of another.", "I can share in a ratio and solve unequal sharing problems.", "I can use a scale factor with similar shapes."],
+    {"start": "For every 2 cups of flour you need 1 egg. How many eggs for 6 cups?", "teach": "Use bar models: 'Ali has 3 times as many as Sam' becomes 1 bar and 3 bars. Share in a ratio by counting parts. Enlarge a shape on squared paper by a scale factor and compare the sides.", "practise": "Ratio on PopSpell.", "check": "Ask to share 35 in the ratio 2 : 5, and the new length when a 4 cm side is enlarged by 3."},
+    ["en-ratio"], "Mix squash or paint in a ratio, such as 1 part to 4.", "ratio, proportion, share, part, scale factor, similar");
+
+  addEngland("Second", M, DATA, ["MNU 2-20a", "MNU 2-03a"], "The mean, multi-step problems and long division (Years 5 and 6)",
+    "We are learning to calculate and interpret the mean, solve multi-step problems, and divide by a two-digit number.",
+    ["I can calculate the mean and say what it tells us.", "I can solve multi-step problems, choosing the operations and methods.", "I can do mental calculations with mixed operations.", "I can divide by a two-digit number and interpret remainders."],
+    {"start": "Three friends have 4, 6 and 8 sweets. How could they share fairly?", "teach": "Show the mean as levelling out towers of cubes, then as total ÷ how many. Model multi-step problems with a bar model and say each step. Divide 4-digit numbers by 2-digit numbers, and decide whether to round a remainder up or down in context.", "practise": "The mean, and multi-step problems on PopSpell.", "check": "Ask the mean of 12, 15 and 9, and how many 52-seat coaches carry 300 people."},
+    ["en-mean", "en-multistep"], "Work out the mean of the family's ages or the week's temperatures.", "mean, average, total, remainder, multi-step, operation");
+
+  addEngland("Second", M, SHAPE, ["MTH 2-18a"], "Coordinates: plotting, translating and reflecting (Years 4 to 6)",
+    "We are learning to plot points to complete shapes, describe translations, and reflect shapes in the axes.",
+    ["I can plot points to complete a polygon.", "I can describe a translation, such as 3 right and 2 up.", "I can draw and translate shapes on a coordinate grid, and reflect them in the axes."],
+    {"start": "Along the corridor, then up the stairs: which coordinate comes first?", "teach": "Plot three corners of a rectangle and find the fourth. Move a shape and describe the translation. Extend the axes to negative numbers and reflect a point in each axis: which number changes sign?", "practise": "Coordinates on PopSpell.", "check": "Ask where (2, 5) goes after moving 3 right and 4 down, and its reflection in the x-axis."},
+    ["en-coordinates"], "Play battleships on squared paper.", "coordinate, axis, plot, translation, reflection, quadrant");
+
+  addEngland("Early", L, HAND, ["LIT 0-21a"], "Getting ready to write: cutting, drawing and forming digits (Reception and Year 1)",
+    "We are learning to use scissors and other small tools with care, draw carefully, and form the digits 0 to 9.",
+    ["I can use scissors, a paintbrush and cutlery safely.", "I can draw with care and accuracy.", "I can form the digits 0 to 9, starting in the right place."],
+    {"start": "Squeeze and stretch: playdough, pegs and tweezers to warm up your fingers.", "teach": "Show how to hold scissors and turn the paper, not the scissors, to cut along a line. Draw carefully, slowly and inside the lines. Model each digit, saying where it starts, and trace it in the air.", "practise": "The \"Cut, draw and write numbers\" sheet.", "check": "Watch them cut a curved line and write 0 to 9, starting each digit in the right place."},
+    [], "Cut out pictures from a catalogue, and help to set the table with a knife and fork.", "scissors, cut, draw, careful, digit, start");
+
+  addEngland("First", L, SPELL, ["LIT 1-21a"], "The alphabet, letter names and the days of the week (Year 1)",
+    "We are learning to name the letters of the alphabet in order, use letter names to talk about spellings, and spell the days of the week.",
+    ["I can name the letters of the alphabet in order.", "I can use letter names to tell different spellings of the same sound apart.", "I can spell the days of the week."],
+    {"start": "Sing or say the alphabet. Which letter comes after p? Before k?", "teach": "Lay out letter cards in order and play 'what's missing'. Show that rain and play have the same sound spelled a-i and a-y, saying the letter names. Learn the days of the week, noticing the tricky parts (the d in Wednesday) and that each starts with a capital letter.", "practise": "The alphabet on PopSpell, then the days of the week list.", "check": "Ask what comes before m, which letters spell the sound in 'boat', and to write Monday and Wednesday."},
+    ["en-alphabet", "y1-days"], "Say the days of the week at breakfast, and find words in a children's dictionary.", "alphabet, letter name, sound, capital letter, days of the week");
+
+  addEngland("First", L, PHON, ["ENG 1-12a", "LIT 1-13a"], "Reading longer words, and checking it makes sense (Years 1 and 2)",
+    "We are learning to read longer words by splitting them into parts, and to check that what we read makes sense.",
+    ["I can read words with two or more syllables by splitting them into parts.", "I can use the sounds I know to read new words until it's automatic.", "I can notice when a sentence doesn't make sense and fix my reading."],
+    {"start": "Clap the beats: rab-bit, gar-den, sand-wich. How many parts?", "teach": "Split long words into syllables, read each part with the sounds you know, then blend the parts. Read a sentence with a mistake in it and ask: does that make sense? Go back and reread the word.", "practise": "The \"Longer words\" sheet, then read a decodable story.", "check": "Ask them to read five two-syllable words, and to spot and fix the wrong word in a sentence."},
+    ["s-d-boat", "s-d-puddle"], "When reading together, stop if something doesn't make sense and ask what went wrong.", "syllable, blend, reread, check, makes sense");
+
+  addEngland("First", L, READ, ["ENG 1-17a", "LIT 1-16a"], "Traditional tales: retelling and story language (Years 1 and 2)",
+    "We are learning to retell traditional tales, notice their story language, and talk about how events link together.",
+    ["I can retell a traditional tale in order.", "I can spot story language, such as once upon a time and repeated lines.", "I can say what is typical of a traditional tale.", "I can say how the events in a story are linked."],
+    {"start": "Who's that trip-trapping over my bridge? Do you know the story?", "teach": "Read the tale on the sheet together. Act it out with puppets, saying the repeated lines. Put the events in order and talk about why each one leads to the next. Compare with another traditional tale: what's the same?", "practise": "The \"Three Billy Goats Gruff\" sheet: order the events, story language, and retell it.", "check": "Ask them to retell the tale in order using first, next, then and in the end."},
+    [], "Read a different traditional tale at bedtime and compare it with this one.", "traditional tale, retell, once upon a time, repeat, beginning, middle, end");
+
+  addEngland("First", L, READ, ["LIT 1-16a"], "Words and what they mean (Years 1 to 6)",
+    "We are learning to work out what words mean, talk about favourite words and phrases, and check meanings in a dictionary.",
+    ["I can work out what a word means from the words around it.", "I can link a new word to words I already know.", "I can talk about words and phrases I like and why.", "I can check a word's meaning in a dictionary."],
+    {"start": "'The giant was colossal.' What might colossal mean? What helped you?", "teach": "Read the short text on the sheet. For each new word, look for clues around it, think of a word like it, then check in a dictionary. Collect favourite words and phrases and say what they add.", "practise": "The \"Word detective\" sheet.", "check": "Ask them to explain two words from the text and how they worked them out."},
+    [], "Pick a 'word of the day' from a book and try to use it at teatime.", "meaning, clue, context, dictionary, definition, phrase");
+
+  addEngland("First", L, CREATE, ["ENG 1-31a"], "Poems to learn, say and write (Year 2)",
+    "We are learning to learn poems by heart and say them with expression, and to write a poem of our own.",
+    ["I can learn a short poem by heart.", "I can say it with the right intonation so the meaning is clear.", "I can write a short poem of my own."],
+    {"start": "Say a rhyme you know. How did you remember it?", "teach": "Read the poem on the sheet together. Learn it a line at a time, with actions. Practise saying it with expression: loud, quiet, slow, fast. Then write your own poem using the same pattern.", "practise": "The \"Poems\" sheet: learn the poem, then write one of your own.", "check": "Listen to them say the poem from memory with expression, and read their own poem."},
+    [], "Say the poem together on the way to school until it's learned.", "poem, rhyme, rhythm, verse, line, expression");
+
+  addEngland("Second", L, READ, ["ENG 2-19a", "ENG 2-31a"], "Poetry forms, and performing poems (Years 3 to 6)",
+    "We are learning to recognise different forms of poetry, learn poems by heart, and perform poems and our own writing to an audience.",
+    ["I can recognise some forms of poetry, such as free verse and narrative poetry.", "I can learn a wider range of poems by heart.", "I can perform a poem or my own writing with intonation, tone, volume and movement so the meaning is clear."],
+    {"start": "Is a poem always rhyming? What else can make it a poem?", "teach": "Compare the two poems on the sheet: one tells a story (narrative), one doesn't rhyme or keep a pattern (free verse). Learn one by heart, then mark the performance: where to pause, get louder or quieter, and gesture. Perform it, then perform a piece of your own writing.", "practise": "The \"Perform a poem\" sheet.", "check": "Watch the performance and ask: what form is it, and how did your performance show its meaning?"},
+    [], "Perform the poem for the family after tea.", "free verse, narrative poem, form, perform, intonation, tone, volume");
+
+  addEngland("First", L, CREATE, ["LIT 1-23a", "LIT 1-10a"], "Talking about my writing: saying it, reading it aloud and improving it (Years 1 and 2)",
+    "We are learning to say our sentences before we write them, read our writing aloud, and talk about how to improve it.",
+    ["I can say each sentence out loud before I write it.", "I can read my writing aloud clearly, with the right intonation.", "I can talk about my writing with an adult and make changes."],
+    {"start": "Tell me one sentence about your weekend. Say it again in the same words.", "teach": "Say a sentence, hold it in your head, write it, then read it back. Read your writing aloud to the adult, clearly and with expression. Talk about one thing that's good and one thing to change, then make the change.", "practise": "The \"Say it, write it, read it\" sheet.", "check": "Ask them to read their writing aloud, and say one change they made and why."},
+    [], "Ask your child to read their homework to you, and say what you liked.", "say, write, read aloud, check, improve, change");
+
+  addEngland("First", L, WRITE, ["LIT 1-22a"], "Expanded noun phrases (Years 2, 5 and 6)",
+    "We are learning to add words before and after a noun to describe and specify it.",
+    ["I can add adjectives to describe a noun, as in the blue butterfly.", "I can add a phrase after the noun, as in the man with a stick.", "I can use expanded noun phrases to give lots of information in few words."],
+    {"start": "Show a picture. 'A dog.' Can you tell me more about it in the same phrase?", "teach": "Build noun phrases on a frame: determiner, adjectives, noun, then a phrase after it. Compare 'the house' with 'the old house at the end of the lane'. For older pupils, rewrite a long sentence as one concise noun phrase.", "practise": "Expanded noun phrases on PopSpell.", "check": "Ask them to expand 'the car' two ways, and say which tells the reader more."},
+    ["eg-noun-phrases"], "Describe things in the street with as much detail as you can in one phrase.", "noun, adjective, noun phrase, expand, describe, specify");
+
+  addEngland("Second", L, SPELL, ["LIT 2-21a"], "Homophones (Years 2 to 6)",
+    "We are learning to spell homophones and words that are often confused, and choose the right one for the meaning.",
+    ["I can spell common homophones, such as there, their and they're.", "I can spell further homophones from the Years 3 and 4 list.", "I can tell apart words that are often confused, such as affect and effect."],
+    {"start": "'I can see the sea.' Which see is which? How do you know?", "teach": "Sort homophone pairs into sentences. Make a memory trick for each, such as 'hear' has 'ear' in it, or stationery has e for envelopes. Use each in a sentence of your own.", "practise": "Homophones on PopSpell: the set for the pupil's year.", "check": "Dictate three sentences with homophones in them and check the choice."},
+    ["eg-homophones-y2", "eg-homophones-y34", "eg-homophones-y56"], "Spot homophones on signs and menus, and check they're right.", "homophone, sound the same, spelled differently, meaning");
+
+  addEngland("Second", L, READ, ["LIT 2-16a", "ENG 2-19a"], "Myths, legends and themes across books (Years 3 to 6)",
+    "We are learning to read myths and legends, retell them, and identify and compare themes and conventions across books.",
+    ["I can retell a myth or legend in my own words.", "I can spot the conventions of myths and legends.", "I can identify themes, such as courage or greed, and compare them across books.", "I can read a wide range of books, including stories from other cultures."],
+    {"start": "What's the difference between a myth and a legend? Have you heard of any?", "teach": "Read the myth on the sheet. Retell it aloud. Note its conventions: gods or magic, an explanation of something in nature. Talk about its theme, then compare it with another story the pupil knows that has the same theme.", "practise": "The \"Myths and themes\" sheet.", "check": "Ask them to name the theme, give evidence, and compare it with another book."},
+    [], "Read a myth or legend from another culture together.", "myth, legend, theme, convention, compare, culture");
+
+  addEngland("Second", L, READ, ["LIT 2-16a", "LIT 2-13a"], "Asking questions and checking understanding as I read (Years 3 to 6)",
+    "We are learning to ask questions as we read, check the text makes sense, and discuss our understanding.",
+    ["I can ask questions before, during and after reading to help me understand.", "I can check the text makes sense and explain words in context.", "I can take part in discussion about books, taking turns and listening."],
+    {"start": "Look at a title. What questions do you have before you read?", "teach": "Read the text on the sheet in parts. Before: what do you expect? During: stop and ask a question, and check you understand. After: what's still puzzling? Discuss your answers, taking turns.", "practise": "The \"Questions as I read\" sheet.", "check": "Ask for one question from before, during and after reading, and how they found the answers."},
+    [], "When reading together, each ask one question about the story.", "question, predict, check, understand, discuss, context");
+
+  addEngland("Second", L, CREATE, ["LIT 2-23a", "LIT 2-26a"], "Planning from a model, rehearsing aloud and improving (Years 3 and 4)",
+    "We are learning to plan by studying a model text, rehearse sentences aloud, and improve our writing, including using pronouns for clarity.",
+    ["I can discuss a model text to learn from its structure and vocabulary.", "I can say my sentences aloud before I write them, including dialogue.", "I can improve my writing, choosing nouns or pronouns for clarity.", "I can read my writing aloud with the right intonation."],
+    {"start": "Read a short paragraph. What did the writer do that you could borrow?", "teach": "Discuss the model on the sheet: structure, vocabulary, sentence types. Plan your own version. Say each sentence aloud before writing it. Then improve it: is it clear who 'he' or 'she' is? Read the final version aloud.", "practise": "Nouns or pronouns on PopSpell, then the \"Learn from a model\" sheet.", "check": "Listen to them read their writing aloud and ask what they changed and why."},
+    ["eg-pronouns"], "Read a favourite author's paragraph and talk about the words they chose.", "model, structure, rehearse, pronoun, clarity, improve");
+
+  addEngland("Second", L, WRITE, ["LIT 2-23a"], "Editing and proofreading: tense, the perfect form and effect (Years 5 and 6)",
+    "We are learning to edit our writing for consistent tense and the perfect form, proofread for errors, and judge how effective it is.",
+    ["I can keep the tense consistent throughout a piece of writing.", "I can use the perfect form of verbs to show time and cause.", "I can proofread for spelling and punctuation errors.", "I can assess how effective my own and others' writing is."],
+    {"start": "Read: 'Yesterday I go to the park and played football.' What's wrong?", "teach": "Edit the paragraph on the sheet in three passes: tense, then spelling and punctuation, then effect (does it do what the writer wanted?). Use the perfect form to show what had happened first. Then edit a piece of your own writing the same way.", "practise": "Tense and the perfect form on PopSpell, then the \"Edit it\" sheet.", "check": "Ask them to edit a paragraph and explain each change."},
+    ["eg-tense-perfect"], "Proofread a shopping list or a birthday card together.", "tense, perfect form, proofread, edit, effective");
+
   // Checking understanding, not just the right answer: a question to ask at the end of each lesson,
   // and what a pupil who understands will say or do. (Know: the words to use. Do: the success criteria.)
   const UNDERSTAND = {
@@ -1349,7 +1531,37 @@ window.PopLessons = (() => {
     "england-joined-handwriting-years-3-and-4": ["Which letters don't join? Why not?", "Names the letters their school doesn't join (often capitals and some after letters such as b, g, j, p, x, y)."],
     "england-writing-legibly-fluently-and-at-speed-years-5-and-6": ["When would you use neat print, and when quick joined writing?", "Matches style to the task: labels or a final copy vs. notes."],
     "england-getting-ready-for-the-times-tables-check-year-4": ["You don't know 7 × 8. What fact could help?", "Uses a known fact: 7 × 8 is double 7 × 4, or 7 × 7 + 7."],
-    "england-getting-ready-for-the-phonics-check-year-1": ["Why can't you guess an alien word?", "Explains alien words aren't real, so you have to sound out every part."]
+    "england-getting-ready-for-the-phonics-check-year-1": ["Why can't you guess an alien word?", "Explains alien words aren't real, so you have to sound out every part."],
+    "england-numbers-in-words-years-1-and-2": ["Why do we write forty without a u, when we say four?", "Notices that forty is spelled differently from four, and checks tricky number words rather than writing them as they sound."],
+    "england-adding-and-subtracting-two-digit-numbers-in-your-head-year-2": ["Is 45 + 30 easier or harder than 45 + 3? Why?", "Explains that adding tens changes the tens digit and adding ones changes the ones, and chooses a method on purpose."],
+    "england-comparing-measures-and-quicker-or-later-years-1-and-2": ["Why does 45 cm > 9 cm, even though 9 is a bigger digit than 4?", "Compares the whole measure, not one digit, and checks the units are the same before comparing."],
+    "england-three-digit-numbers-in-your-head-year-3": ["What is 296 + 10, and why does more than one digit change?", "Explains carrying: the tens go past 9, so the hundreds change too."],
+    "england-pounds-and-pence-adding-and-change-year-3": ["Why is counting on a good way to find change?", "Explains counting up from the price to the amount paid, in friendly steps, and checks by adding the change back."],
+    "england-tenths-and-adding-fractions-with-the-same-denominator-years-3-and-4": ["Why is 2/7 + 3/7 equal to 5/7 and not 5/14?", "Explains that the size of the parts (sevenths) stays the same; only the number of parts changes."],
+    "england-lines-and-shapes-parallel-perpendicular-and-quadrilaterals-years-3-and-4": ["Is a square a kind of rectangle? Explain.", "Reasons from properties: a square has four right angles and opposite sides equal, so it fits the rectangle's properties too."],
+    "england-angles-rectangles-and-accurate-drawing-years-5-and-6": ["A rectangle's perimeter is 30 cm. Can you find its sides without measuring? What else would you need to know?", "Explains that half the perimeter gives one long plus one short side, and that one more length is needed to find both."],
+    "england-counting-in-steps-and-roman-numerals-years-4-and-5": ["Why is our number system easier for adding than Roman numerals?", "Explains that place value and zero let us line up columns, while Roman numerals have no place value."],
+    "england-numbers-to-ten-million-year-6": ["Which is bigger, 2 999 999 or 3 000 000? How do you know without counting?", "Compares from the millions digit first and explains why the first different digit decides."],
+    "england-multiplication-reasoning-facts-splitting-scaling-and-combinations-years-3-to-6": ["Why does 23 × 4 equal 20 × 4 + 3 × 4?", "Explains that 23 fours is 20 fours and 3 more fours, perhaps with an array split into two parts."],
+    "england-mixed-numbers-and-calculating-with-fractions-years-5-and-6": ["Why do we need the same denominator before adding 1/3 + 1/4?", "Explains that the parts must be the same size to be added, and finds equivalent fractions to make them so."],
+    "england-imperial-units-area-of-triangles-and-simple-formulae-years-5-and-6": ["Why is a triangle's area half of base × height?", "Shows two identical triangles make a rectangle (or parallelogram) with the same base and height."],
+    "england-ratio-and-proportion-year-6": ["If the ratio of red to blue is 2 : 3, what fraction of the beads are red? Why isn't it 2/3?", "Explains there are 5 parts altogether, so red is 2/5; the ratio compares parts with each other, not with the whole."],
+    "england-the-mean-multi-step-problems-and-long-division-years-5-and-6": ["The mean of five scores is 7. Does anyone have to have scored 7? Why?", "Explains the mean is the total shared equally, so no single score has to equal it."],
+    "england-coordinates-plotting-translating-and-reflecting-years-4-to-6": ["When you reflect a point in the x-axis, which number changes, and why?", "Explains that the point stays the same distance from the axis on the other side, so the second (y) number changes sign."],
+    "england-getting-ready-to-write-cutting-drawing-and-forming-digits-reception-and-year-1": ["Why do we turn the paper, not the scissors, when we cut round a curve?", "Explains or shows that turning the paper keeps the cutting hand steady and the line accurate."],
+    "england-the-alphabet-letter-names-and-the-days-of-the-week-year-1": ["Why do we use letter names, not sounds, when we spell out a word?", "Explains that the same sound can be spelled in different ways, and letter names say exactly which letters to write."],
+    "england-reading-longer-words-and-checking-it-makes-sense-years-1-and-2": ["You read 'The dog barked at the cat' as 'The dog bark at the car'. How would you know something was wrong?", "Uses meaning to notice the error (cars don't get barked at in the story; it doesn't sound right), then rereads the words carefully."],
+    "england-traditional-tales-retelling-and-story-language-years-1-and-2": ["Why does the troll let the first two goats go?", "Links events: the little goats promise a bigger goat is coming, which leads to the ending."],
+    "england-words-and-what-they-mean-years-1-to-6": ["How did the sentence help you work out the word's meaning?", "Points to a clue in the sentence and explains how it narrows the meaning, then checks it."],
+    "england-poems-to-learn-say-and-write-year-2": ["Why did you say that line louder (or more slowly)?", "Links how they say it to the meaning or feeling of the line."],
+    "england-poetry-forms-and-performing-poems-years-3-to-6": ["How is a narrative poem like a story, and how is it different?", "Explains it tells a story with characters and events, but uses lines, rhythm and poetic language."],
+    "england-talking-about-my-writing-saying-it-reading-it-aloud-and-improving-it-years-1-and-2": ["Why is it useful to say a sentence before you write it?", "Explains that it helps them remember the whole sentence and check it makes sense before writing."],
+    "england-expanded-noun-phrases-years-2-5-and-6": ["Why might a writer use 'the girl in the red coat' instead of 'the girl'?", "Explains it tells the reader which girl, or helps them picture her, without needing another sentence."],
+    "england-homophones-years-2-to-6": ["How will you remember which 'there' to use?", "Gives a reliable memory trick linked to meaning (here, there and where are places; their has 'heir', owning)."],
+    "england-myths-legends-and-themes-across-books-years-3-to-6": ["What lesson or theme does this myth share with another story you know?", "Names a theme and backs it with evidence from both stories."],
+    "england-asking-questions-and-checking-understanding-as-i-read-years-3-to-6": ["Which of your questions helped you most, and why?", "Explains how a question focused their reading or sorted out a misunderstanding."],
+    "england-planning-from-a-model-rehearsing-aloud-and-improving-years-3-and-4": ["When is it better to use the name instead of 'he' or 'she'?", "Explains that a name is clearer when a pronoun could mean more than one person."],
+    "england-editing-and-proofreading-tense-the-perfect-form-and-effect-years-5-and-6": ["Why did the writer use 'had started' and not 'started'?", "Explains the past perfect shows that one event happened before another."]
   };
   lessons.forEach(l => { const u = UNDERSTAND[l.id.replace(/^lesson-/, "")]; if (u) [l.understand, l.lookFor] = u; });
 

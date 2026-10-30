@@ -288,7 +288,7 @@
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
       strand: strandOf(act.organiser), organiser: act.organiser, type: area.id === "games" ? "game" : act.passage ? "story" : "activity",
-      england: area.id === "grammar" || area.id === "england-checks",
+      england: !!area.england,
       detail: act.blurb || "", print: area.id !== "games"
     })));
     // Dictation needs sentences, which the phonics lists have
@@ -458,9 +458,9 @@
     const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
     const en = cur === "england" ? enWork(l.id) : null;
     const curriculum = !en ? (l.england
-      ? `<p class="hint">Written for England's national curriculum. In CfE terms it's ${esc(l.level)} level work.</p>
+      ? `<p class="hint">Written for England's national curriculum. ${l.codes.length ? `In CfE terms it's ${esc(l.level)} level work.` : `It's listed with Second level work, but in CfE it comes at Third level.`}</p>
         <p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-        <p><b>CfE experiences and outcomes it supports:</b> ${esc(l.codes.join(", "))}</p>`
+        ${l.codes.length ? `<p><b>CfE experiences and outcomes it supports:</b> ${esc(l.codes.join(", "))}</p>` : ""}`
       : `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
       <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`)
       : en.statements.length ? `${l.england ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
