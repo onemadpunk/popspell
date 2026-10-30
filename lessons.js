@@ -830,7 +830,7 @@ window.PopLessons = (() => {
       teach: "Practise letters on four-line ruling, with even size and spacing. Copy a short piece neatly with a heading.",
       practise: "Handwriting sheet for this week's spelling list.",
       check: "Copy a sentence neatly with even spacing." },
-    ["letter-formation"], "Write a birthday card in best handwriting.", "handwriting, spacing, size, neat, legible");
+    ["handwriting-spacing"], "Write a birthday card in best handwriting.", "handwriting, spacing, size, neat, legible");
 
   /* ===================== Literacy and English: Second level ===================== */
 
@@ -1048,7 +1048,7 @@ window.PopLessons = (() => {
       teach: "Model a diagonal join (a to n, as in an) and a horizontal join (o to n, as in on). Practise joining pairs, then short words. Talk about letters many schools leave unjoined, such as capitals. Check that ascenders and descenders don't touch.",
       practise: "Use the letter formation sheet for any letters still formed the wrong way, then copy a short sentence in joined writing.",
       check: "Copy a sentence in joined writing: are the letters even, the joins smooth, and the lines parallel?" },
-    ["letter-formation"], "Write a shopping list in joined handwriting.", "join, diagonal, horizontal, ascender, descender");
+    ["handwriting-joins"], "Write a shopping list in joined handwriting.", "join, diagonal, horizontal, ascender, descender");
 
   addEngland("Second", L, HAND, ["LIT 2-24a"], "Writing legibly, fluently and at speed (Years 5 and 6)",
     "We are learning to write legibly and fluently, getting faster, and choosing the right style for the job.",

@@ -730,6 +730,8 @@
     "lc-bus":["en-yR-listening-attention-and-understanding-1","en-yR-comprehension-1","en-y1-reading-comprehension-2","en-y1-6-spoken-language-1"],
     "lc-shell-shop":["en-yR-listening-attention-and-understanding-1","en-yR-comprehension-1","en-y1-reading-comprehension-2","en-y1-6-spoken-language-1"],
     "letter-formation":["en-yR-writing-1","en-yR-fine-motor-skills-1","en-y1-writing-transcription-handwriting-2","en-y1-writing-transcription-handwriting-3"],
+    "handwriting-spacing":["en-y2-writing-transcription-handwriting-1","en-y2-writing-transcription-handwriting-4","en-y2-writing-transcription-handwriting-3"],
+    "handwriting-joins":["en-y3-4-writing-transcription-handwriting-1","en-y3-4-writing-transcription-handwriting-2","en-y2-writing-transcription-handwriting-2"],
     "eg-y1-plurals":["en-y1-writing-vocabulary-grammar-and-punctuation-6","en-y1-writing-transcription-spelling-9"],
     "eg-y1-un":["en-y1-writing-vocabulary-grammar-and-punctuation-6","en-y1-writing-transcription-spelling-10"],
     "eg-y1-capitals":["en-y1-writing-vocabulary-grammar-and-punctuation-5","en-y1-writing-vocabulary-grammar-and-punctuation-4"],

@@ -295,8 +295,8 @@
     const dictation = A ? spelling.filter(item => item.list.items.some(it => it.sentence)).map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`, type: "dictation",
       level: item.level, subject: "Literacy", strand: "Writing: dictation",
       detail: "Listen to each sentence, then write it all: capital letter, spellings and full stop.", print: true })) : [];
-    const paper = [{ id: "letter-formation", title: "Letter formation (a–z)", type: "paper", level: "Early", subject: "Literacy",
-      strand: "Handwriting", detail: "Trace and write every lower-case letter on four-line ruling.", print: true }];
+    const paper = Object.entries(PAPER).map(([id, sheet]) => ({ id, title: sheet.title, type: "paper", level: sheet.level, subject: "Literacy",
+      strand: "Handwriting", detail: sheet.detail, print: true }));
     // Ready lessons (lessons.js): one for every area of the benchmarks
     const lessons = (window.PopLessons ? window.PopLessons.all() : []).map(l => ({ id: l.id, title: l.title, type: "lesson",
       level: l.level, subject: l.subject, strand: l.strand, detail: l.intention, lesson: l, codes: l.codes, ids: lessonOnline(l), print: true, england: !!l.england }));
@@ -434,9 +434,9 @@
 
   /* ---------- Ready lessons (lessons.js): open, print and assign ---------- */
 
-  const workTitle = id => (id === "letter-formation" ? "Letter formation sheet" : listTitle(id));
+  const workTitle = id => (isPaper(id) ? PAPER[id].title : listTitle(id));
   // A lesson's work a pupil can do on their device (not paper sheets)
-  const lessonOnline = l => l.use.filter(id => id !== "letter-formation" && previewHref(id));
+  const lessonOnline = l => l.use.filter(id => !isPaper(id) && previewHref(id));
   const LESSON_STEPS = [["start", "Start"], ["teach", "Teach"], ["practise", "Practise"], ["check", "Check"]];
   // A lesson in Scotland's terms (CfE benchmarks and outcomes) or England's (the national curriculum's
   // statutory statements for the years it covers)
@@ -493,7 +493,7 @@
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     const pupil = [], adult = [];
     l.use.forEach(id => {
-      if (id === "letter-formation") return pupil.push({ label: "Letter formation", html: () => letterFormationHTML(who), checked: true });
+      if (isPaper(id)) return pupil.push({ label: PAPER[id].title, html: () => PAPER[id].html(who), checked: true });
       if (catalogueList(id)) {
         adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
         return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, checked: true });
@@ -1010,13 +1010,15 @@
 
   // One handwriting row on four-line ruling: model, grey to trace, dotted to trace, then space to write.
   // Lines follow the letter shapes: top of tall letters, middle (x-height), baseline, and tails.
-  function handwritingRow(text, cells = ["model", "grey", "dots", "blank"]) {
+  // sizeText: size the letters for this text instead (the longest on a sheet, so every row matches)
+  function handwritingRow(text, cells = ["model", "grey", "dots", "blank"], wordGap = 0, sizeText = text) {
     const width = 1000 / cells.length;
-    const size = Math.min(62, (width - 26) / (Math.max(text.length, 2) * 0.56));
+    const words = sizeText.split(" ").length - 1;
+    const size = Math.min(62, (width - 26) / (Math.max(sizeText.length, 2) * 0.56 + words * wordGap));
     const base = 70, mid = base - size * 0.5, top = base - size * 0.74, tail = base + size * 0.26;
     const line = (y, style) => `<line x1="0" x2="1000" y1="${y}" y2="${y}" class="${style}"/>`;
     const word = (x, kind) => kind === "blank" ? "" :
-      `<text x="${x + 12}" y="${base}" font-size="${size}" class="ws-${kind}">${esc(text)}</text>`;
+      `<text x="${x + 12}" y="${base}" font-size="${size}" class="ws-${kind}"${wordGap ? ` word-spacing="${(wordGap * size).toFixed(1)}"` : ""}>${esc(text)}</text>`;
     return `<svg class="ws-row" viewBox="0 0 1000 92" role="img" aria-label="${esc(text)}">
       ${line(top, "ws-top")}${line(mid, "ws-mid")}${line(base, "ws-base")}${line(tail, "ws-tail")}
       ${cells.map((kind, i) => (i ? `<line x1="${i * width}" x2="${i * width}" y1="${top - 6}" y2="${tail + 4}" class="ws-sep"/>` : "") + word(i * width, kind)).join("")}
@@ -1058,12 +1060,76 @@
       ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`;
   }
 
+  // Size and spacing (First level): copy short sentences, with a finger space modelled between words
+  const SPACING_SENTENCES = ["The dog ran up the hill.", "I can see a big red bus.", "My cat likes to sleep in the sun.",
+    "We went to the park on Monday.", "The frog sat on a log.", "Sam has a new blue kite."];
+  function spacingHTML(who) {
+    const longest = SPACING_SENTENCES.reduce((a, b) => (b.length > a.length ? b : a));
+    return `${dotPattern}${sheetHead("Size and spacing: copying sentences", who)}
+      <p>Copy each sentence on the lines under it. Tall letters reach the top line, small letters sit between the middle line and the bottom line, tails hang below, and leave a finger space between words.</p>
+      ${SPACING_SENTENCES.map((t, i) => `<div class="ws-copy"><p><b>${i + 1}.</b></p>${handwritingRow(t, ["model"], 0.5, longest)}${handwritingRow("", ["blank"])}</div>`).join("")}
+      <p class="ws-check"><b>Check your writing:</b> ☐ tall letters reach the top line &nbsp; ☐ tails go below the line &nbsp; ☐ small letters are all the same size &nbsp; ☐ a finger space between words</p>`;
+  }
+
+  // Joining letters (Years 3 and 4 / P4–P5): each pair with a guide showing where the join goes, to trace
+  // and then write. The guide doesn't impose one joined style: schools use different handwriting schemes.
+  // Letter widths measured in the reading font, so each join guide meets its letters
+  let glyphCtx = null;
+  const glyphWidth = (ch, size) => {
+    glyphCtx = glyphCtx || document.createElement("canvas").getContext("2d");
+    glyphCtx.font = `${size}px ${getComputedStyle(document.documentElement).getPropertyValue("--reading-font") || "sans-serif"}`;
+    return glyphCtx.measureText(ch).width;
+  };
+  const JOINS = [["diagonal", "a", "n"], ["diagonal", "i", "n"], ["diagonal", "u", "n"], ["diagonal", "a", "i"],
+    ["horizontal", "o", "n"], ["horizontal", "w", "i"], ["horizontal", "r", "i"], ["horizontal", "o", "i"]];
+  function joinRow([kind, a, b]) {
+    const size = 56, base = 70, mid = base - size * 0.5, top = base - size * 0.74, tail = base + size * 0.26, cell = 250;
+    const line = (y, style) => `<line x1="0" x2="1000" y1="${y}" y2="${y}" class="${style}"/>`;
+    const pair = (x, ink) => {
+      const ax = x + 40, aEnd = ax + glyphWidth(a, size) - size * 0.06;
+      const bx = aEnd + size * 0.42;
+      // A diagonal join runs from the bottom of the first letter up to the middle line; a horizontal one along the middle line
+      const join = kind === "diagonal" ? `M${aEnd},${base - 1} Q${aEnd + size * 0.22},${base - 1} ${bx + size * 0.08},${mid + 3}`
+        : `M${aEnd},${mid + 3} L${bx + size * 0.08},${mid + 3}`;
+      return `<text x="${ax}" y="${base}" font-size="${size}" class="ws-${ink}">${a}</text>
+        <path d="${join}" class="ws-join ws-join-${ink}"/>
+        <text x="${bx}" y="${base}" font-size="${size}" class="ws-${ink}">${b}</text>`;
+    };
+    return `<svg class="ws-row" viewBox="0 0 1000 92" role="img" aria-label="${kind} join: ${a}${b}">
+      ${line(top, "ws-top")}${line(mid, "ws-mid")}${line(base, "ws-base")}${line(tail, "ws-tail")}
+      ${pair(0, "model")}<line x1="${cell}" x2="${cell}" y1="${top - 6}" y2="${tail + 4}" class="ws-sep"/>${pair(cell, "grey")}
+      ${[2, 3].map(i => `<line x1="${i * cell}" x2="${i * cell}" y1="${top - 6}" y2="${tail + 4}" class="ws-sep"/>`).join("")}
+    </svg>`;
+  }
+  const JOIN_WORDS = ["and", "rain", "win", "oil"];
+  function joinsHTML(who) {
+    return `${dotPattern}${sheetHead("Joining letters", who)}
+      <p>Look at the join between the two letters, trace it, then write the pair joined in the empty boxes. Use the joins your school teaches: the dotted line shows where the join goes.</p>
+      <h2 class="ws-sub">Diagonal joins: from the bottom of the first letter up to the next</h2>
+      ${JOINS.filter(j => j[0] === "diagonal").map(joinRow).join("")}
+      <h2 class="ws-sub">Horizontal joins: along the middle line, from o, r, v and w</h2>
+      ${JOINS.filter(j => j[0] === "horizontal").map(joinRow).join("")}
+      <h2 class="ws-sub">Now write these words joined</h2>
+      ${JOIN_WORDS.map(w => handwritingRow(w, ["model", "blank", "blank"])).join("")}`;
+  }
+
+  // Paper-only sheets, found in the Library, used by ready lessons and printed from Plans & sheets
+  const PAPER = {
+    "letter-formation": { title: "Letter formation (a–z)", level: "Early", html: who => letterFormationHTML(who),
+      detail: "Trace and write every lower-case letter on four-line ruling." },
+    "handwriting-spacing": { title: "Size and spacing: copying sentences", level: "First", html: who => spacingHTML(who),
+      detail: "Copy short sentences: tall letters to the top line, tails below, a finger space between words." },
+    "handwriting-joins": { title: "Joining letters", level: "First", html: who => joinsHTML(who),
+      detail: "Trace the join between letter pairs (diagonal and horizontal), then write them and some words joined." }
+  };
+  const isPaper = id => Boolean(PAPER[id]);
+
   function printLetters() {
     printSheet("ws-literacy", letterFormationHTML(""));
   }
 
   function worksheetSpec(who, plan, mode) {
-    if (plan.list === "letter-formation") return { className: "ws-literacy", html: letterFormationHTML(who) };
+    if (isPaper(plan.list)) return { className: "ws-literacy", html: PAPER[plan.list].html(who) };
     const list = catalogueList(plan.list);
     if (!list) return null;
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
@@ -1086,7 +1152,7 @@
     return { className: "", html };
   }
   // The pupil can't do these without someone reading the words out, so the words come too, on their own page
-  const needsWords = (plan, mode) => plan.list !== "letter-formation" && (mode === "mapping" || mode === "dictation");
+  const needsWords = (plan, mode) => !isPaper(plan.list) && (mode === "mapping" || mode === "dictation");
   const withWords = (who, plan, mode, words = needsWords(plan, mode)) => {
     const sheet = worksheetSpec(who, plan, mode);
     return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
@@ -1103,7 +1169,7 @@
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
-      ${plan.list === "letter-formation" ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+      ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
         <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
       <label class="check" data-words-box><input type="checkbox" data-words checked> The words to say, on a separate page for you</label>
       <button class="btn small" type="button" data-close>Close</button>
@@ -1115,7 +1181,7 @@
     const chosenMode = () => (picker ? picker.value : mode);
     const words = () => needsWords(plan, chosenMode()) && dialog.querySelector("[data-words]").checked;
     const render = () => {
-      dialog.querySelector("[data-words-box]").hidden = !needsWords(plan, chosenMode());
+      dialog.querySelector("[data-words-box]").style.display = needsWords(plan, chosenMode()) ? "" : "none";
       const sheet = withWords(who, plan, chosenMode(), words());
       const page = dialog.querySelector(".sheet-preview-page");
       page.className = `sheet-preview-page ${sheet.className}`;

@@ -90,6 +90,8 @@ MAP = {
   "l-rhyme": "en R comp 3; en 1 rc 6", "l-first-sound": "en R wri 2; en R wread 1", "l-count-sounds": "en R wri 2; en 2 sp 2",
   "lc-bus": "en R lau 1; en R comp 1; en 1 rc 2; en 1-6 sl 1", "lc-shell-shop": "en R lau 1; en R comp 1; en 1 rc 2; en 1-6 sl 1",
   "letter-formation": "en R wri 1; en R fms 1; en 1 hw 2; en 1 hw 3",
+  "handwriting-spacing": "en 2 hw 1; en 2 hw 4; en 2 hw 3",
+  "handwriting-joins": "en 3-4 hw 1; en 3-4 hw 2; en 2 hw 2",
   # Grammar and punctuation by year (activities.js): English Appendix 2, through each year's statements
   "eg-y1-plurals": "en 1 vgp 6; en 1 sp 9", "eg-y1-un": "en 1 vgp 6; en 1 sp 10", "eg-y1-capitals": "en 1 vgp 5; en 1 vgp 4",
   "eg-y2-apostrophes": "en 2 vgp 2; en 2 sp 5; en 2 sp 6", "eg-y2-suffixes": "en 2 vgp 8; en 2 sp 8", "eg-y2-sentence-types": "en 2 vgp 4",

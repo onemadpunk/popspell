@@ -1521,3 +1521,11 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-qs.ws-cols { columns: 2; column-gap: 28px; }
 .ws-qs.ws-cols .ws-q { break-inside: avoid; }
 .ws-qs.ws-cols .q-pic { max-width: 100%; max-height: 110px; }
+/* Handwriting sheets: copying sentences, and joining letters (the join to trace) */
+.ws-copy { break-inside: avoid; margin: 0 0 2px; }
+.ws-copy > p { margin: 0 !important; font-size: 10pt; }
+.ws-row .ws-join { fill: none; stroke-linecap: round; }
+.ws-row .ws-join-model { stroke: #111; stroke-width: 3.5; }
+.ws-row .ws-join-grey { stroke: #8a8a8a; stroke-width: 3.5; stroke-dasharray: 1 6; }
+.ws-sub, .worksheet-print .ws-sub, .sheet-preview-page .ws-sub { font: 700 11.5pt var(--font); margin: 8px 0 2px; color: #0b2e6b; }
+.ws-check, .worksheet-print .ws-check, .sheet-preview-page .ws-check { font: 11pt Arial, sans-serif; margin-top: 10px; }
