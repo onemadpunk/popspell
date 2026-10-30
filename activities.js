@@ -34,7 +34,8 @@ window.PopActivities = (() => {
     const seen = new Set();
     while (out.length < n && tries-- > 0) {
       const q = maker();
-      if (!seen.has(q.label)) { seen.add(q.label); out.push(q); }
+      // A maker returns a bare { label } when its random numbers don't make a fair question: try again
+      if (q.kind && !seen.has(q.label)) { seen.add(q.label); out.push(q); }
     }
     return out;
   }
@@ -64,6 +65,18 @@ window.PopActivities = (() => {
     const coin = (v, i) => { const big = v >= 10; const r = big ? 26 : 20; const gold = v === 1 || v === 2 ? "#D98C4A" : v === 100 || v === 200 ? "#E8C04A" : "#C9CED6";
       return `<g transform="translate(${34 + i * 62},40)"><circle r="${r}" fill="${gold}" stroke="#555" stroke-width="2"/><text y="5" text-anchor="middle" font-size="${big ? 14 : 12}" font-weight="700" fill="#222">${COINS[v]}</text></g>`; };
     return `<svg class="q-pic" viewBox="0 0 ${values.length * 62 + 10} 80" width="${values.length * 62 + 10}" height="80" role="img" aria-label="Coins: ${values.map(v => COINS[v]).join(", ")}">${values.map(coin).join("")}</svg>`;
+  }
+  const SHAPE_COLOURS = { red: "#E53935", blue: "#1E63D6", yellow: "#F5C518", green: "#2E9E4F" };
+  function patternSVG(items) {
+    const shape = ([kind, colour], i) => {
+      const x = 30 + i * 56, fill = SHAPE_COLOURS[colour];
+      return kind === "square" ? `<rect x="${x - 18}" y="12" width="36" height="36" fill="${fill}" stroke="#333" stroke-width="2"/>`
+        : kind === "triangle" ? `<polygon points="${x},10 ${x + 20},48 ${x - 20},48" fill="${fill}" stroke="#333" stroke-width="2"/>`
+          : `<circle cx="${x}" cy="30" r="19" fill="${fill}" stroke="#333" stroke-width="2"/>`;
+    };
+    const w = items.length * 56 + 60;
+    return `<svg class="q-pic" viewBox="0 0 ${w} 60" width="${w}" height="60" role="img" aria-label="${items.map(([k, c]) => `${c} ${k}`).join(", ")}, then a gap">${items.map(shape).join("")}
+      <text x="${30 + items.length * 56}" y="40" text-anchor="middle" font-size="30" font-weight="700" fill="#333">?</text></svg>`;
   }
   function fractionSVG(parts, shaded) {
     const cells = range(0, parts - 1).map(i => `<rect x="${10 + i * (200 / parts)}" y="10" width="${200 / parts}" height="60" fill="${i < shaded ? "#12C6B7" : "#fff"}" stroke="#0B2E6B" stroke-width="3"/>`).join("");
@@ -114,6 +127,8 @@ window.PopActivities = (() => {
     { id: "n-hundreds", title: "Hundreds, tens and ones", level: "Second", organiser: NUM, blurb: "Place value with three-digit numbers.",
       make: () => distinct(10, () => {
         const h = rand(9) + 1, t = rand(10), o = rand(10), n = h * 100 + t * 10 + o, k = rand(3);
+        // Asking about a 0, or a digit that appears twice, has no single answer
+        if (k === 0 && (t === 0 || t === h || t === o)) return { label: "unclear" };
         if (k === 0) return choice(`What is the value of the ${t} in ${n}?`, t * 10, [t, t * 100], { label: `value of ${t} in ${n}`, skill: "place value: hundreds", explain: `The ${t} is in the tens place, so it is worth ${t * 10}.` });
         if (k === 1) return typed(`${h * 100} + ${t * 10} + ${o} =`, n, { label: `${h * 100} + ${t * 10} + ${o}`, skill: "place value: partitioning", explain: `That makes ${n}.` });
         return typed(`What is 10 more than ${n}?`, n + 10, { label: `10 more than ${n}`, skill: "10 more / less", explain: `Add one to the tens: ${n + 10}.` });
@@ -126,6 +141,26 @@ window.PopActivities = (() => {
         const coins = Array.from({ length: rand(3) + 2 }, () => pick([1, 2, 5, 10, 20])).sort((a, b) => b - a);
         const total = coins.reduce((s, c) => s + c, 0);
         return typed("How much money altogether? (in p)", total, { html: coinsSVG(coins), label: coins.map(c => `${c}p`).join("+"), skill: "adding coins", explain: `${coins.map(c => `${c}p`).join(" + ")} = ${total}p.` });
+      }) },
+    { id: "n-money-10", title: "Coins up to 10p", level: "Early", organiser: "Numeracy · Money", blurb: "Know 1p, 2p, 5p and 10p, add them up and pay for things up to 10p.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const [a, b] = shuffle([1, 2, 5, 10]).slice(0, 2);
+          return choice(`Which coin is worth more: ${a}p or ${b}p?`, `${Math.max(a, b)}p`, [`${Math.min(a, b)}p`], { html: coinsSVG([a, b]), label: `${a}p or ${b}p`, skill: "coin values", explain: `${Math.max(a, b)}p is worth more than ${Math.min(a, b)}p, even if the coin is smaller.` }); }
+        const coins = distinctCoins();
+        const total = coins.reduce((t, c) => t + c, 0);
+        if (k === 1) return typed("How much money altogether? (in p)", total, { html: coinsSVG(coins), label: coins.map(c => `${c}p`).join("+"), skill: "adding coins", explain: `${coins.map(c => `${c}p`).join(" + ")} = ${total}p.` });
+        const cost = rand(9) + 2;
+        return choice(`You have these coins. Can you buy a sticker that costs ${cost}p?`, total >= cost ? "yes" : "no", [total >= cost ? "no" : "yes"],
+          { html: coinsSVG(coins), label: `${total}p for ${cost}p`, skill: "paying for things", explain: `You have ${total}p. ${total >= cost ? `That's enough for ${cost}p.` : `That's not enough: you need ${cost}p.`}` });
+      }) },
+    { id: "n-time-oclock", title: "O'clock and the days of the week", level: "Early", organiser: "Numeracy · Time", blurb: "Read o'clock times, and put the days of the week in order.",
+      make: () => distinct(10, () => {
+        const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        if (rand(2)) { const d = rand(7), after = rand(2) === 1, ans = DAYS[(d + (after ? 1 : 6)) % 7];
+          return choice(`Which day comes ${after ? "after" : "before"} ${DAYS[d]}?`, ans, others2(ans, DAYS.filter(x => x !== DAYS[d])), { label: `${after ? "after" : "before"} ${DAYS[d]}`, skill: "days of the week", explain: `The days go in order: ${DAYS.join(", ")}.` }); }
+        const h = rand(12) + 1, say = hh => `${hh} o'clock`;
+        return choice("What time does the clock show?", say(h), [say(h % 12 + 1), say((h + 5) % 12 + 1)], { html: clockSVG(h, 0), label: say(h), skill: "o'clock", explain: `The long hand points to 12 and the short hand points to ${h}: ${say(h)}.` });
       }) },
     { id: "n-time", title: "Telling the time", level: "First", organiser: "Numeracy · Time", blurb: "O'clock, half past and quarter past/to.",
       make: () => distinct(10, () => {
@@ -231,9 +266,12 @@ window.PopActivities = (() => {
   const minus = n => (n < 0 ? `−${-n}` : `${n}`);
   const pad = n => String(n).padStart(2, "0");
   const roundTo = (n, to) => Math.round(n / to) * to;
+  const distinctCoins = () => { for (;;) { const c = Array.from({ length: rand(2) + 2 }, () => pick([1, 2, 5])).concat(rand(4) ? [] : [5]).sort((a, b) => b - a);
+    if (c.reduce((t, v) => t + v, 0) <= 10) return c; } };
   const others2 = (answer, pool) => shuffle(pool.filter(x => String(x) !== String(answer))).slice(0, 2);
   // Decimals as pupils write them: 2.5, not 2.50; also accepts .5 for 0.5
   const dec = n => String(Math.round(n * 100) / 100);
+  const dec3 = n => String(Math.round(n * 1000) / 1000);
   const decAccept = n => (n > 0 && n < 1 ? [dec(n).replace(/^0/, "")] : []);
 
   const numeracyMore = [
@@ -242,6 +280,16 @@ window.PopActivities = (() => {
         const n = (rand(9) + 1) * 10 + rand(9) + 1, low = n - (n % 10);
         return typed(`Round ${n} to the nearest 10.`, roundTo(n, 10), { label: `${n} to 10`, skill: "rounding to 10",
           explain: `${n} is between ${low} and ${low + 10}. The ones digit is ${n % 10}, so round ${n % 10 >= 5 ? "up" : "down"} to ${roundTo(n, 10)}.` });
+      }) },
+    { id: "n-round-10-100", title: "Rounding to 10 and 100", level: "First", organiser: ROUND, blurb: "Round two- and three-digit numbers to the nearest 10 or 100.",
+      make: () => distinct(10, () => {
+        const n = (rand(9) + 1) * 100 + rand(99) + 1;
+        if (rand(2)) { const low = n - (n % 10);
+          return typed(`Round ${n} to the nearest 10.`, roundTo(n, 10), { label: `${n} to 10`, skill: "rounding to 10",
+            explain: `${n} is between ${low} and ${low + 10}. The ones digit is ${n % 10}, so round ${n % 10 >= 5 ? "up" : "down"} to ${roundTo(n, 10)}.` }); }
+        const low = n - (n % 100), d = Math.floor((n % 100) / 10);
+        return typed(`Round ${n} to the nearest 100.`, roundTo(n, 100), { label: `${n} to 100`, skill: "rounding to 100",
+          explain: `${n} is between ${low} and ${low + 100}. The tens digit is ${d}, so round ${d >= 5 ? "up" : "down"} to ${roundTo(n, 100)}.` });
       }) },
     { id: "n-round-100", title: "Rounding to 100 and 1000", level: "Second", organiser: ROUND, blurb: "Round to the nearest 100 or 1000.",
       make: () => distinct(10, () => {
@@ -316,9 +364,33 @@ window.PopActivities = (() => {
         const [x, y] = a > b ? [a, b] : [b, a];
         return typed(`${x} − ${y} =`, x - y, { label: `${x} − ${y}`, skill: "subtracting 3-digit numbers", explain: `${x} − ${y} = ${x - y}. Check: ${x - y} + ${y} = ${x}.` });
       }) },
-    { id: "n-decimals", title: "Decimal fractions", level: "Second", organiser: FDP, blurb: "Tenths and hundredths as decimals.",
+    { id: "n-best-value", title: "Best value, budgets, profit and loss", level: "Second", organiser: "Numeracy · Money", blurb: "Compare prices, keep to a budget, and work out profit or loss.",
+      make: () => distinct(8, () => {
+        const k = rand(3), pounds = n => `£${n.toFixed(2)}`;
+        if (k === 0) { const each = [0.4, 0.45, 0.5, 0.55, 0.6, 0.75], a = pick(each), b = pick(each.filter(x => x !== a)), na = pick([4, 5, 6]), nb = pick([8, 10, 12]);
+          const pa = a * na, pb = b * nb, ans = a < b ? `pack A` : `pack B`;
+          return choice(`Pack A: ${na} for ${pounds(pa)}. Pack B: ${nb} for ${pounds(pb)}. Which is better value?`, ans, [ans === "pack A" ? "pack B" : "pack A"],
+            { label: `${na} for ${pa} v ${nb} for ${pb}`, skill: "best value", explain: `Find the price of one: A is ${pounds(a)} each and B is ${pounds(b)} each, so ${ans} is better value.` }); }
+        if (k === 1) { const budget = pick([10, 15, 20]), x = (rand(10) + 2) + pick([0, 0.25, 0.5, 0.75]), y = (rand(5) + 1) + pick([0, 0.2, 0.5, 0.8]);
+          if (x + y > budget) return { label: "over" };
+          return typed(`You have £${budget}. You spend ${pounds(x)} and ${pounds(y)}. How much is left? (in £)`, dec(budget - x - y), { input: "decimal", accept: [pounds(budget - x - y), (budget - x - y).toFixed(2)],
+            label: `${budget}-${x}-${y}`, skill: "keeping to a budget", explain: `${pounds(x)} + ${pounds(y)} = ${pounds(x + y)}, and £${budget} − ${pounds(x + y)} = ${pounds(budget - x - y)}.` }); }
+        const cost = pick([12, 15, 18, 20, 24]), sold = cost + pick([-6, -4, -3, 3, 4, 6, 8]), diff = Math.abs(sold - cost), ans = sold > cost ? `£${diff} profit` : `£${diff} loss`;
+        return choice(`A stall buys juice for £${cost} and sells it all for £${sold}. Did it make a profit or a loss, and how much?`, ans,
+          [sold > cost ? `£${diff} loss` : `£${diff} profit`, `£${diff + 2} ${sold > cost ? "profit" : "loss"}`], { label: `${cost} to ${sold}`, skill: "profit and loss",
+            explain: `Selling price − cost = £${sold} − £${cost} = ${sold > cost ? "" : "−"}£${diff}, so it's a ${sold > cost ? "profit" : "loss"} of £${diff}.` });
+      }) },
+    { id: "n-decimals", title: "Decimal fractions", level: "Second", organiser: FDP, blurb: "Tenths, hundredths and thousandths as decimals.",
       make: () => distinct(10, () => {
-        const k = rand(4);
+        const k = rand(6);
+        if (k === 4) { const digits = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3), place = rand(3), n = `0.${digits.join("")}`;
+          const names = (digits[place] === 1 ? ["tenth", "hundredth", "thousandth"] : ["tenths", "hundredths", "thousandths"]), ans = `${digits[place]} ${names[place]}`;
+          return choice(`What is the ${digits[place]} worth in ${n}?`, ans, names.filter((_, i) => i !== place).map(x => `${digits[place]} ${x}`),
+            { label: `${digits[place]} in ${n}`, skill: "decimal place value", explain: `After the point come tenths, then hundredths, then thousandths, so the ${digits[place]} in ${n} is ${ans}.` }); }
+        if (k === 5) { const a = (rand(9) + 1) / 10 + (rand(9) + 1) / 1000, b = Math.round(a * 100) / 100;
+          if (Math.abs(a - b) < 0.0005) return { label: "same" };
+          return choice(`Which is bigger: ${dec3(a)} or ${dec3(b)}?`, dec3(Math.max(a, b)), [dec3(Math.min(a, b))], { label: `${dec3(a)} or ${dec3(b)}`, skill: "comparing decimals",
+            explain: `Line up the places: compare tenths, then hundredths, then thousandths. ${dec3(Math.max(a, b))} is bigger.` }); }
         if (k === 0) { const t = rand(9) + 1; return typed(`Write ${t}/10 as a decimal.`, dec(t / 10), { input: "decimal", accept: decAccept(t / 10), label: `${t}/10 as a decimal`, skill: "tenths as decimals", explain: `${t} tenths is 0.${t}.` }); }
         if (k === 1) { const t = rand(9) + 1; return choice(`Which fraction is the same as 0.${t}?`, `${t}/10`, [`${t}/100`, `1/${t + 1}`], { label: `0.${t} as a fraction`, skill: "decimals as fractions", explain: `The first digit after the point is tenths, so 0.${t} = ${t}/10.` }); }
         if (k === 2) {
@@ -481,6 +553,19 @@ window.PopActivities = (() => {
         const to = DIRS[(from + (clockwise ? turns : 4 - turns)) % 4], turn = ["a quarter", "a half", "three quarters of a"][turns - 1];
         return choice(`You face ${DIRS[from]} and make ${turn} turn ${clockwise ? "clockwise" : "anticlockwise"}. Which way do you face now?`, to, others2(to, DIRS),
           { label: `${DIRS[from]} ${turns} ${clockwise}`, skill: "compass turns", explain: `Turning ${clockwise ? "clockwise" : "anticlockwise"} from ${DIRS[from]}, ${turn} turn brings you to ${to}.` });
+      }) },
+    { id: "m-patterns-early", title: "Repeating patterns", level: "Early", organiser: PATTERN, blurb: "What comes next in a pattern of shapes and colours?",
+      make: () => distinct(8, () => {
+        const kinds = shuffle(["circle", "square", "triangle"]), colours = shuffle(["red", "blue", "yellow", "green"]);
+        const unit = pick([["a", "b"], ["a", "a", "b"], ["a", "b", "b"], ["a", "b", "c"]]);
+        const byColour = rand(2) === 1;
+        const item = x => (byColour ? [kinds[0], colours["abc".indexOf(x)]] : [kinds["abc".indexOf(x)], colours[0]]);
+        const seq = Array.from({ length: unit.length * 2 + 1 }, (_, i) => item(unit[i % unit.length]));
+        const next = item(unit[seq.length % unit.length]);
+        const word = it => (byColour ? it[1] : it[0]);
+        const pool = byColour ? colours.slice(0, 3) : kinds;
+        return choice("What comes next in the pattern?", word(next), others2(word(next), pool), { html: patternSVG(seq),
+          label: `${unit.join("")} ${byColour ? "colour" : "shape"} ${seq.map(word).join(",")}`, skill: "repeating patterns", explain: `The pattern repeats ${unit.map(x => word(item(x))).join(", ")}, so next is ${word(next)}.` });
       }) },
     { id: "m-patterns", title: "Number patterns", level: "First", organiser: PATTERN, blurb: "Find the next number, or the missing one, in a pattern.",
       make: () => distinct(10, () => {

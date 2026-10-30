@@ -550,6 +550,7 @@
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🖨️ ${esc(heading)}</h2>
+      ${hideLevelBox()}
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <div class="pack-choices">
@@ -565,13 +566,15 @@
       const page = dialog.querySelector(".sheet-preview-page");
       const h = html();
       page.innerHTML = h || `<p class="hint">Tick something to print.</p>`;
-      if (h) fitPages(page, "ws-activity");
+      page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
+      if (h) fitPages(page, sheetClass("ws-activity"));
     };
     dialog.querySelectorAll("[data-page]").forEach(el => { el.onchange = render; });
+    wireHideLevel(dialog, render);
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet("ws-activity", sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(sheetClass("ws-activity"), sheet); };
     dialog.showModal();
   }
 
@@ -626,7 +629,16 @@
   // would hear (listening, dictation, a story to listen to) goes on the adult's page to read aloud.
   const heardOnly = act => act.area === "listening" || String(act.id).startsWith("dictate:");
   // A CfE level ("First") or an England year ("Year 3", "Reception"), for a sheet's header
-  const levelTag = level => (level ? `&nbsp; <b>${esc(level)}${/^(Year|Reception|Not |Key )/.test(level) ? "" : " level"}</b>` : "");
+  const levelTag = level => (level ? `<span class="ws-level">&nbsp; <b>${esc(level)}${/^(Year|Reception|Not |Key )/.test(level) ? "" : " level"}</b></span>` : "");
+  // Older pupils working at an earlier level can have it left off their own sheet. It's remembered on this device.
+  const HIDE_LEVEL = "popspell-hide-level";
+  const hideLevel = () => { try { return localStorage.getItem(HIDE_LEVEL) === "1"; } catch { return false; } };
+  const hideLevelBox = () => `<label class="check"><input type="checkbox" data-hide-level${hideLevel() ? " checked" : ""}> Leave the level off the pupil's sheet</label>`;
+  const sheetClass = base => `${base}${hideLevel() ? " ws-hide-level" : ""}`;
+  const wireHideLevel = (dialog, render) => {
+    const box = dialog.querySelector("[data-hide-level]");
+    if (box) box.onchange = () => { try { localStorage.setItem(HIDE_LEVEL, box.checked ? "1" : "0"); } catch { /* fine */ } render(); };
+  };
 
   // After the questions: a way to show thinking, a question in a new context, and (on the adult's page)
   // what to look for. Made once per sheet, so the pupil's page and the adult's page match.
@@ -723,13 +735,22 @@
     [/^dictate:/, "Missing a sound, or the right sound with the wrong letters.", "Say the word slowly. Which sound is missing?"],
     [/^(w-|eg-)/, "Following the pattern on the sheet without being able to use it in their own writing.", "Why did you choose that? Look at their own sentence at the end."],
     [/^r-|^d-|^story/, "Answering from memory or a picture, not from the text.", "Where in the story does it say that? Show me."]];
+  const nextLesson = lesson => {
+    const L = window.PopLessons;
+    const same = lesson && L ? L.all().filter(x => x.subject === lesson.subject && x.strand === lesson.strand && !!x.england === !!lesson.england) : [];
+    return lesson ? same[same.indexOf(lesson) + 1] || null : null;
+  };
+  // The same "after marking" section for a bespoke sheet, from its lesson's understanding check
+  const afterMarkingHTML = l => (!l || !l.understand ? "" : `<div class="ws-diag"><h2 class="ws-sub">After marking</h2>
+    <p><b>Ask:</b> “${esc(l.understand)}”</p><p><b>Look for:</b> ${esc(l.lookFor)}</p>
+    <p><b>Talk:</b> ask the pupil to explain one answer or choice to you, as if they were teaching it.</p>
+    <p><b>Ready lesson:</b> ${esc(l.title)}${nextLesson(l) ? ` &nbsp; <b>If secure, next:</b> ${esc(nextLesson(l).title)}` : ""}</p></div>`);
   function diagnosisHTML(act) {
     const id = String(act.id);
     const m = MISTAKES.find(([re]) => re.test(id)) || (act.passage ? MISTAKES[MISTAKES.length - 1] : null);
     const L = window.PopLessons;
     const lesson = L && L.forWork(id)[0];
-    const same = lesson ? L.all().filter(x => x.subject === lesson.subject && x.strand === lesson.strand && !!x.england === !!lesson.england) : [];
-    const next = lesson ? same[same.indexOf(lesson) + 1] : null;
+    const next = nextLesson(lesson);
     if (!m && !lesson && !act.passage) return "";
     return `<div class="ws-diag"><h2 class="ws-sub">After marking</h2>
       ${m ? `<p><b>Look for:</b> ${esc(m[1])}</p><p><b>Ask:</b> “${esc(m[2])}”</p>` : ""}
@@ -764,7 +785,7 @@
     const keyLine = q => [heard && spoken(q) ? `<b>Say:</b> “${esc(spoken(q))}”` : "",
       q.kind === "dictation" ? "" : `<b>${esc(q.answer)}</b>${q.explain ? ` · ${esc(q.explain)}` : ""}`].filter(Boolean).join("<br>");
     const story = act.listen && act.passage ? `<p>Read this story aloud, then read each question.</p><div class="ws-passage"><h2>${esc(act.passage.title)}</h2><p>${esc(act.passage.text)}</p></div>` : "";
-    return `${brandHead(`${heard ? "For the adult" : "Answers"}: ${act.title}`, `${heard ? "Read aloud from this sheet. The answers are below." : "For the adult, not the pupil."}${who ? ` &nbsp; ${esc(who)}` : ""}${levelTag(level)}`)}
+    return `${brandHead(`${heard ? "For the adult" : "Answers"}: ${act.title}`, `${heard ? "Read aloud from this sheet. The answers are below." : "For the adult, not the pupil."}${who ? ` &nbsp; ${esc(who)}` : ""}${levelTag(level)}${englandOnly(act.id) ? EN_TAG : ""}`)}
       ${story}<ol class="ws-answers">${qs.map(q => `<li>${keyLine(q)}</li>`).join("")}</ol>${extra}${diagnosisHTML(act)}`;
   }
   // Both, as print pages. The answers match the questions the pupil's sheet keeps once it's fitted to the page.
@@ -784,6 +805,7 @@
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
       <label class="check"><input type="checkbox" data-answers${heard ? " checked disabled" : ""}> ${heard ? "A page for you to read aloud from (needed)" : "Also print the answers, on a separate page for you"}</label>
+      ${hideLevelBox()}
       ${act.passage ? "" : `<button class="btn small" type="button" data-new>🔀 New questions</button>`}
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
@@ -793,14 +815,16 @@
       const p = activityPages(act, qs, level || act.level, "", extras);
       return `<div class="ws-page">${p.pupil}</div>${dialog.querySelector("[data-answers]").checked ? `<div class="ws-page ws-adult">${p.answers}</div>` : ""}`;
     };
-    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
+    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
+      page.innerHTML = html(); fitPages(page, sheetClass("ws-activity")); };
     dialog.querySelector("[data-answers]").onchange = render;
+    wireHideLevel(dialog, render);
     const fresh = dialog.querySelector("[data-new]");
     if (fresh) fresh.onclick = () => { qs = act.make(); extras = sheetExtras(act); render(); };
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); printSheet("ws-activity", sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); printSheet(sheetClass("ws-activity"), sheet); };
     dialog.showModal();
   }
 
@@ -1175,7 +1199,7 @@
     `<b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}`);
 
   function handwritingHTML(who, list) {
-    return `${dotPattern}${sheetHead(`${list.title} · handwriting`, who)}
+    return `${dotPattern}${sheetHead(`${list.title} · handwriting`, who, englandOnly(list.id) ? EN_TAG : "")}
       <p>Look at the word and say its sounds. Trace the grey word, then the dotted word, then write it on your own.</p>
       ${list.items.map(item => handwritingRow(item.spelling)).join("")}`;
   }
@@ -1187,7 +1211,7 @@
       const blanked = esc(sentence).replace(new RegExp(`\\b${item.spelling}\\b`, "i"), `<span class="ws-blank"></span>`);
       return `<div class="ws-sentence"><p><b>${i + 1}.</b> ${blanked}</p>${handwritingRow("", ["blank"])}</div>`;
     });
-    return `${sheetHead(`${list.title} · sentences`, who)}
+    return `${sheetHead(`${list.title} · sentences`, who, englandOnly(list.id) ? EN_TAG : "")}
       <p>Words to use: <b>${list.items.map(i => esc(i.spelling)).join(", ")}</b></p>
       <p>Fill in the missing word. Then write the whole sentence on the lines, with a capital letter and a full stop.</p>
       ${rows.join("")}
@@ -1285,7 +1309,8 @@
     const kit = l && l.england ? Object.assign({}, PAPER_KIT, { sheetHead: (t, w, extra = "") => sheetHead(t, w, extra + EN_TAG) }) : PAPER_KIT;
     PAPER[sh.id] = { title: sh.title, detail: sh.detail, lesson: sh.lesson, needsAdult: !!sh.needsAdult,
       level: l ? l.level : "", subject: l ? l.subject : "Literacy", strand: l ? l.strand : "Writing: creating texts", england: !!(l && l.england),
-      build: who => { const b = sh.build(who, kit), code = sheetCode(); return Object.assign({}, b, { pupil: withCode(b.pupil, code), answers: withCode(b.answers, code) }); },
+      build: who => { const b = sh.build(who, kit), code = sheetCode();
+        return Object.assign({}, b, { pupil: withCode(b.pupil, code), answers: b.answers ? withCode(b.answers + afterMarkingHTML(l), code) : b.answers }); },
       html: who => sh.build(who, kit).pupil };
   });
   const isPaper = id => Boolean(PAPER[id]);
@@ -1311,7 +1336,7 @@
           <td class="check-box">□</td></tr>`;
     const lines = list.items.map(row).join("") + (fresh.length
       ? `<tr class="ws-new"><td colspan="${mode === "key" ? 4 : 3}"><b>New words</b>: ${mode === "key" ? "not practised, to see if the pupil can use the same sounds" : "use the sounds you know"}</td></tr>${fresh.map((item, i) => row(item, list.items.length + i)).join("")}` : "");
-    const html = `${mode === "key" ? brandHead(`Words to say: ${list.title}`, `For the adult, not the pupil.${who && who !== "Everyone" ? ` &nbsp; ${esc(who)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)
+    const html = `${mode === "key" ? brandHead(`Words to say: ${list.title}`, `For the adult, not the pupil.${who && who !== "Everyone" ? ` &nbsp; ${esc(who)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}${englandOnly(plan.list) ? EN_TAG : ""}`)
       : brandHead(list.title, `<b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
         ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}${englandOnly(plan.list) ? EN_TAG : ""}`)}
       <p>${mode === "key" ? "Read each word aloud for the pupil to write. The sound map shows each sound and the letters for it, for checking their work." :
@@ -2135,6 +2160,7 @@
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
+      ${hideLevelBox()}
       <label class="check"><input type="checkbox" data-sheet="plan" checked> Lesson plan (for you)</label>
       ${sheets.map((s, i) => `<label class="check"><input type="checkbox" data-sheet="${i}" checked> ${esc(s.title)}</label>`).join("")}
       ${sheets.map((s, i) => (s.act ? `<label class="check"><input type="checkbox" data-sheet="a${i}"${heardOnly(s.act) ? " checked" : ""}> ${heardOnly(s.act) ? "To read aloud" : "Answers"} (for you): ${esc(s.title.replace(/^[^:]+: /, ""))}</label>`
@@ -2152,12 +2178,14 @@
       return pupil.filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("")
         + adult.filter(Boolean).map(h => `<div class="ws-page ws-adult">${h}</div>`).join("");
     };
-    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
+    const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
+      page.innerHTML = html(); fitPages(page, sheetClass("ws-activity")); };
     dialog.querySelectorAll("[data-sheet]").forEach(el => { el.onchange = render; });
+    wireHideLevel(dialog, render);
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet("ws-activity", sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(sheetClass("ws-activity"), sheet); };
     dialog.showModal();
   }
 

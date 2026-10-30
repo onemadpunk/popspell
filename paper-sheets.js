@@ -398,7 +398,13 @@ window.PopPaper = (() => {
       <p>Is it still easy to read? ☐ yes ☐ mostly ☐ not yet &nbsp; (Speed and how easy it is to read are judged separately.)</p>
       <p><b>3.</b> Some writing is clearer printed. Label these parts of a plant in clear print: <b>flower, leaf, stem, root</b>.</p>
       ${svg(300, 110, `<line x1="150" y1="100" x2="150" y2="35" class="pp-beam"/><circle cx="150" cy="25" r="14" class="pp-frame"/><ellipse cx="128" cy="62" rx="20" ry="8" class="pp-frame"/>
-        <path d="M150,100 L135,108 M150,100 L165,108" class="pp-beam"/>${[[20, 25], [20, 62], [230, 70], [230, 104]].map(([x, y]) => `<line x1="${x + 50}" y1="${y}" x2="${x < 150 ? 125 : 155}" y2="${y}" class="pp-cut"/><rect x="${x}" y="${y - 10}" width="50" height="18" class="pp-frame"/>`).join("")}`)}`
+        <path d="M150,100 L135,108 M150,100 L165,108" class="pp-beam"/>${[[20, 25], [20, 62], [230, 70], [230, 104]].map(([x, y]) => `<line x1="${x + 50}" y1="${y}" x2="${x < 150 ? 125 : 155}" y2="${y}" class="pp-cut"/><rect x="${x}" y="${y - 10}" width="50" height="18" class="pp-frame"/>`).join("")}`)}`,
+    answers: lookForPage(h, "Writing legibly and at speed", [
+      "1. Joins used consistently, letters the right size and evenly spaced, and a clear finish to each word",
+      "2. Speed: count the words, and compare with their last go rather than with other pupils",
+      "2. Legibility, judged separately: could someone else read every word? Note any letters that break down at speed (often a, d, e, o, r and t)",
+      "3. Clear, unjoined print for the labels, because labels need to be read at a glance"],
+      "Time exactly one minute. If speed rises but legibility falls, slow down and practise the letters that broke down, then time again another day.")
   }));
 
   add("paper-phonics-words", "lesson-england-getting-ready-for-the-phonics-check-year-1", "Read the words", "Real words and alien words to read aloud, with a marking sheet for the adult.", (who, h) => {
@@ -582,6 +588,24 @@ window.PopPaper = (() => {
         <li>Not very useful on its own: it's trying to sell, so it chooses what to tell you. Check the label or another source.</li>
         <li>Three questions of the right kinds</li></ol>`
   }), { needsAdult: true });
+
+  const HAMSTER = "Hamsters are small animals that make good pets. They sleep in the day and are busy at night, so their cage should be somewhere quiet. A hamster needs a big cage with deep bedding to dig in, a wheel to run on and a place to hide. Give your hamster fresh water every day and a small amount of hamster food. They also like small pieces of carrot or apple. Never give a hamster chocolate or sweets. Clean the cage once a week, and handle your hamster gently, close to the floor, in case it jumps.";
+  add("paper-layout-page", "lesson-second-layout-and-presentation-to-engage-a-reader", "Design a page", "Turn a plain text into a leaflet page for a younger reader: headings, bullet points, pictures and captions, then explain the choices.", (who, h) => ({
+    pupil: `${h.sheetHead("Design a page", who)}<p>This information is all in one block, so it's hard to read. Your reader is a child aged 7 who is getting a hamster.</p>
+      <p class="pp-passage">${HAMSTER}</p>
+      <p><b>1.</b> Underline the most important ideas. Which ones belong together? Group them, for example <i>home</i>, <i>food</i>, <i>care</i>.</p>
+      <p><b>2.</b> Design the page in the box. Sketch where everything goes and write the words for your headings and bullet points.</p>
+      <div class="pp-draw" style="height:78mm"></div>
+      <p><b>I used:</b> ${tick(["a heading", "sub-headings", "bullet points", "a picture", "a caption", "a font or colour to make something stand out"])}</p>
+      <p><b>3.</b> Choose one thing you used. Why does it help your reader?</p>${lines(2)}`,
+    answers: lookForPage(h, "Design a page", [
+      "The main ideas picked out and grouped (home, food, care and handling), not every sentence copied",
+      "Features chosen for a purpose: a heading that says what the page is about, sub-headings for each group, bullet points for lists such as foods",
+      "Pictures with captions that add information, not just decoration",
+      "Something important made to stand out, such as never giving chocolate or sweets",
+      "A reason for a choice that is about the 7-year-old reader: finding things quickly, seeing what matters most, wanting to read on"],
+      "A version made on a computer or tablet counts just as much. Ask which choice helps the reader most, and whether there's a better way to show one idea.")
+  }));
 
   return { sheets, get: id => sheets[id] || null, forLesson: lessonId => Object.values(sheets).filter(s => s.lesson === lessonId) };
 })();

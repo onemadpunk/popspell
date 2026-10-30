@@ -93,7 +93,7 @@ window.PopLessons = (() => {
       teach: "Name each coin up to £2. Set up a shop with prices up to 10p. Show paying 7p as 5p and 2p, or seven 1p coins. Talk about giving too much and getting change.",
       practise: "Counting money: add up the coins.",
       check: "Price a toy at 8p: pay for it two different ways." },
-    ["n-money"], "Let your child pay for something small and talk about the coins.", "coin, pence, pound, pay, price, change, enough");
+    ["n-money-10"], "Let your child pay for something small and talk about the coins.", "coin, pence, pound, pay, price, change, enough");
 
   add("Early", M, TIME, ["MNU 0-10a"], "Days, routines and o'clock",
     "We are learning about the order of our day, the days of the week and o'clock.",
@@ -102,7 +102,7 @@ window.PopLessons = (() => {
       teach: "Order picture cards of a day (wake up, breakfast, school, tea, bed). Say the days of the week and talk about the seasons. On a clock, show the minute hand pointing to 12 for o'clock and move the hour hand.",
       practise: "Telling the time: the o'clock questions.",
       check: "Set 3 o'clock on a clock: what time is it? What day comes after Tuesday?" },
-    ["n-time"], "Point out o'clock times at home and talk about tomorrow's day.", "o'clock, hour hand, minute hand, morning, afternoon, night, days, months, seasons");
+    ["n-time-oclock"], "Point out o'clock times at home and talk about tomorrow's day.", "o'clock, hour hand, minute hand, morning, afternoon, night, days, months, seasons");
 
   add("Early", M, MEAS, ["MNU 0-11a"], "Longer, heavier and holds more",
     "We are learning to compare sizes and measure with everyday things.",
@@ -120,7 +120,7 @@ window.PopLessons = (() => {
       teach: "Make a red–blue–red–blue bead pattern. Continue it, then make AAB patterns. Count in ones along a number line and find gaps.",
       practise: "Number patterns: find the next number.",
       check: "Show a pattern with a gap: what is missing?" },
-    ["m-patterns"], "Spot patterns on clothes, tiles and fences.", "pattern, repeat, next, missing");
+    ["m-patterns-early"], "Spot patterns on clothes, tiles and fences.", "pattern, repeat, next, missing");
 
   add("Early", M, SHAPE, ["MTH 0-16a"], "Sorting 2D shapes and 3D objects",
     "We are learning to name, describe and sort shapes.",
@@ -158,7 +158,7 @@ window.PopLessons = (() => {
       teach: "Use a number line to round 2-digit numbers to 10, then 3-digit numbers to 100. Model estimating 38 + 41 as 40 + 40, then working it out and comparing.",
       practise: "Rounding to the nearest 10.",
       check: "Round 67 and 352. Estimate 29 + 52, then check." },
-    ["n-round-10", "n-round-100"], "Round prices in the shop to estimate the total.", "round, nearest, estimate, about, check, sensible");
+    ["n-round-10", "n-round-10-100"], "Round prices in the shop to estimate the total.", "round, nearest, estimate, about, check, sensible");
 
   add("First", M, NUM, ["MNU 1-02a"], "Place value to 1000",
     "We are learning what each digit is worth in numbers to 1000.",
@@ -484,7 +484,7 @@ window.PopLessons = (() => {
       teach: "Compare two pack sizes to find the better value. Plan a budget with a list of prices. Sell 20 cakes at 50p that cost £6 to make: profit or loss? Talk about card payments and keeping PINs safe.",
       practise: "Counting money, then plan a £25 budget from a price list.",
       check: "Which is better value: 6 for £1·50 or 10 for £2·20?" },
-    ["n-money"], "Compare unit prices together when shopping.", "budget, afford, best value, profit, loss, bank card");
+    ["n-best-value", "n-money"], "Compare unit prices together when shopping.", "budget, afford, best value, profit, loss, bank card");
 
   add("Second", M, TIME, ["MNU 2-10a"], "12- and 24-hour time and timetables",
     "We are learning to use 12- and 24-hour time and read timetables.",
@@ -1073,6 +1073,17 @@ window.PopLessons = (() => {
       check: "Ask them to write one literal, one inferential and one evaluative question about something they've heard." },
     [], "When an advert comes on, ask: what is it trying to make us do? Is everything in it a fact?", "literal, inferential, evaluative, fact, opinion, influence, source, reliable");
 
+  add("Second", L, CREATE, ["LIT 2-24a"], "Layout and presentation to engage a reader",
+    "We are learning to choose a layout and presentation, such as headings, bullet points, fonts, pictures and captions, that help and interest our reader.",
+    ["I can make choices about layout and presentation, on paper or on screen, to engage my reader.",
+      "I can use headings, sub-headings, bullet points, fonts, pictures and captions for a purpose.",
+      "I can explain why my layout suits my reader."],
+    { start: "Show the same information twice: once as one block of text, once as a page with a heading, bullet points and a picture. Which would you rather read? Why?",
+      teach: "Name the features on a real leaflet, poster or web page: heading, sub-headings, bullet points, fonts, pictures, captions. For each, ask what it does for the reader (find things fast, see what matters most, want to read on). Plan a page for a younger reader from a plain piece of text: choose the main ideas, then the features that will show them best.",
+      practise: "The \"Design a page\" sheet: turn a plain text into a leaflet page for a younger reader, then explain the choices. It can also be made on a computer or tablet.",
+      check: "Ask: which feature helps your reader most, and why? Could you show the same idea a better way?" },
+    [], "Look at a cereal box, a leaflet or a web page together: what makes you want to read it, and what makes it easy to find things?", "layout, presentation, heading, sub-heading, bullet point, font, caption, picture, reader");
+
   /* ===================== England: lessons for the national curriculum's own requirements ===================== */
   // Grammar by year (English Appendix 2), the statutory spelling words (Appendix 1), joined
   // handwriting, and the Year 1 phonics and Year 4 multiplication tables checks. "level" and "codes"
@@ -1218,11 +1229,11 @@ window.PopLessons = (() => {
     "early-doubles-and-splitting-numbers-to-10": ["Can 7 be split another way? How many ways can you find?", "Finds more than one split (5 and 2, 4 and 3) and sees both parts together make 7."],
     "early-sharing-equally-and-halves": ["Is this half? How do you know?", "Checks both parts are the same size or the same number, not just that there are two parts."],
     "early-coins-and-paying-up-to-10p": ["Which is worth more, one 5p coin or three 1p coins? Why?", "Knows a coin's value isn't how many coins there are: 5p is worth more than 3p."],
-    "early-days-routines-and-o-clock": ["What happens before lunch? What happens after?", "Orders real events in their day and uses before, after, next."],
+    "early-days-routines-and-o-clock": ["The long hand is on 12 and the short hand is on 3. Is it o'clock? What might you be doing at 3 o'clock in the afternoon?", "Explains that the long hand on 12 means o'clock and the short hand shows the hour, and links the time to a real part of their own day."],
     "early-longer-heavier-and-holds-more": ["How could we check which is longer fairly?", "Lines the ends up together, or uses the same thing to measure both."],
     "early-copying-and-continuing-patterns": ["What comes next? How do you know?", "Names the part that repeats and uses it to say what comes next."],
     "early-sorting-2d-shapes-and-3d-objects": ["Is this still a triangle if I turn it round? Why?", "Knows turning a shape doesn't change it: it still has 3 sides and 3 corners."],
-    "early-position-direction-and-symmetry": ["Tell me how to get from the door to your chair.", "Gives clear directions using forwards, turn, next to, behind."],
+    "early-position-direction-and-symmetry": ["Hide a toy and give me clues with words like behind, under and next to. Which clue helped me most? Why?", "Chooses position words to suit a new hiding place, and can say which clue helped and why."],
     "early-sorting-and-simple-charts": ["What does our chart tell us? Which has the most?", "Reads the chart to answer a question, not just describing the pictures."],
     "first-rounding-to-estimate": ["Why would you round before you work it out?", "Uses rounding to check whether an answer is sensible."],
     "first-place-value-to-1000": ["What is the 4 worth in 346? What if it moved to the hundreds?", "Explains the value of a digit depends on its place."],
@@ -1281,7 +1292,7 @@ window.PopLessons = (() => {
     "early-reading-tricky-words": ["Which part of the word is tricky? Which part can you sound out?", "Points to the tricky part (the heart part) and sounds out the rest."],
     "early-talking-about-a-story": ["What do you think will happen next? What makes you think that?", "Gives a prediction and a reason from the story or the pictures."],
     "early-listening-taking-turns-and-following-instructions": ["What did your partner just say? Tell me in your own words.", "Repeats the main idea, showing they listened."],
-    "early-forming-lowercase-letters": ["Where does this letter start? Show me with your finger.", "Starts in the right place and moves the right way without a model."],
+    "early-forming-lowercase-letters": ["Why does it matter where you start a letter? Show me what goes wrong with b if you start at the bottom.", "Explains that the right start makes each letter the same every time; can show a wrong start, spot what changed, and fix it."],
     "early-writing-a-sentence": ["How do you know where your sentence starts and ends?", "Points to the capital letter and full stop, and reads the sentence back."],
     "early-choosing-and-sharing-stories-i-like": ["Why did you choose that book? What did you like or not like about it?", "Gives a reason linked to the book (the cover, the characters, a funny part), not just \"it's good\"."],
     "early-asking-questions-about-stories": ["What question would you ask the character? Why?", "Asks a real question about the story, and links it to something they know or have done."],
@@ -1295,7 +1306,7 @@ window.PopLessons = (() => {
     "first-reading-aloud-with-expression": ["Why did you change your voice there?", "Links expression to the punctuation or a character's feelings."],
     "first-answering-questions-about-a-text": ["How do you know? Show me the words that tell you.", "Points to evidence in the text, not just memory."],
     "first-finding-information-and-making-notes": ["Why didn't you copy the whole sentence?", "Explains notes keep the key words only."],
-    "first-full-stops-question-marks-and-exclamation-marks": ["Why did you use a question mark here?", "Explains the sentence asks something."],
+    "first-full-stops-question-marks-and-exclamation-marks": ["\"You're going home.\" \"You're going home?\" \"You're going home!\" How does each mark change what it means?", "Explains how the end mark changes the meaning or how it's said, and chooses the right mark for a new sentence of their own."],
     "first-joining-sentences-and-but-because-so": ["What's the difference between \"I was cold so I wore a coat\" and \"I was cold but I wore a coat\"?", "Explains so gives a result and but shows a contrast."],
     "first-past-tense-and-checking-my-writing": ["How do you know this sentence is about the past?", "Points to the past-tense verbs, and spots one that doesn't match."],
     "first-dictation-spelling-and-punctuation-together": ["Read your sentence back. What did you check?", "Checks capital letter, spellings and full stop without being told."],
@@ -1309,7 +1320,7 @@ window.PopLessons = (() => {
     "first-writing-to-share-information-or-an-opinion": ["Which of your sentences informs, and which persuades? How can you tell?", "Points to facts that inform and to reasons and \"you should\" that persuade."],
     "first-clear-legible-handwriting": ["Why does it matter that your letters are the right size?", "Explains it helps a reader read it easily."],
     "second-spelling-rules-ing-plurals-and-endings": ["Why does hop become hopping but jump becomes jumping?", "Explains doubling after a short vowel with one consonant."],
-    "second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph": ["Why does the c in city sound like s?", "Knows c is usually soft before e, i or y."],
+    "second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph": ["Here are words you haven't practised: cycle, cell, giant. How would you say each one, and why?", "Applies the soft c and soft g patterns (before e, i or y) to new words and explains them; knows some words, such as get and girl, break the pattern."],
     "second-reading-fluently-with-pace-and-expression": ["How did the way you read help a listener understand?", "Links pace, pauses and emphasis to the meaning."],
     "second-inference-reading-between-the-lines": ["The text doesn't say it. What makes you think so?", "Gives a clue from the text and explains what it suggests."],
     "second-fact-opinion-and-persuasion": ["Why might an advert use opinions and not just facts?", "Explains opinions persuade, and that facts can be chosen to suit the writer."],
@@ -1322,15 +1333,16 @@ window.PopLessons = (() => {
     "second-choosing-texts-and-authors-and-writing-my-own-choice": ["Why did you choose that form for your own text?", "Links the form and style to the audience and purpose, for example a comic for younger readers."],
     "second-group-discussion-building-on-others-ideas": ["How did what I said change your thinking?", "Refers to your point and builds on it or disagrees respectfully with a reason."],
     "second-notes-from-listening-in-my-own-words": ["Why does it matter to say where your information came from?", "Explains it shows the information can be checked and gives credit to the source."],
+    "second-layout-and-presentation-to-engage-a-reader": ["Why did you make that a heading, and not put it in the middle of a paragraph?", "Explains each choice by what the reader needs: to find information quickly, to see what matters most, or to want to read on."],
     "second-questions-fact-and-opinion-in-what-i-hear": ["Was the advert a useful source? Why or why not?", "Weighs it up: it wants to sell, so it chooses facts and adds opinions, so check elsewhere."],
     "second-planning-and-giving-a-short-talk": ["What did you do to keep your audience interested?", "Names techniques: a question, an example, eye contact, changing their voice."],
     "england-year-1-grammar-plurals-un-and-capital-letters": ["Why does box need -es but cat only -s?", "Hears the extra beat (boxes), or knows -es comes after s, x, z, sh and ch."],
-    "england-year-2-grammar-apostrophes-suffixes-and-sentence-types": ["Why is there an apostrophe in can't?", "Explains it shows where letters are missed out (cannot)."],
+    "england-year-2-grammar-apostrophes-suffixes-and-sentence-types": ["Write \"do not\" and \"they are\" the short way. Where does the apostrophe go, and why there?", "Puts the apostrophe where letters are missed out in new words, and explains it; doesn't add apostrophes to ordinary plurals."],
     "england-year-3-grammar-a-or-an-prefixes-and-words-for-time-and-cause": ["Why do we say an apple but a banana?", "Explains an goes before a vowel sound."],
-    "england-year-4-grammar-fronted-adverbials-possessive-apostrophes-and-standard-english": ["Why is there a comma after \"Later that day\"?", "Explains the comma comes after a fronted adverbial."],
+    "england-year-4-grammar-fronted-adverbials-possessive-apostrophes-and-standard-english": ["Start a sentence of your own with \"After lunch\" or \"Without a sound\". Where does the comma go, and how does it help the reader?", "Writes a new fronted adverbial with a comma after it, and explains that the comma shows where the opening ends."],
     "england-year-5-grammar-relative-clauses-possibility-and-parenthesis": ["What does the relative clause add to this sentence?", "Explains it gives extra information about the noun."],
     "england-year-6-grammar-passive-formal-language-and-punctuation-between-clauses": ["Why might a writer use the passive: \"The window was broken\"?", "Explains it hides or doesn't need who did it."],
-    "england-year-1-common-exception-words": ["Which part of said is tricky?", "Points to the ai (it doesn't make its usual sound) and sounds out the rest."],
+    "england-year-1-common-exception-words": ["Which part of \"said\" do you have to remember? Now find the tricky part in \"was\".", "Finds the tricky part in a second word without being told, and sounds out the rest."],
     "england-year-2-common-exception-words": ["How will you remember the tricky part of because?", "Uses a strategy: saying it in syllables, a phrase or noticing the tricky part."],
     "england-years-3-and-4-word-list-roots-prefixes-and-suffixes": ["Which root word is in disappear? How does that help you spell it?", "Finds the root (appear) and adds the prefix without changing it."],
     "england-years-5-and-6-word-list-morphology-and-etymology": ["Where does the word come from, and does that help you spell it?", "Uses a word family or origin to explain a spelling."],

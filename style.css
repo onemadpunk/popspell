@@ -1538,6 +1538,8 @@ a.me-card:hover { border-color: var(--primary); }
 .canopy-reflect { margin: 6px 0 0; text-align: center; font-weight: 700; color: var(--ink, #10284f); }
 /* All 26 letters fill exactly two pages, so the rows are a little smaller */
 .sheet-preview-page .ws-compact .ws-row, .ws-compact .ws-row { width: 90%; margin: 0 auto 3px; }
+/* An older pupil's own sheet can leave the level off; the adult's pages keep it */
+.ws-hide-level .ws-page:not(.ws-adult) .ws-level { display: none; }
 .ws-extra { break-inside: avoid; margin-top: 6px; border-top: 1px dashed #9aa8bf; }
 .ws-extra p { margin: 4px 0 !important; }
 .ws-think { height: 30mm; border: 1.5px dashed #8a9ab4; border-radius: 8px; margin: 4px 0; }
