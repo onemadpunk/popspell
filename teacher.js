@@ -494,7 +494,10 @@
     const pupil = [], adult = [];
     l.use.forEach(id => {
       if (id === "letter-formation") return pupil.push({ label: "Letter formation", html: () => letterFormationHTML(who), checked: true });
-      if (catalogueList(id)) return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, checked: true });
+      if (catalogueList(id)) {
+        adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
+        return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, checked: true });
+      }
       const act = A && A.get(id);
       if (!act || act.area === "games") return;
       const qs = act.make();
@@ -1071,9 +1074,10 @@
         ? `<tr><td>${i + 1}</td><td class="write-line"></td><td class="check-box">□</td></tr>`
         : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
           <td class="check-box">□</td></tr>`).join("");
-    const html = `${brandHead(`${list.title}${mode === "key" ? " · teacher key" : ""}`, `<b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
+    const html = `${mode === "key" ? brandHead(`Words to say: ${list.title}`, `For the adult, not the pupil.${who && who !== "Everyone" ? ` &nbsp; ${esc(who)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)
+      : brandHead(list.title, `<b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
         ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)}
-      <p>${mode === "key" ? "Read each word aloud. One box represents one sound; the letters shown are the matching grapheme." :
+      <p>${mode === "key" ? "Read each word aloud for the pupil to write. The sound map shows each sound and the letters for it, for checking their work." :
         mode === "dictation" ? "Listen, say the sounds, then write the word your teacher or adult says." :
         "Listen to the word. Say it, stretch it, tap one box for each sound, then write the letters for each sound in its box."}</p>
       ${list.tip ? `<p><b>Sound focus:</b> ${esc(list.tip)}</p>` : ""}
@@ -1081,10 +1085,16 @@
         <th>${mode === "key" ? "Sound map" : "Check"}</th></tr></thead><tbody>${lines}</tbody></table>`;
     return { className: "", html };
   }
+  // The pupil can't do these without someone reading the words out, so the words come too, on their own page
+  const needsWords = (plan, mode) => plan.list !== "letter-formation" && (mode === "mapping" || mode === "dictation");
+  const withWords = (who, plan, mode, words = needsWords(plan, mode)) => {
+    const sheet = worksheetSpec(who, plan, mode);
+    return { className: sheet.className, html: `<div class="ws-page">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
+  };
 
   function printWorksheet(who, plan, mode) {
-    const sheet = worksheetSpec(who, plan, mode);
-    if (!sheet) return showError(new Error("Worksheets are available for built-in spelling lists."));
+    if (!worksheetSpec(who, plan, mode)) return showError(new Error("Worksheets are available for built-in spelling lists."));
+    const sheet = withWords(who, plan, mode);
     printSheet(sheet.className, sheet.html);
   }
 
@@ -1094,26 +1104,31 @@
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
       ${plan.list === "letter-formation" ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
-        <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Teacher key</option></select></label>`}
+        <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
+      <label class="check" data-words-box><input type="checkbox" data-words checked> The words to say, on a separate page for you</label>
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page"></section>`;
     document.body.append(dialog);
     const picker = dialog.querySelector("[data-mode]");
     if (picker) picker.value = mode;
+    const chosenMode = () => (picker ? picker.value : mode);
+    const words = () => needsWords(plan, chosenMode()) && dialog.querySelector("[data-words]").checked;
     const render = () => {
-      const sheet = worksheetSpec(who, plan, picker ? picker.value : mode);
+      dialog.querySelector("[data-words-box]").hidden = !needsWords(plan, chosenMode());
+      const sheet = withWords(who, plan, chosenMode(), words());
       const page = dialog.querySelector(".sheet-preview-page");
       page.className = `sheet-preview-page ${sheet.className}`;
       page.innerHTML = sheet.html;
       fitPages(page, sheet.className);
     };
+    dialog.querySelector("[data-words]").onchange = render;
     if (picker) picker.onchange = render;
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     dialog.querySelector("[data-print]").onclick = () => {
-      const sheet = worksheetSpec(who, plan, picker ? picker.value : mode);
+      const sheet = withWords(who, plan, chosenMode(), words());
       dialog.close(); printSheet(sheet.className, sheet.html);
     };
     dialog.showModal();
@@ -1173,7 +1188,7 @@
           <input type="text" id="paperWho" placeholder="Pupil's name" maxlength="40">
           <select id="paperList"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
           <label>Sheet type <select id="paperMode"><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
-            <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Teacher key</option></select></label>
+            <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>
           <button class="btn small" id="paperPreview" type="button" disabled>👀 Preview sheet</button>
           <button class="btn small" id="paperPrint" type="button" disabled>🖨️ Print / Save PDF</button>
           <button class="btn small primary" id="paperMark" type="button" disabled>✍️ Enter marks</button>
@@ -1201,7 +1216,7 @@
             ${catalogueList(plan.list) ? `<button class="btn small" data-preview-plan="${rowIndex}-${planIndex}">👀 Preview worksheet</button>
             <button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
             <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
-            <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print teacher key</button>
+            <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print words to say</button>
             <button class="btn small" data-print-handwriting="${rowIndex}-${planIndex}">Print handwriting</button>
             <button class="btn small" data-print-sentences="${rowIndex}-${planIndex}">Print sentences</button>
             ${row.who.toLowerCase() === "everyone" ? "" : `<button class="btn small" data-mark-plan="${rowIndex}-${planIndex}">Mark worksheet</button>`}` : `<span class="hint">Online activity · no paper sheet</span>`}
@@ -1870,14 +1885,15 @@
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
       <label class="check"><input type="checkbox" data-sheet="plan" checked> Lesson plan (for you)</label>
       ${sheets.map((s, i) => `<label class="check"><input type="checkbox" data-sheet="${i}" checked> ${esc(s.title)}</label>`).join("")}
-      ${sheets.map((s, i) => (s.act ? `<label class="check"><input type="checkbox" data-sheet="a${i}"${heardOnly(s.act) ? " checked" : ""}> ${heardOnly(s.act) ? "To read aloud" : "Answers"} (for you): ${esc(s.title.replace(/^[^:]+: /, ""))}</label>` : "")).join("")}
+      ${sheets.map((s, i) => (s.act ? `<label class="check"><input type="checkbox" data-sheet="a${i}"${heardOnly(s.act) ? " checked" : ""}> ${heardOnly(s.act) ? "To read aloud" : "Answers"} (for you): ${esc(s.title.replace(/^[^:]+: /, ""))}</label>`
+        : `<label class="check"><input type="checkbox" data-sheet="a${i}" checked> Words to say (for you): ${esc(s.title.replace(/^[^:]+: /, ""))}</label>`)).join("")}
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const chosen = key => dialog.querySelector(`[data-sheet="${key}"]`).checked;
     const html = () => [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""].concat(sheets.map((s, i) => (chosen(i) ? sheetHTML(s, i) : "")),
-      sheets.map((s, i) => (s.act && chosen(`a${i}`) ? pagesOf(s, i).answers : "")))
+      sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "key").html)))
       .filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("");
     const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelectorAll("[data-sheet]").forEach(el => { el.onchange = render; });

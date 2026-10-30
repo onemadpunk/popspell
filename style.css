@@ -1024,18 +1024,24 @@ a.me-card:hover { border-color: var(--primary); }
 .t-hello { flex: 1; min-width: 200px; }
 .t-top .t-class { margin-left: auto; }
 .t-tabs {
-  flex-wrap: nowrap; overflow-x: auto; gap: 6px; margin: 14px 0 14px; padding: 6px; border: 0;
+  flex-wrap: nowrap; overflow-x: auto; gap: 2px; margin: 14px 0 14px; padding: 6px; border: 0;
   background: rgba(255, 255, 255, .85); border-radius: 999px; box-shadow: var(--shadow); scrollbar-width: none;
 }
 .t-tabs::-webkit-scrollbar { display: none; }
-.t-tab { flex: none; white-space: nowrap; padding: 8px 14px; font-size: .95rem; color: var(--ink); }
+/* Ten tabs need about 1100px like this, so they share out the bar's width and never run off the end */
+.t-tab { flex: 1 1 auto; white-space: nowrap; padding: 8px 10px; font-size: .9rem; color: var(--ink); }
 .t-tab:hover { background: var(--primary-soft); }
 .t-tab[aria-selected="true"] { background: var(--primary); color: #fff; box-shadow: 0 3px 0 var(--star); }
-/* Narrower than a wide laptop: icon above a small label, so all nine tabs still fit on one row */
-@media (max-width: 1100px) {
+/* Narrower than a wide laptop: icon above a small label, so all ten tabs still fit on one row */
+@media (max-width: 1180px) {
   .t-tabs { border-radius: 22px; }
   .t-tab { flex: 1 1 0; min-width: 64px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 4px; font-size: .78rem; border-radius: 16px; }
   .t-tab > span { font-size: 1.25rem; line-height: 1; }
+}
+/* A phone: two rows of five, so every tab shows without swiping */
+@media (max-width: 680px) {
+  .t-tabs { flex-wrap: wrap; overflow-x: visible; }
+  .t-tab { flex: 1 1 18%; min-width: 0; }
 }
 .t-body { background: rgba(255, 255, 255, .8); border-radius: 26px; padding: clamp(14px, 2.5vw, 24px); box-shadow: var(--shadow); }
 .t-body > .hint:first-child { margin-top: 0; }
