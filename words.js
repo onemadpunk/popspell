@@ -238,3 +238,62 @@ window.SPELLING_LISTS = [
   }
 ];
 
+/* England's statutory spelling words (English Appendix 1: Spelling, the national curriculum in England).
+   They're kept apart from the phonics stages above, so the journey every pupil sees doesn't change:
+   teachers find them in the Library, Assign and the Programme. "tricky" words are shown whole with a
+   heart; "trickyEnglish" ones only with the English accent, where their a says "ar". */
+window.ENGLAND_LISTS = [
+  {
+    stage: "England · Statutory spelling words",
+    colour: "#7c3aed",
+    england: true,
+    lists: [
+      { id: "cew-y1-1", title: "Year 1 common exception words (1 of 3)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["the", "a", "do", "to", "today", "of", "said", "says", "are", "were", "was", "is", "his", "has", "I"], tricky: ["the", "do", "to", "today", "of", "said", "says", "are", "were", "was"] },
+      { id: "cew-y1-2", title: "Year 1 common exception words (2 of 3)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["you", "your", "they", "be", "he", "me", "she", "we", "no", "go", "so", "by", "my", "here", "there"], tricky: ["you", "your", "they", "be", "he", "me", "she", "we", "no", "go", "so", "by", "my", "here", "there"] },
+      { id: "cew-y1-3", title: "Year 1 common exception words (3 of 3)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["where", "love", "come", "some", "one", "once", "ask", "friend", "school", "put", "push", "pull", "full", "house", "our"], tricky: ["where", "love", "come", "some", "one", "once", "friend", "school", "put", "push", "pull", "full", "our"] },
+      { id: "cew-y2-1", title: "Year 2 common exception words (1 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["door", "floor", "poor", "because", "find", "kind", "mind", "behind", "child", "children", "wild", "climb", "most"], tricky: ["door", "floor", "poor", "because", "find", "kind", "mind", "behind", "child", "wild", "climb", "most"] },
+      { id: "cew-y2-2", title: "Year 2 common exception words (2 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["only", "both", "old", "cold", "gold", "hold", "told", "every", "everybody", "even", "great", "break", "steak"], tricky: ["only", "both", "old", "cold", "gold", "hold", "told", "every", "everybody", "even", "great", "break", "steak"] },
+      { id: "cew-y2-3", title: "Year 2 common exception words (3 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["pretty", "beautiful", "after", "fast", "last", "past", "father", "class", "grass", "pass", "plant", "path", "bath"], tricky: ["pretty", "beautiful"], trickyEnglish: ["after", "fast", "last", "past", "father", "class", "grass", "pass", "plant", "path", "bath"] },
+      { id: "cew-y2-4", title: "Year 2 common exception words (4 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["hour", "move", "prove", "improve", "sure", "sugar", "eye", "could", "should", "would", "who", "whole", "any"], tricky: ["hour", "move", "prove", "improve", "sure", "sugar", "eye", "could", "should", "would", "who", "whole", "any"] },
+      { id: "cew-y2-5", title: "Year 2 common exception words (5 of 5)", tip: "Common exception words: sound out the parts that follow the rules, and learn the tricky part (♥) by heart.", focus: [],
+        words: ["many", "clothes", "busy", "people", "water", "again", "half", "money", "Mr", "Mrs", "parents", "Christmas"], tricky: ["many", "clothes", "busy", "people", "water", "again", "half", "money", "Mr", "Mrs", "parents", "Christmas"] },
+      { id: "wl-y34-1", title: "Years 3 and 4 word list (1 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["accident-", "accidentally-", "actual-", "actually-", "address-", "answer-", "appear-", "arrive-", "believe-", "bicycle-", "breath-", "breathe-", "build-", "busy-"] },
+      { id: "wl-y34-2", title: "Years 3 and 4 word list (2 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["business-", "calendar-", "caught-", "centre-", "century-", "certain-", "circle-", "complete-", "consider-", "continue-", "decide-", "describe-", "different-", "difficult-"] },
+      { id: "wl-y34-3", title: "Years 3 and 4 word list (3 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["disappear-", "early-", "earth-", "eight-", "eighth-", "enough-", "exercise-", "experience-", "experiment-", "extreme-", "famous-", "favourite-", "February-", "forward-"] },
+      { id: "wl-y34-4", title: "Years 3 and 4 word list (4 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["forwards-", "fruit-", "grammar-", "group-", "guard-", "guide-", "heard-", "heart-", "height-", "history-", "imagine-", "increase-", "important-", "interest-"] },
+      { id: "wl-y34-5", title: "Years 3 and 4 word list (5 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["island-", "knowledge-", "learn-", "length-", "library-", "material-", "medicine-", "mention-", "minute-", "natural-", "naughty-", "notice-", "occasion-", "occasionally-"] },
+      { id: "wl-y34-6", title: "Years 3 and 4 word list (6 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["often-", "opposite-", "ordinary-", "particular-", "peculiar-", "perhaps-", "popular-", "position-", "possess-", "possession-", "possible-", "potatoes-", "pressure-", "probably-"] },
+      { id: "wl-y34-7", title: "Years 3 and 4 word list (7 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["promise-", "purpose-", "quarter-", "question-", "recent-", "regular-", "reign-", "remember-", "sentence-", "separate-", "special-", "straight-", "strange-", "strength-"] },
+      { id: "wl-y34-8", title: "Years 3 and 4 word list (8 of 8)", tip: "From the statutory word list for Years 3 and 4. Say it in syllables, spot the tricky part, then look, cover, write and check.", focus: [],
+        words: ["suppose-", "surprise-", "therefore-", "though-", "although-", "thought-", "through-", "various-", "weight-", "woman-", "women-"] },
+      { id: "wl-y56-1", title: "Years 5 and 6 word list (1 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["accommodate-", "accompany-", "according-", "achieve-", "aggressive-", "amateur-", "ancient-", "apparent-", "appreciate-", "attached-", "available-", "average-", "awkward-", "bargain-", "bruise-"] },
+      { id: "wl-y56-2", title: "Years 5 and 6 word list (2 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["category-", "cemetery-", "committee-", "communicate-", "community-", "competition-", "conscience-", "conscious-", "controversy-", "convenience-", "correspond-", "criticise-", "curiosity-", "definite-", "desperate-"] },
+      { id: "wl-y56-3", title: "Years 5 and 6 word list (3 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["determined-", "develop-", "dictionary-", "disastrous-", "embarrass-", "environment-", "equip-", "equipped-", "equipment-", "especially-", "exaggerate-", "excellent-", "existence-", "explanation-", "familiar-"] },
+      { id: "wl-y56-4", title: "Years 5 and 6 word list (4 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["foreign-", "forty-", "frequently-", "government-", "guarantee-", "harass-", "hindrance-", "identity-", "immediate-", "immediately-", "individual-", "interfere-", "interrupt-", "language-", "leisure-"] },
+      { id: "wl-y56-5", title: "Years 5 and 6 word list (5 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["lightning-", "marvellous-", "mischievous-", "muscle-", "necessary-", "neighbour-", "nuisance-", "occupy-", "occur-", "opportunity-", "parliament-", "persuade-", "physical-", "prejudice-", "privilege-"] },
+      { id: "wl-y56-6", title: "Years 5 and 6 word list (6 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["profession-", "programme-", "pronunciation-", "queue-", "recognise-", "recommend-", "relevant-", "restaurant-", "rhyme-", "rhythm-", "sacrifice-", "secretary-", "shoulder-", "signature-", "sincere-"] },
+      { id: "wl-y56-7", title: "Years 5 and 6 word list (7 of 7)", tip: "From the statutory word list for Years 5 and 6. Say it in syllables, look for a root word you know, then look, cover, write and check.", focus: [],
+        words: ["sincerely-", "soldier-", "stomach-", "sufficient-", "suggest-", "symbol-", "system-", "temperature-", "thorough-", "twelfth-", "variety-", "vegetable-", "vehicle-", "yacht-"] }
+    ]
+  }
+];

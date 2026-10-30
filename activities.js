@@ -537,6 +537,317 @@ window.PopActivities = (() => {
         { label: `${v} → ${v}ed`, skill: "past tense -ed", explain: `Add -ed: ${v}ed.` })) }
   ];
 
+  /* ---------- Grammar and punctuation by year (English Appendix 2, the national curriculum in England) ---------- */
+
+  // Each item: [question, answer, [wrong answers], why]. Sentences to choose between aren't read
+  // out as options, because hearing them gives away the punctuation.
+  const GRAMMAR = "Literacy · Writing · Tools for writing";
+  const bank = (items, skill, extra = {}) => () => shuffle(items).slice(0, 10).map(([q, answer, others, why]) =>
+    choice(q, answer, others, Object.assign({ label: `${q} → ${answer}`, skill, explain: why }, extra)));
+  const bankSentences = (prompt, items, skill) => () => shuffle(items).slice(0, 10).map(([answer, others, why]) =>
+    choice(prompt, answer, others, { label: answer, skill, explain: why, sayOptions: false }));
+  const g = (id, title, level, blurb, make) => ({ id, title, level, organiser: GRAMMAR, blurb, make });
+
+  const ES = "If you can hear an extra beat at the end (wish-es), add -es. If not, just add -s.";
+  const grammarByYear = [
+    g("eg-y1-plurals", "Year 1: one or more (adding -s or -es)", "First", "One dog, two dogs. One wish, two wishes.", bank([
+      ["One dog, two ___.", "dogs", ["doges", "dog"], ES], ["One wish, two ___.", "wishes", ["wishs", "wish"], ES],
+      ["One fox, two ___.", "foxes", ["foxs", "fox"], ES], ["One cat, two ___.", "cats", ["cates", "cat"], ES],
+      ["One bus, two ___.", "buses", ["buss", "bus"], ES], ["One box, two ___.", "boxes", ["boxs", "box"], ES],
+      ["One hat, two ___.", "hats", ["hates", "hat"], ES], ["One dish, two ___.", "dishes", ["dishs", "dish"], ES],
+      ["One church, two ___.", "churches", ["churchs", "church"], ES], ["One frog, two ___.", "frogs", ["froges", "frog"], ES],
+      ["One brush, two ___.", "brushes", ["brushs", "brush"], ES], ["One bell, two ___.", "bells", ["belles", "bell"], ES]
+    ], "plurals with -s and -es")),
+    g("eg-y1-un", "Year 1: the prefix un-", "First", "Adding un- to the start of a word changes its meaning.", bank([
+      ["Not kind is ___.", "unkind", ["kindly", "kinder"], "un- means not: unkind means not kind."],
+      ["Not happy is ___.", "unhappy", ["happier", "happily"], "un- means not: unhappy means not happy."],
+      ["Not fair is ___.", "unfair", ["fairer", "fairly"], "un- means not: unfair means not fair."],
+      ["Not well is ___.", "unwell", ["welly", "weller"], "un- means not: unwell means not well."],
+      ["Take the knot out: ___ the boat.", "untie", ["tied", "ties"], "un- can mean undoing something: untie the boat."],
+      ["Open the lock: ___ the door.", "unlock", ["locked", "locks"], "un- can mean undoing something: unlock the door."],
+      ["Take things out of a bag: ___ the bag.", "unpack", ["packed", "packs"], "un- can mean undoing something: unpack the bag."],
+      ["Open a zip: ___ your coat.", "unzip", ["zipped", "zips"], "un- can mean undoing something: unzip your coat."],
+      ["Not safe is ___.", "unsafe", ["safer", "safely"], "un- means not: unsafe means not safe."],
+      ["Not able to be seen is ___.", "unseen", ["seeing", "seer"], "un- means not: unseen means not seen."]
+    ], "the prefix un-")),
+    g("eg-y1-capitals", "Year 1: capital letters for names and I", "First", "Names of people, places and days, and the word I, start with a capital letter.", bankSentences("Which sentence is written correctly?", [
+      ["Sam and I went to the park.", ["sam and i went to the park.", "Sam and i went to the park."], "Names and the word I always have a capital letter."],
+      ["On Monday I saw Gran.", ["On monday I saw gran.", "on Monday i saw Gran."], "Days of the week, names and I have capital letters."],
+      ["Ben lives in Leeds.", ["ben lives in leeds.", "Ben lives in leeds."], "Names of people and places have capital letters."],
+      ["Can I play with Ava?", ["can i play with ava?", "Can i play with Ava?"], "Start the sentence, the word I and names with a capital letter."],
+      ["We go swimming on Friday.", ["we go swimming on friday.", "We go swimming on friday."], "Start the sentence and the days of the week with a capital letter."],
+      ["My dog is called Max.", ["my dog is called max.", "My dog is called max."], "Start the sentence and names with a capital letter."],
+      ["I live near London.", ["i live near london.", "I live near london."], "The word I and place names have capital letters."],
+      ["Mia and I like Tuesday best.", ["mia and i like tuesday best.", "Mia and i like tuesday best."], "Names, days and the word I have capital letters."]
+    ], "capital letters for names and I")),
+
+    g("eg-y2-apostrophes", "Year 2: apostrophes for missing letters and belonging", "First", "can't, it's, the girl's name.", bank([
+      ["Shorten \"do not\": ___", "don't", ["dont", "do'nt"], "The apostrophe goes where the missing letter (o) was."],
+      ["Shorten \"can not\": ___", "can't", ["cant", "ca'nt"], "The apostrophe shows the missing letters."],
+      ["Shorten \"I am\": ___", "I'm", ["Im", "I'am"], "The apostrophe goes where the a was."],
+      ["Shorten \"it is\": ___", "it's", ["its", "it'is"], "It's means it is. The apostrophe goes where the i was."],
+      ["Shorten \"did not\": ___", "didn't", ["didnt", "did'nt"], "The apostrophe goes where the o was."],
+      ["Shorten \"we will\": ___", "we'll", ["well", "we'ill"], "The apostrophe goes where the letters wi were."],
+      ["Shorten \"could not\": ___", "couldn't", ["couldnt", "could'nt"], "The apostrophe goes where the o was."],
+      ["The name of the girl is the ___ name.", "girl's", ["girls", "girls'"], "One girl owns it, so add 's: the girl's name."],
+      ["The bone that belongs to the dog is the ___ bone.", "dog's", ["dogs", "dogs'"], "One dog owns it, so add 's: the dog's bone."],
+      ["The hat that belongs to Ravi is ___ hat.", "Ravi's", ["Ravis", "Ravis'"], "Ravi owns it, so add 's: Ravi's hat."],
+      ["The bike that belongs to the man is the ___ bike.", "man's", ["mans", "mans'"], "One man owns it, so add 's: the man's bike."]
+    ], "apostrophes")),
+    g("eg-y2-suffixes", "Year 2: -ness, -ful, -less, -er, -est and -ly", "First", "kind becomes kindness, care becomes careful, quick becomes quickly.", bank([
+      ["Full of care: ___", "careful", ["careless", "carer"], "-ful means full of."],
+      ["Without hope: ___", "hopeless", ["hopeful", "hoping"], "-less means without."],
+      ["Being kind: ___", "kindness", ["kindly", "kinder"], "-ness turns an adjective into a noun: kindness."],
+      ["Being sad: ___", "sadness", ["sadly", "sadder"], "-ness turns an adjective into a noun: sadness."],
+      ["She ran ___. (quick)", "quickly", ["quicker", "quickness"], "-ly turns an adjective into an adverb, telling us how she ran."],
+      ["He spoke ___. (soft)", "softly", ["softer", "softness"], "-ly turns an adjective into an adverb, telling us how he spoke."],
+      ["Ben is tall. Sam is ___.", "taller", ["tallest", "tallly"], "-er compares two things."],
+      ["Mia is the ___ in the class. (tall)", "tallest", ["taller", "tallness"], "-est is for the most of all."],
+      ["Without fear: ___", "fearless", ["fearful", "fearing"], "-less means without."],
+      ["Full of play: ___", "playful", ["playless", "player"], "-ful means full of."]
+    ], "suffixes")),
+    g("eg-y2-sentence-types", "Year 2: statement, question, exclamation or command?", "First", "What kind of sentence is it?", bank([
+      ["\"Shut the door.\" is a ___.", "command", ["question", "statement"], "It tells someone to do something, so it's a command."],
+      ["\"What time is it?\" is a ___.", "question", ["command", "exclamation"], "It asks something, so it's a question."],
+      ["\"What a big dog that is!\" is an ___.", "exclamation", ["question", "command"], "It starts with What and shows strong feeling, so it's an exclamation."],
+      ["\"The cat is asleep.\" is a ___.", "statement", ["command", "question"], "It tells us something, so it's a statement."],
+      ["\"How tall you have grown!\" is an ___.", "exclamation", ["question", "statement"], "It starts with How and shows strong feeling, so it's an exclamation."],
+      ["\"Put your coat on.\" is a ___.", "command", ["statement", "exclamation"], "It tells someone to do something, so it's a command."],
+      ["\"Where do you live?\" is a ___.", "question", ["statement", "command"], "It asks something, so it's a question."],
+      ["\"It is sunny today.\" is a ___.", "statement", ["question", "exclamation"], "It tells us something, so it's a statement."],
+      ["\"Wash your hands.\" is a ___.", "command", ["question", "statement"], "It tells someone to do something, so it's a command."],
+      ["\"Can you swim?\" is a ___.", "question", ["command", "exclamation"], "It asks something, so it's a question."]
+    ], "sentence types", { sayOptions: true })),
+    g("eg-y2-commas-tense", "Year 2: commas in lists, and past or present", "First", "eggs, milk and bread. She is drumming. He was shouting.", () => shuffle([
+      ...[["I need eggs, milk and bread.", ["I need eggs milk, and bread.", "I need, eggs milk and bread."]],
+        ["We saw a cow, a pig and a hen.", ["We saw a cow a pig, and a hen.", "We saw, a cow a pig and a hen."]],
+        ["Pack a hat, a coat and some boots.", ["Pack a hat a coat, and some boots.", "Pack, a hat a coat and some boots."]],
+        ["Red, blue and green are colours.", ["Red blue, and green are colours.", "Red blue and, green are colours."]]]
+        .map(([a, o]) => choice("Which list is punctuated correctly?", a, o, { label: a, skill: "commas in lists", sayOptions: false, explain: "Put a comma between the items, but not before and." })),
+      ...[["Yesterday I ___ football.", "played", ["play", "am playing"], "Yesterday is in the past, so: played."],
+        ["Right now she ___ the drum.", "is drumming", ["drummed", "was drumming"], "Right now is happening now: is drumming."],
+        ["Last night he ___ for help.", "was shouting", ["is shouting", "shouts"], "Last night is in the past and went on for a while: was shouting."],
+        ["Every day we ___ to school.", "walk", ["walked", "was walking"], "Every day is the present: we walk."],
+        ["Last week they ___ a castle.", "visited", ["visit", "are visiting"], "Last week is in the past: visited."],
+        ["At the moment I ___ a book.", "am reading", ["read", "was reading"], "At the moment is happening now: am reading."]]
+        .map(([q, a, o, why]) => choice(q, a, o, { label: q, skill: "past and present tense", explain: why }))
+    ]).slice(0, 10)),
+
+    g("eg-y3-a-an", "Year 3: a or an?", "First", "a rock, an open box.", bank([
+      ["___ apple", "an", ["a"], "Use an before a vowel sound: an apple."], ["___ rock", "a", ["an"], "Use a before a consonant: a rock."],
+      ["___ open box", "an", ["a"], "Open starts with a vowel, so: an open box."], ["___ egg", "an", ["a"], "Egg starts with a vowel, so: an egg."],
+      ["___ banana", "a", ["an"], "Banana starts with a consonant, so: a banana."], ["___ orange", "an", ["a"], "Orange starts with a vowel, so: an orange."],
+      ["___ elephant", "an", ["a"], "Elephant starts with a vowel, so: an elephant."], ["___ kite", "a", ["an"], "Kite starts with a consonant, so: a kite."],
+      ["___ igloo", "an", ["a"], "Igloo starts with a vowel, so: an igloo."], ["___ table", "a", ["an"], "Table starts with a consonant, so: a table."],
+      ["___ ant", "an", ["a"], "Ant starts with a vowel, so: an ant."], ["___ dog", "a", ["an"], "Dog starts with a consonant, so: a dog."]
+    ], "a or an")),
+    g("eg-y3-prefixes", "Year 3: prefixes super-, anti-, auto- and more", "First", "supermarket, anti-clockwise, autograph.", bank([
+      ["A big shop is a ___market.", "super", ["anti", "auto"], "super- means above or more: supermarket."],
+      ["Going the opposite way to a clock: ___-clockwise.", "anti", ["super", "auto"], "anti- means against: anti-clockwise."],
+      ["A famous person's signature is an ___graph.", "auto", ["anti", "super"], "auto- means self: autograph."],
+      ["The story of your own life is an ___biography.", "auto", ["super", "anti"], "auto- means self: autobiography."],
+      ["Not agree: ___agree", "dis", ["mis", "re"], "dis- has a negative meaning: disagree."],
+      ["Behave badly: ___behave", "mis", ["dis", "re"], "mis- means wrongly: misbehave."],
+      ["Do it again: ___do", "re", ["dis", "sub"], "re- means again: redo."],
+      ["A boat that goes under the sea: ___marine", "sub", ["super", "re"], "sub- means under: submarine."],
+      ["Between nations: ___national", "inter", ["sub", "anti"], "inter- means between: international."],
+      ["A star who is very famous: ___star", "super", ["anti", "sub"], "super- means above: superstar."]
+    ], "prefixes")),
+    g("eg-y3-time-cause", "Year 3: words for when, where and why", "First", "Conjunctions, adverbs and prepositions: when, before, so, during.", bank([
+      ["We stayed in ___ it was raining.", "because", ["after", "soon"], "because tells us why (cause)."],
+      ["Brush your teeth ___ you go to bed.", "before", ["because", "during"], "before tells us when (time)."],
+      ["We played games ___ the break.", "during", ["because", "so"], "during tells us when (a preposition of time)."],
+      ["I was hungry, ___ I ate an apple.", "so", ["during", "before"], "so tells us what happened because of it."],
+      ["We had lunch. ___, we went swimming.", "Then", ["Because", "During"], "Then is an adverb that tells us when."],
+      ["The bus was late ___ the snow.", "because of", ["after that", "while"], "because of tells us why (a preposition of cause)."],
+      ["Wait here ___ I find my coat.", "while", ["because of", "therefore"], "while tells us when, at the same time."],
+      ["It was cold. ___, we wore our hats.", "Therefore", ["During", "While"], "Therefore is an adverb that shows cause."],
+      ["The cat hid ___ the sofa.", "under", ["because", "so"], "under tells us where (a preposition of place)."],
+      ["___ the film, we went home.", "After", ["Because", "So"], "After tells us when."]
+    ], "conjunctions, adverbs and prepositions")),
+    g("eg-y3-perfect-speech", "Year 3: has gone or went? and speech marks", "First", "He has gone out to play. \"Come here,\" said Mum.", () => shuffle([
+      ...[["He ___ out to play. He's still outside now.", "has gone", ["went", "go"], "Use has gone when it's still true now (the present perfect)."],
+        ["I ___ my homework, so I can play now.", "have finished", ["finish", "finishing"], "Use have finished when the result matters now."],
+        ["Yesterday he ___ out to play.", "went", ["has gone", "goes"], "Yesterday is a finished time, so use the simple past: went."],
+        ["She ___ her book. She can't find it anywhere.", "has lost", ["loses", "losing"], "It's still lost now, so: has lost."],
+        ["We ___ to France last summer.", "went", ["have gone", "go"], "Last summer is a finished time, so: went."]]
+        .map(([q, a, o, why]) => choice(q, a, o, { label: q, skill: "the present perfect", explain: why })),
+      ...[["\"Come here,\" said Mum.", ["Come here, said Mum.", "\"Come here, said Mum.\""]],
+        ["\"I like cake,\" said Ben.", ["I like cake, said Ben.", "\"I like cake, said Ben.\""]],
+        ["Ava asked, \"Can I come?\"", ["Ava asked, Can I come?", "\"Ava asked, Can I come?\""]],
+        ["\"Run!\" shouted Sam.", ["Run! shouted Sam.", "\"Run! shouted Sam.\""]],
+        ["\"It's my turn,\" said Mia.", ["It's my turn, said Mia.", "\"It's my turn, said Mia\""]]]
+        .map(([a, o]) => choice("Which uses inverted commas (speech marks) correctly?", a, o, { label: a, skill: "inverted commas", sayOptions: false, explain: "Speech marks go around only the words that are said." }))
+    ]).slice(0, 10)),
+
+    g("eg-y4-fronted", "Year 4: fronted adverbials and their commas", "Second", "Later that day, I heard the bad news.", () => shuffle([
+      ...[["Later that day, I heard the bad news.", ["Later that day I, heard the bad news.", "Later, that day I heard the bad news."]],
+        ["After lunch, we played football.", ["After, lunch we played football.", "After lunch we, played football."]],
+        ["In the morning, the birds sang.", ["In the, morning the birds sang.", "In the morning the birds, sang."]],
+        ["Without a sound, the fox crept past.", ["Without a sound the fox, crept past.", "Without, a sound the fox crept past."]],
+        ["As fast as he could, Sam ran home.", ["As fast as he, could Sam ran home.", "As fast, as he could Sam ran home."]]]
+        .map(([a, o]) => choice("Which sentence has the comma in the right place?", a, o, { label: a, skill: "commas after fronted adverbials", sayOptions: false, explain: "Put a comma after the fronted adverbial, the words at the start that say when, where or how." })),
+      ...[["After lunch, we played football.", "After lunch", ["we played", "football"]], ["Last night, it snowed.", "Last night", ["it snowed", "snowed"]],
+        ["Under the bridge, a troll was waiting.", "Under the bridge", ["a troll", "was waiting"]], ["Slowly, the door opened.", "Slowly", ["the door", "opened"]],
+        ["Every Saturday, I visit Gran.", "Every Saturday", ["I visit", "Gran"]]]
+        .map(([s, a, o]) => choice(`Which words are the fronted adverbial? "${s}"`, a, o, { label: s, skill: "fronted adverbials", explain: `"${a}" comes first and tells us when, where or how.` }))
+    ]).slice(0, 10)),
+    g("eg-y4-possessive", "Year 4: plural or possessive -s?", "Second", "the girl's name, the girls' names.", bank([
+      ["The coats of the girls are the ___ coats.", "girls'", ["girl's", "girls"], "More than one girl ends in s already, so the apostrophe goes after: girls'."],
+      ["The name of one girl is the ___ name.", "girl's", ["girls'", "girls"], "One girl: add 's."],
+      ["Three ___ are barking.", "dogs", ["dog's", "dogs'"], "This just means more than one dog, so no apostrophe."],
+      ["The toys of the children are the ___ toys.", "children's", ["childrens'", "childrens"], "Children doesn't end in s, so add 's: children's."],
+      ["The bags of the boys are the ___ bags.", "boys'", ["boy's", "boys"], "More than one boy ends in s, so the apostrophe goes after: boys'."],
+      ["The cheese the mice ate was the ___ cheese.", "mice's", ["mices'", "mices"], "Mice doesn't end in s, so add 's: mice's."],
+      ["Two ___ sat on the wall.", "cats", ["cat's", "cats'"], "This just means more than one cat, so no apostrophe."],
+      ["The pens of the teachers are the ___ pens.", "teachers'", ["teacher's", "teachers"], "More than one teacher ends in s, so the apostrophe goes after: teachers'."],
+      ["The hats of the men are the ___ hats.", "men's", ["mens'", "mens"], "Men doesn't end in s, so add 's: men's."],
+      ["The room of the babies is the ___ room.", "babies'", ["baby's", "babies"], "More than one baby ends in s, so the apostrophe goes after: babies'."]
+    ], "possessive apostrophes")),
+    g("eg-y4-standard", "Year 4: we were, I did (Standard English)", "Second", "Use we were, not we was; I did, not I done.", bank([
+      ["We ___ late for school.", "were", ["was", "is"], "In Standard English it's we were, not we was."],
+      ["I ___ my homework last night.", "did", ["done", "doed"], "In Standard English it's I did, not I done."],
+      ["They ___ playing outside.", "were", ["was", "is"], "In Standard English it's they were."],
+      ["She ___ the film yesterday.", "saw", ["seen", "seed"], "In Standard English it's she saw, not she seen."],
+      ["You ___ really kind.", "were", ["was", "is"], "In Standard English it's you were."],
+      ["He ___ to the shop.", "went", ["gone", "goed"], "In Standard English it's he went, not he gone."],
+      ["We ___ our lunch already.", "have eaten", ["have ate", "eaten"], "In Standard English it's we have eaten, not we have ate."],
+      ["I ___ a picture for Gran.", "drew", ["drawed", "drawn"], "In Standard English it's I drew."],
+      ["Sam and I ___ tired.", "were", ["was", "is"], "Sam and I is more than one person, so: were."],
+      ["They ___ the race.", "won", ["winned", "wined"], "In Standard English it's they won."]
+    ], "Standard English verb forms")),
+
+    g("eg-y5-relative", "Year 5: relative clauses (who, which, where, when, whose, that)", "Second", "The girl who won the race is my sister.", bank([
+      ["The girl ___ won the race is my sister.", "who", ["which", "where"], "Use who for a person."],
+      ["The house ___ I live is old.", "where", ["who", "whose"], "Use where for a place."],
+      ["My dog, ___ is called Rex, loves walks.", "which", ["who", "where"], "Use which for an animal or thing."],
+      ["The boy ___ bike was stolen felt sad.", "whose", ["who", "which"], "Use whose for belonging."],
+      ["I remember the day ___ it snowed.", "when", ["where", "who"], "Use when for a time."],
+      ["This is the book ___ I like best.", "that", ["who", "where"], "Use that (or which) for a thing."],
+      ["Our teacher, ___ is very kind, gave us a sticker.", "who", ["which", "whose"], "Use who for a person."],
+      ["The park ___ we play is near the river.", "where", ["when", "which"], "Use where for a place."],
+      ["The man ___ car broke down called for help.", "whose", ["who", "which"], "Use whose for belonging."],
+      ["The cake, ___ Mum made, was delicious.", "which", ["who", "where"], "Use which for a thing."]
+    ], "relative clauses")),
+    g("eg-y5-possibility", "Year 5: how likely? (modal verbs and adverbs)", "Second", "might, should, will, must; perhaps, surely.", bank([
+      ["It ___ rain later, but I'm not sure.", "might", ["must", "will definitely"], "might shows something is possible but not certain."],
+      ["You ___ wear a seatbelt in the car. It's the law.", "must", ["might", "could"], "must shows something has to happen."],
+      ["___ we'll go to the beach, if it's sunny.", "Perhaps", ["Surely", "Certainly"], "Perhaps shows it's possible but not certain."],
+      ["It's 2 o'clock, so the film ___ start soon.", "will", ["might not", "could never"], "will shows we're sure it will happen."],
+      ["You ___ tidy your room, it's a mess!", "should", ["might", "can't"], "should shows it's a good idea or the right thing to do."],
+      ["___ you know the answer, you're so clever!", "Surely", ["Perhaps", "Maybe"], "Surely shows we're very confident."],
+      ["Which word shows it is certain? It ___ be dark at midnight.", "will", ["might", "could"], "will shows certainty."],
+      ["Which word shows it is only possible? We ___ win the match.", "could", ["will", "must"], "could shows something is possible."],
+      ["The shop ___ be open, so let's check first.", "may", ["must", "will"], "may shows it's possible."],
+      ["___, the sun will rise tomorrow.", "Certainly", ["Perhaps", "Possibly"], "Certainly shows we're sure."]
+    ], "modal verbs and adverbs of possibility")),
+    g("eg-y5-parenthesis", "Year 5: brackets, dashes and commas (parenthesis)", "Second", "My aunt (who lives in Leeds) is visiting.", bankSentences("Which sentence is punctuated correctly?", [
+      ["My aunt (who lives in Leeds) is visiting.", ["My aunt (who lives in Leeds is visiting).", "My aunt who (lives in Leeds) is visiting."], "Brackets go around the extra information, which the sentence would make sense without."],
+      ["The dog – a huge, muddy one – jumped up.", ["The dog – a huge, muddy one jumped up.", "The – dog a huge, muddy one – jumped up."], "Dashes go either side of the extra information."],
+      ["Mr Patel, our head teacher, gave a talk.", ["Mr Patel, our head teacher gave a talk.", "Mr Patel our, head teacher, gave a talk."], "Commas go either side of the extra information."],
+      ["The castle (built in 1200) is huge.", ["The castle (built in 1200 is huge).", "The (castle built) in 1200 is huge."], "Brackets go around the extra information."],
+      ["My cat – who is very lazy – sleeps all day.", ["My cat – who is very lazy sleeps all day.", "My – cat who is very lazy – sleeps all day."], "Dashes go either side of the extra information."],
+      ["Ben, who is eight, loves maths.", ["Ben who is eight, loves maths.", "Ben, who is, eight loves maths."], "Commas go either side of the extra information."]
+    ], "parenthesis")),
+    g("eg-y5-verb-suffixes", "Year 5: making verbs with -ate, -ise and -ify", "Second", "pure becomes purify, modern becomes modernise, active becomes activate.", bank([
+      ["To make something pure: ___", "purify", ["purise", "purate"], "-ify turns pure into a verb: purify."],
+      ["To make something modern: ___", "modernise", ["modernify", "modernate"], "-ise turns modern into a verb: modernise."],
+      ["To make something active: ___", "activate", ["activise", "activify"], "-ate turns active into a verb: activate."],
+      ["To put things into classes: ___", "classify", ["classise", "classate"], "-ify turns class into a verb: classify."],
+      ["To say sorry, give an apology: ___", "apologise", ["apologify", "apologate"], "-ise turns apology into a verb: apologise."],
+      ["To make something solid: ___", "solidify", ["solidise", "solidate"], "-ify turns solid into a verb: solidify."],
+      ["To make something real in your mind: ___", "realise", ["realify", "realate"], "-ise turns real into a verb: realise."],
+      ["To put in a hyphen: ___", "hyphenate", ["hyphenise", "hyphenify"], "-ate turns hyphen into a verb: hyphenate."],
+      ["To make something simple: ___", "simplify", ["simplise", "simplate"], "-ify turns simple into a verb: simplify."],
+      ["To make something seem special or important: ___", "emphasise", ["emphasify", "emphasate"], "-ise turns emphasis into a verb: emphasise."]
+    ], "verb suffixes -ate, -ise and -ify")),
+
+    g("eg-y6-passive", "Year 6: active and passive", "Second", "I broke the window. The window was broken (by me).", () => shuffle([
+      ...[["The window was broken by Sam.", ["Sam broke the window.", "Sam is breaking the window."]],
+        ["The cake was eaten by the children.", ["The children ate the cake.", "The children eat the cake."]],
+        ["The letter was posted yesterday.", ["I posted the letter yesterday.", "She posts the letter."]],
+        ["The ball was kicked over the fence.", ["Ben kicked the ball over the fence.", "Ben kicks the ball."]],
+        ["The thief was caught by the police.", ["The police caught the thief.", "The police catch thieves."]]]
+        .map(([a, o]) => choice("Which sentence is passive?", a, o, { label: a, skill: "the passive", sayOptions: false, explain: "In a passive sentence, the thing the action happens to comes first: was broken, was eaten." })),
+      ...[["The cat chased the mouse.", "The mouse was chased by the cat.", ["The cat was chased by the mouse.", "The mouse chased the cat."]],
+        ["Mia painted the fence.", "The fence was painted by Mia.", ["Mia was painted by the fence.", "The fence painted Mia."]],
+        ["The wind blew the tree down.", "The tree was blown down by the wind.", ["The wind was blown down by the tree.", "The tree blew the wind down."]],
+        ["Our class planted the seeds.", "The seeds were planted by our class.", ["Our class was planted by the seeds.", "The seeds planted our class."]]]
+        .map(([s, a, o]) => choice(`Which is the passive version of: "${s}"`, a, o, { label: s, skill: "the passive", sayOptions: false, explain: `"${a}" puts the thing the action happens to first.` }))
+    ]).slice(0, 10)),
+    g("eg-y6-formal", "Year 6: formal or informal? (and If I were)", "Second", "find out becomes discover, ask for becomes request, If I were you…", bank([
+      ["Which is more formal than \"find out\"?", "discover", ["look up", "suss out"], "discover is the formal word for find out."],
+      ["Which is more formal than \"ask for\"?", "request", ["want", "get"], "request is the formal word for ask for."],
+      ["Which is more formal than \"go in\"?", "enter", ["pop in", "get in"], "enter is the formal word for go in."],
+      ["If I ___ you, I would say sorry.", "were", ["was", "am"], "In formal English, use the subjunctive: If I were you."],
+      ["___ they to come, we would be delighted.", "Were", ["Was", "If"], "Were they to come is the formal subjunctive."],
+      ["Which is more formal than \"help\"?", "assist", ["give a hand", "sort out"], "assist is the formal word for help."],
+      ["Which is more formal than \"get\"?", "obtain", ["grab", "pick up"], "obtain is the formal word for get."],
+      ["In \"He's your friend, isn't he?\", the words \"isn't he\" are a ___, typical of informal speech.", "question tag", ["relative clause", "command"], "A question tag turns a statement into a question, and is typical of informal speech."],
+      ["The head teacher requests that every pupil ___ on time.", "be", ["is", "are"], "In very formal writing, use the subjunctive: that every pupil be on time."],
+      ["Which is more formal than \"lots of\"?", "many", ["loads of", "tons of"], "many is more formal than lots of."]
+    ], "formal and informal language")),
+    g("eg-y6-synonyms", "Year 6: synonyms and antonyms", "Second", "big, large (synonyms); big, little (antonyms).", bank([
+      ["A synonym (same meaning) for big:", "large", ["little", "tiny"], "Synonyms mean the same or nearly the same: big, large."],
+      ["An antonym (opposite) of big:", "little", ["large", "huge"], "Antonyms are opposites: big, little."],
+      ["A synonym for happy:", "cheerful", ["miserable", "angry"], "happy and cheerful mean nearly the same."],
+      ["An antonym of ancient:", "modern", ["old", "historic"], "ancient and modern are opposites."],
+      ["A synonym for begin:", "start", ["finish", "stop"], "begin and start mean the same."],
+      ["An antonym of generous:", "mean", ["kind", "giving"], "generous and mean are opposites."],
+      ["A synonym for quick:", "rapid", ["slow", "lazy"], "quick and rapid mean nearly the same."],
+      ["An antonym of brave:", "cowardly", ["bold", "fearless"], "brave and cowardly are opposites."],
+      ["A synonym for shout:", "yell", ["whisper", "mumble"], "shout and yell mean nearly the same."],
+      ["An antonym of accept:", "refuse", ["take", "agree"], "accept and refuse are opposites."]
+    ], "synonyms and antonyms")),
+    g("eg-y6-punctuation", "Year 6: semi-colons, colons, dashes and hyphens", "Second", "It's raining; I'm fed up. You need: a pen, a ruler and glue.", bankSentences("Which sentence is punctuated correctly?", [
+      ["It's raining; I'm fed up.", ["It's raining I'm; fed up.", "It's; raining I'm fed up."], "A semi-colon joins two clauses that could each be a sentence."],
+      ["You will need: a pen, a ruler and some glue.", ["You will: need a pen, a ruler and some glue.", "You will need a pen: a ruler and some glue."], "A colon can introduce a list."],
+      ["We visited Paris, France; Rome, Italy; and Madrid, Spain.", ["We visited Paris; France, Rome; Italy, and Madrid; Spain.", "We visited Paris France, Rome Italy, and Madrid Spain."], "Semi-colons separate list items that already have commas."],
+      ["I was late – the bus never came.", ["I was – late the bus never came.", "I – was late the bus never came."], "A dash can mark the boundary between two clauses."],
+      ["Watch out for the man-eating shark!", ["Watch out for the man eating-shark!", "Watch-out for the man eating shark!"], "The hyphen shows the shark eats men, not a man eating a shark."],
+      ["The film was brilliant: everyone cheered.", ["The film: was brilliant everyone cheered.", "The: film was brilliant everyone cheered."], "A colon can join two clauses when the second explains the first."],
+      ["She has a well-known name.", ["She has a well known-name.", "She-has a well known name."], "The hyphen joins well and known to make one describing word."],
+      ["Our team trained hard; we won the cup.", ["Our team; trained hard we won the cup.", "Our team trained; hard we won the cup."], "A semi-colon joins two clauses that could each be a sentence."]
+    ], "semi-colons, colons, dashes and hyphens")),
+
+    g("eg-terms-ks1", "Grammar words: Years 1 and 2", "First", "noun, verb, adjective, adverb, plural, suffix…", bank([
+      ["In \"The red ball bounced\", which word is an adjective?", "red", ["ball", "bounced"], "An adjective describes a noun: red ball."],
+      ["In \"The dog ran\", which word is a verb?", "ran", ["dog", "The"], "A verb is a doing or being word: ran."],
+      ["In \"A cat sat on the mat\", which word is a noun?", "cat", ["sat", "on"], "A noun names a person, place or thing: cat."],
+      ["In \"She sang loudly\", which word is an adverb?", "loudly", ["She", "sang"], "An adverb tells us how: loudly."],
+      ["Which word is plural?", "trees", ["tree", "treat"], "Plural means more than one: trees."],
+      ["In \"helpful\", which part is the suffix?", "-ful", ["help", "hel-"], "A suffix is added to the end of a word: -ful."],
+      ["Which is a compound word?", "playground", ["playing", "player"], "A compound word is two words joined: play + ground."],
+      ["Which word is singular?", "box", ["boxes", "foxes"], "Singular means just one: box."],
+      ["Which is a noun phrase?", "the blue butterfly", ["ran away", "very quickly"], "A noun phrase is built around a noun: the blue butterfly."],
+      ["Which punctuation mark ends a question?", "question mark", ["full stop", "comma"], "A question ends with a question mark."]
+    ], "grammar terms", { sayOptions: true })),
+    g("eg-terms-ks2a", "Grammar words: Years 3 and 4", "Second", "preposition, conjunction, clause, pronoun, determiner, adverbial…", bank([
+      ["In \"The cat hid under the bed\", which word is a preposition?", "under", ["cat", "hid"], "A preposition shows where or when: under."],
+      ["In \"I stayed in because it rained\", which word is a conjunction?", "because", ["stayed", "rained"], "A conjunction joins clauses: because."],
+      ["In \"Sam lost his hat and he was sad\", which word is a pronoun?", "he", ["hat", "sad"], "A pronoun stands in for a noun: he (Sam)."],
+      ["In \"The dog is mine\", which word is a possessive pronoun?", "mine", ["dog", "is"], "A possessive pronoun shows who owns something: mine."],
+      ["In \"Those apples are ripe\", which word is a determiner?", "Those", ["apples", "ripe"], "A determiner comes before a noun to say which one: those."],
+      ["In \"Later that day, I went home\", which words are the adverbial?", "Later that day", ["I went", "home"], "An adverbial tells us when, where or how."],
+      ["In \"I smiled when I saw her\", which part is the subordinate clause?", "when I saw her", ["I smiled", "I saw"], "A subordinate clause can't stand alone: when I saw her."],
+      ["Which is a vowel letter?", "e", ["t", "m"], "The vowel letters are a, e, i, o and u."],
+      ["In \"solve, solution, solver\", the words are a ___.", "word family", ["compound", "suffix"], "Words related in form and meaning are a word family."],
+      ["What are \" \" called when they show what someone says?", "inverted commas", ["brackets", "dashes"], "Inverted commas (speech marks) show direct speech."]
+    ], "grammar terms", { sayOptions: true })),
+    g("eg-terms-ks2b", "Grammar words: Years 5 and 6", "Second", "relative clause, modal verb, subject, object, active, passive…", bank([
+      ["In \"The girl who won is my sister\", which part is the relative clause?", "who won", ["The girl", "is my sister"], "A relative clause adds information about a noun, starting with who, which, that…"],
+      ["In \"You must listen\", which word is a modal verb?", "must", ["You", "listen"], "Modal verbs show how likely or necessary something is: must."],
+      ["In \"Mia kicked the ball\", what is the subject?", "Mia", ["kicked", "the ball"], "The subject is who or what does the action: Mia."],
+      ["In \"Mia kicked the ball\", what is the object?", "the ball", ["Mia", "kicked"], "The object is what the action is done to: the ball."],
+      ["\"The ball was kicked by Mia\" is ___.", "passive", ["active", "a command"], "The thing the action happens to comes first, so it's passive."],
+      ["Big and large are ___.", "synonyms", ["antonyms", "homophones"], "Words with the same or nearly the same meaning are synonyms."],
+      ["Hot and cold are ___.", "antonyms", ["synonyms", "relative pronouns"], "Words with opposite meanings are antonyms."],
+      ["In \"The man whose dog barked\", which word is the relative pronoun?", "whose", ["man", "barked"], "Relative pronouns: who, which, where, when, whose, that."],
+      ["Which mark joins two clauses that could each be a sentence?", "semi-colon", ["hyphen", "apostrophe"], "A semi-colon can join two independent clauses."],
+      ["Extra information in brackets is called ___.", "parenthesis", ["cohesion", "ellipsis"], "Parenthesis is extra information marked by brackets, dashes or commas."]
+    ], "grammar terms", { sayOptions: true }))
+  ];
+
   // Sentence dictation for any spelling list: hear a sentence, write it all (activity id "dictate:<list id>")
   function dictation(listId) {
     const list = window.PopSpell && window.PopSpell.LISTS[listId];
@@ -814,11 +1125,55 @@ window.PopActivities = (() => {
       } }
   ];
 
+  /* ---------- England's Year 4 multiplication tables check: timed practice ---------- */
+
+  // Built like a real check form (the Standards and Testing Agency's assessment framework): 25
+  // questions from the 2 to 12 tables, so many from each table (more from 6, 7, 8, 9 and 12, the
+  // hardest), 3 to 7 from the key stage 1 tables (2, 5 and 10), no repeats or reversals (3 × 8 and
+  // 8 × 3), 6 seconds each and a 3-second pause between them.
+  const MTC_LIMITS = { 2: [0, 2], 3: [1, 3], 4: [1, 3], 5: [1, 3], 6: [2, 4], 7: [2, 4], 8: [2, 4], 9: [2, 4], 10: [0, 2], 11: [1, 3], 12: [2, 4] };
+  const KS1_TABLES = [2, 5, 10];
+  function mtcForm() {
+    for (let attempt = 0; attempt < 50; attempt++) {
+      const count = Object.fromEntries(Object.entries(MTC_LIMITS).map(([t, [min]]) => [t, min]));
+      const ks1 = () => KS1_TABLES.reduce((n, t) => n + count[t], 0);
+      let total = Object.values(count).reduce((a, b) => a + b, 0);
+      for (let guard = 0; total < 25 && guard < 500; guard++) {
+        const t = pick(Object.keys(MTC_LIMITS).map(Number));
+        const isKs1 = KS1_TABLES.includes(t);
+        if (count[t] >= MTC_LIMITS[t][1] || (isKs1 && ks1() >= 7) || (!isKs1 && ks1() < 3 && 25 - total <= 3 - ks1())) continue;
+        count[t]++; total++;
+      }
+      if (total !== 25 || ks1() < 3) continue;
+      const used = new Set(), items = [];
+      let ok = true;
+      Object.entries(count).forEach(([t, n]) => {
+        for (let k = 0; k < n && ok; k++) {
+          const choices = shuffle(range(2, 12)).filter(b => !used.has(`${t}x${b}`) && !used.has(`${b}x${t}`));
+          if (!choices.length) { ok = false; break; }
+          used.add(`${t}x${choices[0]}`);
+          items.push([Number(t), choices[0]]);
+        }
+      });
+      if (ok) return shuffle(items); // not ordered by difficulty, as in the check
+    }
+    return shuffle(range(2, 12)).slice(0, 25).map(b => [pick([6, 7, 8, 9, 12]), b]);
+  }
+  const englandChecks = [
+    { id: "n-mtc", title: "Times tables check practice (Year 4)", level: "Second", organiser: "Numeracy · Number and number processes",
+      blurb: "25 questions, 6 seconds each, like England's Year 4 multiplication tables check. Type the answer and press Enter.",
+      make: () => mtcForm().map(([a, b]) => Object.assign(typed(`${a} × ${b} =`, a * b),
+        { time: 6, label: `${a} × ${b}`, skill: `${a} times table`, explain: `${a} × ${b} = ${a * b}.` })) }
+  ].map(a => Object.assign(a, { check: false }));
+
   /* ---------- The catalogue ---------- */
 
   const AREAS = [
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames) },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
+    // England's grammar by year: found by teachers in the Library and set as work, not shown on every pupil's home page
+    { id: "grammar", title: "Grammar and punctuation by year (England)", colour: "#7C3AED", icon: "🔤", activities: grammarByYear, assignedOnly: true },
+    { id: "england-checks", title: "Practice for England's national checks", colour: "#B45309", icon: "⏱️", activities: englandChecks, assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
@@ -904,7 +1259,13 @@ window.PopActivities = (() => {
       if (a) return { level: a.level, organiser: a.organiser, area: a.area, eo: eo(a.organiser, a.level, a.id) };
       const stages = window.SPELLING_LISTS || [];
       const s = stages.findIndex(st => st.lists.some(l => l.id === id));
-      return s >= 0 ? { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) } : null;
+      if (s >= 0) return { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) };
+      // England's statutory words: common exception words are First level spelling in CfE terms, the
+      // Years 3 to 6 word lists Second level (spelling the most commonly used words, LIT 1-21a / 2-21a)
+      const extra = (window.ENGLAND_LISTS || []).some(st => st.lists.some(l => l.id === id));
+      if (!extra) return null;
+      const level = /^cew-/.test(id) ? "First" : "Second";
+      return { level, organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, level, id) };
     }
   };
 })();

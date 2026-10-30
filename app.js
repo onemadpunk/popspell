@@ -7,10 +7,8 @@
   const SITE = Object.assign({ title: "PopSpell", subtitle: "Hear it. Map it. Spell it." }, window.SITE);
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
-  // The words on the Tricky words list. Their tricky part doesn't make its usual sound, so they're
-  // always shown whole with a heart, never with dots and lines that would point to the wrong sounds.
-  const TRICKY_WORDS = new Set(STAGES.flatMap(s => s.lists).filter(l => l.id === "tricky")
-    .flatMap(l => l.words).map(w => w.replace(/-/g, "").toLowerCase()));
+  // England's statutory spelling words (words.js), kept apart from the phonics stages
+  const EXTRA_STAGES = window.ENGLAND_LISTS || [];
   const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
@@ -27,6 +25,13 @@
     return accentOf(read("popspell-class-v1"), read("spelling-settings-v2"));
   })();
   const R_SOUNDED = ACCENT !== "english";
+  // Tricky words: the Tricky words list, and the common exception words each England list marks
+  // (some only in an English accent, where their a says "ar"). Their tricky part doesn't make its
+  // usual sound, so they're always shown whole with a heart, never with dots and lines that would
+  // point to the wrong sounds.
+  const TRICKY_WORDS = new Set(STAGES.concat(EXTRA_STAGES).flatMap(s => s.lists)
+    .flatMap(l => (l.id === "tricky" ? l.words : (l.tricky || []).concat(ACCENT === "english" ? l.trickyEnglish || [] : [])))
+    .map(w => w.replace(/-/g, "").toLowerCase()));
   const R_GRAPHEMES = ["air", "are", "ear", "eer", "ere", "ar", "or", "er", "ir", "ur"];
   const keepR = g => !(R_SOUNDED && R_GRAPHEMES.includes(g));
   // The part a pupil has to choose when the r is sounded: er, ir or ur is the vowel before the r
@@ -178,7 +183,7 @@
     ready.focusSet = listFocus(ready);
     return ready;
   };
-  STAGES.forEach(stage => stage.lists.forEach(list => {
+  STAGES.concat(EXTRA_STAGES).forEach(stage => stage.lists.forEach(list => {
     LISTS[list.id] = prepare(list, { stage: stage.stage, accent: stage.colour });
   }));
 
@@ -762,7 +767,8 @@
   // two- or three-letter sounds, and an arc joining a split digraph. A word kept whole is a
   // tricky word: it gets a heart instead, as buttons would point to the wrong sounds.
   function wordHTML(item, missed = new Set()) {
-    if (item.whole) return `<span class="g whole heart">${esc(item.spelling)}</span>`;
+    // A long word kept whole (Years 3 to 6) has no heart: only tricky words do
+    if (item.whole) return `<span class="g whole${TRICKY_WORDS.has(item.spelling.toLowerCase()) ? " heart" : ""}">${esc(item.spelling)}</span>`;
     const g = ch => `<span class="g ${ch.split ? "sv" : ch.text.length > 1 ? "multi" : "single"}${missed.has(ch.g) ? " missed" : ""}" data-g="${ch.g}">${esc(ch.text)}</span>`;
     let html = "";
     for (let k = 0; k < item.chunks.length; k++) {
@@ -1013,7 +1019,7 @@
     const A = window.PopActivities;
     // Short tab names, so the tabs fit on a phone
     const SHORT = { games: "Games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
-    const areas = A ? A.AREAS.filter(a => a.id !== "stories").map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
+    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
     areas.push({ id: "checks", icon: "🧭", title: "Checks", colour: "#0f766e",
       items: Object.entries(CHECKS).filter(([k]) => k === "spelling" || A).map(([k, c]) => ({ id: `check:${k}`, href: `#/check/${k}`, title: c.title.replace("Starting check: ", ""), icon: c.icon, level: "About 10 minutes", colour: c.accent })) });
     return areas;
@@ -1999,10 +2005,11 @@
     app.innerHTML = `
       <section class="panel practice activity" style="--accent:${esc(act.colour)}">
         ${progressHTML()}
+        ${q.time ? `<div class="mtc-bar" aria-hidden="true"><span style="animation-duration:${q.time}s"></span></div>` : ""}
         ${passageBox}
-        <p class="phase q-prompt">${esc(q.prompt)}</p>
+        <p class="phase q-prompt${q.time ? " mtc-q" : ""}">${esc(q.prompt)}</p>
         ${q.html || ""}
-        ${q.say ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
+        ${q.say && !q.time ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
         ${q.kind === "choice"
           ? `<div class="q-options">${q.options.map(optionHTML).join("")}</div>`
           : `<form class="spell-form" id="qForm" autocomplete="off">
@@ -2017,11 +2024,15 @@
     if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);
     const reader = $("#passageBox") ? wireReadAlong($("#passageBox"), passage) : null;
     app.querySelectorAll("#storyBox .sw").forEach(b => { b.onclick = () => sayWord(b.dataset.word); });
+    // Timed questions (the multiplication tables check) aren't read out: the time starts at once
+    if (q.time) { /* silent */ }
     // Listening activities start with the story (first question) or the question's own sound
-    if (act.listen && session.i === 0) reader.start(0).then(() => my === phase && sayQuestion(q));
+    else if (act.listen && session.i === 0) reader.start(0).then(() => my === phase && sayQuestion(q));
     else sayQuestion(q);
 
+    let finished = false;
     const finish = correct => {
+      finished = true;
       const earned = correct ? ACTIVITY_TRIES - wrong.length : 0;
       session.results.push({ item: q, correct, wrong: wrong.slice(), stars: earned,
         missed: correct && !wrong.length ? [] : (missed.length ? missed : [q.skill]) });
@@ -2036,8 +2047,9 @@
           ? `The sentence was: <b>${esc(q.answer)}</b>`
           : `The answer is <b>${esc(q.answer)}</b>${/[.!?]$/.test(q.answer) ? "" : "."} ${esc(q.explain || "")}`;
       if (correct) chimeRight(); else chimeWrong();
-      // Said as well as shown: praise, or the answer and why
-      later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
+      // Said as well as shown: praise, or the answer and why. Timed questions move on by themselves
+      // after 3 seconds, as in the real check, so they aren't talked over.
+      if (!q.time) later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
         : sayLine(window.PopSpeech.answerLine(q))), 350);
       app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
@@ -2050,6 +2062,7 @@
         session.i++;
         showQuestion();
       };
+      if (q.time && !isLast) later(() => { if (my === phase) $("#nextQ").click(); }, 3000);
     };
     const tryAgain = text => {
       chimeWrong();
@@ -2076,6 +2089,15 @@
 
     const input = $("#qAnswer");
     input.focus();
+    // When the time runs out, whatever has been typed is the answer (one go only)
+    if (q.time) later(() => {
+      if (finished || my !== phase) return;
+      const value = input.value.trim();
+      const right = Boolean(value) && norm(value) === norm(q.answer);
+      if (!right) wrong.push(value || "no answer");
+      $("#feedback").before(Object.assign(document.createElement("p"), { className: "mtc-up", textContent: "⏰ Time's up" }));
+      finish(right);
+    }, q.time * 1000);
     $("#qForm").onsubmit = e => {
       e.preventDefault();
       const value = input.value.trim();
@@ -2097,7 +2119,7 @@
         }
       } else {
         right = [q.answer].concat(q.accept || []).some(a => norm(a) === norm(value));
-        if (!right && wrong.length + 1 < ACTIVITY_TRIES) {
+        if (!right && !q.time && wrong.length + 1 < ACTIVITY_TRIES) {
           wrong.push(value);
           input.value = "";
           input.focus();
@@ -3280,7 +3302,7 @@
 
   // What the teacher pages (teacher.js) need from here
   window.PopSpell = {
-    LISTS, STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned, CHECKS, checkKind, checkGaps, isAssessment, QUEST,
+    LISTS, STAGES, EXTRA_STAGES, esc, label, plural, analyse, wordHTML, parseWords, resolveAssigned, CHECKS, checkKind, checkGaps, isAssessment, QUEST,
     get teacher() { return TEACHER; }
   };
 

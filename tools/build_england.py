@@ -88,6 +88,17 @@ MAP = {
   "l-rhyme": "en R comp 3; en 1 rc 6", "l-first-sound": "en R wri 2; en R wread 1", "l-count-sounds": "en R wri 2; en 2 sp 2",
   "lc-bus": "en R lau 1; en R comp 1; en 1 rc 2; en 1-6 sl 1", "lc-shell-shop": "en R lau 1; en R comp 1; en 1 rc 2; en 1-6 sl 1",
   "letter-formation": "en R wri 1; en R fms 1; en 1 hw 2; en 1 hw 3",
+  # Grammar and punctuation by year (activities.js): English Appendix 2, through each year's statements
+  "eg-y1-plurals": "en 1 vgp 6; en 1 sp 9", "eg-y1-un": "en 1 vgp 6; en 1 sp 10", "eg-y1-capitals": "en 1 vgp 5; en 1 vgp 4",
+  "eg-y2-apostrophes": "en 2 vgp 2; en 2 sp 5; en 2 sp 6", "eg-y2-suffixes": "en 2 vgp 8; en 2 sp 8", "eg-y2-sentence-types": "en 2 vgp 4",
+  "eg-y2-commas-tense": "en 2 vgp 2; en 2 vgp 6", "eg-y3-a-an": "en 3-4 vgp 7", "eg-y3-prefixes": "en 3-4 vgp 7; en 3-4 sp 1",
+  "eg-y3-time-cause": "en 3-4 vgp 5; en 3-4 vgp 2", "eg-y3-perfect-speech": "en 3-4 vgp 3; en 3-4 vgp 11",
+  "eg-y4-fronted": "en 3-4 vgp 6; en 3-4 vgp 9", "eg-y4-possessive": "en 3-4 vgp 10; en 3-4 sp 4", "eg-y4-standard": "en 3-4 vgp 7; en 2 vgp 9",
+  "eg-y5-relative": "en 5-6 vgp 7", "eg-y5-possibility": "en 5-6 vgp 6", "eg-y5-parenthesis": "en 5-6 vgp 12",
+  "eg-y5-verb-suffixes": "en 5-6 vgp 8; en 5-6 sp 1", "eg-y6-passive": "en 5-6 vgp 3", "eg-y6-formal": "en 5-6 vgp 2",
+  "eg-y6-synonyms": "en 5-6 vgp 8", "eg-y6-punctuation": "en 5-6 vgp 13; en 5-6 vgp 14; en 5-6 vgp 11",
+  "eg-terms-ks1": "en 1 vgp 7; en 2 vgp 10", "eg-terms-ks2a": "en 3-4 vgp 12", "eg-terms-ks2b": "en 5-6 vgp 16",
+  "n-mtc": "ma 4 md 1",
   # Spelling lists (Appendix 1 places each pattern in a year)
   "short-a": "en R wri 2; en 1 sp 2", "short-e": "en R wri 2; en 1 sp 2", "short-i": "en R wri 2; en 1 sp 2",
   "short-o": "en R wri 2; en 1 sp 2", "short-u": "en R wri 2; en 1 sp 2",
@@ -164,6 +175,11 @@ MAP = {
   "lesson-second-spelling-rules-ing-plurals-and-endings": "en 2 sp 9; en 3-4 sp 1",
   "lesson-second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph": "en 2 sp 9; en 5-6 sp 2",
 }
+
+# England's statutory spelling words (window.ENGLAND_LISTS in words.js), one entry per list
+STATUTORY = {"cew-y1": "en 1 sp 3; en 1 wr 4", "cew-y2": "en 2 sp 4; en 2 wr 5", "wl-y34": "en 3-4 sp 3", "wl-y56": "en 5-6 sp 4"}
+for list_id in re.findall(r'id: "((?:cew|wl)-y\d+-\d+)"', open("words.js", encoding="utf-8").read()):
+    MAP[list_id] = STATUTORY[list_id.rsplit("-", 1)[0]]
 
 keys = re.findall(r'^  "([^"]+)":', MAP_SOURCE.split("MAP = {")[1].split("\n}")[0], re.M)
 dupes = sorted({k for k in keys if keys.count(k) > 1})

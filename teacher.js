@@ -215,6 +215,8 @@
 
   // Everything a teacher can set: spelling lists by stage, then writing, reading, listening and
   // numeracy activities (activities.js), then sentence dictation for any spelling list
+  // The phonics stages, then England's statutory spelling words (words.js keeps them apart)
+  const ALL_STAGES = () => P().STAGES.concat(P().EXTRA_STAGES || []);
   function catalogueOptions() {
     const checks = Object.values(P().CHECKS).filter(c => c.id === "check-spelling" || window.PopActivities);
     const groups = [];
@@ -223,7 +225,7 @@
     if (gameArea) groups.push(`<optgroup label="${gameArea.icon} ${esc(gameArea.title)}">${gameArea.activities
       .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`);
     groups.push(`<optgroup label="🧭 Starting checks"><option value="assess">🌟 Pip's Sound Quest (full assessment)</option>${checks.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join("")}</optgroup>`);
-    P().STAGES.forEach(st => groups.push(`<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
+    ALL_STAGES().forEach(st => groups.push(`<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`));
     if (A) {
       A.AREAS.filter(area => area.id !== "games").forEach(area => groups.push(`<optgroup label="${area.icon} ${esc(area.title)}">${area.activities
         .map(a => `<option value="${esc(a.id)}">${esc(a.title)} (${esc(a.level)})</option>`).join("")}</optgroup>`));
@@ -278,17 +280,18 @@
       .concat(A ? [{ id: "check-numbers", title: P().CHECKS.numbers.title, subject: "Maths",
         detail: "Questions from first counting to upper primary (CfE Early to Second level, or Reception to Year 6 in England). It shows where to start in maths." }] : [])
       .map(c => Object.assign(c, { type: "check", strand: FIND_LEVEL, level: "" }));
-    const spelling = P().STAGES.flatMap(stage => stage.lists.map(item => {
+    const spelling = ALL_STAGES().flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
       return { id: item.id, title: list.title, type: "spelling", level: tag(item.id).level, subject: "Literacy", strand: "Spelling",
-        stage: stage.stage.split(" · ")[0], detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
+        stage: stage.england ? "England statutory words" : stage.stage.split(" · ")[0], detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
     }));
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
       strand: strandOf(act.organiser), organiser: act.organiser, type: area.id === "games" ? "game" : act.passage ? "story" : "activity",
       detail: act.blurb || "", print: area.id !== "games"
     })));
-    const dictation = A ? spelling.map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`, type: "dictation",
+    // Dictation needs sentences, which the phonics lists have
+    const dictation = A ? spelling.filter(item => item.list.items.some(it => it.sentence)).map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`, type: "dictation",
       level: item.level, subject: "Literacy", strand: "Writing: dictation",
       detail: "Listen to each sentence, then write it all: capital letter, spellings and full stop.", print: true })) : [];
     const paper = [{ id: "letter-formation", title: "Letter formation (a–z)", type: "paper", level: "Early", subject: "Literacy",
@@ -1044,7 +1047,7 @@
     if (tab !== "plans") return;
     const plans = rows.flatMap((row, rowIndex) => row.plans.map((plan, planIndex) =>
       ({ row, rowIndex, plan, planIndex })));
-    const spellingOptions = P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+    const spellingOptions = ALL_STAGES().map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
     const games = (window.PopActivities?.AREAS.find(area => area.id === "games") || {}).activities || [];
     body.innerHTML = `<div class="work-flow">
       <h2>💻 Online work</h2>
@@ -1309,6 +1312,11 @@
   // Schools (reading for pleasure every lesson), and each part names its CfE outcomes.
   const LEVEL_ORDER = ["Early", "First", "Second"];
   const spellingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id));
+  const englandOrder = () => (P().EXTRA_STAGES || []).flatMap(st => st.lists.map(l => l.id));
+  // A pupil moves on within the sequence their list is in, never from one into the other
+  const orderFor = id => (englandOrder().includes(id) ? englandOrder() : spellingOrder());
+  // Stories and games for an England list: the phonics stage its words are closest to
+  const phonicsStageOf = id => (stageOf(id) >= 0 ? stageOf(id) : /^cew-y1/.test(id) ? 2 : /^cew-y2/.test(id) ? 4 : P().STAGES.length - 1);
   const mathsOrder = () => {
     const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
     return area ? area.activities.slice().sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(a => a.id) : [];
@@ -1423,7 +1431,7 @@
     const A = A_();
     const list = prog.focus !== "maths" ? catalogueList(prog.spelling) : null;
     const act = prog.focus !== "literacy" && A ? A.get(prog.maths) : null;
-    const stage = list ? stageOf(prog.spelling) : -1;
+    const stage = list ? phonicsStageOf(prog.spelling) : -1;
     const level = list ? levelOfStage(stage) : "";
     const rotate = arr => arr.filter(Boolean)[(n - 1) % Math.max(1, arr.filter(Boolean).length)] || null;
     const parts = [];
@@ -1485,10 +1493,10 @@
 
   // The programme moved on one lesson: the next list and maths activity, if the pupil moves on
   function advanced(prog, spellingNext, mathsNext) {
-    const sOrder = spellingOrder(), mOrder = mathsOrder();
-    const next = (order, id, go) => (go && order[order.indexOf(id) + 1]) || id;
+    const mOrder = mathsOrder();
+    const next = (order, id, go) => (go && order.includes(id) && order[order.indexOf(id) + 1]) || id;
     return Object.assign({}, prog, { lesson: prog.lesson + 1,
-      spelling: prog.focus === "maths" ? prog.spelling : next(sOrder, prog.spelling, spellingNext),
+      spelling: prog.focus === "maths" ? prog.spelling : next(orderFor(prog.spelling), prog.spelling, spellingNext),
       maths: prog.focus === "literacy" ? prog.maths : next(mOrder, prog.maths, mathsNext) });
   }
   const WHERE = { you: "👩‍🏫 With you", device: "💻 On the device", paper: "📝 On paper" };
@@ -1507,7 +1515,7 @@
     const when = d => new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
     const rows = roster.map(r => ({ r, a: assignments.find(x => sameName(x.who, r.name)) || null, prog: r.programme || null, start: programmeStart(r, sessions) }))
       .sort((x, y) => (!!y.prog - !!x.prog) || ((x.r.nextLessonDate >= today ? x.r.nextLessonDate : "9999").localeCompare(y.r.nextLessonDate >= today ? y.r.nextLessonDate : "9999")) || x.r.name.localeCompare(y.r.name));
-    const listOptions = chosen => P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}"${l.id === chosen ? " selected" : ""}>${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+    const listOptions = chosen => ALL_STAGES().map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}"${l.id === chosen ? " selected" : ""}>${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
     const mathsOptions = chosen => LEVEL_ORDER.map(lv => `<optgroup label="${lv} level">${mathsOrder().map(id => A_().get(id)).filter(a => a.level === lv)
       .map(a => `<option value="${esc(a.id)}"${a.id === chosen ? " selected" : ""}>${esc(a.title)}</option>`).join("")}</optgroup>`).join("");
     const focusOptions = chosen => [["both", "Literacy and maths"], ["literacy", "Literacy only"], ["maths", "Maths only"]]
@@ -1685,7 +1693,7 @@
   function lessonDoneDialog(x, sessions, done) {
     const prog = x.prog;
     const since = (prog.log || []).length ? prog.log[prog.log.length - 1].at : prog.started;
-    const tracks = [prog.focus !== "maths" && { key: "spelling", id: prog.spelling, order: spellingOrder() },
+    const tracks = [prog.focus !== "maths" && { key: "spelling", id: prog.spelling, order: orderFor(prog.spelling) },
       prog.focus !== "literacy" && { key: "maths", id: prog.maths, order: mathsOrder() }].filter(Boolean).map(t => {
       const s = sessions.find(ss => sameName(ss.pupil, x.r.name) && ss.listId === t.id && ss.at >= since);
       const pct = firstPct(s);

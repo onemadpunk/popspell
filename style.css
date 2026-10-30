@@ -1477,3 +1477,10 @@ a.me-card:hover { border-color: var(--primary); }
 .lesson-criteria { margin: 4px 0 12px; padding-left: 1.3em; }
 .prog-ready ul { margin: 6px 0; padding-left: 1.2em; }
 .prog-ready li { margin: 4px 0; }
+
+/* Timed practice (England's multiplication tables check): 6 seconds, shown as a shrinking bar */
+.mtc-bar { height: 10px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 6px 0 4px; }
+.mtc-bar span { display: block; height: 100%; background: var(--primary); transform-origin: left; animation: mtc-time linear forwards; }
+@keyframes mtc-time { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.mtc-q { font-size: clamp(2rem, 7vw, 3rem); }
+.mtc-up { text-align: center; font-weight: 700; color: var(--oops); margin: 4px 0 0; }
