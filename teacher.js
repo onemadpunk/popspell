@@ -1089,7 +1089,7 @@
   const needsWords = (plan, mode) => plan.list !== "letter-formation" && (mode === "mapping" || mode === "dictation");
   const withWords = (who, plan, mode, words = needsWords(plan, mode)) => {
     const sheet = worksheetSpec(who, plan, mode);
-    return { className: sheet.className, html: `<div class="ws-page">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
+    return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
   };
 
   function printWorksheet(who, plan, mode) {
@@ -1892,9 +1892,14 @@
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const chosen = key => dialog.querySelector(`[data-sheet="${key}"]`).checked;
-    const html = () => [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""].concat(sheets.map((s, i) => (chosen(i) ? sheetHTML(s, i) : "")),
-      sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "key").html)))
-      .filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("");
+    // The pupil's sheets together first, then everything for the tutor (plan, words to say, answers)
+    const html = () => {
+      const pupil = sheets.map((s, i) => (chosen(i) ? sheetHTML(s, i) : ""));
+      const adult = [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""]
+        .concat(sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "key").html)));
+      return pupil.filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("")
+        + adult.filter(Boolean).map(h => `<div class="ws-page ws-adult">${h}</div>`).join("");
+    };
     const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelectorAll("[data-sheet]").forEach(el => { el.onchange = render; });
     render();
