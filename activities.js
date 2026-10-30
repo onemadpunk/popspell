@@ -936,7 +936,7 @@ window.PopActivities = (() => {
     passage: s, decodable: true, stage: s.stage, make: storyQuestions(s, false)
   }));
 
-  /* ---------- Sound Hopper: count the beats, then map one grapheme to each sound ---------- */
+  /* ---------- Sound Hopper: count the sounds, then map one grapheme to each sound ---------- */
 
   const MAP_ALTERNATIVES = {
     a: ["e", "o"], e: ["i", "a"], i: ["e", "u"], o: ["a", "u"], u: ["o", "i"],
@@ -975,13 +975,13 @@ window.PopActivities = (() => {
   };
   const trailGames = [
     { id: "g-hopper-short", title: "Sound Hopper: short vowels", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
-      blurb: "Tap the beats you hear. Build each sound into a bridge and help Pip cross the river.",
+      blurb: "Tap once for each sound you hear. Build each sound into a bridge and help Pip cross the river.",
       make: () => trailWords(["short-a", "short-e", "short-i", "short-o", "short-u"]) },
     { id: "g-hopper-digraphs", title: "Sound Hopper: two-letter sounds", level: "Early", organiser: "Literacy · Writing · Tools for writing (spelling)",
       blurb: "Count the sounds, then build a bridge with sh, ch, th and more.",
       make: () => trailWords(["sh", "ch", "th"]) },
     { id: "g-hopper-long-a", title: "Sound Hopper: long a", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
-      blurb: "Hear the beats and choose between ai, ay and a–e to make a bridge.",
+      blurb: "Count the sounds and choose between ai, ay and a–e to make a bridge.",
       make: () => trailWords(["ai", "ay", "a-e"]) },
     { id: "g-hopper-r", title: "Sound Hopper: r sounds", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
       blurb: "In Scottish mode, hear the vowel then r as two sounds. Try the same words in English mode to compare.",

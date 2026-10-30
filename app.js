@@ -2214,15 +2214,15 @@
         </div>
         <h1 class="hopper-title">${session.i === 0 ? "Help Pip cross!" : "Another river to cross!"}</h1>
         <div class="hopper-head">
-          <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap one beat for every sound you hear.</p>
+          <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap once for every sound you hear.</p>
           <button type="button" class="btn small" id="hearQ">🔊 Hear it again</button>
         </div>
         <div class="hopper-beats" id="beatPhase">
-          <button type="button" class="beat-pad" id="beatPad" aria-label="Tap one beat for a sound">🥁<span>Tap a beat</span></button>
+          <button type="button" class="beat-pad" id="beatPad" aria-label="Tap once for a sound">🥁<span>Tap a sound</span></button>
           <div class="beat-side">
-            <div class="beat-dots" id="beatDots" aria-live="polite">No beats yet</div>
-            <div class="row center"><button type="button" class="btn" id="beatUndo" disabled>Undo a beat</button>
-              <button type="button" class="btn primary" id="beatCheck" disabled>Check my beats</button></div>
+            <div class="beat-dots" id="beatDots" aria-live="polite">No sounds yet</div>
+            <div class="row center"><button type="button" class="btn" id="beatUndo" disabled>Undo one</button>
+              <button type="button" class="btn primary" id="beatCheck" disabled>Check my sounds</button></div>
           </div>
         </div>
         <div class="map-game" id="mapPhase" hidden>
@@ -2251,7 +2251,7 @@
     sayAgain();
 
     const renderBeats = () => {
-      $("#beatDots").textContent = beats ? "● ".repeat(beats).trim() : "No beats yet";
+      $("#beatDots").textContent = beats ? "● ".repeat(beats).trim() : "No sounds yet";
       $("#beatUndo").disabled = beats === 0;
       $("#beatCheck").disabled = beats === 0;
     };
@@ -2267,7 +2267,7 @@
         if (wrong.length < 6) wrong.push(`counted ${beats} sounds`);
         missed.add("segmenting sounds");
         feedback.className = "feedback oops";
-        feedback.textContent = `You tapped ${beats}. Listen once more and tap a beat for each sound.`;
+        feedback.textContent = `You tapped ${beats}. Listen once more and tap once for each sound.`;
         beats = 0;
         renderBeats();
         hopperTone(190);
@@ -2606,6 +2606,10 @@
       const payoff = { flash: "The path lights up!", make: "Pip crosses the river!", hide: "The fireflies come out!", compare: "Pip found the way!" }[q.mode];
       feedback.className = "feedback good";
       feedback.innerHTML = `${payoff} <b>${esc(result)}</b> <span class="stars-inline">${stars(earned)}</span>`;
+      // Saying how they knew, or finding another way, shows understanding as well as the answer
+      const reflect = { flash: "How did you know how many, without counting one by one?", make: `Can you find another way to make ${q.total}?`,
+        hide: "How did you work out how many were hiding?", compare: "How did you know which had more?" }[q.mode];
+      if (reflect) feedback.insertAdjacentHTML("afterend", `<p class="canopy-reflect"><span aria-hidden="true">💬</span> ${esc(reflect)} Tell your grown-up.</p>`);
       chimeRight();
       app.querySelectorAll("#canopyWork button, #canopyHint").forEach(button => { button.disabled = true; });
       const next = document.createElement("div");

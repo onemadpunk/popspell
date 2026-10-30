@@ -15,6 +15,8 @@ window.PopPaper = (() => {
   // Shared pieces
   const answersPage = (h, title, items, note = "", after = "") => `${h.brandHead(`Answers: ${title}`, "For the adult, not the pupil.")}
     ${note ? `<p>${note}</p>` : ""}<ol class="ws-answers">${items.map(a => `<li>${a}</li>`).join("")}</ol>${after}`;
+  const lookForPage = (h, title, items, note = "") => `${h.brandHead(`What to look for: ${title}`, "For the adult, not the pupil.")}
+    ${note ? `<p>${note}</p>` : ""}<ul class="ws-answers">${items.map(a => `<li>${a}</li>`).join("")}</ul>`;
   const blank = (w = 5) => `<span class="ws-blank" style="width:${w}em"></span>`;
   // Plain writing lines (Second level), or four-line ruling (Early and First)
   const lines = n => `<div class="ws-lines">${"<span></span>".repeat(n)}</div>`;
@@ -48,9 +50,10 @@ window.PopPaper = (() => {
     return {
       pupil: `${h.sheetHead("Guess, then count", who)}
         <p>Look at each box for a moment. Guess how many dots, and write your guess. Then count them carefully, touching each one.</p>
-        <div class="pp-grid3">${counts.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${dots(n)}<p>Guess: ${blank(3)} &nbsp; Count: ${blank(3)}</p></div>`).join("")}</div>
-        <p>Was your guess more than, less than, or the same as the count? Tell your adult.</p>`,
-      answers: answersPage(h, "Guess, then count", counts.map(n => `${n} dots`), "Any sensible guess is fine: praise guesses that get closer.")
+        <div class="pp-grid3">${counts.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${dots(n)}<p>Guess: ${blank(3)}</p><p>Count: ${blank(3)}</p></div>`).join("")}</div>
+        <p><b>7.</b> Choose one box. How did you know how many, or how did you count them? Tell your adult, or draw it here.</p><div class="pp-draw pp-short"></div>`,
+      answers: answersPage(h, "Guess, then count", counts.map(n => `${n} dots`).concat(["Listen for how they knew: seeing a pattern without counting (subitising), counting in twos or groups, or touching each dot once. Note if they count a dot twice or miss one."]),
+        "Any sensible guess is fine: praise guesses that get closer.")
     };
   });
 
@@ -69,7 +72,7 @@ window.PopPaper = (() => {
         <p><b>4.</b> One more and one less.</p>
         <div class="pp-next">${[7, 12, 18, 20].map(n => `<span>${blank(2)} &lt; <b>${n}</b> &lt; ${blank(2)}</span>`).join("")}</div>
         <p class="hint">One less goes on the left and one more on the right.</p>`,
-      answers: answersPage(h, "Counting to 20 and beyond", [
+      answers: answersPage(h, "Counting to 20 and beyond", ["Mark each part separately: counting on, counting back, and one more or less are different skills.",
         `Missing numbers: ${[...gaps].sort((a, b) => a - b).join(", ")}`,
         `Counting back: ${back.filter((_, i) => backGaps.has(i)).join(", ")}`,
         `What comes next: ${next.map(n => n + 2).join(", ")}`,
@@ -90,10 +93,10 @@ window.PopPaper = (() => {
       pupil: `${h.sheetHead("Sharing and halves", who)}
         ${shares.map(([n, p], i) => `<div class="pp-q"><p><b>${i + 1}.</b> Share these ${n} apples equally between ${p} plates. Draw them on the plates.</p>
           ${things(n)}${plates(p)}<p>Each plate has ${blank(3)} apples.</p></div>`).join("")}
-        <p><b>${shares.length + 1}.</b> Has each shape been cut into two equal halves? Colour half of the ones that have. Write yes or no.</p>
+        <p><b>${shares.length + 1}.</b> Has each shape been cut into two equal halves? Colour half of the ones that have. Write yes or no. Tell your adult why.</p>
         <div class="pp-row4">${halves.map(([, d]) => `<div>${svg(100, 100, d)}<p>${blank(3)}</p></div>`).join("")}</div>`,
       answers: answersPage(h, "Sharing and halves", shares.map(([n, p]) => `${n} shared between ${p}: ${n / p} each`)
-        .concat([`Halves: yes, yes, no (the two parts aren't the same size), yes`]))
+        .concat([`Halves: yes, yes, no (the two parts aren't the same size), yes. Listen for "both parts are the same size", not just "it's cut in two".`]))
     };
   });
 
@@ -118,7 +121,8 @@ window.PopPaper = (() => {
       pupil: `${h.sheetHead("Longer, taller, heavier, holds more", who)}<p>Look carefully at each pair. Circle the right one.</p>
         <div class="pp-cols">${pairs.map((p, i) => `<div class="pp-q"><p><b>${i + 1}.</b> ${p.q}</p>${p.pic}</div>`).join("")}
         <div class="pp-q"><p><b>${pairs.length + 1}.</b> Draw something shorter than your pencil, and something heavier than a feather.</p><div class="pp-draw"></div></div></div>`,
-      answers: answersPage(h, "Longer, taller, heavier, holds more", pairs.map(p => `${p.answer} is ${p.word}`).concat(["Any sensible drawings"]))
+      answers: answersPage(h, "Longer, taller, heavier, holds more", pairs.map(p => `${p.answer} is ${p.word}`).concat(["Any sensible drawings"]),
+        "", "<p>Pictures are a quick check. For stronger evidence, compare real objects: two pencils side by side, two toys in the hands or on scales, two cups filled with water.</p>")
     };
   });
 
@@ -143,7 +147,8 @@ window.PopPaper = (() => {
         ${svg(300, 130, `<rect x="110" y="60" width="80" height="60" class="pp-frame"/><polygon points="105,60 150,25 195,60" class="pp-frame"/><rect x="140" y="90" width="20" height="30" class="pp-frame"/><line x1="0" y1="120" x2="300" y2="120" class="pp-beam"/>`)}
         <p><b>3.</b> The dotted line is a mirror. Colour squares on the right to finish the picture so both sides match.</p>${grid}`,
       answers: answersPage(h, "Where is it?", qs.map(([q, a]) => `${q} <b>${a}</b>`).concat(["2. Check the sun is above, the tree beside, and the cat in front of the house.",
-        "3. The right side is a mirror image: the same squares, the same distance from the line."]))
+        "3. The right side is a mirror image: the same squares, the same distance from the line."]), "",
+        "<p>Follow up: ask the pupil to give you directions to find something in the room (behind, next to, under), and note any position words they mix up.</p>")
     };
   });
 
@@ -159,8 +164,10 @@ window.PopPaper = (() => {
     return {
       pupil: `${h.sheetHead("Area by counting squares", who)}<p>Each shape is made of squares. Count the squares to find its area.</p>
         <div class="pp-grid3">${sizes.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${shape(n)}<p>Area: ${blank(3)} squares</p></div>`).join("")}</div>
-        <p><b>7.</b> Draw two different shapes that each have an area of 8 squares.</p>${svg(12 * s + 2, 6 * s + 2, gridLines(12, 6, s, 1, 1))}`,
-      answers: answersPage(h, "Area by counting squares", sizes.map(n => `${n} squares`).concat(["7. Any two shapes of exactly 8 squares"]))
+        <p><b>7.</b> Draw two different shapes that each have an area of 8 squares.</p>${svg(12 * s + 2, 6 * s + 2, gridLines(12, 6, s, 1, 1))}
+        <p><b>8.</b> Can two different shapes have the same area? How do you know?</p>${ruled(h, 1)}`,
+      answers: answersPage(h, "Area by counting squares", sizes.map(n => `${n} squares`).concat(["7. Any two shapes of exactly 8 squares", "8. Yes: area is how many squares, not the shape, so different shapes can cover the same number of squares."]),
+        "Watch for counting the edges (the perimeter) instead of the squares inside.")
     };
   });
 
@@ -188,7 +195,7 @@ window.PopPaper = (() => {
           <p><b>7.</b> Draw a smiley face at C2.</p></div></div>
         <p><b>8.</b> The dotted line is a mirror line. Shade squares on the right so the pattern is symmetrical.</p>${pattern}`,
       answers: answersPage(h, "Grid references and symmetry", ask.map(c => `${c.mark}`).concat(find.map(c => ref(c)), ["A face in column C, row 2"]),
-        "", `<p><b>8.</b> The finished pattern:</p>${mirrored}`)
+        "Note the kind of mistake: number before letter (order), or the right letter but the wrong row (misreading an axis).", `<p><b>8.</b> The finished pattern:</p>${mirrored}`)
     };
   });
 
@@ -227,8 +234,11 @@ window.PopPaper = (() => {
         <div class="pp-cols">${qs.map(([e], i) => `<p><b>${i + 1}.</b> ${e} = ${blank(4)}</p>`).join("")}</div>
         <p><b>Put in brackets to make each one true.</b></p>
         <div class="pp-cols">${brackets.map(([e], i) => `<p><b>${qs.length + i + 1}.</b> ${e}</p>`).join("")}</div>
-        <p><b>${qs.length + brackets.length + 1}.</b> Write your own calculation where brackets change the answer. Show it with and without brackets.</p>${lines(2)}`,
-      answers: answersPage(h, "Order of operations", qs.map(([e, a]) => `${e} = ${a}`).concat(brackets.map(([, a]) => a), ["Any calculation where brackets change the answer"]))
+        <p><b>${qs.length + brackets.length + 1}.</b> Cinema tickets cost £6 each. Mia buys 3 tickets and a £4 box of popcorn. Write one calculation for the total, then work it out.</p>${lines(1)}
+        <p><b>${qs.length + brackets.length + 2}.</b> Ben says 2 + 3 × 4 = 20. Amy says it's 14. Who is right? Explain why the order matters.</p>${lines(2)}`,
+      answers: answersPage(h, "Order of operations", qs.map(([e, a]) => `${e} = ${a}`).concat(brackets.map(([, a]) => a),
+        ["3 × 6 + 4 = £22 (or 6 × 3 + 4)", "Amy is right: multiply before adding, so 3 × 4 = 12, then 2 + 12 = 14. Ben worked from left to right."]),
+        "Watch for working left to right every time. Ask: which part do we do first, and why?")
     };
   });
 
@@ -242,13 +252,15 @@ window.PopPaper = (() => {
       ["regular hexagon", `<polygon points="${poly(6)}" class="pp-frame"/>`, 6],
       ["isosceles triangle", `<polygon points="55,10 85,100 25,100" class="pp-frame"/>`, 1],
       ["kite", `<polygon points="55,8 88,45 55,102 22,45" class="pp-frame"/>`, 1],
-      ["parallelogram", `<polygon points="30,25 100,25 80,85 10,85" class="pp-frame"/>`, 0]]).slice(0, 6);
+      ["parallelogram", `<polygon points="30,25 100,25 80,85 10,85" class="pp-frame"/>`, 0]]).slice(0, 5)
+      // One shape turned on its corner, so lines of symmetry aren't only ever up and down or across
+      .concat([["square, turned", `<polygon points="55,8 102,55 55,102 8,55" class="pp-frame"/>`, 4]]);
     return {
       pupil: `${h.sheetHead("Lines of symmetry", who)}<p>Draw every line of symmetry with a ruler. Then write how many lines each shape has. A shape may have none.</p>
         <div class="pp-grid3">${shapes.map(([name, d], i) => `<div class="pp-cell"><p><b>${i + 1}.</b> ${name}</p>${svg(110, 110, d)}<p>Lines: ${blank(3)}</p></div>`).join("")}</div>
-        <p><b>7.</b> Which capital letters have a line of symmetry? Try A, B, F, H, N, T and Z, and write the ones that do.</p>${lines(1)}
+        <p><b>7.</b> Which of these capital letters have a line of symmetry, as they're printed here? <span class="pp-letters">A B F H N T Z</span></p>${lines(1)}
         <p><b>8.</b> Draw a shape of your own with exactly two lines of symmetry.</p><div class="pp-draw"></div>`,
-      answers: answersPage(h, "Lines of symmetry", shapes.map(([name, , n]) => `${name}: ${n}`).concat(["7. A (1), B (1), H (2), T (1). F, N and Z have none.", "8. For example, a rectangle or an oval"]))
+      answers: answersPage(h, "Lines of symmetry", shapes.map(([name, , n]) => `${name}: ${n}`).concat(["7. A (1), B (1), H (2), T (1). F, N and Z have none. In some handwriting styles letters differ, so accept a reasoned answer.", "8. For example, a rectangle or an oval"]))
     };
   });
 
@@ -259,7 +271,10 @@ window.PopPaper = (() => {
         <p><b>1.</b> How might each person use maths at work? Think about measuring, money, time, shapes and data.</p>
         <table class="pp-table"><tr><th>Job</th><th>How they use maths</th></tr>${jobs.map(j => `<tr><td>${j[0].toUpperCase() + j.slice(1)}</td><td></td></tr>`).join("")}<tr><td>A job I'd like: ${blank(6)}</td><td></td></tr></table>
         <p><b>2.</b> Choose an invention (a bridge, a phone, a rocket, a clock…). What maths did its inventors need?</p>${lines(3)}
-        <p><b>3.</b> Ask an adult: "How do you use maths in your life or work?" Write their answer.</p>${lines(3)}`
+        <p><b>3.</b> Ask an adult: "How do you use maths in your life or work?" Write their answer.</p>${lines(3)}`,
+      answers: lookForPage(h, "Maths at work", ["The maths itself, named: measuring, money, time, shape, data or calculating", "A real example for each job, not just \"they count things\"",
+        "For the invention: a specific bit of maths (measuring lengths, angles, timing, scale)", "The interview: what the adult said, in the pupil's own words"],
+        "Assess the mathematical explanation, not how much they know about the job.")
     };
   });
 
@@ -267,14 +282,20 @@ window.PopPaper = (() => {
 
   add("paper-my-story", "lesson-early-telling-and-drawing-my-own-story", "My story", "Draw and write a story in three parts: beginning, middle and end.", (who, h) => ({
     pupil: `${h.sheetHead("My story", who)}<p>Draw your story in the boxes. Then write a sentence under each picture. Tell your adult the story first.</p>
-      ${["At the beginning…", "In the middle…", "At the end…"].map(t => box(t, `<div class="pp-draw pp-short"></div>${ruled(h, 1)}`)).join("")}`
+      ${["At the beginning…", "In the middle…", "At the end…"].map(t => box(t, `<div class="pp-draw pp-short"></div>${ruled(h, 1)}`)).join("")}`,
+    answers: lookForPage(h, "My story", ["Telling the story aloud first, in order, before drawing and writing", "A clear beginning, middle and end that follow on from each other",
+      "Story words such as once upon a time, then, suddenly, in the end", "Sentences that can be read back (sounding out is fine)"],
+      "The telling matters as much as the page: jot down what the pupil says as they tell the story.")
   }));
 
   add("paper-recount", "lesson-first-planning-and-writing-a-recount", "Plan a recount", "A planning frame for a recount: who, where and when, then what happened in order.", (who, h) => ({
     pupil: `${h.sheetHead("Plan a recount", who)}<p>Plan a recount of something you did. Then use your plan to write it.</p>
       <div class="pp-cols">${["Who was there?", "Where were you?", "When was it?", "How did you feel?"].map(q => box(q, ruled(h, 1))).join("")}</div>
       ${["First…", "Next…", "Then…", "Finally…"].map(q => box(q, ruled(h, 1))).join("")}
-      <p class="pp-bank"><b>Words to help:</b> first, next, then, after that, later, finally, because, so, and, but</p>`
+      <p class="pp-bank"><b>Words to help:</b> first, next, then, after that, later, finally, because, so, and, but</p>`,
+    answers: lookForPage(h, "Plan a recount", ["Events in the order they happened, not just a list", "Who, where and when answered, so a reader could picture it",
+      "Relevant detail and a feeling, not every small thing", "Time words (first, next, then, finally) joining the events"],
+      "Judge the order and the detail, not how many boxes are filled.")
   }));
 
   add("paper-story-planner", "lesson-first-writing-a-story-with-characters-and-a-setting", "Plan a story", "Plan a character, a setting, a problem and an ending.", (who, h) => ({
@@ -283,7 +304,11 @@ window.PopPaper = (() => {
         ${box("My character", `<div class="pp-draw pp-short"></div><p>Name: ${blank(8)}</p><p>Looks like: ${blank(9)}</p><p>Feels: ${blank(10)}</p>`)}
         ${box("The setting", `<div class="pp-draw pp-short"></div><p>Where: ${blank(9)}</p><p>I can see: ${blank(8)}</p><p>I can hear: ${blank(8)}</p>`)}</div>
       ${box("The problem: what goes wrong?", ruled(h, 1))}${box("How is it sorted out?", ruled(h, 1))}${box("How does it end?", ruled(h, 1))}
-      <p class="pp-bank"><b>Describing words:</b> tiny, enormous, gloomy, sparkling, brave, nervous, cheeky, frosty, silent, busy</p>`
+      <p class="pp-bank"><b>Describing words:</b> tiny, enormous, gloomy, sparkling, brave, nervous, cheeky, frosty, silent, busy</p>
+      <p class="hint">You can draw or tell your plan too.</p>`,
+    answers: lookForPage(h, "Plan a story", ["A character with a name, a look and a feeling", "A setting described with what you can see or hear",
+      "A problem that matters to the character, and an ending that sorts it out", "How the parts connect: does the setting or the character cause the problem?"],
+      "A drawn or spoken plan counts as much as a written one.")
   }));
 
   add("paper-fact-opinion", "lesson-second-fact-opinion-and-persuasion", "Fact or opinion?", "Sort statements into facts and opinions, then write persuasive sentences with reasons.", (who, h) => {
@@ -291,13 +316,21 @@ window.PopPaper = (() => {
       ["Cats make better pets than dogs.", "opinion"], ["There are seven days in a week.", "fact"], ["Winter is the most boring season.", "opinion"],
       ["The Sun is a star.", "fact"], ["Chocolate ice cream tastes nicer than vanilla.", "opinion"], ["A triangle has three sides.", "fact"],
       ["Everyone should learn to swim.", "opinion"], ["Penguins cannot fly.", "fact"], ["Homework is a waste of time.", "opinion"]];
-    const items = shuffle(all).slice(0, 10);
+    const items = shuffle(all).slice(0, 8);
     return {
       pupil: `${h.sheetHead("Fact or opinion?", who)}<p>A <b>fact</b> can be checked and proved. An <b>opinion</b> is what someone thinks or feels. Tick one box for each.</p>
         <table class="pp-table"><tr><th>Statement</th><th>Fact</th><th>Opinion</th></tr>${items.map(([t], i) => `<tr><td>${i + 1}. ${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
-        <p><b>11.</b> Write a persuasive sentence giving your opinion about school dinners. Give a reason using <b>because</b>.</p>${lines(2)}
-        <p><b>12.</b> Now add a fact that supports your opinion.</p>${lines(1)}`,
-      answers: answersPage(h, "Fact or opinion?", items.map(([t, k]) => `${t} <b>${k}</b>`).concat(["11–12. Any opinion with a reason, and a fact that supports it"]))
+        <p><b>9.</b> Read this advert.</p>
+        <p class="pp-advert"><b>CRUNCHO cereal!</b> The tastiest breakfast in the world! 9 out of 10 children love it. Every bowl has added vitamins. Buy CRUNCHO today!</p>
+        <p>a) What does the advert want you to do? ${blank(10)}</p>
+        <p>b) Write one opinion from the advert. ${blank(10)}</p>
+        <p>c) "9 out of 10 children love it." How could you check if this is true? Who might have asked the children?</p>${lines(1)}
+        <p>d) Would you trust this advert? Why or why not?</p>${lines(1)}
+        <p><b>10.</b> Give your opinion about school dinners, with a reason using <b>because</b>, and a fact that supports it.</p>${lines(2)}`,
+      answers: answersPage(h, "Fact or opinion?", items.map(([t, k]) => `${t} <b>${k}</b>`).concat([
+        "9a. Buy CRUNCHO cereal.", "9b. The tastiest breakfast in the world (it can't be proved).",
+        "9c. Ask how many children were asked, and who asked them: the cereal company might only have asked a few, or children who already liked it.",
+        "9d. Any reasoned answer: the advert is trying to sell, so it chooses what to tell you.", "10. Any opinion with a reason, and a fact that supports it"]))
     };
   });
 
@@ -307,12 +340,12 @@ window.PopPaper = (() => {
       ["after lunch we played football", "After lunch, we played football."], ["where is my coat asked mia", "“Where is my coat?” asked Mia."],
       ["the childrens books are on the shelf", "The children’s books are on the shelf."], ["i cant find my shoes", "I can’t find my shoes."],
       ["my brother who is ten loves chess", "My brother, who is ten, loves chess."], ["were going to grans house on saturday", "We’re going to Gran’s house on Saturday."],
-      ["mum shouted come inside now", "Mum shouted, “Come inside now!”"], ["the girls coats were wet", "The girls’ coats were wet. (or The girl’s coat was wet.)"],
+      ["mum shouted come inside now", "Mum shouted, “Come inside now!”"], ["the two girls coats were wet", "The two girls’ coats were wet."],
       ["slowly the fox crept past the hens", "Slowly, the fox crept past the hens."]];
-    const items = shuffle(all).slice(0, 8);
+    const items = shuffle(all).slice(0, 7);
     return {
       pupil: `${h.sheetHead("Commas, speech marks and apostrophes", who)}<p>Write each sentence correctly. Add capital letters, full stops, commas, speech marks and apostrophes.</p>
-        ${items.map(([s], i) => `<div class="pp-q"><p><b>${i + 1}.</b> ${s}</p>${lines(1)}</div>`).join("")}`,
+        ${items.map(([s], i) => `<div class="pp-q"><p><b>${i + 1}.</b> ${s}</p>${lines(2)}</div>`).join("")}`,
       answers: answersPage(h, "Commas, speech marks and apostrophes", items.map(([, a]) => a))
     };
   });
@@ -323,7 +356,10 @@ window.PopPaper = (() => {
       ${box("Opening: catch the reader's attention", lines(2))}
       ${[1, 2, 3].map(n => box(`Point ${n}`, `${lines(1)}<p class="hint">Evidence or example:</p>${lines(1)}`)).join("")}
       ${box("Ending: sum up, or tell the reader what to do", lines(2))}
-      <p><b>I will use:</b> ${tick(["a question for the reader", "a fact or number", "strong, emotive words", "“you” to talk to the reader", "firstly, furthermore, however, therefore"])}</p>`
+      <p><b>I will use:</b> ${tick(["a question for the reader", "a fact or number", "strong, emotive words", "“you” to talk to the reader", "firstly, furthermore, however, therefore"])}</p>`,
+    answers: lookForPage(h, "Plan: inform or persuade", ["A clear purpose (inform or persuade) and a named reader", "Each point backed by evidence or an example that really supports it",
+      "Language chosen for that reader and purpose", "An opening that hooks and an ending that sums up or asks the reader to act"],
+      "Check the finished writing too: does the evidence support each point, or just repeat it?")
   }));
 
   add("paper-story-mountain", "lesson-second-writing-a-story-plot-character-and-setting", "Story mountain", "Plan a story on a story mountain: opening, build-up, problem, resolution and ending.", (who, h) => ({
@@ -331,7 +367,10 @@ window.PopPaper = (() => {
       ${svg(560, 140, `<polyline points="10,130 140,90 280,32 420,90 550,130" class="pp-mountain"/>
         ${[["1 Opening", 14, 112], ["2 Build-up", 96, 74], ["3 Problem", 244, 22], ["4 Resolution", 408, 72], ["5 Ending", 478, 104]].map(([t, x, y]) => `<text x="${x}" y="${y}" class="pp-lab pp-halo">${t}</text>`).join("")}`, "pp-wide")}
       ${["1. Opening: who, where, when?", "2. Build-up: what starts to happen?", "3. Problem: what goes wrong?", "4. Resolution: how is it sorted out?", "5. Ending: how does it finish?"].map(t => box(t, lines(2))).join("")}
-      <div class="pp-cols">${box("Main character: feelings and actions", lines(2))}${box("Setting: sights, sounds, atmosphere", lines(2))}</div>`
+      <div class="pp-cols">${box("Main character: feelings and actions", lines(2))}${box("Setting: sights, sounds, atmosphere", lines(2))}</div>
+      ${box("How does the problem change your character by the end?", lines(1))}`,
+    answers: lookForPage(h, "Story mountain", ["Each stage leads to the next: the build-up sets up the problem", "A problem with real tension, and a resolution that follows from what has happened",
+      "A character who changes or learns something because of the problem", "A setting that adds atmosphere, not just a place name"])
   }));
 
   add("paper-talk", "lesson-second-planning-and-giving-a-short-talk", "Plan a short talk", "Plan a two-minute talk, make cue cards, and check how it went.", (who, h) => ({
@@ -341,7 +380,12 @@ window.PopPaper = (() => {
       ${box("Ending: sum up, or ask the audience to think about something", lines(2))}
       <p><b>Cue cards:</b> write a few key words for each part. Cut them out and use them when you speak.</p>
       <div class="pp-cols3">${["Opening", "Points", "Ending"].map(t => `<div class="pp-card"><b>${t}</b></div>`).join("")}</div>
-      <p><b>After my talk:</b> ${tick(["I looked at my audience", "I spoke loudly and clearly", "I didn't rush", "I answered a question"])}</p>`
+      <p><b>After my talk:</b> ${tick(["I looked at my audience", "I spoke loudly and clearly", "I didn't rush", "I answered a question"])}</p>`,
+    answers: `${h.brandHead("What to look for: Plan a short talk", "For the adult, while you listen.")}
+      <table class="pp-table"><tr><th>While they speak</th><th>Not yet</th><th>Some of the time</th><th>Yes</th></tr>
+        ${["Clear opening that catches the listener", "Three points, each with an example", "Looks at the audience", "Loud and clear enough", "A steady pace, with pauses",
+          "Words chosen for this audience", "A clear ending", "Answers a question thoughtfully"].map(t => `<tr><td>${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
+      <p>As a listener, ask one question and note how they respond.</p>`
   }));
 
   add("paper-handwriting-speed", "lesson-england-writing-legibly-fluently-and-at-speed-years-5-and-6", "Writing legibly and at speed", "Copy a passage in best handwriting, time a one-minute speed write, and choose print or joined for the task.", (who, h) => ({
@@ -350,7 +394,8 @@ window.PopPaper = (() => {
       <p class="pp-passage">The night was cold and still. Far below the castle, a light flickered in the forest, and an owl called once across the frozen lake.</p>${lines(3)}
       <p><b>2.</b> One-minute speed write. When your adult says go, copy this sentence as many times as you can, keeping it readable.</p>
       <p class="pp-passage">The quick brown fox jumps over the lazy dog.</p>${lines(4)}
-      <p>Words written in one minute: ${blank(3)} &nbsp; Is it still easy to read? ☐ yes ☐ mostly ☐ not yet</p>
+      <p>Words written in one minute: ${blank(3)}</p>
+      <p>Is it still easy to read? ☐ yes ☐ mostly ☐ not yet &nbsp; (Speed and how easy it is to read are judged separately.)</p>
       <p><b>3.</b> Some writing is clearer printed. Label these parts of a plant in clear print: <b>flower, leaf, stem, root</b>.</p>
       ${svg(300, 110, `<line x1="150" y1="100" x2="150" y2="35" class="pp-beam"/><circle cx="150" cy="25" r="14" class="pp-frame"/><ellipse cx="128" cy="62" rx="20" ry="8" class="pp-frame"/>
         <path d="M150,100 L135,108 M150,100 L165,108" class="pp-beam"/>${[[20, 25], [20, 62], [230, 70], [230, 104]].map(([x, y]) => `<line x1="${x + 50}" y1="${y}" x2="${x < 150 ? 125 : 155}" y2="${y}" class="pp-cut"/><rect x="${x}" y="${y - 10}" width="50" height="18" class="pp-frame"/>`).join("")}`)}`

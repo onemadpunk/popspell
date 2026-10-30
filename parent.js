@@ -8,7 +8,7 @@
   const day = ms => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   const date = key => new Date(`${key}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
   const chips = (list, kind) => list.map(s => `<span class="chip ${kind}">${esc(s)}</span>`).join(" ");
-  const STATUS = { Secure: "secure", Developing: "developing", "Needs support": "support" };
+  const STATUS = { Secure: "secure", "Secure in practice": "secure", Developing: "developing", "Needs support": "support" };
 
   const notWorking = () => {
     document.title = "PopSpell · Link not working";
@@ -60,9 +60,9 @@
           <div class="t-scroll"><table class="t-table cfe-table">
             <thead><tr><th>Area</th><th>${s.curriculum === "england" ? "Year" : "Level"}</th><th>Progress</th></tr></thead>
             <tbody>${s.cfe.map(c => `<tr><td>${esc(c.organiser)}</td><td>${esc(c.level)}</td>
-              <td><span class="cfe ${STATUS[c.status] || ""}">${esc(c.status)}</span></td></tr>`).join("")}</tbody>
+              <td><span class="cfe ${STATUS[c.status] || ""}">${esc(c.status)}</span>${c.evidence ? `<br><span class="hint">${esc(c.evidence)}</span>` : ""}</td></tr>`).join("")}</tbody>
           </table></div>
-          <p class="hint">Secure means 85% or more right first time, on at least 10 questions over two or more days. This is a guide from PopSpell work only, not a school report.</p>` : ""}
+          <p class="hint">Secure in practice means 85% or more right first time, on at least 10 questions over two or more days. It comes from PopSpell work only: it isn't a ${s.curriculum === "england" ? "national curriculum" : "Curriculum for Excellence"} level or a school report. Your child's teacher looks at this alongside their own work in lessons.</p>` : ""}
 
         <h2>How to help at home</h2>
         <ul class="parent-list">

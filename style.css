@@ -1529,6 +1529,25 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-row .ws-join-grey { stroke: #8a8a8a; stroke-width: 3.5; stroke-dasharray: 1 6; }
 .ws-sub, .worksheet-print .ws-sub, .sheet-preview-page .ws-sub { font: 700 11.5pt var(--font); margin: 8px 0 2px; color: #0b2e6b; }
 .ws-check, .worksheet-print .ws-check, .sheet-preview-page .ws-check { font: 11pt Arial, sans-serif; margin-top: 10px; }
+/* After the questions: show your thinking, story problems, your turn; on the adult's page, what to look for */
+.ws-en { display: inline-block; border: 1.5px solid #7c3aed; color: #5b21b6; border-radius: 999px; padding: 0 8px; font: 700 9pt Arial, sans-serif; }
+.ws-goal { margin: 4px 0 8px !important; padding: 4px 10px; border-left: 4px solid #12c6b7; background: #f1fbfa; font-size: 10.5pt; }
+.lesson-kdu { border: 1.5px solid var(--line, #d5dce8); border-radius: 10px; padding: 4px 12px; margin: 8px 0; }
+.lesson-kdu ul { margin: 4px 0; padding-left: 20px; }
+.ws-code { margin: -4px 0 4px !important; text-align: right; font: 8.5pt Arial, sans-serif; color: #666; }
+.canopy-reflect { margin: 6px 0 0; text-align: center; font-weight: 700; color: var(--ink, #10284f); }
+/* All 26 letters fill exactly two pages, so the rows are a little smaller */
+.sheet-preview-page .ws-compact .ws-row, .ws-compact .ws-row { width: 90%; margin: 0 auto 3px; }
+.ws-extra { break-inside: avoid; margin-top: 6px; border-top: 1px dashed #9aa8bf; }
+.ws-extra p { margin: 4px 0 !important; }
+.ws-think { height: 30mm; border: 1.5px dashed #8a9ab4; border-radius: 8px; margin: 4px 0; }
+.ws-numline { display: block; width: 100%; height: auto; margin: 2px 0; }
+.ws-tenframe { display: block; width: 52mm; height: auto; margin: 4px 0; }
+.ws-nl { stroke: #333; stroke-width: 2; fill: none; }
+.ws-diag { margin-top: 10px; border: 1.5px solid #9aa8bf; border-radius: 8px; padding: 2px 10px 6px; break-inside: avoid; }
+.ws-diag p { margin: 4px 0 !important; }
+td.ws-err { white-space: nowrap; letter-spacing: .3em; font: 10pt Arial, sans-serif; color: #444; }
+tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 /* Worksheets for lessons taught with objects, talk or writing (paper-sheets.js) */
 .ws-lines span { display: block; height: 9mm; border-bottom: 1px solid #8a8a8a; }
 .pp-pic { display: block; max-width: 100%; height: auto; margin: 4px 0; }
@@ -1577,3 +1596,5 @@ a.me-card:hover { border-color: var(--primary); }
 .pp-word { border: 2px solid #333; border-radius: 10px; padding: 10px 4px; text-align: center; font: 700 22pt var(--reading-font); }
 .pp-word i { display: block; font-style: normal; font-size: 14pt; }
 .pp-halo { paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+.pp-advert { border: 2px dashed #e05a00; border-radius: 10px; padding: 6px 12px; font-size: 12pt; }
+.pp-letters { font: 700 16pt Arial, sans-serif; letter-spacing: .35em; }

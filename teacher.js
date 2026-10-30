@@ -315,6 +315,12 @@
     return all;
   }
   const EN_NONE = "Not in England's curriculum";
+  // Work that comes from England's curriculum alone: grammar by year, the times tables check,
+  // the statutory word lists, England's own lessons and their sheets
+  let enOnlySet = null;
+  const englandOnly = id => (enOnlySet = enOnlySet || new Set(libraryEntries().filter(e => e.england).map(e => e.id))).has(String(id).replace(/^dictate:/, ""));
+  const EN_TAG = `&nbsp; <span class="ws-en">England's national curriculum</span>`;
+  const EN_PRACTICE = "England's curriculum (practice only)";
 
   const LIB_KEY = "popspell-library";
   const LIB_BLANK = { cur: "", level: "", subject: "", strand: "", type: "" };
@@ -461,12 +467,19 @@
         ${en.hi === 0 ? "Children at the expected level of development will:" : en.lo === 0 ? "What children are expected to do (Reception) and be taught (Year 1 on):" : "Pupils should be taught to:"}</p>
         <ul class="lesson-criteria">${lessonStatements(en).slice(0, 6).map(s => `<li>${esc(s.wording)} <span class="hint">(${esc(E_().yearLabel(s.year))} · ${esc(E_().domainLabel(s.domain))})</span></li>`).join("")}</ul>`
       : `<p><b>National curriculum (England):</b> ${esc(en.label)}. This lesson goes beyond what England's primary curriculum sets out, so use it as enrichment.</p>`;
+    // Scotland's view sets the lesson out as know, do, understand; England's keeps its statements and adds the check
+    const kdu = l.understand && cur !== "england";
     return `<p><b>Learning intention:</b> ${esc(l.intention)}</p>
       ${curriculum}
-      ${l.vocab ? `<p><b>Words to use:</b> ${esc(l.vocab)}</p>` : ""}
+      ${l.vocab && !kdu ? `<p><b>Words to use:</b> ${esc(l.vocab)}</p>` : ""}
       <table class="t-table lesson-steps"><thead><tr><th>Part</th><th>Time</th><th>What to do</th></tr></thead><tbody>
         ${LESSON_STEPS.map(([k, name]) => `<tr><td><b>${name}</b></td><td>${M[k]} min</td><td>${esc(l.steps[k])}${k === "practise" && l.use.length
           ? `<br><span class="hint">PopSpell: ${l.use.map(work).join(", ")}</span>` : ""}</td></tr>`).join("")}</tbody></table>
+      ${kdu ? `<div class="lesson-kdu"><p><b>Know, do, understand</b></p><ul>
+          <li><b>Know:</b> ${esc(l.vocab || "the words used in this lesson")}</li>
+          <li><b>Do:</b> the success criteria above</li>
+          <li><b>Understand:</b> ask “${esc(l.understand)}” <span class="hint">Look for: ${esc(l.lookFor)}</span></li></ul></div>`
+        : l.understand ? `<div class="lesson-kdu"><p><b>Check understanding:</b> ask “${esc(l.understand)}”</p><p class="hint">Look for: ${esc(l.lookFor)}</p></div>` : ""}
       ${l.home ? `<p><b>At home:</b> ${esc(l.home)}</p>` : ""}`;
   }
   function lessonDialog(l, cur = "") {
@@ -487,15 +500,23 @@
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.showModal();
   }
+  // "I am learning to…" and the first "I can…", under a sheet's header, for the pupil to tick
+  const pupilVoice = t => t.replace(/^We are learning/, "I am learning").replace(/\bour\b/g, "my").replace(/\bwe\b/g, "I").replace(/\bus\b/g, "me");
+  const goalHTML = l => `<p class="ws-goal"><b>${esc(pupilVoice(l.intention))}</b><br><span>☐ ${esc(l.criteria[0])}</span></p>`;
+  const withGoal = (html, goal) => (goal ? html.replace("</header>", `</header>${goal}`) : html);
+  // A short code printed on a pupil's sheet and on its answers, so the two can be matched up later
+  const sheetCode = () => `${todayKey().slice(2).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+  const withCode = (html, code) => (html ? html.replace("</header>", `</header><p class="ws-code">Sheet ${code}</p>`) : html);
   // The lesson plan, then a sheet for each piece of work it uses (games are online only)
   function lessonPrintDialog(l, who = "", cur = "") {
     const A = window.PopActivities;
+    const goal = goalHTML(l);
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     const pupil = [], adult = [];
     lessonPapers(l).forEach(id => {
       let made = null;
       const pages = () => (made = made || PAPER[id].build(who));
-      pupil.push({ label: PAPER[id].title, html: () => pages().pupil, checked: true });
+      pupil.push({ label: PAPER[id].title, html: () => withGoal(pages().pupil, goal), checked: true });
       if (PAPER[id].build === undefined) return;
       adult.push({ label: `${PAPER[id].needsAdult ? "For you" : "Answers"}: ${PAPER[id].title}`, html: () => pages().answers || "", checked: PAPER[id].needsAdult, adult: true, has: () => Boolean(pages().answers) });
     });
@@ -503,14 +524,14 @@
       if (isPaper(id)) return;
       if (catalogueList(id)) {
         adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
-        return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, checked: true });
+        return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, goal), checked: true });
       }
       const act = A && A.get(id);
       if (!act || act.area === "games") return;
       const qs = act.make();
       const level = cur === "england" ? (enWork(id) || {}).label || "" : l.level;
       let made = null;
-      const pages = () => (made = made || activityPages(act, qs, level, who));
+      const pages = () => (made = made || activityPages(act, qs, level, who, Object.assign(sheetExtras(act), { goal })));
       pupil.push({ label: workTitle(id), html: () => pages().pupil, checked: true });
       adult.push({ label: `${heardOnly(act) ? "To read aloud" : "Answers"}: ${workTitle(id)}`, html: () => pages().answers, checked: heardOnly(act), adult: true });
     });
@@ -607,8 +628,117 @@
   // A CfE level ("First") or an England year ("Year 3", "Reception"), for a sheet's header
   const levelTag = level => (level ? `&nbsp; <b>${esc(level)}${/^(Year|Reception|Not |Key )/.test(level) ? "" : " level"}</b>` : "");
 
+  // After the questions: a way to show thinking, a question in a new context, and (on the adult's page)
+  // what to look for. Made once per sheet, so the pupil's page and the adult's page match.
+  const lines = n => `<div class="ws-lines">${"<span></span>".repeat(n)}</div>`;
+  const pickOne = a => a[Math.floor(Math.random() * a.length)];
+  const between = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+  const numberLine = max => `<svg class="ws-numline" viewBox="0 0 1000 64" role="img" aria-label="A number line from 0 to ${max}">
+    <line x1="20" x2="980" y1="30" y2="30" class="ws-nl"/>${Array.from({ length: max + 1 }, (_, n) => {
+      const x = 20 + n * 960 / max;
+      return `<line x1="${x}" x2="${x}" y1="22" y2="38" class="ws-nl"/><text x="${x}" y="60" text-anchor="middle" font-size="20">${n}</text>`;
+    }).join("")}</svg>`;
+  const tenFrame = () => `<svg class="ws-tenframe" viewBox="0 0 254 104" role="img" aria-label="A ten frame">${Array.from({ length: 10 },
+    (_, i) => `<rect x="${2 + (i % 5) * 50}" y="${2 + Math.floor(i / 5) * 50}" width="50" height="50" class="ws-nl"/>`).join("")}</svg>`;
+  // Two word problems: one that matches the sheet and one that doesn't, so the pupil has to choose
+  const STORY_SUMS = { "n-add-10": ["add", 10], "n-sub-10": ["sub", 10], "n-bonds-10": ["bonds", 10], "n-add-20": ["add", 20], "n-sub-20": ["sub", 20], "n-bonds-20": ["bonds", 20] };
+  function storyProblems(kind, max) {
+    const name = pickOne(["Mia", "Sam", "Ali", "Zoe", "Finn", "Isla", "Ravi", "Leo"]);
+    const add = () => { const a = between(2, max - 3), b = between(1, max - a); return [`${name} has ${a} shells and finds ${b} more. How many shells does ${name} have now?`, a + b]; };
+    const sub = () => { const a = between(4, max), b = between(1, a - 1); return [`There are ${a} apples in a bowl. ${b} are eaten. How many are left?`, a - b]; };
+    const bus = () => { const b = between(1, max - 1); return [`A minibus has ${max} seats. ${b} people are sitting down. How many seats are empty?`, max - b]; };
+    const page = () => { const b = between(1, max - 1); return [`${name} needs ${max} stickers to fill a page and has ${b}. How many more stickers are needed?`, max - b]; };
+    return kind === "bonds" ? [bus(), page()] : kind === "sub" ? [sub(), add()] : [add(), sub()];
+  }
+  // Another way to show it, for number work beyond adding and taking away
+  const REPRESENT = [[/^n-tables|^n-multiples|^n-doubles/, "Choose one fact. Draw it as equal groups or as an array (rows and columns)."],
+    [/^n-division/, "Choose one question. Draw it as sharing into equal groups."],
+    [/^n-(place-value|hundreds|compare|round|big-add|x10|negative)/, "Choose one question. Show it on a number line, or draw it with hundreds, tens and ones."],
+    [/^n-(fractions|equivalent|decimals|percent)/, "Choose one question. Show it with a drawing: a shape, a bar or a number line."],
+    [/^n-(money)/, "Choose one question. Draw the coins you would use. Is there another way to make the same amount?"],
+    [/^n-(time|durations)/, "Choose one question. Draw the clock, or show the time passing on a number line."],
+    [/^n-(measure|units|area|estimate)/, "Choose one question. Explain how you worked it out, or how you could check it with real objects."],
+    [/^n-(tally|bar|table|chance)/, "Choose one question. Write how you found the answer from the chart or table."],
+    [/^m-/, "Choose one answer. Explain how you know, using the words faces, edges, corners, sides or angles."]];
+  const OWN_SENTENCE = { "w-capitals": "with a person's name and a place in it, using capital letters", "w-end-marks": "that asks a question, with a question mark",
+    "w-joining": "with two ideas joined by and, but or because", "w-past-ed": "about something you did yesterday, using a word ending in -ed" };
+  function sheetExtras(act) {
+    const id = String(act.id);
+    const box = (title, body) => `<div class="ws-extra"><h2 class="ws-sub">${title}</h2>${body}</div>`;
+    if (STORY_SUMS[id]) {
+      const [kind, max] = STORY_SUMS[id];
+      const probs = storyProblems(kind, max);
+      return {
+        pupil: box("Show your thinking", `<p>Choose one question. Show how you worked it out on the number line${max === 10 ? " or in the ten frame" : ""}.</p>${numberLine(max)}${max === 10 ? tenFrame() : ""}`)
+          + box("Story problems", probs.map(([q], i) => `<p><b>${"AB"[i]}.</b> ${esc(q)} <span class="ws-blank"></span></p>`).join("")),
+        answers: `<p><b>Story problems:</b> ${probs.map(([, a], i) => `${"AB"[i]}. ${a}`).join(" &nbsp; ")}. Ask: did you add or take away? How did you know?</p>`
+      };
+    }
+    const rep = REPRESENT.find(([re]) => re.test(id));
+    if (rep && id !== "n-mtc") return { pupil: box("Show your thinking", `<p>${rep[1]}</p><div class="ws-think"></div>`), answers: "" };
+    if (OWN_SENTENCE[id] || /^eg-y/.test(id)) {
+      return { pupil: box("Your turn", `<p>Write a sentence of your own ${OWN_SENTENCE[id] || "that uses what you practised on this sheet"}.</p>${handwritingRow("", ["blank"])}`),
+        answers: `<p><b>Your turn:</b> look for the skill used correctly in the pupil's own sentence. That shows more than the questions above.</p>` };
+    }
+    if (act.passage && !String(act.id).startsWith("dictate:")) {
+      const tell = act.listen ? "Tell your adult the story in your own words: the beginning, the middle and the end." : "Retell the story in three sentences: the beginning, the middle and the end.";
+      return {
+        pupil: box("Thinking about the story", `<p><b>A.</b> ${tell}</p>${act.listen ? "" : lines(3)}
+          ${act.listen ? "" : `<p><b>B.</b> Choose one of your answers. Which words in the story helped you? Copy them.</p>${lines(1)}`}
+          <p><b>${act.listen ? "B" : "C"}.</b> What do you think happens next? Why do you think that?</p>${act.listen ? "" : lines(2)}`),
+        answers: `<p><b>Thinking about the story:</b> any answer that fits the story. A retelling should keep events in order; a prediction should give a reason from the story${act.listen ? " (these are spoken: jot down what the pupil says)" : ""}.</p>`
+      };
+    }
+    return { pupil: "", answers: "" };
+  }
+  // On the adult's page: the mistake to look for, a question to ask, and where to go next
+  const MISTAKES = [
+    [/^n-add/, "Counting the first number again when counting on (4 + 3 = 6).", "Which number do you start from? Do you count it?"],
+    [/^n-sub/, "Counting the starting number when counting back, or taking the smaller number from the larger whatever the order.", "Show me on the number line where you started and where you stopped."],
+    [/^n-bonds/, "Off by one from counting on, or adding the two numbers instead of finding the missing part.", "How many more to make the total? How could you check?"],
+    [/^n-doubles/, "Adding 2 instead of doubling (double 6 = 8).", "What does double mean? Show me with counters."],
+    [/^n-tables|^n-multiples/, "Counting up from the start every time, or mixing up neighbouring facts (7 × 8 and 7 × 9).", "Which fact you know could help you with this one?"],
+    [/^n-division/, "Treating division as taking away once, or dividing the smaller number by the larger.", "How many groups? How many in each group?"],
+    [/^n-(place-value|hundreds)/, "Reading the digit, not its value (the 3 in 35 is worth 30), or missing a zero (305 written as 35).", "What is this digit worth?"],
+    [/^n-compare/, "Comparing only the first digit, or mixing up the < and > signs.", "Which is bigger? How do you know?"],
+    [/^n-money/, "Counting every coin as one, whatever its value, or mixing pounds and pence.", "How much is this coin worth?"],
+    [/^n-durations/, "Treating time like ordinary numbers (1:50 and 20 minutes = 1:70).", "How many minutes in an hour? Count on to the next o'clock first."],
+    [/^n-time/, "Mixing up the hour and minute hands, past and to, or times after 12:00 on a 24-hour clock.", "Which hand shows the hour? Where is it pointing?"],
+    [/^n-(fractions|equivalent)/, "Thinking a bigger bottom number means a bigger fraction, or counting parts that aren't equal.", "Are the parts the same size? Which is bigger, a half or a quarter of the same cake?"],
+    [/^n-round/, "Rounding a 5 down, or rounding the wrong digit.", "Which two tens (or hundreds) is it between? Which is it nearer?"],
+    [/^n-estimate/, "Working it out exactly instead of estimating, or guesses that aren't sensible.", "Is your answer sensible? Round first."],
+    [/^n-negative/, "Thinking −8 is more than −3.", "Which is colder, −8 °C or −3 °C?"],
+    [/^n-x10/, "The \"add a zero\" rule, which breaks with decimals.", "What happens to each digit's value?"],
+    [/^n-big-add/, "Not lining up the columns, or forgetting the carried digit.", "Which column is this digit in?"],
+    [/^n-decimals/, "Thinking a longer decimal is bigger (0.25 more than 0.3).", "How many tenths in each?"],
+    [/^n-percent/, "Thinking per cent means out of 10, or always half.", "What is 100%? What is 10% of 100?"],
+    [/^n-(measure|units)/, "Starting the ruler at 1, not 0, or mixing up units (cm and mm).", "Where does the ruler start? Which unit is it in?"],
+    [/^n-area/, "Counting the edge (perimeter) instead of the squares inside.", "What are you counting: the edge, or the space inside?"],
+    [/^n-(tally|bar|table)/, "Misreading the scale, or counting a tally gate of 5 as 4.", "What does each mark or square stand for?"],
+    [/^n-chance/, "Thinking unlikely means impossible, or that what happened last time changes what happens next.", "Could it happen? How likely is it?"],
+    [/^m-shapes/, "Thinking a turned square isn't a square, or mixing up faces, edges and corners.", "What stays the same when it's turned over?"],
+    [/^m-angles/, "Judging an angle by how long its lines are.", "How far does it turn?"],
+    [/^n-mtc/, "Facts the pupil has to count up to are slow, even when right.", "Note which facts took too long, not just which were wrong."],
+    [/^l-/, "Saying letter names instead of sounds, or guessing from the picture.", "Say it slowly. What sound do you hear?"],
+    [/^dictate:/, "Missing a sound, or the right sound with the wrong letters.", "Say the word slowly. Which sound is missing?"],
+    [/^(w-|eg-)/, "Following the pattern on the sheet without being able to use it in their own writing.", "Why did you choose that? Look at their own sentence at the end."],
+    [/^r-|^d-|^story/, "Answering from memory or a picture, not from the text.", "Where in the story does it say that? Show me."]];
+  function diagnosisHTML(act) {
+    const id = String(act.id);
+    const m = MISTAKES.find(([re]) => re.test(id)) || (act.passage ? MISTAKES[MISTAKES.length - 1] : null);
+    const L = window.PopLessons;
+    const lesson = L && L.forWork(id)[0];
+    const same = lesson ? L.all().filter(x => x.subject === lesson.subject && x.strand === lesson.strand && !!x.england === !!lesson.england) : [];
+    const next = lesson ? same[same.indexOf(lesson) + 1] : null;
+    if (!m && !lesson && !act.passage) return "";
+    return `<div class="ws-diag"><h2 class="ws-sub">After marking</h2>
+      ${m ? `<p><b>Look for:</b> ${esc(m[1])}</p><p><b>Ask:</b> “${esc(m[2])}”</p>` : ""}
+      <p><b>Talk:</b> ask the pupil to explain one answer to you, as if they were teaching it.</p>
+      ${lesson ? `<p><b>Ready lesson:</b> ${esc(lesson.title)}${next ? ` &nbsp; <b>If secure, next:</b> ${esc(next.title)}` : ""}</p>` : ""}</div>`;
+  }
+
   // The pupil's sheet: the questions and room to answer them, nothing for the adult
-  function activitySheetHTML(act, qs, level = act.level, who = "") {
+  function activitySheetHTML(act, qs, level = act.level, who = "", extra = "") {
     const heard = heardOnly(act);
     const question = (q, i) => {
       const answer = q.kind === "dictation" ? handwritingRow("", ["blank"]) + handwritingRow("", ["blank"])
@@ -621,33 +751,34 @@
     // Short questions (most maths) sit in two columns, so a sheet fits one page
     const short = !act.passage && qs.every(q => q.kind !== "dictation" && String(q.prompt || "").length <= 60
       && (!q.options || q.options.every(o => String(o).length <= 24)));
-    return `${dotPattern}${sheetHead(act.title, who, levelTag(level))}
+    return `${dotPattern}${sheetHead(act.title, who, levelTag(level) + (englandOnly(act.id) ? EN_TAG : ""))}
       <p>${qs.some(q => q.kind === "dictation") ? "Your adult reads each sentence to you. Listen, then write it." :
         heard ? "Your adult reads each one to you. Listen, then answer." : act.passage ? "Read the story. Then answer the questions." : "Answer each question."}</p>
       ${story}
-      <div class="ws-qs${short ? " ws-cols" : ""}"${act.passage || qs.some(q => q.kind === "dictation") ? ` data-cols="no"` : ""}>${qs.map(question).join("")}</div>`;
+      <div class="ws-qs${short ? " ws-cols" : ""}"${act.passage || qs.some(q => q.kind === "dictation") ? ` data-cols="no"` : ""}>${qs.map(question).join("")}</div>${extra}`;
   }
   // The adult's sheet: the answers, and for listening work and dictation what to read aloud
-  function answersSheetHTML(act, qs, level = act.level, who = "") {
+  function answersSheetHTML(act, qs, level = act.level, who = "", extra = "") {
     const heard = heardOnly(act);
     const spoken = q => (q.say && (q.say.word || q.say.text)) || "";
     const keyLine = q => [heard && spoken(q) ? `<b>Say:</b> “${esc(spoken(q))}”` : "",
       q.kind === "dictation" ? "" : `<b>${esc(q.answer)}</b>${q.explain ? ` · ${esc(q.explain)}` : ""}`].filter(Boolean).join("<br>");
     const story = act.listen && act.passage ? `<p>Read this story aloud, then read each question.</p><div class="ws-passage"><h2>${esc(act.passage.title)}</h2><p>${esc(act.passage.text)}</p></div>` : "";
     return `${brandHead(`${heard ? "For the adult" : "Answers"}: ${act.title}`, `${heard ? "Read aloud from this sheet. The answers are below." : "For the adult, not the pupil."}${who ? ` &nbsp; ${esc(who)}` : ""}${levelTag(level)}`)}
-      ${story}<ol class="ws-answers">${qs.map(q => `<li>${keyLine(q)}</li>`).join("")}</ol>`;
+      ${story}<ol class="ws-answers">${qs.map(q => `<li>${keyLine(q)}</li>`).join("")}</ol>${extra}${diagnosisHTML(act)}`;
   }
   // Both, as print pages. The answers match the questions the pupil's sheet keeps once it's fitted to the page.
-  function activityPages(act, qs, level, who = "") {
-    const pupil = activitySheetHTML(act, qs, level, who);
+  function activityPages(act, qs, level, who = "", extras = sheetExtras(act)) {
+    const code = extras.code = extras.code || sheetCode();
+    const pupil = withCode(withGoal(activitySheetHTML(act, qs, level, who, extras.pupil), extras.goal), code);
     const kept = keptQuestions(pupil);
-    return { pupil, answers: answersSheetHTML(act, qs.slice(0, kept || qs.length), level, who) };
+    return { pupil, answers: withCode(answersSheetHTML(act, qs.slice(0, kept || qs.length), level, who, extras.answers), code) };
   }
 
   function previewActivitySheet(id, level) {
     const act = window.PopActivities && window.PopActivities.get(id);
     if (!act) return showError(new Error("That work has no paper version."));
-    let qs = act.make();
+    let qs = act.make(), extras = sheetExtras(act);
     const heard = heardOnly(act);
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
@@ -659,13 +790,13 @@
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const html = () => {
-      const p = activityPages(act, qs, level || act.level);
+      const p = activityPages(act, qs, level || act.level, "", extras);
       return `<div class="ws-page">${p.pupil}</div>${dialog.querySelector("[data-answers]").checked ? `<div class="ws-page ws-adult">${p.answers}</div>` : ""}`;
     };
     const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.innerHTML = html(); fitPages(page, "ws-activity"); };
     dialog.querySelector("[data-answers]").onchange = render;
     const fresh = dialog.querySelector("[data-new]");
-    if (fresh) fresh.onclick = () => { qs = act.make(); render(); };
+    if (fresh) fresh.onclick = () => { qs = act.make(); extras = sheetExtras(act); render(); };
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
@@ -1059,14 +1190,24 @@
     return `${sheetHead(`${list.title} · sentences`, who)}
       <p>Words to use: <b>${list.items.map(i => esc(i.spelling)).join(", ")}</b></p>
       <p>Fill in the missing word. Then write the whole sentence on the lines, with a capital letter and a full stop.</p>
-      ${rows.join("")}`;
+      ${rows.join("")}
+      <div class="ws-sentence"><p><b>Your turn:</b> write a sentence of your own using one of the words.</p>${handwritingRow("", ["blank"])}</div>`;
   }
 
-  function letterFormationHTML(who) {
-    const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-    return `${dotPattern}${sheetHead("Letter formation", who)}
-      <p>Form each letter the way you've been shown, starting in the right place. Trace the grey letters, then the dotted ones, then write your own.</p>
-      ${letters.map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("")}`;
+  // Letters that start with the same movement are practised together, so each movement is learned once
+  const LETTER_FAMILIES = [
+    ["curly", "Curly letters", "Most start like c, at the top, curling back round anticlockwise (e starts with a line across).", "cadgoqesf"],
+    ["ladder", "Long ladder letters", "Start at the top and go straight down.", "litujy"],
+    ["bouncy", "Down and bounce letters", "Go down, then back up the same line and over.", "rnmhbkp"],
+    ["zigzag", "Zigzag letters", "Start at the top and go in straight lines, changing direction at each point.", "zvwx"]];
+  const CHECK_LETTERS = `<p class="ws-check"><b>Check your letters:</b> ☐ I started each one in the right place &nbsp; ☐ they sit on the line &nbsp; ☐ tall letters and tails are the right size</p>`;
+  function letterFormationHTML(who, family = "") {
+    const fams = LETTER_FAMILIES.filter(f => !family || f[0] === family);
+    const rows = letters => [...letters].map(c => handwritingRow(`${c} ${c} ${c}`, ["model", "grey", "dots", "blank"])).join("");
+    return `${dotPattern}${sheetHead(family ? `Letter formation: ${fams[0][1].toLowerCase()}` : "Letter formation", who)}
+      <p>Form each letter the way you've been shown, starting in the right place. Trace the grey letters, then the dotted ones, then write your own.${family ? "" : " Letters that start with the same movement come together: curly, long ladder, down and bounce, then zigzag letters."}</p>
+      ${family ? `<h2 class="ws-sub">${fams[0][1]} (${[...fams[0][3]].join(" ")}): ${fams[0][2]}</h2>${rows(fams[0][3])}` : `<div class="ws-compact">${fams.map(f => rows(f[3])).join("")}</div>`}
+      ${family ? CHECK_LETTERS : ""}`;
   }
 
   // Size and spacing (First level): copy short sentences, with a finger space modelled between words
@@ -1077,6 +1218,7 @@
     return `${dotPattern}${sheetHead("Size and spacing: copying sentences", who)}
       <p>Copy each sentence on the lines under it. Tall letters reach the top line, small letters sit between the middle line and the bottom line, tails hang below, and leave a finger space between words.</p>
       ${SPACING_SENTENCES.map((t, i) => `<div class="ws-copy"><p><b>${i + 1}.</b></p>${handwritingRow(t, ["model"], 0.5, longest)}${handwritingRow("", ["blank"])}</div>`).join("")}
+      <div class="ws-copy"><p><b>Your turn:</b> write a sentence of your own, with finger spaces.</p>${handwritingRow("", ["blank"])}</div>
       <p class="ws-check"><b>Check your writing:</b> ☐ tall letters reach the top line &nbsp; ☐ tails go below the line &nbsp; ☐ small letters are all the same size &nbsp; ☐ a finger space between words</p>`;
   }
 
@@ -1125,7 +1267,9 @@
   // Paper-only sheets, found in the Library, used by ready lessons and printed from Plans & sheets
   const PAPER = {
     "letter-formation": { title: "Letter formation (a–z)", level: "Early", html: who => letterFormationHTML(who),
-      detail: "Trace and write every lower-case letter on four-line ruling." },
+      detail: "Trace and write every lower-case letter on four-line ruling, in families of letters that start the same way." },
+    ...Object.fromEntries(LETTER_FAMILIES.map(([key, name, how, letters]) => [`letter-family-${key}`, { title: `Letter formation: ${name.toLowerCase()}`, level: "Early",
+      html: who => letterFormationHTML(who, key), detail: `${[...letters].join(", ")}. ${how}` }])),
     "handwriting-spacing": { title: "Size and spacing: copying sentences", level: "First", html: who => spacingHTML(who),
       detail: "Copy short sentences: tall letters to the top line, tails below, a finger space between words." },
     "handwriting-joins": { title: "Joining letters", level: "First", html: who => joinsHTML(who),
@@ -1137,9 +1281,12 @@
     phonicsWords: () => phonicsCheckWords() };
   Object.values((window.PopPaper && window.PopPaper.sheets) || {}).forEach(sh => {
     const l = window.PopLessons && window.PopLessons.get(sh.lesson);
+    // Sheets for England's own lessons say so in their header
+    const kit = l && l.england ? Object.assign({}, PAPER_KIT, { sheetHead: (t, w, extra = "") => sheetHead(t, w, extra + EN_TAG) }) : PAPER_KIT;
     PAPER[sh.id] = { title: sh.title, detail: sh.detail, lesson: sh.lesson, needsAdult: !!sh.needsAdult,
       level: l ? l.level : "", subject: l ? l.subject : "Literacy", strand: l ? l.strand : "Writing: creating texts", england: !!(l && l.england),
-      build: who => sh.build(who, PAPER_KIT), html: who => sh.build(who, PAPER_KIT).pupil };
+      build: who => { const b = sh.build(who, kit), code = sheetCode(); return Object.assign({}, b, { pupil: withCode(b.pupil, code), answers: withCode(b.answers, code) }); },
+      html: who => sh.build(who, kit).pupil };
   });
   const isPaper = id => Boolean(PAPER[id]);
   // The paper sheets a lesson hands out: any in its own work, and any made for it
@@ -1155,21 +1302,26 @@
     if (!list) return null;
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
     if (mode === "sentences") return { className: "ws-literacy", html: sentencesHTML(who, list) };
-    const lines = list.items.map((item, i) => mode === "key"
-      ? `<tr><td>${i + 1}</td><td>${esc(item.spelling)}</td><td>${esc(item.tokens.join(" · "))}</td></tr>`
+    const fresh = mode === "key" || mode === "dictation" || mode === "mapping" ? (list.checks || []) : [];
+    const row = (item, i) => mode === "key"
+      ? `<tr><td>${i + 1}</td><td>${esc(item.spelling)}</td><td>${esc(item.tokens.join(" · "))}</td><td class="ws-err">S G W P H</td></tr>`
       : mode === "dictation"
         ? `<tr><td>${i + 1}</td><td class="write-line"></td><td class="check-box">□</td></tr>`
         : `<tr><td>${i + 1}</td><td><div class="sound-boxes">${item.tokens.map(() => "<span></span>").join("")}</div></td>
-          <td class="check-box">□</td></tr>`).join("");
+          <td class="check-box">□</td></tr>`;
+    const lines = list.items.map(row).join("") + (fresh.length
+      ? `<tr class="ws-new"><td colspan="${mode === "key" ? 4 : 3}"><b>New words</b>: ${mode === "key" ? "not practised, to see if the pupil can use the same sounds" : "use the sounds you know"}</td></tr>${fresh.map((item, i) => row(item, list.items.length + i)).join("")}` : "");
     const html = `${mode === "key" ? brandHead(`Words to say: ${list.title}`, `For the adult, not the pupil.${who && who !== "Everyone" ? ` &nbsp; ${esc(who)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)
       : brandHead(list.title, `<b>Pupil:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)}
-        ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}`)}
+        ${current ? `&nbsp; <b>Class:</b> ${esc(current.name)}` : ""} &nbsp; <b>Date:</b> ${esc(plan.from)}${englandOnly(plan.list) ? EN_TAG : ""}`)}
       <p>${mode === "key" ? "Read each word aloud for the pupil to write. The sound map shows each sound and the letters for it, for checking their work." :
         mode === "dictation" ? "Listen, say the sounds, then write the word your teacher or adult says." :
         "Listen to the word. Say it, stretch it, tap one box for each sound, then write the letters for each sound in its box."}</p>
       ${list.tip ? `<p><b>Sound focus:</b> ${esc(list.tip)}</p>` : ""}
       <table><thead><tr><th>#</th><th>${mode === "key" ? "Word" : mode === "dictation" ? "Write the word" : "Map each sound to letters"}</th>
-        <th>${mode === "key" ? "Sound map" : "Check"}</th></tr></thead><tbody>${lines}</tbody></table>`;
+        <th>${mode === "key" ? "Sound map" : "Check"}</th>${mode === "key" ? "<th>Error</th>" : ""}</tr></thead><tbody>${lines}</tbody></table>
+      ${mode === "key" ? `<p class="hint"><b>Error:</b> circle one for each word spelled wrongly. <b>S</b> a sound not heard or missed out, <b>G</b> the wrong letters for a sound,
+        <b>W</b> a tricky, word-specific part, <b>P</b> punctuation or capitals, <b>H</b> handwriting (the letters can't be read). Mostly S: practise hearing sounds. Mostly G: teach the spelling choices.</p>` : ""}`;
     return { className: "", html };
   }
   // The pupil can't do these without someone reading the words out, so the words come too, on their own page
@@ -1594,10 +1746,12 @@
     const c = levelCheck(r, prog);
     if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see what's expected for their age next to where they're working: a CfE level for P1–S6, or a national curriculum year for Reception–Year 11.</p>`;
     if (c.england) return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}</b> (${esc(c.expected.stage)}): ${esc(c.expected.text)}.</p>
-      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${yearStatus(c.year, a.status)}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}</div>`;
+      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${yearStatus(c.year, a.status)}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}${LEVEL_EVIDENCE}</div>`;
     return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}:</b> ${c.expected[0]} level (${esc(c.expected[1])}).</p>
-      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${LEVEL_STATUS[a.status]}</span> <b>${a.area}:</b> working at ${a.level} level</p>`).join("")}</div>`;
+      ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${LEVEL_STATUS[a.status]}</span> <b>${a.area}:</b> working at ${a.level} level</p>`).join("")}${LEVEL_EVIDENCE}</div>`;
   }
+  const LEVEL_EVIDENCE = `<p class="hint">This comes from PopSpell work only. Before you decide a level, add your own evidence in the Diary:
+    what you see in lessons, how the pupil explains their thinking, and whether they can use it in a new context.</p>`;
   // Sound games that practise each spelling stage (stage 1 is short vowels)
   const STAGE_GAMES = [["g-hopper-short", "g-switch-first"], ["g-hopper-digraphs", "g-switch-digraphs", "g-switch-build"],
     ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"]];
@@ -2026,7 +2180,7 @@
           <datalist id="diaryNames">${names.map(n => `<option value="${esc(n)}">`).join("")}</datalist>
           <label>Lesson date <input type="date" id="diaryDate" value="${todayKey()}" required></label></div>
         <div class="empty" id="diaryProgress">Choose a pupil to see their recorded progress.</div>
-        <label>Last work and progress <textarea id="diaryLast" rows="4" maxlength="2000" placeholder="What did the pupil practise? What went well or needs more work?"></textarea></label>
+        <label>Last work and progress <textarea id="diaryLast" rows="4" maxlength="2000" placeholder="What did the pupil practise? What went well or needs more work? Your evidence: what they said or explained, what they did without help, and anything they used in a new context."></textarea></label>
         <button class="btn small" type="button" id="useProgress">Use latest result as a starting note</button>
         <label>Next lesson <textarea id="diaryNext" rows="4" maxlength="2000" placeholder="What should happen next lesson?"></textarea></label>
         <div class="add-row"><label>Next spelling list (optional) <select id="diaryNextList">${catalogueOptions()}</select></label>
@@ -2121,15 +2275,19 @@
 
   /* ---------- Curriculum for Excellence: progress by organiser ---------- */
 
-  // Secure: 85%+ right first time on 10+ questions over 2+ days. Developing: 60%+. Below that: needs support.
+  // Secure in practice: 85%+ right first time on 10+ questions over 2+ days. Developing: 60%+. Below that: needs support.
+  // It's evidence from PopSpell practice for the teacher's judgement, never a level or curriculum judgement in itself.
   function cfeStatus(row) {
     if (row.items < 5) return { key: "none", text: "Not enough yet" };
     const pct = row.first / row.items;
-    if (pct >= 0.85 && row.items >= 10 && row.days.size >= 2) return { key: "secure", text: "Secure" };
+    if (pct >= 0.85 && row.items >= 10 && row.days.size >= 2) return { key: "secure", text: "Secure in practice" };
     if (pct >= 0.6) return { key: "developing", text: "Developing" };
     return { key: "support", text: "Needs support" };
   }
 
+  const SECURE_NOTE = "Secure in practice means 85% or more right first time, on at least 10 questions over two or more days, in PopSpell work. It is evidence for the teacher's judgement, alongside what they see in lessons, how the pupil explains their thinking and work in new contexts. It is not a CfE level or a national curriculum judgement.";
+  const evidence = r => `${r.items} questions on ${r.days.size} ${r.days.size === 1 ? "day" : "days"}${r.from ? `, ${shortDay(r.from)}${r.to && shortDay(r.to) !== shortDay(r.from) ? `–${shortDay(r.to)}` : ""}` : ""}`;
+  const shortDay = t => new Date(t).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   // England pupils' rows are national curriculum strands with the years of the work done in them
   const enStrandOf = id => { const w = enWork(id); return w && w.strand ? w.strand : "Other work"; };
   function cfeRows(sessions, pupilName, en = false) {
@@ -2139,9 +2297,12 @@
     sessions.filter(s => !P().isAssessment(s.listId))
       .filter(s => !pupilName || String(s.pupil || "").trim().toLowerCase() === pupilName.toLowerCase()).forEach(s => {
       const tag = (A && A.tag(s.listId)) || { organiser: "Other work", level: "" };
-      const key = en ? enStrandOf(s.listId) : tag.organiser;
-      const r = rows[key] = rows[key] || { organiser: key, levels: new Set(), years: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {} };
-      if (tag.level) r.levels.add(tag.level);
+      // Scottish pupils' England-only work has its own row, so it never counts towards a CfE organiser
+      const key = en ? enStrandOf(s.listId) : englandOnly(s.listId) ? EN_PRACTICE : tag.organiser;
+      const r = rows[key] = rows[key] || { organiser: key, levels: new Set(), years: new Set(), work: new Set(), items: 0, first: 0, days: new Set(), skills: {}, from: 0, to: 0 };
+      if (!r.from || s.at < r.from) r.from = s.at;
+      if (s.at > r.to) r.to = s.at;
+      if (tag.level && key !== EN_PRACTICE) r.levels.add(tag.level);
       const w = en ? enWork(s.listId) : null;
       if (w && w.lo !== null) r.years.add(w.lo);
       r.work.add(s.list);
@@ -2158,7 +2319,8 @@
       levelText: en ? (r.years.size ? E_().rangeLabel(Math.min(...r.years), Math.max(...r.years)) : "")
         : levelOrder.filter(l => r.levels.has(l)).join(", "),
       topSkills: Object.entries(r.skills).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([s]) => s)
-    })).sort((a, b) => (en ? E_().STRAND_ORDER.indexOf(a.organiser) - E_().STRAND_ORDER.indexOf(b.organiser) : 0) || a.organiser.localeCompare(b.organiser));
+    })).sort((a, b) => (a.organiser === EN_PRACTICE) - (b.organiser === EN_PRACTICE)
+      || (en ? E_().STRAND_ORDER.indexOf(a.organiser) - E_().STRAND_ORDER.indexOf(b.organiser) : 0) || a.organiser.localeCompare(b.organiser));
   }
 
   function printReport(pupilName, sessions, en = false) {
@@ -2167,11 +2329,12 @@
     printSheet("ws-report", `${brandHead("Progress report")}
       <p><b>Pupil:</b> ${esc(pupilName)} &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Period:</b> ${esc(period)} &nbsp; <b>Printed:</b> ${esc(new Date().toLocaleDateString("en-GB"))}</p>
       <p>Grouped by ${en ? "national curriculum (England) strand, with the years the work comes from" : "Curriculum for Excellence organiser"}. “Right first time” counts questions answered correctly without help.
-        Secure means 85% or more right first time, on at least 10 questions over two or more days.</p>
-      <table><thead><tr><th>${en ? "Strand" : "Organiser"}</th><th>${en ? "Year" : "Level"}</th><th>Work done</th><th>Questions</th><th>Right first time</th><th>Status</th><th>To work on</th></tr></thead>
+        ${SECURE_NOTE}${!en && rows.some(r => r.organiser === EN_PRACTICE) ? ` Work from England's curriculum is shown on its own row, as extra practice: it isn't part of any CfE organiser.` : ""}</p>
+      <table><thead><tr><th>${en ? "Strand" : "Organiser"}</th><th>${en ? "Year" : "Level"}</th><th>Work done</th><th>Evidence</th><th>Right first time</th><th>Status</th><th>To work on</th></tr></thead>
       <tbody>${rows.map(r => `<tr><td>${esc(r.organiser)}</td><td>${esc(r.levelText)}</td><td>${esc([...r.work].slice(0, 6).join(", "))}${r.work.size > 6 ? "…" : ""}</td>
-        <td>${r.items}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
+        <td>${esc(evidence(r))}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
         || `<tr><td colspan="7">No work recorded in this period.</td></tr>`}</tbody></table>
+      <p><b>The teacher's own evidence</b> (what you've seen in lessons, how the pupil explains their thinking, work in new contexts):</p><p class="ws-comment"></p>
       <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
   }
 
@@ -2583,7 +2746,7 @@
 
   const ARROW = { up: ["▲", "Improving"], down: ["▼", "Slipping"], steady: ["▶", "Steady"] };
   const shortArea = o => o.replace(/^(Literacy|Numeracy) · /, "").replace(/ · Tools for (reading|writing|listening and talking)/, "");
-  const statusBadge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/\s+/g, "-")}">${esc(s)}</span>`;
+  const statusBadge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/ in practice$/, "").replace(/\s+/g, "-")}">${esc(s)}</span>`;
 
   function parentsNightReport(pupil, sessions, assessments, { from, to, comment }) {
     const last = lastReportOf(pupil);
@@ -2660,7 +2823,7 @@
       <h2>Next steps</h2>${next.length ? `<ul>${next.map(s => `<li>${s}</li>`).join("")}</ul>` : `<p>Keep up the good work, and keep stretching with new lists.</p>`}
       <h2>Teacher's comment</h2>${comment ? `<p class="pn-comment">${esc(comment).replace(/\n/g, "<br>")}</p>` : `<div class="ws-comment"></div>`}
       <p class="ar-note"><b>About this report.</b> It is worked out from ${name}'s PopSpell results. “Right first time” counts questions answered correctly without help.
-        Secure means 85% or more right first time, on at least 10 questions over two or more days; “Now” uses the last 8 weeks. Trends compare the first half of the period's questions in an area with the second half.
+        ${SECURE_NOTE} “Now” uses the last 8 weeks. Trends compare the first half of the period's questions in an area with the second half.
         ${en ? "Curriculum years show which year of England's national curriculum the work comes from. They are indicative and should be confirmed by the teacher's own judgement against the programmes of study."
           : "CfE levels are indicative and should be confirmed by the teacher's own judgement against the benchmarks."}</p>
     </div>`;
@@ -2962,7 +3125,7 @@
         .sort((a, b) => a.from.localeCompare(b.from)).slice(0, 3).map(p => ({ title: titleOf(p.list), from: p.from })),
       curriculum: inEngland(r) ? "england" : "scotland",
       cfe: cfeRows(sessions, name, inEngland(r)).filter(x => x.status.key !== "none")
-        .map(x => ({ organiser: x.organiser, level: x.levelText, status: x.status.text }))
+        .map(x => ({ organiser: x.organiser, level: x.levelText, status: x.status.text, evidence: evidence(x) }))
     };
   }
 
@@ -3071,10 +3234,10 @@
           return `<div class="t-scroll"><table class="t-table cfe-table"><thead><tr><th>Pupil</th>${areas.map(o => `<th>${esc(o.replace(/^(Literacy|Numeracy) · /, ""))}</th>`).join("")}</tr></thead>
           <tbody>${group.map(p => { const rows = cfeRows(sessions, p.pupil, en);
             return `<tr><td class="who">${esc(p.pupil)}</td>${areas.map(o => { const r = rows.find(x => x.organiser === o);
-              return `<td>${r ? `<span class="cfe ${r.status.key}">${esc(r.status.text)}</span><br><span class="meta">${r.pct}% · ${r.items} q</span>` : "—"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>`;
+              return `<td>${r ? `<span class="cfe ${r.status.key}">${esc(r.status.text)}</span><br><span class="meta">${r.pct}% · ${r.items} q · ${r.days.size} d</span>` : "—"}</td>`; }).join("")}</tr>`; }).join("")}</tbody></table></div>`;
         };
         const scots = pupils.filter(p => !isEn(p)), english = pupils.filter(isEn);
-        const key = "Secure = 85%+ right first time on 10+ questions over 2+ days; Developing = 60%+.";
+        const key = "Secure in practice = 85%+ right first time on 10+ questions over 2+ days; Developing = 60%+. This is practice evidence for your judgement, not a level.";
         return `${scots.length ? `<h2 class="t-h2">Curriculum for Excellence overview</h2>
           <p class="hint">Each pupil's status for each organiser in this period. ${key}</p>${table(scots, false)}` : ""}
           ${english.length ? `<h2 class="t-h2">National curriculum (England) overview</h2>
