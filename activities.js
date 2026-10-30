@@ -850,6 +850,41 @@ window.PopActivities = (() => {
   }));
   const ALL = AREAS.flatMap(a => a.activities);
 
+  // The Curriculum for Excellence Experiences and Outcomes each piece of work builds towards, so
+  // lesson plans and the library can quote them. These are the current codes: the refreshed
+  // curriculum (from August 2028) replaces them with its Know-Do-Understand model.
+  const EO_BY_ORGANISER = [
+    [/spelling/, ["ENG 0-12a", "LIT 0-13a", "LIT 0-21a"], ["LIT 1-21a"], ["LIT 2-21a"]],
+    [/Tools for reading/, ["ENG 0-12a", "LIT 0-13a"], ["ENG 1-12a", "LIT 1-13a"], ["ENG 2-12a", "LIT 2-13a"]],
+    [/Understanding/, ["ENG 0-17a", "LIT 0-19a"], ["LIT 1-16a", "ENG 1-17a"], ["LIT 2-16a", "ENG 2-17a"]],
+    [/Tools for writing/, ["ENG 0-12a", "LIT 0-13a", "LIT 0-21a"], ["LIT 1-22a"], ["LIT 2-22a"]],
+    [/Listening/, ["LIT 0-01a", "LIT 0-04a"], ["LIT 1-04a"], ["LIT 2-04a"]],
+    [/Estimation/, ["MNU 0-01a"], ["MNU 1-01a"], ["MNU 2-01a"]],
+    [/Number and number/, ["MNU 0-02a", "MNU 0-03a"], ["MNU 1-02a", "MNU 1-03a"], ["MNU 2-02a", "MNU 2-03a"]],
+    [/Multiples/, [], [], ["MTH 2-05a"]],
+    [/Fractions/, ["MNU 0-07a"], ["MNU 1-07a", "MNU 1-07b", "MTH 1-07c"], ["MNU 2-07a", "MNU 2-07b", "MTH 2-07c"]],
+    [/Money/, ["MNU 0-09a"], ["MNU 1-09a", "MNU 1-09b"], ["MNU 2-09a"]],
+    [/Time/, ["MNU 0-10a"], ["MNU 1-10a"], ["MNU 2-10a"]],
+    [/Measurement/, ["MNU 0-11a"], ["MNU 1-11a"], ["MNU 2-11a", "MNU 2-11b"]],
+    [/Data/, ["MNU 0-20a"], ["MNU 1-20a"], ["MNU 2-20a"]],
+    [/chance/, [], ["MNU 1-22a"], ["MNU 2-22a"]],
+    [/2D shapes/, ["MTH 0-16a"], ["MTH 1-16a"], ["MTH 2-16a"]],
+    [/Angle/, ["MTH 0-17a"], ["MTH 1-17a"], ["MTH 2-17a", "MTH 2-17c"]],
+    [/Patterns/, ["MTH 0-13a"], ["MTH 1-13a", "MTH 1-13b"], ["MTH 2-13a"]],
+    [/Expressions/, [], ["MTH 1-15a", "MTH 1-15b"], ["MTH 2-15a"]]
+  ];
+  const EO_FOR_ID = {
+    "n-negative": ["MNU 2-04a"], "n-durations": ["MNU 1-10c"], "n-area": ["MNU 2-11c"], "n-units": ["MNU 2-11b"],
+    "n-decimals": ["MNU 2-02a", "MNU 2-03b"], "n-percent": ["MNU 2-07a", "MNU 2-07b"], "n-equivalent": ["MTH 2-07c", "MNU 2-07b"]
+  };
+  function eo(organiser, level, id) {
+    if (EO_FOR_ID[id]) return EO_FOR_ID[id].slice();
+    const row = EO_BY_ORGANISER.find(([test]) => test.test(organiser || ""));
+    const codes = row ? (row[1 + ["Early", "First", "Second"].indexOf(level)] || []).slice() : [];
+    // Dictation is spelling and punctuation together
+    return String(id).startsWith("dictate:") ? [...new Set(eo(SPELLING_ORGANISER, level, "").concat(codes))] : codes;
+  }
+
   // The organiser for a spelling list, by its stage (spelling is Tools for writing)
   const SPELLING_ORGANISER = "Literacy · Writing · Tools for writing (spelling)";
   function spellingLevel(stageIndex) { return stageIndex <= 1 ? "Early" : stageIndex <= 4 ? "First" : "Second"; }
@@ -862,13 +897,14 @@ window.PopActivities = (() => {
     order() { return ALL.map(a => a.id); },
     all() { return ALL.slice(); },
     dictation,
-    // Level and organiser for anything a pupil can do: an activity id, a dictation, or a spelling list
+    eo,
+    // Level, organiser and CfE outcomes for anything a pupil can do: an activity id, a dictation, or a spelling list
     tag(id) {
       const a = this.get(id);
-      if (a) return { level: a.level, organiser: a.organiser, area: a.area };
+      if (a) return { level: a.level, organiser: a.organiser, area: a.area, eo: eo(a.organiser, a.level, a.id) };
       const stages = window.SPELLING_LISTS || [];
       const s = stages.findIndex(st => st.lists.some(l => l.id === id));
-      return s >= 0 ? { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling" } : null;
+      return s >= 0 ? { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) } : null;
     }
   };
 })();

@@ -137,7 +137,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly([
             'name', 'parentEmail', 'reminderOptIn', 'nextLessonDate',
             'lessonTime', 'homeworkList', 'updated', 'parentLink', 'parentAt', 'parentNote',
-            'yearGroup', 'needs', 'likes', 'reports'])
+            'yearGroup', 'needs', 'likes', 'reports', 'programme'])
           && shortText(request.resource.data.name, 40)
           && shortText(request.resource.data.parentEmail, 254)
           && request.resource.data.reminderOptIn is bool
@@ -150,7 +150,17 @@ service cloud.firestore {
           && (!('yearGroup' in request.resource.data) || shortText(request.resource.data.yearGroup, 10))
           && (!('needs' in request.resource.data) || shortText(request.resource.data.needs, 500))
           && (!('likes' in request.resource.data) || shortText(request.resource.data.likes, 300))
-          && (!('reports' in request.resource.data) || (request.resource.data.reports is list && request.resource.data.reports.size() <= 12));
+          && (!('reports' in request.resource.data) || (request.resource.data.reports is list && request.resource.data.reports.size() <= 12))
+          && (!('programme' in request.resource.data) || request.resource.data.programme == null || validProgramme(request.resource.data.programme));
+        }
+        // The pupil's place in their lesson programme, and the last few lessons
+        function validProgramme(p) {
+          return p is map && p.keys().hasOnly(['spelling', 'maths', 'focus', 'lesson', 'started', 'log'])
+          && shortText(p.get('spelling', ''), 60) && shortText(p.get('maths', ''), 60)
+          && p.get('focus', 'both') in ['both', 'literacy', 'maths']
+          && p.get('lesson', 1) is int && p.get('lesson', 1) >= 1 && p.get('lesson', 1) <= 1000
+          && p.get('started', 0) is number
+          && (!('log' in p) || (p.log is list && p.log.size() <= 30));
         }
         allow create: if validPupil();
         allow update: if validPupil()

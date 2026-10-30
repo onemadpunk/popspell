@@ -306,6 +306,13 @@ async function start() {
         .sort((a, b) => a.name.localeCompare(b.name));
     },
     async savePupil(classId, pupil) {
+      const cleanProgramme = p => (!p ? null : {
+        spelling: String(p.spelling || "").slice(0, 60), maths: String(p.maths || "").slice(0, 60),
+        focus: ["both", "literacy", "maths"].includes(p.focus) ? p.focus : "both",
+        lesson: Math.min(1000, Math.max(1, Math.round(Number(p.lesson) || 1))), started: Number(p.started) || Date.now(),
+        log: (p.log || []).slice(-30).map(l => ({ n: Math.round(Number(l.n) || 0), at: Number(l.at) || 0,
+          spelling: String(l.spelling || "").slice(0, 60), maths: String(l.maths || "").slice(0, 60),
+          spellingNext: !!l.spellingNext, mathsNext: !!l.mathsNext })) });
       const name = String(pupil.name || "").trim().slice(0, 40);
       if (!name) throw new Error("Enter the pupil's name or code.");
       const key = await fingerprint(name);
@@ -322,6 +329,8 @@ async function start() {
         ...(pupil.likes !== undefined ? { likes: String(pupil.likes).trim().slice(0, 300) } : {}),
         // When each parents' night report was printed, so the next one can say what's changed
         ...(pupil.reports !== undefined ? { reports: pupil.reports.map(Number).filter(Number.isFinite).slice(-12) } : {}),
+        // Where the pupil is in their lesson programme (null when it's stopped)
+        ...(pupil.programme !== undefined ? { programme: cleanProgramme(pupil.programme) } : {}),
         updated: serverTimestamp()
       }, { merge: true });
     },

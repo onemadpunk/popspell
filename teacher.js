@@ -99,7 +99,7 @@
   function draw() {
     stopWatching();
     // Short names with icons, so every tab fits on one row (it scrolls sideways on a phone)
-    const tabs = [["library", "📚", "Library"], ["live", "🟢", "Live"], ["next", "🧭", "Next steps"], ["assign", "📌", "Assign"],
+    const tabs = [["library", "📚", "Library"], ["live", "🟢", "Live"], ["next", "🧭", "Next steps"], ["programme", "📘", "Programme"], ["assign", "📌", "Assign"],
       ["plans", "🗓️", "Plans & sheets"], ["diary", "📝", "Diary"], ["pupils", "👧", "Pupils"], ["classes", "🏫", "Classes"]];
     if (canAdmin()) tabs.push(["teachers", "👩‍🏫", "Teachers"]);
     root.innerHTML = `
@@ -131,12 +131,12 @@
       draw();
     };
     const body = $("#tBody");
-    const needsClass = ["live", "next", "assign", "plans", "diary", "pupils"].includes(tab);
+    const needsClass = ["live", "next", "programme", "assign", "plans", "diary", "pupils"].includes(tab);
     if (needsClass && !current) {
       body.innerHTML = `<div class="empty">Make a class first, in the <b>Classes</b> tab.</div>`;
       return;
     }
-    ({ library: drawLibrary, live: drawLive, next: drawNext, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -296,7 +296,8 @@
     const all = checks.concat(spelling, activities, dictation, paper);
     all.forEach((e, i) => {
       e.order = i;
-      e.search = `${e.title} ${e.strand} ${e.organiser || ""} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}`.toLowerCase();
+      e.codes = e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level);
+      e.search = `${e.title} ${e.strand} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}`.toLowerCase();
     });
     return all;
   }
@@ -331,6 +332,7 @@
           <span class="lib-type">${LIB_TYPES[e.type]}</span>${e.stage ? `<span class="lib-type">${esc(e.stage)}</span>` : ""}</p>
         <h3>${esc(e.title)}</h3>
         <p>${esc(e.detail)}</p>
+        ${e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : ""}
         ${e.list ? `<details><summary>See ${e.list.items.length} words and their sound maps</summary>
           <ul class="wordlist">${e.list.items.map(item => `<li class="mini-word">${P().wordHTML(item)}</li>`).join("")}</ul></details>` : ""}
         <div class="row">${e.type === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(e.id))}" target="_blank" rel="noopener">▶ Test</a>
@@ -431,7 +433,7 @@
   // A paper version of an activity: fresh questions, then a page for the adult. Anything a pupil
   // would hear (listening, dictation, a story to listen to) goes on the adult's page to read aloud.
   const heardOnly = act => act.area === "listening" || String(act.id).startsWith("dictate:");
-  function activitySheetHTML(act, qs, withAnswers, level = act.level) {
+  function activitySheetHTML(act, qs, withAnswers, level = act.level, who = "") {
     const heard = heardOnly(act);
     const spoken = q => (q.say && (q.say.word || q.say.text)) || "";
     const question = (q, i) => {
@@ -447,7 +449,7 @@
     const adult = heard || withAnswers ? `<div class="ws-key"><h2>${heard ? "For the adult: read aloud, and the answers" : "Answers"} · ${esc(act.title)}</h2>
         ${act.listen ? `<p>Read this story aloud, then read each question.</p>${story}` : ""}
         <ol>${qs.map(q => `<li>${keyLine(q)}</li>`).join("")}</ol></div>` : "";
-    return `${dotPattern}${sheetHead(act.title, "", `&nbsp; <b>${esc(level)} level</b>`)}
+    return `${dotPattern}${sheetHead(act.title, who, `&nbsp; <b>${esc(level)} level</b>`)}
       <p>${qs.some(q => q.kind === "dictation") ? "Your adult reads each sentence to you. Listen, then write it." :
         heard ? "Your adult reads each one to you. Listen, then answer." : act.passage ? "Read the story. Then answer the questions." : "Answer each question."}</p>
       ${act.passage && !act.listen ? story : ""}
@@ -1166,6 +1168,345 @@
     });
   }
 
+  /* ---------- Lesson programme: a lesson-by-lesson plan for each pupil ---------- */
+
+  // Each lesson rotates between work with the teacher, on the device and on paper. Its spelling
+  // list and maths activity move on when the pupil is ready (the teacher decides at the end of the
+  // lesson); the warm-up, story and number facts are chosen to match. The shape follows Making
+  // Maths Count (short, frequent revisiting of number facts, talking about thinking) and Reading
+  // Schools (reading for pleasure every lesson), and each part names its CfE outcomes.
+  const LEVEL_ORDER = ["Early", "First", "Second"];
+  const spellingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id));
+  const mathsOrder = () => {
+    const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
+    return area ? area.activities.slice().sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(a => a.id) : [];
+  };
+  const firstPct = s => { const ws = (s && s.words) || []; return ws.length ? Math.round((ws.filter(w => w.correct && w.triesUsed === 1).length / ws.length) * 100) : null; };
+  const yearLevel = year => { const n = Number(String(year || "").replace(/\D/g, "")); return !n ? "" : n <= 1 ? "Early" : n <= 4 ? "First" : "Second"; };
+  // Sound games that practise each spelling stage (stage 1 is short vowels)
+  const STAGE_GAMES = [["g-hopper-short", "g-switch-first"], ["g-hopper-digraphs", "g-switch-digraphs", "g-switch-build"],
+    ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"]];
+  const CANOPY_GAMES = { Early: ["g-canopy-flash", "g-canopy-make", "g-canopy-hidden", "g-canopy-compare", "g-canopy-run"], First: ["g-canopy-twenty", "g-canopy-run-20"] };
+
+  // Where a pupil's programme starts: the newest of Pip's Sound Quest, a starting check or their
+  // practice, and for maths with nothing yet, the start of their year group's CfE level
+  function programmeStart(r, sessions) {
+    const mine = sessions.filter(s => sameName(s.pupil, r.name)); // newest first
+    const quest = questSessions(r.name, sessions);
+    const gap = s => P().checkGaps(s.words || [])[0];
+    const pickNewest = options => options.filter(o => o.s).sort((a, b) => b.s.at - a.s.at)[0];
+    const sOrder = spellingOrder(), mOrder = mathsOrder();
+    const nextAfter = (order, s) => { const i = order.indexOf(s.listId); return firstPct(s) >= 80 && order[i + 1] ? order[i + 1] : s.listId; };
+    const spellingCheck = mine.find(s => s.listId === P().CHECKS.spelling.id);
+    const spellingPractice = mine.find(s => sOrder.includes(s.listId));
+    const spelling = pickNewest([
+      { s: quest.spell, list: quest.spell && (gap(quest.spell) || sOrder[sOrder.length - 1]), why: "Pip's Sound Quest" },
+      { s: spellingCheck, list: spellingCheck && (gap(spellingCheck) || sOrder[sOrder.length - 1]), why: "the spelling starting check" },
+      { s: spellingPractice, list: spellingPractice && nextAfter(sOrder, spellingPractice), why: "their last spelling result" }]);
+    const mathsCheck = mine.find(s => s.listId === P().CHECKS.numbers.id);
+    const mathsPractice = mine.find(s => mOrder.includes(s.listId));
+    const maths = pickNewest([
+      { s: quest.numbers, list: quest.numbers && (gap(quest.numbers) || mOrder[mOrder.length - 1]), why: "Pip's Sound Quest" },
+      { s: mathsCheck, list: mathsCheck && (gap(mathsCheck) || mOrder[mOrder.length - 1]), why: "the numbers starting check" },
+      { s: mathsPractice, list: mathsPractice && nextAfter(mOrder, mathsPractice), why: "their last maths result" }]);
+    const level = yearLevel(r.yearGroup);
+    const mathsByYear = level && mOrder.find(id => window.PopActivities.get(id).level === level);
+    return {
+      spelling: spelling ? spelling.list : sOrder[0], spellingWhy: spelling ? spelling.why : "the first spelling list",
+      maths: maths ? maths.list : mathsByYear || mOrder[0],
+      mathsWhy: maths ? maths.why : mathsByYear ? `the start of ${level} level, for ${r.yearGroup}` : "the first maths activity"
+    };
+  }
+
+  // "Add two small numbers." → "I can add two small numbers."
+  const canDo = (blurb, title) => (/[.!]$/.test(blurb || "") ? `I can ${blurb[0].toLowerCase()}${blurb.slice(1)}` : `I can answer questions about ${title.toLowerCase()}.`);
+  const A_ = () => window.PopActivities;
+  const codesOf = (id, level) => {
+    const A = A_();
+    const act = A && A.get(id);
+    if (catalogueList(id)) return (A.tag(id) || {}).eo || [];
+    return act ? A.eo(act.organiser, level || act.level, id) : [];
+  };
+
+  // The parts of one lesson, with minutes shared out to fit the lesson length
+  function lessonParts(prog, n, length) {
+    const A = A_();
+    const list = prog.focus !== "maths" ? catalogueList(prog.spelling) : null;
+    const act = prog.focus !== "literacy" && A ? A.get(prog.maths) : null;
+    const stage = list ? stageOf(prog.spelling) : -1;
+    const level = list ? levelOfStage(stage) : "";
+    const rotate = arr => arr.filter(Boolean)[(n - 1) % Math.max(1, arr.filter(Boolean).length)] || null;
+    const parts = [];
+    const game = list ? rotate((STAGE_GAMES[stage] || []).map(id => A.get(id))) : act ? rotate((CANOPY_GAMES[act.level] || []).map(id => A.get(id))) : null;
+    if (game) parts.push({ key: "warm", icon: "🎮", where: "device", weight: 1, title: `Warm-up: ${game.title}`, id: game.id,
+      how: "A quick game to get going. Praise effort and sharp listening." });
+    if (list) {
+      const words = list.items.slice(0, 4).map(it => it.spelling).join(", ");
+      parts.push({ key: "sounds", icon: "👩‍🏫", where: "you", weight: 2, title: `Teach: ${list.title}`, id: list.id, sheet: { kind: "mapping", id: list.id },
+        how: `${list.tip || "Introduce the sound."} Say ${words}… Tap out each sound, then map the letters on the sound map sheet.`,
+        intention: `We are learning to read and spell words with ${list.title.replace(/ \(.*\)$/, "")}.`,
+        criteria: ["I can hear each sound in a word.", "I can write the letters for each sound."], codes: codesOf(list.id) });
+      parts.push({ key: "spell", icon: "💻", where: "device", weight: 1, title: `Spell: ${list.title}`, id: list.id,
+        how: "The pupil hears each word, maps its sounds and spells it. Watch which sounds they miss." });
+      const stories = A ? A.AREAS.find(a => a.id === "stories").activities : [];
+      const passages = A ? A.AREAS.find(a => a.id === "reading").activities.filter(a => a.passage) : [];
+      const fits = stories.filter(s => s.stage === stage + 1);
+      const story = rotate(fits.length ? fits.concat(stage >= 4 ? passages.filter(p => p.level === level) : [])
+        : stories.filter(s => s.stage <= stage + 1).concat(passages.filter(p => p.level === level)));
+      if (story) parts.push({ key: "read", icon: "📖", where: "device", weight: 2, title: `Read: ${story.title}`, id: story.id, sheet: { kind: "activity", id: story.id },
+        how: "Read it together or alone, on screen or on paper, then answer the questions. Ask: what did you like? What might happen next?",
+        codes: codesOf(story.id) });
+    }
+    if (act) {
+      const secured = (prog.log || []).filter(l => l.mathsNext && l.maths && l.maths !== act.id).map(l => l.maths);
+      const facts = A.get(secured[secured.length - 1]) || null;
+      if (facts) parts.push({ key: "facts", icon: "⚡", where: "device", weight: 1, title: `Number facts: ${facts.title}`, id: facts.id,
+        how: "A few minutes of quick-fire facts they've already secured, to keep them fluent." });
+      parts.push({ key: "maths", icon: "👩‍🏫", where: "you", weight: 3, title: `Teach: ${act.title}`, id: act.id, sheet: { kind: "activity", id: act.id },
+        how: `Model one or two with objects, pictures or a number line, then the pupil does the sheet. Talk about it: “How did you work that out? Is there another way?” Mistakes are how we learn.`,
+        intention: `We are learning about ${act.title.charAt(0).toLowerCase()}${act.title.slice(1)}.`, criteria: [canDo(act.blurb, act.title)], codes: codesOf(act.id) });
+      parts.push({ key: "practise", icon: "💻", where: "device", weight: 1, title: `Practise: ${act.title}`, id: act.id,
+        how: "Questions get harder as they go. Every question is read aloud." });
+    }
+    if (list && list.items.some(it => it.sentence)) parts.push({ key: "dictation", icon: "📝", where: "paper", weight: 1, title: `Dictation: ${list.title}`,
+      id: `dictate:${list.id}`, sheet: { kind: "activity", id: `dictate:${list.id}` },
+      how: "Read each sentence aloud twice. The pupil writes it: capital letter, spellings and full stop.", codes: codesOf(`dictate:${list.id}`, level) });
+    parts.push({ key: "wrap", icon: "⭐", where: "you", weight: 1, title: "Story time, praise and home",
+      how: `Share a book the pupil chooses, for the joy of it. Say what they did well. At home: ${list ? `${list.title} on PopSpell, and 10 minutes reading together` : `${act ? act.title : "maths"} on PopSpell, and spotting numbers out and about (prices, clocks, house numbers)`}.` });
+    // Short lessons drop the extras first, so the main parts get time to breathe
+    const dropFirst = ["facts", "warm", "dictation", "practise", "spell", "read"];
+    let use = parts;
+    while (use.length > Math.floor((length / 5) * 0.8)) {
+      const key = dropFirst.find(k => use.some(p => p.key === k));
+      if (!key) break;
+      use = use.filter(p => p.key !== key);
+    }
+    const units = Math.round(length / 5);
+    const total = use.reduce((sum, p) => sum + p.weight, 0);
+    const exact = use.map(p => (p.weight / total) * units);
+    const share = exact.map(x => Math.max(1, Math.floor(x)));
+    while (share.reduce((a, b) => a + b, 0) < units) {
+      const i = exact.map((x, j) => x - share[j]).reduce((best, x, j, all) => (x > all[best] ? j : best), 0);
+      share[i]++;
+    }
+    while (share.reduce((a, b) => a + b, 0) > units) share[share.indexOf(Math.max(...share))]--;
+    return use.map((p, i) => Object.assign(p, { minutes: share[i] * 5 }));
+  }
+
+  // The programme moved on one lesson: the next list and maths activity, if the pupil moves on
+  function advanced(prog, spellingNext, mathsNext) {
+    const sOrder = spellingOrder(), mOrder = mathsOrder();
+    const next = (order, id, go) => (go && order[order.indexOf(id) + 1]) || id;
+    return Object.assign({}, prog, { lesson: prog.lesson + 1,
+      spelling: prog.focus === "maths" ? prog.spelling : next(sOrder, prog.spelling, spellingNext),
+      maths: prog.focus === "literacy" ? prog.maths : next(mOrder, prog.maths, mathsNext) });
+  }
+  const WHERE = { you: "👩‍🏫 With you", device: "💻 On the device", paper: "📝 On paper" };
+  const lessonTopics = prog => [prog.focus !== "maths" ? titleOf(prog.spelling) : "", prog.focus !== "literacy" ? titleOf(prog.maths) : ""].filter(Boolean).join(" · ");
+
+  let openProgramme = "";
+  async function drawProgramme(body) {
+    body.innerHTML = `<div class="empty">Loading…</div>`;
+    let sessions, roster, assignments;
+    try { [sessions, roster, assignments] = await Promise.all([cloud.sessions(current.id, 365), cloud.pupils(current.id), cloud.assignments(current.id)]); }
+    catch (err) { return showError(err); }
+    if (tab !== "programme") return;
+    const prefs = calendarPrefs();
+    const length = LESSON_LENGTHS.includes(Number(prefs.length)) ? Number(prefs.length) : 60;
+    const today = todayKey();
+    const when = d => new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    const rows = roster.map(r => ({ r, a: assignments.find(x => sameName(x.who, r.name)) || null, prog: r.programme || null, start: programmeStart(r, sessions) }))
+      .sort((x, y) => (!!y.prog - !!x.prog) || ((x.r.nextLessonDate >= today ? x.r.nextLessonDate : "9999").localeCompare(y.r.nextLessonDate >= today ? y.r.nextLessonDate : "9999")) || x.r.name.localeCompare(y.r.name));
+    const listOptions = chosen => P().STAGES.map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}"${l.id === chosen ? " selected" : ""}>${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
+    const mathsOptions = chosen => LEVEL_ORDER.map(lv => `<optgroup label="${lv} level">${mathsOrder().map(id => A_().get(id)).filter(a => a.level === lv)
+      .map(a => `<option value="${esc(a.id)}"${a.id === chosen ? " selected" : ""}>${esc(a.title)}</option>`).join("")}</optgroup>`).join("");
+    const focusOptions = chosen => [["both", "Literacy and maths"], ["literacy", "Literacy only"], ["maths", "Maths only"]]
+      .map(([v, t]) => `<option value="${v}"${v === chosen ? " selected" : ""}>${t}</option>`).join("");
+    const startForm = (x, i) => `<div class="add-row prog-start" data-start-form="${i}">
+        <label>Spelling and reading <select data-start-spelling>${listOptions(x.prog ? x.prog.spelling : x.start.spelling)}</select></label>
+        <label>Maths <select data-start-maths>${mathsOptions(x.prog ? x.prog.maths : x.start.maths)}</select></label>
+        <label>Covers <select data-start-focus>${focusOptions(x.prog ? x.prog.focus : "both")}</select></label>
+        <button class="btn primary" type="button" data-start="${i}">${x.prog ? "Save changes" : "Start the programme"}</button>
+        ${x.prog ? `<button class="btn" type="button" data-stop="${i}">Stop the programme</button>` : ""}</div>`;
+    const planTable = parts => `<table class="t-table prog-plan"><thead><tr><th>Part</th><th>Time</th><th>What to do</th><th></th></tr></thead><tbody>
+      ${parts.map(p => `<tr><td><b>${p.icon} ${esc(p.title)}</b><br><span class="hint">${WHERE[p.where]}</span></td><td>${p.minutes} min</td>
+        <td>${esc(p.how)}${p.codes && p.codes.length ? `<br><span class="prog-codes">CfE ${esc(p.codes.join(", "))}</span>` : ""}</td>
+        <td>${p.id && previewHref(p.id) ? `<a class="btn small" href="${esc(previewHref(p.id))}" target="_blank" rel="noopener">▶ Test</a>` : ""}</td></tr>`).join("")}</tbody></table>`;
+    const card = (x, i) => {
+      const name = x.r.name;
+      const date = x.r.nextLessonDate >= today ? x.r.nextLessonDate : "";
+      if (!x.prog) return `<details class="lib-group prog-card" data-name="${esc(name)}"${openProgramme === name ? " open" : ""}>
+        <summary><span>${esc(name)}</span><span class="hint">No programme yet</span></summary>
+        <div class="prog-body"><p>Suggested start: <b>${esc(titleOf(x.start.spelling))}</b> (from ${esc(x.start.spellingWhy)}) and <b>${esc(titleOf(x.start.maths))}</b> (from ${esc(x.start.mathsWhy)}). Change either if you know better.</p>
+          ${startForm(x, i)}</div></details>`;
+      const parts = lessonParts(x.prog, x.prog.lesson, length);
+      const intentions = parts.filter(p => p.intention);
+      let ahead = x.prog;
+      const coming = [1, 2, 3].map(() => { ahead = advanced(ahead, true, true); return `<li>Lesson ${ahead.lesson}: ${esc(lessonTopics(ahead))}</li>`; }).join("");
+      const log = (x.prog.log || []).slice(-6).reverse();
+      return `<details class="lib-group prog-card" data-name="${esc(name)}"${openProgramme === name ? " open" : ""}>
+        <summary><span>${esc(name)} · Lesson ${x.prog.lesson}</span><span class="hint">${esc(lessonTopics(x.prog))}${date ? ` · ${esc(when(date))}` : ""}</span></summary>
+        <div class="prog-body">
+          <h3>Lesson ${x.prog.lesson} · ${length} minutes${date ? ` · ${esc(when(date))}${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""}` : ""}</h3>
+          ${intentions.map(p => `<p class="prog-li"><b>${esc(p.intention)}</b> ${p.criteria.map(c => `<span class="t-chip">${esc(c)}</span>`).join(" ")}</p>`).join("")}
+          ${planTable(parts)}
+          <div class="row prog-actions">
+            <label>Lesson date <input type="date" data-date="${i}" value="${esc(date || today)}" min="${today}"></label>
+            <button class="btn primary small" type="button" data-schedule="${i}">📌 Put on ${esc(name)}'s device</button>
+            <button class="btn small" type="button" data-pack="${i}">🖨️ Print lesson pack</button>
+            <button class="btn small" type="button" data-done="${i}">✅ Lesson done</button>
+          </div>
+          <details class="prog-more"><summary>Coming up, and lessons so far</summary>
+            <p><b>Coming up</b> (if ${esc(name)} is ready to move on):</p><ul>${coming}</ul>
+            ${log.length ? `<p><b>Lessons so far</b></p><ul>${log.map(l => `<li>Lesson ${l.n} · ${esc(day(l.at))}: ${[
+              l.spelling ? `${esc(titleOf(l.spelling))} (${l.spellingNext ? "moved on" : "practise again"})` : "",
+              l.maths ? `${esc(titleOf(l.maths))} (${l.mathsNext ? "moved on" : "practise again"})` : ""].filter(Boolean).join(" · ")}</li>`).join("")}</ul>` : ""}
+            <p><b>Change the programme</b></p>${startForm(x, i)}
+          </details>
+        </div></details>`;
+    };
+    body.innerHTML = `<div class="work-flow">
+        <h2>📘 Lesson programme</h2>
+        <p class="hint">A lesson-by-lesson programme for each pupil, starting from their Sound Quest, starting checks or practice. Each lesson mixes work with you, on the device and on paper, and names its CfE outcomes. At the end of a lesson, press <b>Lesson done</b> and choose whether they move on.</p>
+        <label>Lesson length <select id="progLength">${LESSON_LENGTHS.map(n => `<option value="${n}"${n === length ? " selected" : ""}>${n} minutes</option>`).join("")}</select></label>
+      </div>
+      ${rows.length ? rows.map(card).join("") : `<div class="empty">Add pupils in the <b>Pupils</b> tab first, then give each one a programme here.</div>`}`;
+    $("#progLength").onchange = e => { saveCalendarPrefs(Object.assign(calendarPrefs(), { length: Number(e.target.value) })); drawProgramme(body); };
+    body.querySelectorAll(".prog-card").forEach(d => d.addEventListener("toggle", () => { if (d.open) openProgramme = d.dataset.name; }));
+    const save = async (x, programme) => {
+      openProgramme = x.r.name;
+      try { await cloud.savePupil(current.id, Object.assign({}, x.r, { programme })); drawProgramme(body); } catch (err) { showError(err); }
+    };
+    body.querySelectorAll("[data-start]").forEach(b => { b.onclick = () => {
+      const x = rows[Number(b.dataset.start)];
+      const form = b.closest("[data-start-form]");
+      const pick = sel => form.querySelector(sel).value;
+      save(x, Object.assign({ lesson: 1, started: Date.now(), log: [] }, x.prog || {},
+        { spelling: pick("[data-start-spelling]"), maths: pick("[data-start-maths]"), focus: pick("[data-start-focus]") }));
+    }; });
+    body.querySelectorAll("[data-stop]").forEach(b => { b.onclick = () => {
+      const x = rows[Number(b.dataset.stop)];
+      if (confirm(`Stop ${x.r.name}'s programme? Their results stay; only the lesson plan is removed.`)) save(x, null);
+    }; });
+    body.querySelectorAll("[data-schedule]").forEach(b => { b.onclick = async () => {
+      const x = rows[Number(b.dataset.schedule)];
+      const date = body.querySelector(`[data-date="${b.dataset.schedule}"]`).value;
+      if (!date || date < today) return showError(new Error("Choose today or a later date."));
+      const parts = lessonParts(x.prog, x.prog.lesson, length);
+      const online = [...new Set(parts.filter(p => p.where === "device" && p.id).map(p => p.id))];
+      b.disabled = true;
+      try {
+        await scheduleLesson(x, online, date, x.prog.focus === "maths" ? x.prog.maths : x.prog.spelling);
+        openProgramme = x.r.name;
+        notice(`Lesson ${x.prog.lesson} is on ${x.r.name}'s device for ${when(date)}: ${online.map(titleOf).join(", ")}.`);
+        drawProgramme(body);
+      } catch (err) { b.disabled = false; showError(err); }
+    }; });
+    body.querySelectorAll("[data-pack]").forEach(b => { b.onclick = () => {
+      const x = rows[Number(b.dataset.pack)];
+      const date = body.querySelector(`[data-date="${b.dataset.pack}"]`).value || today;
+      lessonPackDialog(x, lessonParts(x.prog, x.prog.lesson, length), date, length);
+    }; });
+    body.querySelectorAll("[data-done]").forEach(b => { b.onclick = () => {
+      const x = rows[Number(b.dataset.done)];
+      lessonDoneDialog(x, sessions, programme => save(x, programme));
+    }; });
+  }
+
+  // Puts the lesson's online work on the pupil's device for its date, sets homework, and keeps
+  // the parent page and calendar up to date (as Next steps does)
+  async function scheduleLesson(x, lists, date, homework) {
+    const today = todayKey();
+    let plans = (x.a ? x.a.plans : []).filter(p => !(lists.includes(p.list) && p.from === date && p.until === date));
+    // Old plans make room when a pupil reaches the limit of 30
+    while (plans.length + lists.length > 30 && plans.some(p => p.until < today)) plans.splice(plans.findIndex(p => p.until < today), 1);
+    if (plans.length + lists.length > 30) throw new Error("This pupil has the maximum of 30 plans. Remove some in Plans & sheets.");
+    await cloud.savePlans(current.id, x.a ? x.a.who : x.r.name, plans.concat(lists.map(list => ({ list, from: date, until: date }))));
+    const updated = Object.assign({}, x.r, { homeworkList: homework, nextLessonDate: date });
+    await cloud.savePupil(current.id, updated);
+    if (x.r.parentLink) { const [s, a] = await parentData(); await publishParent(updated, s, a); }
+    if (date !== x.r.nextLessonDate) await calendarAfterSave(updated);
+  }
+
+  // End of lesson: how the pupil did on PopSpell since the last lesson, and whether each part moves on
+  function lessonDoneDialog(x, sessions, done) {
+    const prog = x.prog;
+    const since = (prog.log || []).length ? prog.log[prog.log.length - 1].at : prog.started;
+    const tracks = [prog.focus !== "maths" && { key: "spelling", id: prog.spelling, order: spellingOrder() },
+      prog.focus !== "literacy" && { key: "maths", id: prog.maths, order: mathsOrder() }].filter(Boolean).map(t => {
+      const s = sessions.find(ss => sameName(ss.pupil, x.r.name) && ss.listId === t.id && ss.at >= since);
+      const pct = firstPct(s);
+      const next = t.order[t.order.indexOf(t.id) + 1];
+      return Object.assign(t, { pct, next, moveOn: !!next && (pct === null || pct >= 80),
+        result: s ? `${pct}% right first time on PopSpell${s.source === "worksheet" ? " (marked worksheet)" : ""}` : "No PopSpell result since the last lesson" });
+    });
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>✅ ${esc(x.r.name)} · Lesson ${prog.lesson} done</h2>
+        <button class="btn small" type="button" data-close>Close</button></div>
+      ${tracks.map(t => `<fieldset class="prog-track"><legend><b>${esc(titleOf(t.id))}</b></legend>
+        <p class="hint">${esc(t.result)}${t.pct !== null && t.pct < 80 ? ". Under 80%, so practising again is suggested." : t.pct !== null ? ". Ready to move on." : ". Choose practise again if it wasn't secure."}</p>
+        <label class="check"><input type="radio" name="${t.key}" value="next"${t.moveOn ? " checked" : ""}${t.next ? "" : " disabled"}> ${t.next ? `Move on to ${esc(titleOf(t.next))}` : "This is the last one in the programme"}</label>
+        <label class="check"><input type="radio" name="${t.key}" value="again"${t.moveOn ? "" : " checked"}> Practise ${esc(titleOf(t.id))} again</label></fieldset>`).join("")}
+      <div class="row end"><button class="btn primary" type="button" data-save>Save and plan lesson ${prog.lesson + 1}</button></div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-save]").onclick = () => {
+      const go = key => { const el = dialog.querySelector(`input[name="${key}"]:checked`); return !!el && el.value === "next"; };
+      const spellingNext = go("spelling"), mathsNext = go("maths");
+      const log = (prog.log || []).concat({ n: prog.lesson, at: Date.now(), spelling: prog.focus !== "maths" ? prog.spelling : "",
+        maths: prog.focus !== "literacy" ? prog.maths : "", spellingNext, mathsNext }).slice(-30);
+      dialog.close();
+      done(Object.assign(advanced(prog, spellingNext, mathsNext), { log }));
+    };
+    dialog.showModal();
+  }
+
+  // The lesson plan for the teacher, then every sheet the lesson uses, ready to print together
+  function lessonPlanHTML(x, parts, date, length) {
+    const prog = x.prog;
+    const when = new Date(`${date}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    const intentions = parts.filter(p => p.intention);
+    const codes = [...new Set(parts.flatMap(p => p.codes || []))];
+    return `<h1>PopSpell · ${esc(x.r.name)} · Lesson ${prog.lesson}</h1>
+      <p><b>${esc(when)}</b>${x.r.lessonTime ? ` at ${esc(x.r.lessonTime)}` : ""} · ${length} minutes${current ? ` · ${esc(current.name)}` : ""}</p>
+      ${intentions.map(p => `<p><b>Learning intention:</b> ${esc(p.intention)}<br><b>Success criteria:</b> ${p.criteria.map(esc).join(" ")}</p>`).join("")}
+      ${codes.length ? `<p><b>CfE experiences and outcomes:</b> ${esc(codes.join(", "))}</p>` : ""}
+      <table><thead><tr><th>Part</th><th>Time</th><th>Where</th><th>What to do</th><th>✓</th></tr></thead><tbody>
+        ${parts.map(p => `<tr><td><b>${esc(p.title)}</b></td><td>${p.minutes} min</td><td>${WHERE[p.where].replace(/^\S+ /, "")}</td><td>${esc(p.how)}</td><td class="check-box">□</td></tr>`).join("")}</tbody></table>
+      <p><b>Notes</b> (what went well, sounds or facts to revisit):</p><div class="ws-comment"></div>`;
+  }
+  function lessonPackDialog(x, parts, date, length) {
+    const A = A_();
+    const sheets = parts.filter(p => p.sheet).map(p => {
+      const act = p.sheet.kind === "activity" ? A.get(p.sheet.id) : null;
+      const label = { sounds: "Sound map", read: "Story", maths: "Maths sheet", dictation: "Dictation" }[p.key];
+      return { title: `${label}: ${p.title.replace(/^[^:]+: /, "")}`, kind: p.sheet.kind, id: p.sheet.id, act, qs: act ? act.make() : null };
+    });
+    const sheetHTML = s => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date }, "mapping").html
+      : activitySheetHTML(s.act, s.qs, true, s.id.startsWith("dictate:") ? levelOfStage(stageOf(s.id.slice(8))) : s.act.level, x.r.name));
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
+      <label class="check"><input type="checkbox" data-sheet="plan" checked> Lesson plan</label>
+      ${sheets.map((s, i) => `<label class="check"><input type="checkbox" data-sheet="${i}" checked> ${esc(s.title)}</label>`).join("")}
+      <button class="btn small" type="button" data-close>Close</button>
+      <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
+      <section class="sheet-preview-page ws-activity"></section>`;
+    document.body.append(dialog);
+    const chosen = key => dialog.querySelector(`[data-sheet="${key}"]`).checked;
+    const html = () => [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""].concat(sheets.map((s, i) => (chosen(i) ? sheetHTML(s) : "")))
+      .filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("");
+    const render = () => { dialog.querySelector(".sheet-preview-page").innerHTML = html(); };
+    dialog.querySelectorAll("[data-sheet]").forEach(el => { el.onchange = render; });
+    render();
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet("ws-activity", sheet); };
+    dialog.showModal();
+  }
+
   /* ---------- Private lesson diary ---------- */
 
   async function drawDiary(body) {
@@ -1336,7 +1677,6 @@
   const assessLink = name => `${homeLink(name)}&then=assess`;
   const stageOf = listId => P().STAGES.findIndex(st => st.lists.some(l => l.id === listId));
   const levelOfStage = i => (i <= 1 ? "Early" : i <= 4 ? "First" : "Second"); // as the lists' CfE labels
-  const LEVEL_ORDER = ["Early", "First", "Second"];
 
   // The latest go at each island, from the results the teacher already has
   function questSessions(name, sessions) {

@@ -1202,6 +1202,29 @@ a.me-card:hover { border-color: var(--primary); }
 .assign-names .check { margin-top: 8px; }
 .assign-names .check input { width: 20px; height: 20px; }
 .assign-new { display: grid; gap: 4px; font-weight: 700; margin-bottom: 12px; }
+/* Lesson programme: one card per pupil, with the lesson plan and its actions */
+.prog-codes { font-size: .78rem; font-weight: 700; color: var(--muted); }
+.library-card .prog-codes { margin: -4px 0 8px; }
+.prog-card > summary .hint { margin-left: auto; text-align: right; }
+.prog-body { padding: 0 16px 16px; }
+.prog-body h3 { margin: 4px 0 8px; }
+.prog-li { margin: 4px 0 10px; }
+.prog-li .t-chip { padding-right: 10px; font-weight: 600; }
+.prog-plan td { vertical-align: top; }
+.prog-plan td:nth-child(2), .prog-plan td:last-child { white-space: nowrap; }
+.prog-actions { flex-wrap: wrap; align-items: end; gap: 8px; margin: 12px 0; }
+.prog-actions label { display: grid; gap: 2px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+.prog-more > summary { cursor: pointer; color: var(--primary); font-weight: 700; }
+.prog-start label { display: grid; gap: 2px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+.prog-track { margin: 0 18px 12px; border: 2px solid var(--line); border-radius: 12px; padding: 8px 14px; }
+.prog-track .check { margin-top: 6px; }
+@media (max-width: 560px) {
+  .prog-plan, .prog-plan tbody, .prog-plan tr, .prog-plan td { display: block; width: auto; }
+  .prog-plan thead { display: none; }
+  .prog-plan tr { border-bottom: 2px solid var(--line); padding: 6px 0; }
+  .prog-plan td { border: 0; padding: 2px 8px; }
+  .prog-start label, .prog-start select { width: 100%; }
+}
 .preview-banner { max-width: 850px; margin: 12px auto; padding: 10px 14px; border: 2px solid var(--accent); border-radius: 14px; background: #fff8d8; color: var(--primary); font-weight: 700; text-align: center; }
 .worksheet-preview { width: min(96vw, 1000px); max-width: none; max-height: 92vh; padding: 0; border: 2px solid var(--line); border-radius: 18px; background: #e8edf5; color: #111; box-shadow: 0 20px 60px #001a4a55; }
 .worksheet-preview::backdrop { background: #00143a99; }
@@ -1247,6 +1270,9 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-key h2 { font-size: 15pt; }
 .ws-key li { margin-bottom: 6px; }
 .sheet-preview-page .ws-key { margin-top: 28px; padding-top: 16px; border-top: 2px dashed #999; }
+.ws-page + .ws-page { break-before: page; }
+.sheet-preview-page .ws-page + .ws-page { margin-top: 28px; padding-top: 16px; border-top: 3px dashed #999; }
+.sheet-preview-page .ws-comment { height: 90px; border: 1px solid #777; border-radius: 6px; }
 .sheet-preview-page .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
 @media (max-width: 640px) { .sheet-preview-page { width: 100%; margin: 0; padding: 18px; } .work-flow { padding: 14px; } }
 

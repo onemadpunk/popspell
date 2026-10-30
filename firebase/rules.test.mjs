@@ -154,6 +154,15 @@ await check("a pupil device can't change the profile", assertFails(updateDoc(doc
 await check("teacher saves parents' night report dates", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { reports: [Date.now() - 2e10, Date.now()] })));
 await check("report dates are kept to twelve", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { reports: Array(13).fill(1) })));
 await check("a pupil device can't change report dates", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { reports: [] })));
+const programme = { spelling: "short-e", maths: "n-add-20", focus: "both", lesson: 3, started: Date.now(),
+  log: [{ n: 2, at: Date.now(), spelling: "short-a", maths: "n-add-20", spellingNext: true, mathsNext: false }] };
+await check("teacher saves a lesson programme", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme })));
+await check("teacher stops a lesson programme", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme: null })));
+await check("a programme can't hold other fields", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme: { ...programme, extra: 1 } })));
+await check("a programme's focus is checked", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme: { ...programme, focus: "art" } })));
+await check("a programme's lesson number is checked", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme: { ...programme, lesson: 0 } })));
+await check("a programme keeps 30 lessons at most", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { programme: { ...programme, log: Array(31).fill({ n: 1 }) } })));
+await check("a pupil device can't change a programme", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { programme })));
 await check("teacher loads every starting assessment", assertSucceeds(getDocs(query(collection(tutor, "classes/ABC234/sessions"), where("listId", "in", ["assess-read", "check-spelling"])))));
 await check("a pupil device can't load the class's assessments", assertFails(getDocs(query(collection(pupil, "classes/ABC234/sessions"), where("listId", "in", ["assess-read"])))));
 await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
