@@ -370,14 +370,15 @@
   }
   const saveLibraryPrefs = p => { try { localStorage.setItem(LIB_KEY, JSON.stringify(p)); } catch { /* fine */ } };
 
-  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14" };
+  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14", "Key stage 4": "Age 14–16" };
   function drawLibrary(body) {
     const prefs = libraryPrefs();
     // Scotland (CfE levels and organisers) or England (national curriculum years and domains).
     // England's own work (grammar by year, statutory words, the national checks, its lessons) shows in
     // both, placed by CfE level and strand in Scotland's view and tagged as from England's curriculum.
     const en = prefs.cur === "england" && Boolean(E_());
-    const entries = libraryEntries();
+    // England's key stage 4 work has no CfE level of Scotland's library, so it shows in England's view only
+    const entries = libraryEntries().filter(e => en || !(e.england && e.level && !LIB_LEVELS.some(([l]) => l === e.level)));
     const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
     const strandOfEntry = e => (en ? e.enStrand : e.strand);
     const levelOfEntry = e => (en ? e.band : e.level);
@@ -783,7 +784,9 @@
     [/^r-|^d-|^story/, "Answering from memory or a picture, not from the text.", "Where in the story does it say that? Show me."]];
   const nextLesson = lesson => {
     const L = window.PopLessons;
-    const same = lesson && L ? L.all().filter(x => x.subject === lesson.subject && x.strand === lesson.strand && !!x.england === !!lesson.england) : [];
+    // (England's key stage 4 lessons follow on from each other, not from its primary ones)
+    const ks4 = x => x.england && x.level === "Fourth";
+    const same = lesson && L ? L.all().filter(x => x.subject === lesson.subject && x.strand === lesson.strand && !!x.england === !!lesson.england && ks4(x) === ks4(lesson)) : [];
     return lesson ? same[same.indexOf(lesson) + 1] || null : null;
   };
   // The same "after marking" section for a bespoke sheet, from its lesson's understanding check

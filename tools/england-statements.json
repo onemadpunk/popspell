@@ -5775,5 +5775,958 @@
   "domain": "Statistics",
   "level": 1,
   "text": "describe simple mathematical relationships between two variables (bivariate data) in observational and experimental contexts and illustrate using scatter graphs."
+ },
+ {
+  "id": "en-y10-11-reading-1",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 1,
+  "text": "read and appreciate the depth and power of the English literary heritage through:"
+ },
+ {
+  "id": "en-y10-11-reading-2",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "reading a wide range of high-quality, challenging, classic literature and extended literary non-fiction, such as essays, reviews and journalism. This writing should include whole texts. The range will include: • at least one play by Shakespeare • works from the 19th, 20th and 21st centuries • poetry since 1789, including representative Romantic poetry",
+  "parent": "read and appreciate the depth and power of the English literary heritage through:"
+ },
+ {
+  "id": "en-y10-11-reading-3",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "re-reading literature and other writing as a basis for making comparisons",
+  "parent": "read and appreciate the depth and power of the English literary heritage through:"
+ },
+ {
+  "id": "en-y10-11-reading-4",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "choosing and reading books independently for challenge, interest and enjoyment.",
+  "parent": "read and appreciate the depth and power of the English literary heritage through:"
+ },
+ {
+  "id": "en-y10-11-reading-5",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 1,
+  "text": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-6",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "reading in different ways for different purposes, summarising and synthesising ideas and information, and evaluating their usefulness for particular purposes",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-7",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "drawing on knowledge of the purpose, audience for and context of the writing, including its social, historical and cultural context and the literary tradition to which it belongs, to inform evaluation",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-8",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "identifying and interpreting themes, ideas and information",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-9",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "exploring aspects of plot, characterisation, events and settings, the relationships between them and their effects",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-10",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "seeking evidence in the text to support a point of view, including justifying inferences with evidence",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-11",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "distinguishing between statements that are supported by evidence and those that are not, and identifying bias and misuse of evidence",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-12",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "analysing a writer’s choice of vocabulary, form, grammatical and structural features, and evaluating their effectiveness and impact",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-13",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "making critical comparisons, referring to the contexts, themes, characterisation, style and literary quality of texts, and drawing on knowledge and skills from wider reading",
+  "parent": "understand and critically evaluate texts through:"
+ },
+ {
+  "id": "en-y10-11-reading-14",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 1,
+  "text": "make an informed personal response, recognising that other responses to a text are possible and evaluating these."
+ },
+ {
+  "id": "en-y10-11-writing-1",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 1,
+  "text": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y10-11-writing-2",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "adapting their writing for a wide range of purposes and audiences: to describe, narrate, explain, instruct, give and respond to information, and argue",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y10-11-writing-3",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "selecting and organising ideas, facts and key points, and citing evidence, details and quotation effectively and pertinently for support and emphasis",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y10-11-writing-4",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "selecting, and using judiciously, vocabulary, grammar, form, and structural and organisational features, including rhetorical devices, to reflect audience, purpose and context, and using Standard English where appropriate",
+  "parent": "write accurately, fluently, effectively and at length for pleasure and information through:"
+ },
+ {
+  "id": "en-y10-11-writing-5",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 1,
+  "text": "make notes, draft and write, including using information provided by others [e.g. writing a letter from key points provided; drawing on and using information from a presentation]"
+ },
+ {
+  "id": "en-y10-11-writing-6",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 1,
+  "text": "revise, edit and proof-read through:"
+ },
+ {
+  "id": "en-y10-11-writing-7",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "reflecting on whether their draft achieves the intended impact",
+  "parent": "revise, edit and proof-read through:"
+ },
+ {
+  "id": "en-y10-11-writing-8",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "restructuring their writing, and amending its grammar and vocabulary to improve coherence, consistency, clarity and overall effectiveness",
+  "parent": "revise, edit and proof-read through:"
+ },
+ {
+  "id": "en-y10-11-writing-9",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "paying attention to the accuracy and effectiveness of grammar, punctuation and spelling.",
+  "parent": "revise, edit and proof-read through:"
+ },
+ {
+  "id": "en-y10-11-grammar-and-vocabulary-1",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Grammar and vocabulary",
+  "level": 1,
+  "text": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y10-11-grammar-and-vocabulary-2",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "studying their effectiveness and impact in the texts they read",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y10-11-grammar-and-vocabulary-3",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "drawing on new vocabulary and grammatical constructions from their reading and listening, and using these consciously in their writing and speech to achieve particular effects",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y10-11-grammar-and-vocabulary-4",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "analysing some of the differences between spoken and written language, including differences associated with formal and informal registers, and between Standard English and other varieties of English",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y10-11-grammar-and-vocabulary-5",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Grammar and vocabulary",
+  "level": 2,
+  "text": "using linguistic and literary terminology accurately and confidently in discussing reading, writing and spoken language.",
+  "parent": "consolidate and build on their knowledge of grammar and vocabulary through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-1",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 1,
+  "text": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-2",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "using Standard English when the context and audience require it",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-3",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "working effectively in groups of different sizes and taking on required roles, including leading and managing discussions, involving others productively, reviewing and summarising, and contributing to meeting goals/deadlines",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-4",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "listening to and building on the contributions of others, asking questions to clarify and inform, and challenging courteously when necessary",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-5",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "planning for different purposes and audiences, including selecting and organising information and ideas effectively and persuasively for formal spoken presentations and debates",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-6",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "listening and responding in a variety of different contexts, both formal and informal, and evaluating content, viewpoints, evidence and aspects of presentation",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "en-y10-11-spoken-english-7",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "improvising, rehearsing and performing play scripts and poetry in order to generate language and discuss language use and meaning, using role, intonation, tone, volume, mood, silence, stillness and action to add impact.",
+  "parent": "speak confidently, audibly and effectively, including through:"
+ },
+ {
+  "id": "ma-y10-11-number-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "apply systematic listing strategies, {including use of the product rule for counting}"
+ },
+ {
+  "id": "ma-y10-11-number-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "{estimate powers and roots of any given positive number}"
+ },
+ {
+  "id": "ma-y10-11-number-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "calculate with roots, and with integer {and fractional} indices"
+ },
+ {
+  "id": "ma-y10-11-number-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "calculate exactly with fractions, {surds} and multiples of π; {simplify surd expressions involving squares [for example 1 24 34 3 2 3= ×= × = × ] and rationalise denominators}"
+ },
+ {
+  "id": "ma-y10-11-number-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "calculate with numbers in standard form A 10n, where 1 ≤ A < 10 and n is an integer"
+ },
+ {
+  "id": "ma-y10-11-number-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "{change recurring decimals into their corresponding fractions and vice versa}"
+ },
+ {
+  "id": "ma-y10-11-number-7",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "identify and work with fractions in ratio problems"
+ },
+ {
+  "id": "ma-y10-11-number-8",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Number",
+  "level": 1,
+  "text": "apply and interpret limits of accuracy when rounding or truncating, {including upper and lower bounds}."
+ },
+ {
+  "id": "ma-y10-11-algebra-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "simplify and manipulate algebraic expressions (including those involving surds {and algebraic fractions}) by:"
+ },
+ {
+  "id": "ma-y10-11-algebra-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "factorising quadratic expressions of the form 2 ++x bx c 2ax bx c++, including the difference of two squares; {factorising quadratic expressions of the form }",
+  "parent": "simplify and manipulate algebraic expressions (including those involving surds {and algebraic fractions}) by:"
+ },
+ {
+  "id": "ma-y10-11-algebra-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "si mplifying expressions involving sums, products and powers, including the laws of indices",
+  "parent": "simplify and manipulate algebraic expressions (including those involving surds {and algebraic fractions}) by:"
+ },
+ {
+  "id": "ma-y10-11-algebra-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "know the difference between an equation and an identity; argue mathematically to show algebraic expressions are equivalent, and use algebra to support and construct arguments {and proofs}"
+ },
+ {
+  "id": "ma-y10-11-algebra-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "where appropriate, interpret simple expressions as functions with inputs and outputs; {interpret the reverse process as the ‘inverse function’; interpret the succession of two functions as a ‘composite function’}"
+ },
+ {
+  "id": "ma-y10-11-algebra-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "use the form = +y mx c to identify parallel {and perpendicular} lines; find the equation of the line through two given points, or through one point with a given gradient"
+ },
+ {
+  "id": "ma-y10-11-algebra-7",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "identify and interpret roots, intercepts and turning points of quadratic functions graphically; deduce roots algebraically {and turning points by completing the square}"
+ },
+ {
+  "id": "ma-y10-11-algebra-8",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "recognise, sketch and interpret graphs of linear functions, quadratic functions, simple cubic functions, the reciprocal function 1=y x cosyx= with x ≠ 0, {the exponential function xyk= sinyx= for positive values of k, and the trigonometric functions (with arguments in degrees), and tanyx= for angles of any size}"
+ },
+ {
+  "id": "ma-y10-11-algebra-9",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "{sketch translations and reflections of the graph of a given function}"
+ },
+ {
+  "id": "ma-y10-11-algebra-10",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "plot and interpret graphs (including reciprocal graphs {and exponential graphs}) and graphs of non-standard functions in real contexts, to find approximate solutions to problems such as simple kinematic problems involving distance, speed and acceleration"
+ },
+ {
+  "id": "ma-y10-11-algebra-11",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "{calculate or estimate gradients of graphs and areas under graphs (including quadratic and other non-linear graphs), and interpret results in cases such as distance-time graphs, velocity-time graphs and graphs in financial contexts}"
+ },
+ {
+  "id": "ma-y10-11-algebra-12",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "{recognise and use the equation of a circle with centre at the origin; find the equation of a tangent to a circle at a given point}"
+ },
+ {
+  "id": "ma-y10-11-algebra-13",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "solve quadratic equations {including those that require rearrangement} algebraically by factorising, {by completing the square and by using the quadratic formula}; find approximate solutions using a graph"
+ },
+ {
+  "id": "ma-y10-11-algebra-14",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "solve two simultaneous equations in two variables (linear/linear {or linear/quadratic}) algebraically; find approximate solutions using a graph"
+ },
+ {
+  "id": "ma-y10-11-algebra-15",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "{find approximate solutions to equations numerically using iteration}"
+ },
+ {
+  "id": "ma-y10-11-algebra-16",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "translate simple situations or procedures into algebraic expressions or formulae; derive an equation (or two simultaneous equations), solve the equation(s) and interpret the solution"
+ },
+ {
+  "id": "ma-y10-11-algebra-17",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "solve linear inequalities in one {or two} variable{s}, {and quadratic inequalities in one variable}; represent the solution set on a number line, {using set notation and on a graph}"
+ },
+ {
+  "id": "ma-y10-11-algebra-18",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "recognise and use sequences of triangular, square and cube numbers, simple arithmetic progressions, Fibonacci type sequences, quadratic sequences, and simple geometric progressions ( r n where n is an integer, and r is a positive rational number {or a surd}) {and other sequences}"
+ },
+ {
+  "id": "ma-y10-11-algebra-19",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 1,
+  "text": "deduce expressions to calculate the nth term of linear {and quadratic} sequences."
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "compare lengths, areas and volumes using ratio notation and/or scale factors; make links to similarity (including trigonometric ratios)"
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "convert between related compound units (speed, rates of pay, prices, density, pressure) in numerical and algebraic contexts"
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "understand that X is inversely proportional to Y is equivalent to X is proportional to Y; {construct and} interpret equations that describe direct and inverse proportion"
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "interpret the gradient of a straight line graph as a rate of change; recognise and interpret graphs that illustrate direct and inverse proportion"
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "{interpret the gradient at a point on a curve as the instantaneous rate of change; apply the concepts of instantaneous and average rate of change (gradients of tangents and chords) in numerical, algebraic and graphical contexts}"
+ },
+ {
+  "id": "ma-y10-11-ratio-proportion-and-rates-of-change-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 1,
+  "text": "set up, solve and interpret the answers in growth and decay problems, including compound interest {and work with general iterative processes}."
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "interpret and use fractional {and negative} scale factors for enlargements"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "{describe the changes and invariance achieved by combinations of rotations, reflections and translations}"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "identify and apply circle definitions and properties, including: centre, radius, chord, diameter, circumference, tangent, arc, sector and segment"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "{apply and prove the standard circle theorems concerning angles, radii, tangents and chords, and use them to prove related results}"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "construct and interpret plans and elevations of 3D shapes"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "interpret and use bearings"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-7",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "calculate arc lengths, angles and areas of sectors of circles"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-8",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "calculate surface areas and volumes of spheres, pyramids, cones and composite solids"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-9",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "apply the concepts of congruence and similarity, including the relationships between lengths, {areas and volumes} in similar figures"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-10",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "apply Pythagoras’ Theorem and trigonometric ratios to find angles and lengths in right-angled triangles {and, where possible, general triangles} in two {and three} dimensional figures"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-11",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "know the exact values of sin cosθθ and 0000, 30, 45 60θ = 0 and sin sin sin abc ABC= = for 000 00, 30, 45, 60 90θ = 0 and; know the exact value of tanθ a2 = b22+−c 2bc cos A 1Area = sin2 ab C for"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-12",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "{kno w and apply the sine rule,, and cosine rule,, to find unknown lengths and angles}"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-13",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "{kno w and apply t o calculate the area, sides or angles of any triangle}"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-14",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "describe translations as 2D vectors"
+ },
+ {
+  "id": "ma-y10-11-geometry-and-measures-15",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 1,
+  "text": "apply addition and subtraction of vectors, multiplication of vectors by a scalar, and diagrammatic and column representations of vectors; {use vectors to construct geometric arguments and proofs}."
+ },
+ {
+  "id": "ma-y10-11-probability-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Probability",
+  "level": 1,
+  "text": "apply the property that the probabilities of an exhaustive set of mutually exclusive events sum to one"
+ },
+ {
+  "id": "ma-y10-11-probability-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Probability",
+  "level": 1,
+  "text": "use a probability model to predict the outcomes of future experiments; understand that empirical unbiased samples tend towards theoretical probability distributions, with increasing sample size"
+ },
+ {
+  "id": "ma-y10-11-probability-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Probability",
+  "level": 1,
+  "text": "calculate the probability of independent and dependent combined events, including using tree diagrams and other representations, and know the underlying assumptions"
+ },
+ {
+  "id": "ma-y10-11-probability-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Probability",
+  "level": 1,
+  "text": "{calculate and interpret conditional probabilities through representation using expected frequencies with two-way tables, tree diagrams and Venn diagrams}."
+ },
+ {
+  "id": "ma-y10-11-statistics-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "infer properties of populations or distributions from a sample, whilst knowing the limitations of sampling"
+ },
+ {
+  "id": "ma-y10-11-statistics-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "interpret and construct tables and line graphs for time series data"
+ },
+ {
+  "id": "ma-y10-11-statistics-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "{construct and interpret diagrams for grouped discrete data and continuous data, i.e. histograms with equal and unequal class intervals and cumulative frequency graphs, and know their appropriate use}"
+ },
+ {
+  "id": "ma-y10-11-statistics-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "interpret, analyse and compare the distributions of data sets from univariate empirical distributions through:"
+ },
+ {
+  "id": "ma-y10-11-statistics-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 2,
+  "text": "appropriate graphical representation involving discrete, continuous and grouped data, {including box plots}",
+  "parent": "interpret, analyse and compare the distributions of data sets from univariate empirical distributions through:"
+ },
+ {
+  "id": "ma-y10-11-statistics-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 2,
+  "text": "appropriate measures of central tendency (including modal class) and spread {including quartiles and inter-quartile range}",
+  "parent": "interpret, analyse and compare the distributions of data sets from univariate empirical distributions through:"
+ },
+ {
+  "id": "ma-y10-11-statistics-7",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "apply statistics to describe a population"
+ },
+ {
+  "id": "ma-y10-11-statistics-8",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Statistics",
+  "level": 1,
+  "text": "use and interpret scatter graphs of bivariate data; recognise correlation and know that it does not indicate causation; draw estimated lines of best fit; make predictions; interpolate and extrapolate apparent trends whilst knowing the dangers of so doing."
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-1",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "critical reading and comprehension: identifying and interpreting themes, ideas and information in a range of literature and other high-quality writing; reading in different ways for different purposes, and comparing and evaluating the usefulness, relevance and presentation of content for these purposes; drawing inferences and justifying these with evidence; supporting a point of view by referring to evidence within the text; identifying bias and misuse of evidence, including distinguishing between statements that are supported by evidence and those that are not; reflecting critically and evaluatively on text, using the context of the text and drawing on knowledge and skills gained from wider reading; recognising the possibility of different responses to a text",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-2",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "summary and synthesis: identifying the main theme or themes; summarising ideas and information from a single text; synthesising from more than one text",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-3",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "evaluation of a writer’s choice of vocabulary, form, grammatical and structural features: explaining and illustrating how vocabulary and grammar contribute to effectiveness and impact, using linguistic and literary terminology accurately to do so and paying attention to detail; analysing and evaluating how form and structure contribute to the effectiveness and impact of a text",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-4",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Reading",
+  "level": 2,
+  "text": "comparing texts: comparing two or more texts critically with respect to the above.",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-5",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "producing clear and coherent text: writing effectively for different purposes and audiences: to describe, narrate, explain, instruct, give and respond to information, and argue; selecting vocabulary, grammar, form, and structural and organisational features judiciously to reflect audience, purpose and context; using language imaginatively and creatively; using information provided by others to write in different forms; maintaining a consistent point of view; maintaining coherence and consistency across a text",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-6",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Writing",
+  "level": 2,
+  "text": "writing for impact: selecting, organising and emphasising facts, ideas and key points; citing evidence and quotation effectively and pertinently to support views; creating emotional impact; using language creatively, imaginatively and persuasively, including rhetorical devices (such as rhetorical questions, antithesis, parenthesis).",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-7",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "presenting information and ideas: selecting and organising information and ideas effectively and persuasively for prepared spoken presentations; planning effectively for different purposes and audiences; making presentations and speeches",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-8",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "responding to spoken language: listening to and responding appropriately to any questions and feedback",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "en-y10-11-gcse-english-language-9",
+  "subject": "en",
+  "year": "10-11",
+  "domain": "Spoken English",
+  "level": 2,
+  "text": "spoken Standard English: expressing ideas using Standard English whenever and wherever appropriate.",
+  "parent": "GCSE English language subject content, scope of study –"
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-1",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "The quadratic formula: The solutions of ax² + bx + c = 0 where a ≠ 0: x = (−b ± √(b² − 4ac)) / 2a",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae included in the subject content. Candidates are expected to know these formulae; they must not be given in the assessment."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-2",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 2,
+  "text": "Circumference and area of a circle: Where r is the radius and d is the diameter: Circumference of a circle = 2πr = πd; Area of a circle = πr²",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae included in the subject content. Candidates are expected to know these formulae; they must not be given in the assessment."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-3",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 2,
+  "text": "Pythagoras’s theorem: In any right-angled triangle where a, b and c are the length of the sides and c is the hypotenuse: a² + b² = c²",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae included in the subject content. Candidates are expected to know these formulae; they must not be given in the assessment."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-4",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 2,
+  "text": "Trigonometry formulae: In any right-angled triangle ABC where a, b and c are the length of the sides and c is the hypotenuse: sin A = a/c, cos A = b/c, tan A = a/b. In any triangle ABC where a, b and c are the length of the sides: sine rule: a/sin A = b/sin B = c/sin C; cosine rule: a² = b² + c² − 2bc cos A; Area = ½ab sin C",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae included in the subject content. Candidates are expected to know these formulae; they must not be given in the assessment."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-5",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 2,
+  "text": "Perimeter, area, surface area and volume formulae: Where a and b are the lengths of the parallel sides and h is their perpendicular separation: Area of a trapezium = ½(a + b)h; Volume of a prism = area of cross section × length",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. The following formulae are not specified in the content but should be derived or informally understood by candidates. These formulae must not be given in the examination."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-6",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Ratio, proportion and rates of change",
+  "level": 2,
+  "text": "Compound interest: Where P is the principal amount, r is the interest rate over a given period and n is number of times that the interest is compounded: Total accrued = P(1 + r/100)ⁿ",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. The following formulae are not specified in the content but should be derived or informally understood by candidates. These formulae must not be given in the examination."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-7",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Probability",
+  "level": 2,
+  "text": "Probability: Where P(A) is the probability of outcome A and P(B) is the probability of outcome B: P(A or B) = P(A) + P(B) − P(A and B); P(A and B) = P(A given B)P(B)",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. The following formulae are not specified in the content but should be derived or informally understood by candidates. These formulae must not be given in the examination."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-8",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Geometry and measures",
+  "level": 2,
+  "text": "Perimeter, area, surface area and volume formulae: Where r is the radius of the sphere or cone, l is the slant height of a cone and h is the perpendicular height of a cone: Curved surface area of a cone = πrl; Surface area of a sphere = 4πr²; Volume of a sphere = 4/3 πr³; Volume of a cone = 1/3 πr²h",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae that candidates should be able to use, but need not memorise. These can be given in the exam, either in the relevant question, or in a list from which candidates select and apply as appropriate."
+ },
+ {
+  "id": "ma-y10-11-gcse-formulae-9",
+  "subject": "ma",
+  "year": "10-11",
+  "domain": "Algebra",
+  "level": 2,
+  "text": "Kinematics formulae: Where a is constant acceleration, u is initial velocity, v is final velocity, s is displacement from the position when t = 0 and t is time taken: v = u + at; s = ut + ½at²; v² = u² + 2as",
+  "parent": "GCSE mathematics, Appendix: Mathematical formulae. Formulae that candidates should be able to use, but need not memorise. These can be given in the exam, either in the relevant question, or in a list from which candidates select and apply as appropriate."
  }
 ]
