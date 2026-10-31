@@ -237,3 +237,12 @@ Speech voices can't reliably say isolated phonemes, so the site reads whole word
 
 Double-click `index.html` to open it in a browser.
 
+
+## Checks
+
+GitHub runs these on every push (`.github/workflows/checks.yml`); a red cross on the repository means something needs fixing. To run them yourself you need [Node.js](https://nodejs.org) (and Python for the England check):
+
+- `npm test`: the unit tests in `tests/`.
+- `npm run check`: the content checks (`tools/check.mjs`). Every CfE experience and outcome from Early to Fourth level has a ready lesson (`tools/cfe-outcomes.json`, from Education Scotland's documents); every lesson has an understanding check and printable work, and everything it uses exists; every paper sheet belongs to a lesson, has a unique id and title, and builds; and `england.js` matches `tools/build_england.py`, whose own checks make sure every statement exists and every key stage 4 statement is taught.
+- `npm run rules`: the Firestore security rules tests, on Firebase's local emulator (needs Java).
+- Printed pages fitting A4 needs a browser: open `_test.html?as=owner#/teacher`, go to the Library, and follow the steps at the top of `tools/fit-sweep.js`.

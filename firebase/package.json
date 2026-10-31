@@ -1,0 +1,10 @@
+{
+  "name": "popspell-rules-tests",
+  "private": true,
+  "description": "Runs rules.test.mjs against Firebase's local emulator (npm run rules, from the project folder). Needs Java for the emulator.",
+  "type": "module",
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "3.0.4",
+    "firebase": "10.14.1"
+  }
+}

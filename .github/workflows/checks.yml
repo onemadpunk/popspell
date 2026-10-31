@@ -1,0 +1,41 @@
+# Runs PopSpell's checks on every push and pull request: the unit tests, the content checks
+# (every CfE outcome and England statement taught, every lesson printable, every sheet builds),
+# and the Firestore security rules tests on Firebase's local emulator. A red cross on GitHub
+# means something needs fixing before it goes live.
+name: Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Content checks
+        run: npm run check
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Security rules tests (Firestore emulator)
+        run: npm run rules

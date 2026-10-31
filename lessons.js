@@ -945,7 +945,7 @@ window.PopLessons = (() => {
     ["I can calculate any side of a right-angled triangle using Pythagoras' theorem.", "I can calculate a side using trigonometry.", "I can calculate an angle using trigonometry.", "I can choose the right strategy and interpret the answer in context."],
     { start: "A 5 m ladder leans against a wall with its foot 3 m out. How high up the wall does it reach?",
       teach: "Square the sides of 3, 4, 5 triangles to show a² + b² = c². Find a hypotenuse and a shorter side. Label opposite, adjacent and hypotenuse from an angle, and use SOH CAH TOA. Find a side (tan 35° × 8) and an angle (inverse tan of 5 ÷ 8). Decide which tool fits: two sides and no angle needed means Pythagoras.",
-      practise: "The \"Right-angled triangles\" sheet.",
+      practise: "The \"Pythagoras and trigonometry\" sheet.",
       check: "Find the hypotenuse when the other sides are 9 cm and 12 cm. A ramp rises 1·2 m over 6 m: find its angle with the ground." },
     [], "Use a ruler and protractor to check a Pythagoras answer on a real triangle, such as a ladder's position or a slope.", "hypotenuse, Pythagoras, opposite, adjacent, sine, cosine, tangent, inverse");
 
@@ -1131,7 +1131,7 @@ window.PopLessons = (() => {
       "I can use what I find to make a choice or a plan."],
     { start: "Show a sign (a toilet sign, a shop sign, an exit). What does it tell us? How do you know?",
       teach: "Put a storybook beside an information book. How are they different (photographs, labels, facts)? Find one fact in the information book together. Then read a simple poster or menu and use it to choose or plan something.",
-      practise: "The \"Find it\" sheet: read a poster and a menu with an adult, find the information and make a choice.",
+      practise: "The \"Find it!\" sheet: read a poster and a menu with an adult, find the information and make a choice.",
       check: "Show a new sign or a page of an information book. What does it tell us? What could we do with that?" },
     [], "Point out signs on a walk or in a shop, and ask what each one tells you.", "sign, information, fact, label, storybook, information book");
 
@@ -1308,7 +1308,7 @@ window.PopLessons = (() => {
       "I can spot words that often show an opinion, such as best, I think and should."],
     { start: "\"Penguins are birds.\" \"Penguins are the cutest animals.\" Which one could we check in a book?",
       teach: "Read a short text about an animal or place. Underline the facts in one colour and the opinions in another. Collect opinion words (best, worst, I think, amazing, should). Ask: why might a writer put opinions in?",
-      practise: "The \"Fact or opinion?\" sheet: sort sentences from a short text, then write one fact and one opinion of their own.",
+      practise: "The \"Fact or opinion? Penguins\" sheet: sort sentences from a short text, then write one fact and one opinion of their own.",
       check: "Give three new sentences. Which are facts and which are opinions, and how do they know?" },
     [], "Spot facts and opinions on food packets and adverts together.", "fact, opinion, true, check, think, believe");
 
@@ -1449,7 +1449,7 @@ window.PopLessons = (() => {
       "I can use vocabulary, eye contact, body language, emphasis, pace and tone when I talk, and spot techniques speakers use to influence me."],
     { start: "Agree or disagree: \"Every child should learn to cook.\" Give one reason.",
       teach: "Teach discussion moves with sentence starters: I agree with… because…; Building on what you said…; Can you explain what you mean by…?; I see it differently because…. Discuss a question together, taking turns, and use at least three moves each. Then listen to a short persuasive speech (or perform one) and spot the techniques: emphasis, pace, tone, rhetorical questions.",
-      practise: "The \"Discussion\" sheet: plan points for a discussion, use the starters, and note techniques heard.",
+      practise: "The \"Discussion: building on ideas\" sheet: plan points for a discussion, use the starters, and note techniques heard.",
       check: "In a short discussion, do they build on what you said rather than just giving their own point?" },
     [], "Have a family debate on something light, like the best pizza topping, with everyone building on the last speaker.", "discussion, agree, disagree, build on, clarify, viewpoint, tone, emphasis, rhetorical question");
 

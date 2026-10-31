@@ -6,7 +6,7 @@ import { runInNewContext } from "node:vm";
 const appSource = readFileSync(new URL("../app.js", import.meta.url), "utf8");
 const phonics = appSource.slice(appSource.indexOf("  const R_GRAPHEMES ="), appSource.indexOf("  const label ="));
 assert.ok(phonics.includes("function analyse(entry)"), "the test uses PopSpell's real sound mapper");
-const makeAnalyse = runInNewContext(`(function(R_SOUNDED) { const SENTENCES = {}; ${phonics} return analyse; })`);
+const makeAnalyse = runInNewContext(`(function(R_SOUNDED) { const SENTENCES = {}; const TRICKY_WORDS = new Set(); ${phonics} return analyse; })`);
 const activitySource = readFileSync(new URL("../activities.js", import.meta.url), "utf8");
 const audioSource = readFileSync(new URL("../audio/index.js", import.meta.url), "utf8");
 const audio = { window: {} };

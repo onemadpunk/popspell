@@ -2285,8 +2285,8 @@ window.PopPaper = (() => {
       "2w + 2(w + 3) = 46: width 10 cm, length 13 cm", "x < −3: dividing by a negative reverses the order (for example 2 < 3 but −2 > −3)"])
   }));
 
-  add("paper-right-triangles", T4("pythagoras-and-trigonometry-in-right-angled-triangles"), "Right-angled triangles", "Pythagoras' theorem for any side, trigonometry for sides and angles, and choosing the right tool in context.", (who, h) => ({
-    pupil: `${h.sheetHead("Right-angled triangles", who)}<p>Sketch and label each triangle first. Give lengths to 1 decimal place and angles to the nearest 0·1°.</p>
+  add("paper-right-triangles", T4("pythagoras-and-trigonometry-in-right-angled-triangles"), "Pythagoras and trigonometry", "Pythagoras' theorem for any side, trigonometry for sides and angles, and choosing the right tool in context.", (who, h) => ({
+    pupil: `${h.sheetHead("Pythagoras and trigonometry", who)}<p>Sketch and label each triangle first. Give lengths to 1 decimal place and angles to the nearest 0·1°.</p>
       ${qs([`Find the hypotenuse when the other two sides are 9 cm and 12 cm ${blank(3)}, and when they are 5 cm and 12 cm ${blank(3)}`,
         `The hypotenuse is 10 cm and one side is 6 cm. Find the other side. ${blank(3)}`,
         `A 5 m ladder leans against a wall with its foot 3 m from the wall. How high up the wall does it reach?${lines(1)}`,
@@ -2296,7 +2296,7 @@ window.PopPaper = (() => {
         `A ramp rises 1·2 m over a horizontal distance of 6 m. Find the angle it makes with the ground.${lines(1)}`,
         `A kite is flown on a 30 m string. It is 18 m above the ground. Find the angle between the string and the ground.${lines(1)}`,
         `Is a triangle with sides 7 cm, 24 cm and 25 cm right-angled? Show how you know.${lines(1)}`])}`,
-    answers: answersPage(h, "Right-angled triangles", ["15 cm; 13 cm", "8 cm", "4 m", "√8425 ≈ 91·8 cm", "8 × tan 35° ≈ 5·6 cm", "12 × sin 40° ≈ 7·7 cm", "tan⁻¹(1·2 ÷ 6) ≈ 11·3°", "sin⁻¹(18 ÷ 30) ≈ 36·9°", "Yes: 7² + 24² = 49 + 576 = 625 = 25²"])
+    answers: answersPage(h, "Pythagoras and trigonometry", ["15 cm; 13 cm", "8 cm", "4 m", "√8425 ≈ 91·8 cm", "8 × tan 35° ≈ 5·6 cm", "12 × sin 40° ≈ 7·7 cm", "tan⁻¹(1·2 ÷ 6) ≈ 11·3°", "sin⁻¹(18 ÷ 30) ≈ 36·9°", "Yes: 7² + 24² = 49 + 576 = 625 = 25²"])
   }));
 
   add("paper-round-and-round", T4("circles-circumference-and-area"), "Round and round", "Circumference and area of circles, working back to the radius or diameter, and a wheel problem.", (who, h) => ({
