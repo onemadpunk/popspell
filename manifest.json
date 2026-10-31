@@ -1,0 +1,22 @@
+{
+  "name": "PopSpell",
+  "short_name": "PopSpell",
+  "description": "Sounds-first spelling, reading and maths practice for children and teachers.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eaf3ff",
+  "theme_color": "#0b2e6b",
+  "icons": [
+    {
+      "src": "assets/brand/pip-logo-120.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/brand/pip-mascot.png",
+      "sizes": "240x240",
+      "type": "image/png"
+    }
+  ]
+}

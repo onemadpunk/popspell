@@ -816,7 +816,7 @@
       { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/");
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
-    else if (parts[0] === "teacher" && window.PopTeacher) window.PopTeacher.show(app, decodeURIComponent(parts[1] || ""));
+    else if (parts[0] === "teacher") showTeacherArea(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
@@ -957,6 +957,35 @@
     setPupil(name);
     return true;
   }
+  // The teacher area's scripts (the <template id="teacherScripts"> in index.html) load the first time
+  // it's opened, one after another, so pupils' devices never download them
+  let teacherLoading = null;
+  function loadTeacher() {
+    if (window.PopTeacher) return Promise.resolve();
+    const tpl = document.getElementById("teacherScripts");
+    const srcs = tpl ? [...tpl.content.querySelectorAll("script[src]")].map(s => s.getAttribute("src")) : [];
+    teacherLoading = teacherLoading || srcs.reduce((done, src) => done.then(() => new Promise((ok, bad) => {
+      const el = document.createElement("script");
+      el.src = src;
+      el.onload = ok;
+      el.onerror = () => bad(new Error(src));
+      document.body.append(el);
+    })), Promise.resolve()).catch(e => { teacherLoading = null; throw e; });
+    return teacherLoading;
+  }
+  function showTeacherArea(tab) {
+    if (window.PopTeacher) return window.PopTeacher.show(app, tab);
+    app.innerHTML = `<section class="panel"><p class="hint" role="status">Opening the teacher area…</p></section>`;
+    loadTeacher().then(() => { if (location.hash.startsWith("#/teacher")) window.PopTeacher.show(app, tab); })
+      .catch(() => { app.innerHTML = `<section class="panel"><p>The teacher area couldn't load. Check the connection and <button class="btn small" type="button" id="teacherRetry">try again</button>.</p></section>`;
+        $("#teacherRetry").onclick = () => showTeacherArea(tab); });
+  }
+
+  // Offline: the service worker (sw.js) keeps the app's files, so practice works with no connection
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    navigator.serviceWorker.register("sw.js").catch(() => { /* not available: the app still works online */ });
+  }
+
   window.addEventListener("hashchange", route);
   window.addEventListener("pagehide", () => leaveSession(session));
 
@@ -3288,7 +3317,8 @@
     document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
     const link = $("#teacherLink");
     link.hidden = !CLOUD_CONFIGURED;
-    const short = window.PopTeacherShortName || (n => n.split(" ")[0]);
+    // "Sara Green" → "Sara", but "Mr Smith" stays "Mr Smith" (as teacher.js shows it)
+    const short = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
     link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${short(TEACHER.name)}` : "👩‍🏫 Teacher";
   }
 

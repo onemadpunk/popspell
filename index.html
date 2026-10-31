@@ -2,7 +2,7 @@
 <html lang="en-GB">
 <head>
   <meta charset="utf-8">
-  <meta name="popspell-build" content="49ccf857">
+  <meta name="popspell-build" content="58f14bc6">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PopSpell · Hear it. Map it. Spell it.</title>
   <meta name="description" content="PopSpell helps children hear, map and spell words sound by sound.">
@@ -10,6 +10,8 @@
   <meta property="og:description" content="Sounds-first spelling practice for children and teachers.">
   <meta property="og:image" content="https://popspell.com/assets/brand/social-preview.png">
   <link rel="icon" href="assets/brand/favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b2e6b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -92,16 +94,19 @@
   <script src="passages.js?v=78ef512a"></script>
   <script src="stories.js?v=4364cbe8"></script>
   <script src="activities.js?v=9f7b0bb3"></script>
-  <script src="lessons.js?v=2977422e"></script>
-  <script src="england.js?v=6ce7b81c"></script>
-  <script src="paper-sheets.js?v=203d86b0"></script>
   <script src="speech-text.js?v=2b9e12eb"></script>
   <script src="forest-rewards.js?v=5073ea07"></script>
   <script src="audio/index.js?v=23a01fa9"></script>
   <script>window.PopCloudReady = new Promise(resolve => { window.__popCloudResolve = resolve; });</script>
   <script type="module" src="cloud.js?v=90476e89"></script>
-  <script src="teacher.js?v=22104970"></script>
-  <script src="app.js?v=fc0d47a3"></script>
+  <!-- The teacher area's scripts, loaded by app.js only when it's opened, so pupils' devices never download them -->
+  <template id="teacherScripts">
+    <script src="lessons.js?v=2977422e"></script>
+    <script src="england.js?v=6ce7b81c"></script>
+    <script src="paper-sheets.js?v=203d86b0"></script>
+    <script src="teacher.js?v=22104970"></script>
+  </template>
+  <script src="app.js?v=48336a9c"></script>
 </body>
 </html>
 

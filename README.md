@@ -238,6 +238,11 @@ Speech voices can't reliably say isolated phonemes, so the site reads whole word
 Double-click `index.html` to open it in a browser.
 
 
+## Fast and offline
+
+- **Pupils download only the pupil app.** The teacher area's scripts (`lessons.js`, `england.js`, `paper-sheets.js`, `teacher.js`, together about two-thirds of the site's code) sit in a `<template id="teacherScripts">` in `index.html`, and `app.js` (`loadTeacher`) loads them the first time the teacher area opens.
+- **Works offline.** `sw.js`, the service worker, keeps the pupil app's page and files on the device, so practice carries on with no connection. Files stamped with `?v=` come from the device first (a new stamp replaces the old copy); everything else of PopSpell's comes from the network first, with the kept copy as a fallback. Firebase, Google sign-in and fonts are never stored. `manifest.json` lets the site be added to a tablet's home screen like an app.
+
 ## Editing lessons and sheets
 
 - **Ready lessons** live in `content/lessons/`, one JSON file per section (`01-maths-early.json` to `13-england-ks4.json`). Each lesson has its id, level, subject, strand, CfE codes, title, learning intention, success criteria, the four timed steps, the PopSpell work it uses, a home idea, words to use, its understanding check (`understand`, `lookFor`) and, for England's lessons, `england: true` and any Scottish version (`cfe`).
