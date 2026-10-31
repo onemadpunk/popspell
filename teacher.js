@@ -96,19 +96,24 @@
 
   /* ---------- The dashboard frame ---------- */
 
+  // The help.html section for each tab
+  const HELP_SECTIONS = { library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
+    diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
+
   function draw() {
     stopWatching();
     // Short names with icons, so every tab fits on one row (it scrolls sideways on a phone)
     const tabs = [["library", "📚", "Library"], ["live", "🟢", "Live"], ["next", "🧭", "Next steps"], ["programme", "📘", "Programme"], ["assign", "📌", "Assign"],
       ["plans", "🗓️", "Plans & sheets"], ["diary", "📝", "Diary"], ["pupils", "👧", "Pupils"], ["classes", "🏫", "Classes"]];
     if (canAdmin()) tabs.push(["teachers", "👩‍🏫", "Teachers"]);
+    const [, , tabName] = tabs.find(([k]) => k === tab) || tabs[0];
     root.innerHTML = `
       <section class="t-wrap">
         <div class="t-top">
           <img class="t-pip" src="assets/brand/pip-mascot-small.webp" alt="" width="64" height="64">
           <div class="t-hello">
             <h1>Hello, ${esc(shortName(me.name))}${canAdmin() ? ` <span class="t-role">${roleLabel(me.role)}</span>` : ""}</h1>
-            <p class="meta">${esc(me.email)} · <a href="help.html" target="_blank" rel="noopener">❓ Help</a> · <button class="linklike" id="signOut">Sign out</button></p>
+            <p class="meta">${esc(me.email)} · <a href="help.html#${HELP_SECTIONS[tab] || "start"}" target="_blank" rel="noopener">❓ Help with ${esc(tabName)}</a> · <button class="linklike" id="signOut">Sign out</button></p>
           </div>
           ${classes.length ? `
             <label class="t-class">Class
@@ -248,6 +253,7 @@
   const LIB_TYPES = { lesson: "Ready lesson", check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
     game: "Game", dictation: "Dictation", paper: "Paper sheet" };
   const FIND_LEVEL = "Find their level";
+  const LIB_OPEN_MAX = 12;
   // The strand a teacher looks for, from the CfE organiser
   function strandOf(organiser) {
     const o = String(organiser || "");
@@ -310,10 +316,33 @@
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = `${e.title} ${e.enTitle || ""} ${e.strand} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
-        ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""}`.toLowerCase();
+      e.search = fold(`${e.title} ${e.enTitle || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+        ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
+      SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
     });
     return all;
+  }
+  // Searching: every word has to match, in any order. Dashes are all the same, and a school year
+  // ("P5", "S2", "Year 4") finds work at its CfE level or England year.
+  const fold = t => String(t).toLowerCase().replace(/[‐-―−]/g, "-");
+  // Everyday names for things the Library calls something else
+  const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"]];
+  const CFE_YEARS = { nursery: "Early", p1: "Early", p2: "First", p3: "First", p4: "First", p5: "Second", p6: "Second", p7: "Second", s1: "Third", s2: "Third", s3: "Third" };
+  const EN_YEARS = { reception: "Reception", 1: "Year 1", 2: "Year 2", 3: "Years 3–4", 4: "Years 3–4", 5: "Years 5–6", 6: "Years 5–6", 7: "Key stage 3", 8: "Key stage 3", 9: "Key stage 3" };
+  function librarySearch(query, entries) {
+    const years = [];
+    const rest = fold(query).replace(/\b(?:years?|y) ?([1-9])(?:-[1-9])?\b|\b(nursery|reception|p[1-7]|s[1-3])\b/g,
+      (m, n, word) => { years.push(n ? EN_YEARS[n] : CFE_YEARS[word] || EN_YEARS[word]); return " "; });
+    const words = rest.split(/[\s,]+/).filter(Boolean);
+    // Each word from the start of a word ("cat" finds "cats", not "location")
+    const startsWith = w => { const re = new RegExp(`(?:^|[^a-z0-9])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`); return e => re.test(e.search); };
+    // Starting checks have no level, so they fit any year
+    const inYear = e => years.every(y => e.type === "check" || e.level === y || e.band === y);
+    // The words together as typed, if anything has them like that ("short a"); otherwise each word anywhere
+    const phrase = startsWith(words.join(" "));
+    if (words.length > 1 && entries.some(e => inYear(e) && phrase(e))) return e => inYear(e) && phrase(e);
+    const each = words.map(startsWith);
+    return e => inYear(e) && each.every(has => has(e));
   }
   const EN_NONE = "Not in England's curriculum";
   // England's lessons with a Scottish version (lessons.js, l.cfe) are ordinary CfE lessons in the Scotland view:
@@ -366,7 +395,7 @@
       <div class="add-row lib-more">
         <label>Strand <select id="libStrand"></select></label>
         <label>Type <select id="libType"><option value="">All types</option>${Object.entries(LIB_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></label>
-        <label>Search <input id="librarySearch" type="search" placeholder="Words, sounds or skills"></label>
+        <label>Search <input id="librarySearch" type="search" placeholder="Words, skills or a year (P5, Year 4)"></label>
       </div>
       <p class="hint" id="libraryCount"></p></div>
       <div id="libResults"></div>`;
@@ -398,23 +427,26 @@
       $("#libType").value = prefs.type;
       body.querySelectorAll("[data-level]").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === prefs.level));
       body.querySelectorAll("[data-subject]").forEach(b => b.setAttribute("aria-pressed", b.dataset.subject === prefs.subject));
-      const query = $("#librarySearch").value.trim().toLowerCase();
+      const query = $("#librarySearch").value.trim();
+      const found = librarySearch(query, entries);
       // Starting checks show at every level: they're how a teacher finds the level
       // Starting checks have no level, so they show at every one; in England, work beyond the
       // primary curriculum shows only under "All years"
       const levelFits = e => !prefs.level || (e.type === "check" ? true : en ? e.band === prefs.level : !e.level || e.level === prefs.level);
       const shown = entries.filter(e => levelFits(e) && (!prefs.subject || e.subject === prefs.subject)
-        && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && (!query || e.search.includes(query)))
+        && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && found(e))
         .sort((a, b) => order.indexOf(strandOfEntry(a)) - order.indexOf(strandOfEntry(b)) || levelRank(a) - levelRank(b)
           || (en && a.en && b.en ? (a.en.lo ?? 99) - (b.en.lo ?? 99) : 0)
           || (b.type === "lesson") - (a.type === "lesson") || (a.type === "game") - (b.type === "game") || a.order - b.order); // ready lessons first, games last
       const narrowed = !!(prefs.level || prefs.subject || prefs.strand || prefs.type || query);
       const groups = order.map(s => ({ name: s, items: shown.filter(e => strandOfEntry(e) === s) })).filter(g => g.items.length);
-      $("#libResults").innerHTML = groups.length ? groups.map(g => `<details class="lib-group"${narrowed || g.name === FIND_LEVEL ? " open" : ""}>
+      // A few results show straight away; more stay closed under their strands, which then read as a contents list
+      const openAll = narrowed && (shown.length <= LIB_OPEN_MAX || groups.length === 1);
+      $("#libResults").innerHTML = groups.length ? groups.map(g => `<details class="lib-group"${openAll || g.name === FIND_LEVEL ? " open" : ""}>
           <summary><span>${esc(g.name)}</span><span class="lib-count">${g.items.length}</span></summary>
           <div class="library-grid">${g.items.map(card).join("")}</div></details>`).join("")
         : `<div class="empty">Nothing matches. Try <button class="linklike" type="button" data-clear>showing everything</button>.</div>`;
-      $("#libraryCount").textContent = narrowed ? `${shown.length} of ${entries.length} resources shown.`
+      $("#libraryCount").textContent = narrowed ? `${shown.length} of ${entries.length} resources shown${openAll ? "" : `, in ${groups.length} strands. Open a strand to see its work`}.`
         : `${entries.length} resources in ${groups.length} strands. Choose a level and subject, or open a strand.`;
       saveLibraryPrefs(prefs);
     };
@@ -552,11 +584,11 @@
     adult.push({ label: "Lesson plan", adult: true, checked: !pupil.length,
       html: () => `${brandHead(l.title, `<b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}`)}
       ${lessonBodyHTML(l, true, cur)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` });
-    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.");
+    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.", who);
   }
   // Preview sheets, choose which to print, and print them together: the pupil's sheets, then any
   // pages for the tutor (answers, lesson plan), each on its own page
-  function packDialog(heading, pupilPages, adultPages = [], note = "") {
+  function packDialog(heading, pupilPages, adultPages = [], note = "", who = "") {
     // A page for the tutor only shows when there is one (a sheet with no right answers has no answers page)
     adultPages = adultPages.filter(pg => !pg.has || pg.has());
     const pages = pupilPages.concat(adultPages);
@@ -574,7 +606,7 @@
       </div>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
-    const html = () => pages.filter((pg, i) => dialog.querySelector(`[data-page="${i}"]`).checked)
+    const html = (all = false) => pages.filter((pg, i) => all || dialog.querySelector(`[data-page="${i}"]`).checked)
       .map(pg => `<div class="ws-page${pg.adult ? " ws-adult" : ""}">${pg.html()}</div>`).join("");
     const render = () => {
       const page = dialog.querySelector(".sheet-preview-page");
@@ -588,7 +620,7 @@
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(sheetClass("ws-activity"), sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(sheetClass("ws-activity"), sheet, { title: heading, who, pages: html(true) }); };
     dialog.showModal();
   }
 
@@ -825,9 +857,9 @@
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
-    const html = () => {
+    const html = (all = false) => {
       const p = activityPages(act, qs, level || act.level, "", extras);
-      return `<div class="ws-page">${p.pupil}</div>${dialog.querySelector("[data-answers]").checked ? `<div class="ws-page ws-adult">${p.answers}</div>` : ""}`;
+      return `<div class="ws-page">${p.pupil}</div>${all || dialog.querySelector("[data-answers]").checked ? `<div class="ws-page ws-adult">${p.answers}</div>` : ""}`;
     };
     const render = () => { const page = dialog.querySelector(".sheet-preview-page"); page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
       page.innerHTML = html(); fitPages(page, sheetClass("ws-activity")); };
@@ -838,7 +870,7 @@
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); printSheet(sheetClass("ws-activity"), sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); printSheet(sheetClass("ws-activity"), sheet, { title: act.title, pages: html(true) }); };
     dialog.showModal();
   }
 
@@ -1171,8 +1203,10 @@
     box.remove();
     return n;
   }
-  // Puts a sheet on the page just for printing (or saving as PDF), then removes it
-  async function printSheet(className, html) {
+  // Puts a sheet on the page just for printing (or saving as PDF), then removes it.
+  // keep ({ title, who, pages }) adds it to Recently printed, with every page made for it
+  async function printSheet(className, html, keep = null) {
+    if (keep) rememberPrint(Object.assign({ className }, keep));
     const sheet = document.createElement("section");
     sheet.className = `worksheet-print ${className}`;
     sheet.innerHTML = html;
@@ -1184,6 +1218,99 @@
     const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
     window.addEventListener("afterprint", clean, { once: true });
     window.print();
+  }
+
+  /* ---------- Recently printed: sheets printed on this device, to print again exactly ---------- */
+
+  // Each print makes new questions, so a lost answer page or a second copy needs the sheet itself.
+  // Kept in this browser only, never sent anywhere: the newest 30, with every page made for them
+  // (answers too, printed or not).
+  const PRINTED_KEY = "popspell-printed";
+  const PRINTED_MAX = 30;
+  const readPrinted = () => { try { return JSON.parse(localStorage.getItem(PRINTED_KEY)) || []; } catch { return []; } };
+  function writePrinted(list) {
+    // Drops the oldest until it fits in the browser's storage
+    for (let keep = list.length; keep > 0; keep--) {
+      try { localStorage.setItem(PRINTED_KEY, JSON.stringify(list.slice(0, keep))); return true; } catch { /* too big: drop one */ }
+    }
+    try { localStorage.removeItem(PRINTED_KEY); } catch { /* fine */ }
+    return false;
+  }
+  function rememberPrint({ title, who = "", className, pages }) {
+    const codes = [...new Set([...pages.matchAll(/Sheet (\d{6}-[A-Z0-9]{1,3})/g)].map(m => m[1]))];
+    const entry = { at: Date.now(), title, who: /^everyone$/i.test(who) ? "" : who, cls: current ? current.name : "", className, pages, codes };
+    if (writePrinted([entry].concat(readPrinted()).slice(0, PRINTED_MAX)))
+      notice(`“${title}” is in Recently printed (Plans & sheets), so you can print the same sheet and its answers again.`);
+  }
+  // A deleted pupil's sheets go from this device too
+  const forgetPrinted = name => writePrinted(readPrinted().filter(e => !sameName(e.who, name)));
+  const printedWhen = ms => new Date(ms).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+
+  function printedHTML() {
+    const list = readPrinted();
+    return `<div class="work-flow" id="printed">
+        <h2>🕘 Recently printed</h2>
+        <p class="hint">The last ${PRINTED_MAX} sheets printed on this device, with their answers, so you can print exactly the same sheet again. Kept in this browser only.</p>
+        ${list.length ? `<label class="printed-find">Find <input type="search" id="printedSearch" placeholder="Title, pupil, date or code"></label>
+        <ul class="printed-list">${list.map((e, i) => `<li data-printed-text="${esc(`${e.title} ${e.who} ${e.cls} ${printedWhen(e.at)} ${e.codes.join(" ")}`.toLowerCase())}">
+          <span><b>${esc(e.title)}</b>${e.who ? ` · ${esc(e.who)}` : ""}<br><span class="meta">${esc(printedWhen(e.at))}${e.cls ? ` · ${esc(e.cls)}` : ""}${e.codes.length ? ` · Sheet ${esc(e.codes.join(", "))}` : ""}</span></span>
+          <button class="btn small" type="button" data-reprint="${i}">🖨️ Print again</button></li>`).join("")}</ul>
+        <p class="hint" id="printedNone" hidden>Nothing printed matches.</p>
+        <button class="linklike" type="button" id="printedClear">Clear this list</button>`
+        : `<div class="empty">Nothing printed on this device yet. Sheets you print from the Library, Programme or here will be listed.</div>`}
+      </div>`;
+  }
+  function wirePrinted(body) {
+    const list = readPrinted();
+    const search = body.querySelector("#printedSearch");
+    if (search) search.oninput = () => {
+      const words = search.value.toLowerCase().split(/\s+/).filter(Boolean);
+      let shown = 0;
+      body.querySelectorAll("[data-printed-text]").forEach(li => { li.hidden = !words.every(w => li.dataset.printedText.includes(w)); shown += !li.hidden; });
+      body.querySelector("#printedNone").hidden = shown > 0;
+    };
+    body.querySelectorAll("[data-reprint]").forEach(b => { b.onclick = () => reprintDialog(list[Number(b.dataset.reprint)]); });
+    const clear = body.querySelector("#printedClear");
+    if (clear) clear.onclick = () => {
+      if (!confirm("Clear the list of recently printed sheets on this device?")) return;
+      try { localStorage.removeItem(PRINTED_KEY); } catch { /* fine */ }
+      body.querySelector("#printed").outerHTML = printedHTML();
+      wirePrinted(body);
+    };
+  }
+  // The same pages as before: the pupil's, the tutor's (answers, words to say, lesson plan), or both
+  function reprintDialog(entry) {
+    const box = document.createElement("div");
+    box.innerHTML = entry.pages;
+    const pages = [...box.querySelectorAll(":scope > .ws-page")];
+    const adult = pages.filter(p => p.classList.contains("ws-adult"));
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🖨️ ${esc(entry.title)}</h2>
+        <label class="check"><input type="checkbox" data-pupil checked${adult.length === pages.length ? " disabled" : ""}> The pupil's pages</label>
+        ${adult.length ? `<label class="check"><input type="checkbox" data-adult checked> Pages for you (answers, words to say, plan)</label>` : ""}
+        <button class="btn small" type="button" data-close>Close</button>
+        <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
+      <p class="hint">First printed ${esc(printedWhen(entry.at))}${entry.who ? ` for ${esc(entry.who)}` : ""}${entry.codes.length ? ` · Sheet ${esc(entry.codes.join(", "))}` : ""}.</p>
+      <section class="sheet-preview-page"></section>`;
+    document.body.append(dialog);
+    const html = () => {
+      const pupil = dialog.querySelector("[data-pupil]").checked, forYou = dialog.querySelector("[data-adult]")?.checked;
+      return pages.filter(p => (p.classList.contains("ws-adult") ? forYou : pupil)).map(p => p.outerHTML).join("");
+    };
+    const render = () => {
+      const page = dialog.querySelector(".sheet-preview-page");
+      const h = html();
+      page.className = `sheet-preview-page ${entry.className}`;
+      page.innerHTML = h || `<p class="hint">Tick something to print.</p>`;
+      if (h) fitPages(page, entry.className);
+    };
+    dialog.querySelectorAll("input[type=checkbox]").forEach(el => { el.onchange = render; });
+    render();
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(entry.className, sheet); };
+    dialog.showModal();
   }
 
   // One handwriting row on four-line ruling: model, grey to trace, dotted to trace, then space to write.
@@ -1377,10 +1504,16 @@
     return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
   };
 
+  // What Recently printed calls a spelling or paper sheet, and every page that goes with it
+  const SHEET_MODES = { mapping: "Sound map", dictation: "Dictation", handwriting: "Handwriting", sentences: "Sentences", key: "Words to say" };
+  const keepWorksheet = (who, plan, mode, cache) => ({ who, title: isPaper(plan.list) ? PAPER[plan.list].title : `${SHEET_MODES[mode]}: ${listTitle(plan.list)}`,
+    pages: withWords(who, plan, mode, isPaper(plan.list) || needsWords(plan, mode), cache).html });
+
   function printWorksheet(who, plan, mode) {
     if (!worksheetSpec(who, plan, mode)) return showError(new Error("Worksheets are available for built-in spelling lists."));
-    const sheet = withWords(who, plan, mode);
-    printSheet(sheet.className, sheet.html);
+    const cache = {};
+    const sheet = withWords(who, plan, mode, needsWords(plan, mode), cache);
+    printSheet(sheet.className, sheet.html, keepWorksheet(who, plan, mode, cache));
   }
 
   function previewWorksheet(who, plan, mode) {
@@ -1418,7 +1551,7 @@
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     dialog.querySelector("[data-print]").onclick = () => {
       const sheet = withWords(who, plan, chosenMode(), words(), cache);
-      dialog.close(); printSheet(sheet.className, sheet.html);
+      dialog.close(); printSheet(sheet.className, sheet.html, keepWorksheet(who, plan, chosenMode(), cache));
     };
     dialog.showModal();
   }
@@ -1484,6 +1617,7 @@
         </div>
         <div class="row"><button class="btn small" id="printLetters" type="button">Print letter formation (a–z)</button></div>
       </div>
+      ${printedHTML()}
       <div class="work-flow">
         <h2>🎮 Quick game</h2>
         <p class="hint">Test a game first, then give it to one pupil for today. It disappears from their assigned work after today.</p>
@@ -1577,6 +1711,7 @@
         drawPlans(body); } catch (err) { showError(err); }
     }; });
     $("#printLetters").onclick = printLetters;
+    wirePrinted(body);
     body.querySelectorAll("[data-preview-plan]").forEach(b => { b.onclick = () => {
       const { row, plan } = ref(b.dataset.previewPlan);
       previewWorksheet(row.who, plan, "mapping");
@@ -2183,9 +2318,10 @@
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
-    const chosen = key => dialog.querySelector(`[data-sheet="${key}"]`).checked;
-    // The pupil's sheets together first, then everything for the tutor (plan, words to say, answers)
-    const html = () => {
+    // The pupil's sheets together first, then everything for the tutor (plan, words to say, answers).
+    // all: every page, chosen or not (for Recently printed)
+    const html = (all = false) => {
+      const chosen = key => all || dialog.querySelector(`[data-sheet="${key}"]`).checked;
       const pupil = sheets.map((s, i) => (chosen(i) ? sheetHTML(s, i) : ""));
       const adult = [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""]
         .concat(sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "key").html)));
@@ -2199,7 +2335,8 @@
     render();
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close(); if (sheet) printSheet(sheetClass("ws-activity"), sheet); };
+    dialog.querySelector("[data-print]").onclick = () => { const sheet = html(); dialog.close();
+      if (sheet) printSheet(sheetClass("ws-activity"), sheet, { title: `Lesson ${x.prog.lesson} pack`, who: x.r.name, pages: html(true) }); };
     dialog.showModal();
   }
 
@@ -3188,6 +3325,7 @@
   const parentData = () => Promise.all([cloud.sessions(current.id, PARENT_DAYS), cloud.assignments(current.id)]);
 
   let days = 30;
+  const openRoster = new Set();
   const PERIODS =[[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
 
   async function drawPupils(body) {
@@ -3212,7 +3350,11 @@
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
           <div class="row"><button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
             <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button>
-            <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button></div></div>
+            <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button>
+            ${pupils.some(p => sameName(p.pupil, r.name)) ? `<button class="btn small" data-results="${esc(r.name)}">📊 Results</button>` : ""}</div></div>
+        <details class="roster-more" data-key="${esc(r.key)}"${openRoster.has(r.key) ? " open" : ""}>
+          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}Lesson date, homework, home login and parent page</summary>
+          <div class="roster-more-body">
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
@@ -3243,13 +3385,14 @@
           ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}
           ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}
           <button class="btn small danger" data-delete-pupil="${esc(r.key)}">🗑️ Delete pupil and records</button></div>
+          </div></details>
       </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}
       <div class="row t-row">
         <label class="t-class">Show <select id="days">${PERIODS.map(([d, t]) => `<option value="${d}"${d === days ? " selected" : ""}>${t}</option>`).join("")}</select></label>
         <p class="hint">${esc(current.name)}: ${sessions.length} lists done by ${pupils.length} pupils.</p>
         ${sessions.length ? `<button class="btn" id="csv">⬇ Download every word (spreadsheet)</button>` : ""}</div>
       ${pupils.length ? `<div class="pupil-grid">${pupils.map(p => `
-        <article class="pcard">
+        <article class="pcard" data-results-of="${esc(p.pupil.trim().toLowerCase())}" tabindex="-1">
           <div class="next-head"><h3>${esc(p.pupil)}</h3><div class="row"><button class="btn small" data-report="${esc(p.pupil)}">📄 Progress report</button>
             <button class="btn small" data-pn="${esc(p.pupil)}">📅 Parents' night</button></div></div>
            <p class="meta">${p.lists} lists (${p.worksheets} worksheets) · ${p.right}/${p.words} words right · ${p.firstGo} first time · last ${day(p.last)}</p>
@@ -3293,6 +3436,12 @@
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
     body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions, inEngland(roster.find(r => sameName(r.name, b.dataset.report)))); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
+    // Each pupil's details fold away; the open ones stay open when the tab redraws
+    body.querySelectorAll(".roster-more").forEach(d => d.addEventListener("toggle", () => { if (d.open) openRoster.add(d.dataset.key); else openRoster.delete(d.dataset.key); }));
+    body.querySelectorAll("[data-results]").forEach(b => { b.onclick = () => {
+      const card = body.querySelector(`[data-results-of="${CSS.escape(b.dataset.results.trim().toLowerCase())}"]`);
+      if (card) { card.scrollIntoView({ block: "start" }); card.focus({ preventScroll: true }); card.classList.add("t-flash"); setTimeout(() => card.classList.remove("t-flash"), 1600); }
+    }; });
     $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
     // Roster pupils, plus anyone with results who isn't on the roster yet
     const reportPupil = name => roster.find(r => sameName(r.name, name)) || { name };
@@ -3349,6 +3498,7 @@
           const token = await cloud.calendarToken();
           if (token) await gcalRemove(token, record).catch(() => {});
         }
+        forgetPrinted(name);
         await drawPupils(body);
         notice(`🗑️ Deleted everything PopSpell held about ${name} (${plural(n, "result", "results")}).`);
       } catch (err) { if (button) button.disabled = false; showError(err); }

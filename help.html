@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=third-1">
+  <link rel="stylesheet" href="style.css?v=nav-1">
   <style>
     .help { max-width: 1180px; margin: 0 auto; padding: 8px 16px 48px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
     .help-toc { position: sticky; top: 104px; background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; max-height: calc(100vh - 130px); overflow: auto; }
@@ -116,6 +116,7 @@
           <tr><td>🏫 Classes</td><td>Make classes, get the class link, and set the accent.</td></tr>
           <tr><td>👩‍🏫 Teachers</td><td>Site admins only: invite and remove teachers.</td></tr>
         </table>
+        <p>The <span class="ui">❓ Help with …</span> link under your name opens this page at the section for the tab you're on.</p>
         <a class="help-top" href="#top">↑ Back to the top</a>
       </section>
 
@@ -295,7 +296,7 @@
         <figure class="help-shot"><a href="assets/help/pupils-top.webp"><img src="assets/help/pupils-top.webp" alt="The top of the Pupils tab with buttons for calendar, parents' night reports and new pupils, and the add pupil form" loading="lazy"></a>
           <figcaption>The top of the Pupils tab.</figcaption></figure>
         <h3>Each pupil's card</h3>
-        <p>Every pupil has a card with their details. After changing anything, press <span class="ui">Save details</span> at the bottom of the card.</p>
+        <p>Every pupil has a card with their details. Their next lesson date, homework, home login and parent page are folded away to keep the page short: press the line under their name to open them. After changing anything, press <span class="ui">Save details</span> at the bottom of the card. <span class="ui">📊 Results</span> jumps to the pupil's results for the period you've chosen, further down the page.</p>
         <ul>
           <li><b>Parent email</b> and <b>Parent requested reminders</b>: tick this only if the parent asked for lesson reminders.</li>
           <li><b>Next lesson</b> and <b>Time</b>: used by Next steps, reminders, the parent page and the calendar.</li>
@@ -407,10 +408,12 @@
         <h3>Library</h3>
         <p><span class="ui">📚 Library</span> has everything in PopSpell in one place, sorted the way you'd look for it:</p>
         <ol class="help-steps">
-          <li><b>Choose a level:</b> Early (nursery to P1), First (P2 to P4) or Second (P5 to P7).</li>
+          <li><b>Choose a level:</b> Early (nursery to P1), First (P2 to P4), Second (P5 to P7) or Third (S1 to S3).</li>
           <li><b>Choose a subject:</b> Literacy or Maths. The work appears in strands, such as Spelling, Reading: understanding stories, Number, Time or Fractions.</li>
           <li>To narrow it down further, pick one <b>Strand</b> or a <b>Type</b> (spelling list, activity, story, game, dictation or paper sheet), or search for a word, sound or skill.</li>
         </ol>
+        <p>When more than 12 things match, they stay closed under their strands, with a count on each, so you can open the strand you want.</p>
+        <p><b>Searching:</b> type words in any order. Every word has to match, and words match from their start, so <b>fraction</b> finds fractions. A school year finds work at its level: <b>S2 fractions</b>, <b>P5 spelling</b>, <b>Year 4 times tables</b>. <b>a-e</b> finds a–e, <b>sheet</b> or <b>worksheet</b> finds anything you can print, and <b>split digraph</b> finds the silent e work.</p>
         <p>Not sure of a pupil's level? <b>Find their level</b>, at the top, has Pip's Sound Quest and the starting checks. The library remembers your last choices on that device.</p>
         <p>Every card shows its level and type, and has three buttons:</p>
         <ul>
@@ -438,6 +441,7 @@
         <ul>
           <li><b>Schedule work:</b> choose a pupil, a list or activity and the dates it should appear. Test it first if you like.</li>
           <li><b>Paper worksheets:</b> choose a pupil, list and sheet type, then <span class="ui">👀 Preview sheet</span> and <span class="ui">🖨️ Print / Save PDF</span>. After the child has done it, press <span class="ui">✍️ Enter marks</span> so the results join their progress.</li>
+          <li><b>🕘 Recently printed:</b> the last 30 sheets printed on this device, from the Library, Programme or here, with who they were for, the date and their sheet codes. Each print makes new questions, so use <span class="ui">🖨️ Print again</span> to get exactly the same sheet, or the answers you didn't print the first time. Type in <b>Find</b> to look for a title, a pupil, a date or a sheet code. The list stays in this browser only and is never sent anywhere. <span class="ui">Clear this list</span> empties it, and deleting a pupil removes their sheets from it.</li>
           <li><b>Handwriting sheets</b> (in the Library, under Handwriting):
             <ul>
               <li><b>Letter formation (a–z)</b>, Early level: every lower-case letter to trace and write on four-line ruling, grouped in families that start with the same movement. <span class="ui">Print letter formation (a–z)</span> here prints it too. Each family is also a one-page sheet: <b>curly letters</b> (c a d g o q e s f), <b>long ladder letters</b> (l i t u j y), <b>down and bounce letters</b> (r n m h b k p) and <b>zigzag letters</b> (z v w x).</li>
