@@ -1208,6 +1208,7 @@ a.me-card:hover { border-color: var(--primary); }
 .lib-level.lv-first { background: #e4efff; color: #1d4fa3; }
 .lib-level.lv-second { background: #f3e8ff; color: #6b2fb3; }
 .lib-level.lv-third { background: #fde7ef; color: #9d174d; }
+.lib-level.lv-fourth { background: #fff1d6; color: #8a4b00; }
 /* England's bands, in the same colour steps */
 .lib-level.lv-reception { background: #fff1d6; color: #8a4b00; }
 .lib-level.lv-year-1, .lib-level.lv-year-2 { background: #e3f6ee; color: #11683f; }
