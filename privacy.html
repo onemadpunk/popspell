@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=a11y-1">
   <style>
     .policy { max-width: 760px; margin: 0 auto; padding: 8px 16px 40px; line-height: 1.6; }
     .policy h1 { margin: 12px 0 4px; }
@@ -30,7 +30,7 @@
 
   <main class="policy">
     <h1>Privacy</h1>
-    <p class="updated">Last updated: 30 October 2026</p>
+    <p class="updated">Last updated: 31 October 2026</p>
 
     <div class="summary">
       <p><b>The short version.</b></p>
@@ -44,6 +44,18 @@
           reads the rest of the calendar.</li>
       </ul>
     </div>
+
+    <h2 id="children-short">For children</h2>
+    <ul>
+      <li>PopSpell asks for your first name so it can save your stars and sounds. You don't need to type your full name.</li>
+      <li>If you've joined a class, your teacher can see what you practise and how you get on, even while you're doing it.
+        PopSpell tells you this under your name with a 👀.</li>
+      <li>Only your teacher and the people who run PopSpell can see your work. Your teacher might also make a page about your
+        progress for your grown-ups at home.</li>
+      <li>There are no adverts or chat, and strangers can't contact you.</li>
+      <li>If you're worried about anything, or want something taken away, tell a parent, carer or teacher. You can also
+        email us yourself.</li>
+    </ul>
 
     <h2>Who we are</h2>
     <p>PopSpell (popspell.com) is owned and run by Steven Green, trading as onemadpunk, who is the <i>data controller</i>
@@ -121,6 +133,7 @@
       <li><b>GitHub Pages</b> hosts the website itself. Like any web host, it sees visitors' IP addresses when it sends the
         pages.</li>
       <li><b>Google Fonts</b> provides the website's fonts, so a visitor's browser fetches them from Google.</li>
+      <li>The code that connects PopSpell to Firebase is also fetched from Google's servers (gstatic.com) when a page opens.</li>
     </ul>
     <p>We don't use analytics, advertising or tracking cookies, and we don't sell or share anyone's information.</p>
 
@@ -128,7 +141,13 @@
     <p>PopSpell keeps some information in the browser's own storage so it works offline and remembers settings: the
       child's name or code, their class, their saved progress, reading speed and other settings. Results are kept on
       the device until they reach the server. None of this is used to track anyone. Clearing the browser's site data
-      removes it.</p>
+      removes it, and on a child's device <b>Not me?</b> (beside their name) forgets the name.</p>
+    <p>On a teacher's computer, the browser also keeps a copy of their classes so the teacher area works with a poor
+      connection. Signing out removes that copy (with any other PopSpell tabs closed first), so teachers should always
+      sign out on a shared computer. Google Calendar
+      permission is kept only in the open tab and goes when it closes.</p>
+    <p>PopSpell doesn't set cookies (Google's own sign-in window may, when a teacher signs in with Google). Everything it keeps in the browser is needed for something the person has asked
+      for (practising, saving progress, signing in or their own settings), so there's no cookie banner.</p>
 
     <h2>How long we keep it</h2>
     <p>Results and pupil records are kept while the child has lessons, and deleted within 12 months of their last
@@ -151,7 +170,8 @@
 
   <footer class="site-footer">
     <p>PopSpell by <b>onemadpunk</b> ·
-      <a href="mailto:onemadpunk@gmail.com?subject=PopSpell%20%E2%80%94%20privacy">Privacy questions</a></p>
+      <a href="mailto:onemadpunk@gmail.com?subject=PopSpell%20%E2%80%94%20privacy">Privacy questions</a> ·
+      <a href="accessibility.html">Accessibility</a></p>
   </footer>
 </body>
 </html>

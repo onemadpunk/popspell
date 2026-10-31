@@ -190,7 +190,7 @@
   /* ---------- Settings (kept in this browser only) ---------- */
 
   const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: true, spellOut: true, sounds: true,
-    sentences: true, checks: true };
+    sentences: true, checks: true, timeLimit: "normal" };
   const STORE_KEY = "spelling-settings-v2";
   const settings = (() => {
     try { return Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem(STORE_KEY))); }
@@ -921,11 +921,15 @@
   function mountPupil(box, { onChange, onEnter, lead = "Spelling as" } = {}) {
     const name = getPupil();
     // lead "" (the home page, which already greets them by name) leaves just "Not Ava?"
+    // Said plainly to the child, where they type their name: who will see it (the Children's Code asks for this)
+    const who = REPORTING ? "Your teacher sees your name and how you get on." : "Your name stays on this device.";
     box.innerHTML = name
-      ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>`
+      ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>
+         ${REPORTING ? `<p class="hint watched"><span aria-hidden="true">👀</span> ${who}</p>` : ""}`
       : `<label class="field pupil-field">What's your name?
            <input class="pupil-name" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
          </label>
+         <p class="hint watched">${who} Just your first name is fine.</p>
          <p class="hint pupil-hint"></p>`;
     if (name) {
       box.querySelector(".not-me").onclick = () => {
@@ -1448,7 +1452,7 @@
           `<span class="forest-decor ${item.id}" aria-hidden="true">${item.icon}</span>`).join("")}
         <span class="forest-home-owl" aria-hidden="true">🦉</span>
       </div>
-      <h3>Choose what to add to your forest</h3>
+      <h2>Choose what to add to your forest</h2>
       <div class="forest-shop">${FOREST.ITEMS.map(item => {
         const has = owned.has(item.id), need = Math.max(0, item.cost - balance);
         return `<div class="forest-item${has ? " owned" : ""}"><span class="forest-item-icon" aria-hidden="true">${item.icon}</span>
@@ -1619,6 +1623,7 @@
     const my = phase;
     app.innerHTML = `
       <section class="panel practice one-page" style="--accent:${esc(session.list.accent)}">
+        <h1 class="sr-only">${esc(session.list.title)}</h1>
         ${progressHTML()}
         ${item.challenge ? `<p class="phase challenge"><span aria-hidden="true">🔍</span> New word!</p>` : ""}
         <div class="word-stage" id="stage">
@@ -1852,6 +1857,9 @@
 
   function showActivityStart(act) {
     document.title = `${act.title} · ${SITE.title}`;
+    // Seconds per question when the activity is timed (the times tables check), so it can be lengthened or switched off
+    if (act.timed === undefined) try { act.timed = (act.make().find(q => q.time) || {}).time || 0; } catch { act.timed = 0; }
+    const timed = act.timed;
     app.innerHTML = `
       <section class="panel start" style="--accent:${esc(act.colour)}">
         <a class="back" href="#/">← All activities</a>
@@ -1871,9 +1879,14 @@
             <option value="english">English: ar, er, ir, or, ur count as one sound (c · ar)</option>
           </select></label>
           ${CLASS && CLASS.accent ? `<p class="hint">Set for ${esc(CLASS.name)} in Teacher → Classes.</p>` : ""}` : ""}
+        ${timed ? `<fieldset class="time-choice"><legend>Time for each question</legend>
+          ${[["normal", `${timed} seconds, like the real check`], ["double", `${timed * 2} seconds`], ["off", "No time limit"]].map(([v, t]) =>
+            `<label class="check"><input type="radio" name="timeLimit" value="${v}"${settings.timeLimit === v ? " checked" : ""}> ${t}</label>`).join("")}
+          </fieldset>` : ""}
         ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
         <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
       </section>`;
+    app.querySelectorAll("[name=timeLimit]").forEach(r => { r.onchange = () => { settings.timeLimit = r.value; saveSettings(); }; });
     const go = $("#go");
     const box = $("#pupilBox");
     const accent = $("#hopperAccent");
@@ -1903,6 +1916,8 @@
   // Plays a question's sound: a recorded word, a recording (with the device voice as back-up), or text
   // Every question is read out, so a child who can't read yet can still answer it
   const questionSay = q => q.say || (q.prompt ? { text: speakable(q.prompt) } : null);
+  // A timed question's seconds, as chosen on the start screen: as set, doubled, or no limit (0)
+  const questionTime = q => (!q.time || settings.timeLimit === "off" ? 0 : q.time * (settings.timeLimit === "double" ? 2 : 1));
   // An answer choice read out: a recorded word where there is one
   const sayOption = o => (/\s/.test(o) || !hasWordClip(o) ? sayLine(speakable(o)) : sayWord(o));
 
@@ -2014,6 +2029,7 @@
     const my = newScreen();
     const act = session.activity;
     const q = session.items[session.i];
+    const time = questionTime(q);
     if (q.kind === "map") return showSoundHopper(q);
     if (q.kind === "switch") return showSoundSwitch(q);
     if (q.kind === "canopy") return showCountingCanopy(q);
@@ -2039,12 +2055,13 @@
       </div>`;
     app.innerHTML = `
       <section class="panel practice activity" style="--accent:${esc(act.colour)}">
+        <h1 class="sr-only">${esc(session.list.title)}</h1>
         ${progressHTML()}
-        ${q.time ? `<div class="mtc-bar" aria-hidden="true"><span style="animation-duration:${q.time}s"></span></div>` : ""}
+        ${time ? `<div class="mtc-bar" aria-hidden="true"><span style="animation-duration:${time}s"></span></div>` : ""}
         ${passageBox}
         <p class="phase q-prompt${q.time ? " mtc-q" : ""}">${esc(q.prompt)}</p>
         ${q.html || ""}
-        ${q.say && !q.time ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
+        ${q.say && !time ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
         ${q.kind === "choice"
           ? `<div class="q-options">${q.options.map(optionHTML).join("")}</div>`
           : `<form class="spell-form" id="qForm" autocomplete="off">
@@ -2060,7 +2077,7 @@
     const reader = $("#passageBox") ? wireReadAlong($("#passageBox"), passage) : null;
     app.querySelectorAll("#storyBox .sw").forEach(b => { b.onclick = () => sayWord(b.dataset.word); });
     // Timed questions (the multiplication tables check) aren't read out: the time starts at once
-    if (q.time) { /* silent */ }
+    if (time) { /* silent */ }
     // Listening activities start with the story (first question) or the question's own sound
     else if (act.listen && session.i === 0) reader.start(0).then(() => my === phase && sayQuestion(q));
     else sayQuestion(q);
@@ -2084,7 +2101,7 @@
       if (correct) chimeRight(); else chimeWrong();
       // Said as well as shown: praise, or the answer and why. Timed questions move on by themselves
       // after 3 seconds, as in the real check, so they aren't talked over.
-      if (!q.time) later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
+      if (!time) later(() => (correct ? sayPhrase(pick(q.kind === "dictation" ? PRAISE : ACTIVITY_PRAISE))
         : sayLine(window.PopSpeech.answerLine(q))), 350);
       app.querySelectorAll(".q-option, #qForm button, #qAnswer").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
@@ -2097,7 +2114,7 @@
         session.i++;
         showQuestion();
       };
-      if (q.time && !isLast) later(() => { if (my === phase) $("#nextQ").click(); }, 3000);
+      if (time && !isLast) later(() => { if (my === phase) $("#nextQ").click(); }, 3000);
     };
     const tryAgain = text => {
       chimeWrong();
@@ -2125,14 +2142,14 @@
     const input = $("#qAnswer");
     input.focus();
     // When the time runs out, whatever has been typed is the answer (one go only)
-    if (q.time) later(() => {
+    if (time) later(() => {
       if (finished || my !== phase) return;
       const value = input.value.trim();
       const right = Boolean(value) && norm(value) === norm(q.answer);
       if (!right) wrong.push(value || "no answer");
       $("#feedback").before(Object.assign(document.createElement("p"), { className: "mtc-up", textContent: "⏰ Time's up" }));
       finish(right);
-    }, q.time * 1000);
+    }, time * 1000);
     $("#qForm").onsubmit = e => {
       e.preventDefault();
       const value = input.value.trim();

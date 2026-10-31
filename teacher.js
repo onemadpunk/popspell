@@ -862,9 +862,9 @@
           </tr>`).join("") : `<tr><td colspan="3" class="empty">No assignments yet. Add a pupil below.</td></tr>`}</tbody>
       </table>
       <form class="add-row" id="addForm">
-        <input type="text" id="newWho" placeholder="Pupil's first name (or Everyone)" maxlength="30">
-        <select id="newList">${options}</select>
-        <input type="text" id="newLink" placeholder="…or paste a Make a list link">
+        <input type="text" id="newWho" aria-label="Pupil's first name, or Everyone" placeholder="Pupil's first name (or Everyone)" maxlength="30">
+        <select id="newList" aria-label="Work to set">${options}</select>
+        <input type="text" id="newLink" aria-label="Or paste a Make a list link" placeholder="…or paste a Make a list link">
         <a class="btn small" id="newPreview" target="_blank" rel="noopener" hidden>▶ Test online</a>
         <button class="btn primary" type="submit">Add</button>
       </form>`;
@@ -1463,8 +1463,8 @@
       <h2>💻 Online work</h2>
       <p class="hint">Choose a list or activity, test it as a pupil, then schedule when it appears on the child's device.</p>
       <form class="add-row" id="planForm">
-        <input type="text" id="planWho" placeholder="Pupil's name (or Everyone)" maxlength="40" required>
-        <select id="planList" required>${catalogueOptions()}</select>
+        <input type="text" id="planWho" aria-label="Pupil's name, or Everyone" placeholder="Pupil's name (or Everyone)" maxlength="40" required>
+        <select id="planList" aria-label="Work to schedule" required>${catalogueOptions()}</select>
         <label>From <input type="date" id="planFrom" value="${todayKey()}" required></label>
         <label>Through <input type="date" id="planUntil" value="${todayKey()}" required></label>
         <a class="btn small" id="planOnlinePreview" target="_blank" rel="noopener" hidden>▶ Test online</a>
@@ -1474,8 +1474,8 @@
         <h2>🖨️ Paper worksheets</h2>
         <p class="hint">Preview the sheet before printing. After the child completes it, enter the marks here; this adds the findings to their progress without assigning online work.</p>
         <div class="add-row" id="paperTools">
-          <input type="text" id="paperWho" placeholder="Pupil's name" maxlength="40">
-          <select id="paperList"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
+          <input type="text" id="paperWho" aria-label="Pupil's name" placeholder="Pupil's name" maxlength="40">
+          <select id="paperList" aria-label="Spelling list"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
           <label>Sheet type <select id="paperMode"><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
             <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>
           <button class="btn small" id="paperPreview" type="button" disabled>👀 Preview sheet</button>
@@ -1488,8 +1488,8 @@
         <h2>🎮 Quick game</h2>
         <p class="hint">Test a game first, then give it to one pupil for today. It disappears from their assigned work after today.</p>
         <form class="add-row" id="quickGameForm">
-          <input type="text" id="quickWho" placeholder="Pupil's name" maxlength="40" required>
-          <select id="quickGame">${games.map(g => `<option value="${esc(g.id)}">${esc(g.title)}</option>`).join("")}</select>
+          <input type="text" id="quickWho" aria-label="Pupil's name" placeholder="Pupil's name" maxlength="40" required>
+          <select id="quickGame" aria-label="Game">${games.map(g => `<option value="${esc(g.id)}">${esc(g.title)}</option>`).join("")}</select>
           <a class="btn small" id="quickPreview" target="_blank" rel="noopener" href="${esc(games.length ? previewHref(games[0].id) : "#")}">▶ Test game</a>
           <button class="btn primary" type="submit">Assign for today</button>
         </form>
@@ -1672,6 +1672,7 @@
       <p class="hint">Each pupil's next lesson, what's planned for it, how they did last time, and a suggestion that follows the teaching order.
         <b>Plan it</b> puts the suggestion on the pupil's schedule for that date (and as their homework list), or choose something else.</p>
       ${rows.length ? `<p class="pill${unplanned ? " stuck" : ""}">${unplanned ? `⚠ ${plural(unplanned, "pupil has", "pupils have")} nothing planned` : "✓ Every pupil has work planned"}</p>
+      <h2 class="sr-only">Next steps for each pupil</h2>
       <div class="next-list">${rows.map((x, i) => `
         <article class="pcard next-card${x.upcoming ? "" : " unplanned"}">
           <div class="next-head"><h3>${esc(x.name)}</h3>
@@ -1682,8 +1683,8 @@
           ${x.summary && x.summary.topSounds.length ? `<p><b>To work on:</b> ${x.summary.topSounds.slice(0, 3).map(([s, n]) => `<span class="sound-chip">${esc(s)} ×${n}</span>`).join("")}</p>` : ""}
           <div class="next-suggest"><span>💡 ${esc(x.suggestion.text)}</span></div>
           <form class="add-row" data-plan-row="${i}">
-            <select data-plan-list>${catalogueOptions()}</select>
-            <input type="date" data-plan-date value="${esc(x.lessonDate || today)}" min="${today}" required>
+            <select data-plan-list aria-label="Work for ${esc(x.name)}">${catalogueOptions()}</select>
+            <input type="date" data-plan-date aria-label="Date for ${esc(x.name)}" value="${esc(x.lessonDate || today)}" min="${today}" required>
             <button class="btn primary small" type="submit">Plan it</button>
           </form>
         </article>`).join("")}</div>`
@@ -2555,7 +2556,7 @@
       dialog.innerHTML = `${head(`Phonics check practice: ${r.name}`)}
         <p>Practice for England's Year 1 <b>phonics screening check</b>: 40 words in two sections, a mix of real words and pseudo-words (made-up words, shown with an alien). ${esc(r.name)} reads each word aloud and you mark it. Section 2 is harder.</p>
         <ol class="help-steps">
-          <li>On ${esc(r.name)}'s device, open this link. It shows each word as you move through: <span class="t-link-row"><input class="t-link" readonly value="${esc(link)}"> <button class="btn small" type="button" data-copy>Copy</button></span></li>
+          <li>On ${esc(r.name)}'s device, open this link. It shows each word as you move through: <span class="t-link-row"><input class="t-link" readonly value="${esc(link)}" aria-label="Phonics check link"> <button class="btn small" type="button" data-copy>Copy</button></span></li>
           <li>Or, if they're not on a device, share your screen and press <b>Show on my screen</b> during the check.</li>
           <li>Mark each word: <b>✓ Right</b> (key 1) or <b>✗ Not right</b> (key 2). If you like, tap the sound they got wrong first, so it shows in their results.</li>
         </ol>
@@ -2961,7 +2962,8 @@
           <label>First name, as the child will type it ${r ? `<input type="text" value="${esc(r.name)}" disabled>` : `<input type="text" id="flowName" maxlength="40" required>`}</label>
           <label>Year group <select id="flowYear"><option value="">Choose…</option>${yearOptions(r && r.yearGroup)}</select></label>
           <label>Parent email (optional) <input type="email" id="flowEmail" value="${esc(r ? r.parentEmail || "" : "")}" placeholder="parent@example.com"></label>
-          <label>Things to bear in mind <textarea id="flowNeeds" rows="2" maxlength="500" placeholder="e.g. diagnosed dyslexia, gets tired quickly">${esc(r ? r.needs || "" : "")}</textarea></label>
+          <label>Things to bear in mind <textarea id="flowNeeds" rows="2" maxlength="500" placeholder="e.g. diagnosed dyslexia, gets tired quickly" aria-describedby="flowNeedsHint">${esc(r ? r.needs || "" : "")}</textarea></label>
+          <p class="hint" id="flowNeedsHint">A diagnosis or additional need is health information: note it only with the parent's agreement, and only what helps you teach.</p>
           <div class="chips">${NEED_CHIPS.map(c => `<button type="button" class="t-chip need-chip" data-need="${esc(c)}">＋ ${esc(c)}</button>`).join("")}</div>
           <label>What they enjoy (for choosing stories and keeping it fun) <input type="text" id="flowLikes" maxlength="300" value="${esc(r ? r.likes || "" : "")}" placeholder="e.g. football, dinosaurs, drawing"></label>
           <div class="row end"><button class="btn primary" type="submit">Save and continue →</button></div>
@@ -3205,8 +3207,8 @@
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
       <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
-      <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" placeholder="Pupil's name or code" required>
-        <input type="email" id="rosterParent" placeholder="Parent email (optional)">
+      <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" aria-label="Pupil's name or code" placeholder="Pupil's name or code" required>
+        <input type="email" id="rosterParent" aria-label="Parent email (optional)" placeholder="Parent email (optional)">
         <button class="btn primary" type="submit">Add pupil</button></form>
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
@@ -3476,9 +3478,9 @@
         ${c.teacher !== me.uid ? `<p class="meta">${esc(c.teacherName)}</p>` : ""}
         <p class="t-code" aria-label="Class code">${esc(c.id)}</p>
         <p class="hint">Open this link once on each pupil's device (or type the code on the home page):</p>
-        <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link">
+        <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link" aria-label="Join link for ${esc(c.name)}">
           <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button></div>
-        ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" data-rename-input="${esc(c.id)}">
+        ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" aria-label="Class name" data-rename-input="${esc(c.id)}">
           <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>
           <label class="check"><input type="checkbox" data-assigned-only="${esc(c.id)}"${c.assignedOnly ? " checked" : ""}>
             Pupils only see the work I set (hide the rest of the library)</label>
@@ -3491,7 +3493,7 @@
       </article>`;
     body.innerHTML = `
       <form class="add-row" id="newClass">
-        <input type="text" id="className" maxlength="60" placeholder="New class name, e.g. Tuesday 4pm group">
+        <input type="text" id="className" maxlength="60" aria-label="New class name" placeholder="New class name, e.g. Tuesday 4pm group">
         <button class="btn primary" type="submit">＋ Make class</button>
       </form>
       <h2 class="t-h2">My classes</h2>
@@ -3546,9 +3548,9 @@
     body.innerHTML = `
       <p class="hint">Invite someone by their <b>Google</b> email address. Teachers see their own classes; site admins can manage all classes, plans, results and teachers. Only the owner can grant site admin access.</p>
       <form class="add-row" id="invite">
-        <input type="email" id="invEmail" placeholder="tutor@gmail.com" required>
-        <input type="text" id="invName" placeholder="Name, e.g. Mrs Green" maxlength="60">
-        ${me.role === "owner" ? `<select id="invRole"><option value="teacher">Teacher</option><option value="admin">Site admin</option></select>` : ""}
+        <input type="email" id="invEmail" aria-label="Teacher's Google email" placeholder="tutor@gmail.com" required>
+        <input type="text" id="invName" aria-label="Teacher's name" placeholder="Name, e.g. Mrs Green" maxlength="60">
+        ${me.role === "owner" ? `<select id="invRole" aria-label="Role"><option value="teacher">Teacher</option><option value="admin">Site admin</option></select>` : ""}
         <button class="btn primary" type="submit">Invite</button>
       </form>
       <table class="t-table">
