@@ -1864,11 +1864,13 @@
       });
     const countToday = rows.filter(x => x.r.nextLessonDate === today).length;
     const needAttention = rows.filter(x => x.flags.length).length;
+    const needDate = roster.filter(r => !r.nextLessonDate || r.nextLessonDate < today).sort((a, b) => a.name.localeCompare(b.name));
     body.innerHTML = `<div class="today-intro">
         <p class="hint">Lessons from ${esc(when(today))} through ${esc(when(through))} in ${esc(current.name)}. Results shown here are recorded PopSpell work; paper homework may still need checking with the pupil.</p>
         <div class="summary-bar"><span class="pill">${plural(countToday, "lesson", "lessons")} today</span>
           <span class="pill">${rows.length} in the next seven days</span>
-          ${needAttention ? `<span class="pill stuck">${needAttention} to check</span>` : ""}</div>
+          ${needAttention ? `<span class="pill stuck">${needAttention} to check</span>` : ""}
+          ${needDate.length ? `<span class="pill">${needDate.length} without an upcoming date</span>` : ""}</div>
       </div>
       ${rows.length ? `<div class="today-cards">${rows.map((x, i) => {
         const { r, dated, recent, since, flags } = x;
@@ -1894,8 +1896,24 @@
           </div>
         </article>`;
       }).join("")}</div>` : `<div class="empty">No lessons are dated for the next seven days. Add dates on the <b>Pupils</b> page.</div>`}
-      <div class="row"><button class="btn small" type="button" id="todayPupils">Set lesson dates</button>
+      ${needDate.length ? `<details class="lib-group today-unscheduled"><summary>${needDate.length} pupil${needDate.length === 1 ? "" : "s"} without an upcoming lesson date</summary>
+        <div class="today-date-list">${needDate.map(r => `<div class="today-date-row"><span><b>${esc(r.name)}</b>${r.nextLessonDate ? ` <small>Last date: ${esc(r.nextLessonDate)}</small>` : ""}</span>
+          <label>Next lesson <input type="date" min="${today}" data-today-date="${esc(r.key)}"></label>
+          <button class="btn small" type="button" data-today-save-date="${esc(r.key)}">Save date</button></div>`).join("")}</div></details>` : ""}
+      <div class="row"><button class="btn small" type="button" id="todayPupils">Open pupils</button>
         <button class="btn small" type="button" id="todaySheets">Recently printed sheets</button></div>`;
+    body.querySelectorAll("[data-today-save-date]").forEach(b => { b.onclick = async () => {
+      const r = needDate.find(p => p.key === b.dataset.todaySaveDate);
+      const date = body.querySelector(`[data-today-date="${b.dataset.todaySaveDate}"]`).value;
+      if (!r || !date) return showError(new Error("Choose a lesson date first."));
+      b.disabled = true;
+      try {
+        const updated = Object.assign({}, r, { nextLessonDate: date });
+        await cloud.savePupil(current.id, updated);
+        await calendarAfterSave(updated);
+        drawToday(body);
+      } catch (err) { b.disabled = false; showError(err); }
+    }; });
     body.querySelectorAll("[data-today-plan]").forEach(b => { b.onclick = () => {
       const r = rows[Number(b.dataset.todayPlan)].r;
       if (r.programme) { openProgramme = r.name; tab = "programme"; } else tab = "next";

@@ -1728,6 +1728,11 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .today-card p { margin: 8px 0; }
 .today-flags { margin: 12px 0; padding: 10px 12px 10px 30px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: .9rem; }
 .today-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.today-date-list { display: grid; gap: 10px; padding: 14px; }
+.today-date-row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.today-date-row > span { flex: 1 1 180px; }
+.today-date-row small { display: block; color: var(--muted); }
+.today-date-row label { display: grid; gap: 2px; font-size: .82rem; color: var(--muted); }
 .t-pagehead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 20px; }
 .t-crumb { margin: 0; font: 600 .75rem var(--t-font); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 .t-pagehead h1 { margin: 2px 0 0; font: 700 1.8rem/1.2 var(--t-font); color: var(--ink); letter-spacing: -.02em; }
