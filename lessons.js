@@ -1756,6 +1756,355 @@ window.PopLessons = (() => {
     {"start": "Read: 'Yesterday I go to the park and played football.' What's wrong?", "teach": "Edit the paragraph on the sheet in three passes: tense, then spelling and punctuation, then effect (does it do what the writer wanted?). Use the perfect form to show what had happened first. Then edit a piece of your own writing the same way.", "practise": "Tense and the perfect form on PopSpell, then the \"Edit it\" sheet.", "check": "Ask them to edit a paragraph and explain each change."},
     ["eg-tense-perfect"], "Proofread a shopping list or a birthday card together.", "tense, perfect form, proofread, edit, effective");
 
+  /* ===================== England: key stage 4 (Years 10 and 11) ===================== */
+  // The key stage 4 programmes of study (DfE, 2014), with the GCSE subject content's own detail where
+  // it spells a statement out (the GCSE English language scope of study and the GCSE maths formulae).
+  // Content for more highly attaining pupils (in braces in the programme of study, bold in the GCSE
+  // content) is marked "(higher)". "Fourth" places them after CfE Third level; with no CfE outcomes,
+  // they're England's only. The statements each one covers are in england.js.
+
+  addEngland("Fourth", M, NUM, [], "Powers, roots, indices and standard form (Years 10 and 11)",
+    "We are learning to calculate with powers and roots, use the laws of indices, and calculate with numbers in standard form.",
+    ["I can calculate with roots, and with integer indices, including zero and negative indices.", "I can use the laws of indices to simplify expressions involving sums, products and powers.", "I can calculate with numbers in standard form A × 10ⁿ, where 1 ≤ A < 10 and n is an integer.", "I can estimate powers and roots of any given positive number, and calculate with fractional indices (higher)."],
+    { start: "Which is bigger, 2¹⁰ or 10³? How can you tell without a calculator?",
+      teach: "Build the laws from what a power means: 2³ × 2⁴ is seven 2s multiplied, so add the indices; dividing subtracts them; (2³)² = 2⁶. Halve down the pattern 2³, 2², 2¹, 2⁰, 2⁻¹ to show that 2⁰ = 1 and 2⁻¹ = ½. Use the laws in algebra: x⁵ × x³ = x⁸ and (3a²)³ = 27a⁶. Write 45 000 and 0.0062 in standard form, then multiply and divide in standard form by dealing with the numbers and the powers of 10 separately, adjusting the answer if needed. Higher: 8^⅔ is (∛8)² = 4, and √50 is just over 7, as 7² = 49.",
+      practise: "The \"Powers, roots and standard form\" sheet.",
+      check: "Ask for 5⁰, 4⁻², (2 × 10³) × (6 × 10⁴) in standard form, and y⁷ ÷ y² simplified." },
+    [], "Find very large and very small numbers in science or the news (the distance to the Sun, the width of a hair) and write them in standard form.", "power, index, indices, root, reciprocal, standard form, estimate");
+
+  addEngland("Fourth", M, FDP, [], "Exact calculation: fractions, surds, π and recurring decimals (Years 10 and 11)",
+    "We are learning to give exact answers using fractions, surds and multiples of π, and to change between recurring decimals and fractions.",
+    ["I can calculate exactly with fractions and multiples of π.", "I can calculate exactly with surds, simplify surd expressions involving squares, and rationalise denominators (higher).", "I can change recurring decimals into their corresponding fractions and vice versa (higher)."],
+    { start: "A circle has a radius of 3 cm. What is its area, exactly, without a calculator?",
+      teach: "Show why 9π cm² is more accurate than 28.27 cm², and keep answers as fractions: ⅔ of ⅗ is ⅖. Higher: a surd is a root that isn't a whole number. Simplify using square factors: √12 = √(4 × 3) = √4 × √3 = 2√3; then √3 × √3 = 3, so 6/√3 = 6√3/3 = 2√3. Divide 7 by 11 to get 0.636363…, then go back the other way: if x = 0.4545…, then 100x = 45.4545…, so 99x = 45 and x = 45/99 = 5/11.",
+      practise: "The \"Exact answers\" sheet.",
+      check: "Ask for the exact circumference of a circle with diameter 8, √50 simplified, and 0.777… as a fraction." },
+    [], "Use a calculator's fraction or exact mode to check some answers, and talk about when an exact answer matters.", "exact, surd, rationalise, multiple of π, recurring decimal, terminating decimal");
+
+  addEngland("Fourth", M, NUM, [], "Limits of accuracy: rounding, truncating and bounds (Years 10 and 11)",
+    "We are learning to say how accurate a measurement is, and to find the largest and smallest values a calculation could give.",
+    ["I can apply and interpret limits of accuracy when rounding or truncating.", "I can write an error interval using inequality notation.", "I can use upper and lower bounds in calculations (higher)."],
+    { start: "A length is 7 cm to the nearest centimetre. What could it actually be?",
+      teach: "Show 6.5 ≤ l < 7.5 on a number line: half a unit either side, with the upper value not included. Compare truncating, which just cuts digits off: a number truncated to 7 could be anything from 7 up to (but not including) 8. Higher: ask which values make an answer as big as possible. For a perimeter, add the upper bounds; for a speed (distance ÷ time), divide the upper bound of the distance by the lower bound of the time.",
+      practise: "The \"How accurate?\" sheet.",
+      check: "A mass is 4.3 kg to 1 decimal place: write its error interval. A rectangle is 8 cm by 5 cm, both to the nearest centimetre: find the upper bound of its area." },
+    [], "Look at a food label. If the pack says 500 g, what range of masses might it really hold?", "limit of accuracy, error interval, round, truncate, upper bound, lower bound");
+
+  addEngland("Fourth", M, PAT, [], "Factorising quadratics and algebraic fractions (Years 10 and 11)",
+    "We are learning to factorise quadratic expressions and to simplify expressions, including algebraic fractions.",
+    ["I can simplify and manipulate algebraic expressions, including those involving surds and algebraic fractions (higher).", "I can factorise quadratic expressions of the form x² + bx + c, including the difference of two squares.", "I can factorise quadratic expressions of the form ax² + bx + c (higher)."],
+    { start: "Expand (x + 3)(x + 5). Now work backwards: what multiplies out to x² + 8x + 15?",
+      teach: "Expand with a grid, then reverse it: for x² + bx + c, find two numbers that multiply to c and add to b, so x² + 7x + 12 = (x + 3)(x + 4) and x² − 2x − 15 = (x − 5)(x + 3). Show the difference of two squares: x² − 49 = (x + 7)(x − 7). Higher: for 2x² + 7x + 3, split the middle term: 2x² + 6x + x + 3 = 2x(x + 3) + 1(x + 3) = (2x + 1)(x + 3). Simplify an algebraic fraction by factorising and then cancelling: (x² − 9)/(x + 3) = x − 3.",
+      practise: "The \"Factorise it\" sheet.",
+      check: "Ask them to factorise x² + 5x + 6 and x² − 16 (and 3x² + 10x + 8, higher), checking each by expanding." },
+    [], "Make up a quadratic by expanding two brackets, and challenge someone at home to factorise it.", "expand, factorise, quadratic, coefficient, difference of two squares, algebraic fraction");
+
+  addEngland("Fourth", M, PAT, [], "Identities, algebraic proof and functions (Years 10 and 11)",
+    "We are learning the difference between an equation and an identity, to use algebra to prove things, and to think of expressions as functions.",
+    ["I know the difference between an equation and an identity.", "I can argue mathematically to show algebraic expressions are equivalent, and use algebra to support and construct arguments and proofs.", "I can interpret simple expressions as functions with inputs and outputs.", "I can interpret the reverse process as the inverse function, and the succession of two functions as a composite function (higher)."],
+    { start: "Is 3(x + 2) = 3x + 6 true for every value of x? Is 3x + 2 = 11?",
+      teach: "Sort statements into equations (true for some values) and identities (true for every value, written with ≡). Prove that the sum of three consecutive whole numbers is a multiple of 3: n + (n + 1) + (n + 2) = 3n + 3 = 3(n + 1). Use 2n for an even number and 2n + 1 for an odd one. Show a function as a machine: f(x) = 2x + 3, so f(4) = 11. Higher: run the machine backwards for the inverse, f⁻¹(x) = (x − 3)/2, and join machines for a composite: if g(x) = x², then fg(x) = 2x² + 3 but gf(x) = (2x + 3)².",
+      practise: "The \"Prove it\" sheet.",
+      check: "Is (x + 1)² ≡ x² + 1? Why? Prove that the sum of two odd numbers is even." },
+    [], "Try a number trick (think of a number, double it, add 6, halve it, take away the number you started with) and prove with algebra why the answer is always 3.", "equation, identity, proof, consecutive, function, input, output, inverse, composite");
+
+  addEngland("Fourth", M, PAT, [], "Straight-line graphs: y = mx + c, parallel and perpendicular lines (Years 10 and 11)",
+    "We are learning to use y = mx + c to find and compare straight lines, and to read a gradient as a rate of change.",
+    ["I can use the form y = mx + c to identify parallel lines, and perpendicular lines (higher).", "I can find the equation of the line through two given points, or through one point with a given gradient.", "I can interpret the gradient of a straight line graph as a rate of change.", "I can recognise and use the equation of a circle with centre at the origin, and find the equation of a tangent to a circle at a given point (higher)."],
+    { start: "Which of these lines are parallel: y = 3x + 1, y = 2x + 3, y = 3x − 4? How do you know?",
+      teach: "Gradient = change in y ÷ change in x. For the line through (1, 5) and (3, 9), m = 4 ÷ 2 = 2; substitute a point to find c: 5 = 2 × 1 + c, so c = 3 and y = 2x + 3. Parallel lines have the same gradient. On a graph of a taxi fare, the gradient is the cost per mile and the intercept is the fixed charge. Higher: perpendicular gradients multiply to −1 (2 and −½). x² + y² = 25 is a circle of radius 5; the tangent at (3, 4) is perpendicular to the radius, whose gradient is 4/3, so the tangent's gradient is −¾ and its equation is y − 4 = −¾(x − 3).",
+      practise: "The \"Lines and gradients\" sheet.",
+      check: "Ask for the equation of the line through (0, −1) and (2, 7), and the gradient of a line perpendicular to it (higher)." },
+    [], "Find a real straight-line relationship (a phone plan, a taxi fare) and say what its gradient and intercept mean.", "gradient, intercept, parallel, perpendicular, rate of change, tangent, radius");
+
+  addEngland("Fourth", M, PAT, [], "Quadratics: roots, turning points and solving (Years 10 and 11)",
+    "We are learning to solve quadratic equations and to link their solutions to the graph.",
+    ["I can solve quadratic equations algebraically by factorising, and find approximate solutions using a graph.", "I can identify and interpret roots, intercepts and turning points of quadratic functions graphically, and deduce roots algebraically.", "I can solve quadratic equations by completing the square and by using the quadratic formula, and deduce turning points by completing the square (higher).", "I know the quadratic formula: the solutions of ax² + bx + c = 0 are x = (−b ± √(b² − 4ac)) / 2a."],
+    { start: "If a × b = 0, what can you say about a or b?",
+      teach: "Factorise and use the zero product: x² − 5x + 6 = 0 gives (x − 2)(x − 3) = 0, so x = 2 or x = 3. Sketch y = x² − 5x + 6: the roots are where it crosses the x-axis, the y-intercept is 6, and the turning point is halfway between the roots, at x = 2.5. Higher: complete the square, x² − 6x + 2 = (x − 3)² − 7, so the turning point is (3, −7) and x = 3 ± √7. When it won't factorise, use the formula: 2x² + 3x − 4 = 0 gives x = (−3 ± √41)/4, so x ≈ 0.85 or x ≈ −2.35.",
+      practise: "The \"Solve the quadratic\" sheet.",
+      check: "Solve x² + x − 12 = 0. Where does y = x² + x − 12 cross each axis?" },
+    [], "Throw a ball and sketch its path. Where would the roots and the turning point be, and what do they mean?", "quadratic, root, solution, intercept, turning point, factorise, completing the square, quadratic formula");
+
+  addEngland("Fourth", M, PAT, [], "Simultaneous equations and inequalities (Years 10 and 11)",
+    "We are learning to form and solve simultaneous equations and inequalities, and to show the solutions.",
+    ["I can solve two simultaneous equations in two variables (linear/linear) algebraically, and find approximate solutions using a graph.", "I can translate simple situations into an equation or two simultaneous equations, solve them and interpret the solution.", "I can solve linear inequalities in one variable and represent the solution set on a number line.", "I can solve linear/quadratic simultaneous equations, linear inequalities in two variables and quadratic inequalities in one variable, using set notation and a graph (higher)."],
+    { start: "Two coffees and a cake cost £8. One coffee and a cake cost £5.50. How much is a coffee?",
+      teach: "Write the start problem as 2c + k = 8 and c + k = 5.5, then subtract to remove k: c = 2.5 and k = 3. Solve 3x + 2y = 16 and x − 2y = 0 by adding: 4x = 16, so x = 4 and y = 2. Draw both lines: the solution is where they cross. Solve 3x − 5 < 10 like an equation, x < 5, and show it with an open circle on a number line; turn the sign round when multiplying or dividing by a negative. Higher: substitute y = x + 1 into x² + y² = 13 to find where a line meets a circle; solve x² < 9 as −3 < x < 3, written {x : −3 < x < 3}.",
+      practise: "The \"Two unknowns\" sheet.",
+      check: "Solve 2x + y = 11 and x − y = 1. Solve 4 − 2x ≥ 10 and show it on a number line." },
+    [], "Find a \"two prices\" puzzle on a café menu and set it up as simultaneous equations.", "simultaneous, eliminate, substitute, inequality, solution set, set notation, region");
+
+  addEngland("Fourth", M, PAT, [], "Sequences: quadratic, geometric and the nth term (Years 10 and 11)",
+    "We are learning to recognise different kinds of sequence and to find a rule for the nth term.",
+    ["I can deduce expressions to calculate the nth term of linear sequences, and of quadratic sequences (higher).", "I can recognise and use sequences of triangular, square and cube numbers, simple arithmetic progressions, Fibonacci type sequences, quadratic sequences, and simple geometric progressions.", "I can use geometric progressions where the common ratio is a surd, and other sequences (higher)."],
+    { start: "What comes next, and why: 1, 4, 9, 16…; 2, 6, 18, 54…; 1, 1, 2, 3, 5…?",
+      teach: "Sort sequences by type: arithmetic (add the same each time), geometric (multiply by the same ratio), Fibonacci type (add the two before), square, cube and triangular numbers, and quadratic (the second differences are the same). The nth term of 5, 8, 11, 14 goes up in 3s, so it's 3n + 2. Higher: for 3, 9, 19, 33, 51 the second difference is 4, so it starts 2n²; take 2n² away (2, 8, 18, 32, 50) to leave 1 each time, so the nth term is 2n² + 1.",
+      practise: "The \"Sequence detective\" sheet.",
+      check: "Find the nth term of 7, 11, 15, 19. Is 2, 6, 12, 20, 30 arithmetic, geometric or quadratic? Find its nth term (higher)." },
+    [], "Look for growing patterns in tiles, stacks of cans or bricks, and predict the 10th one.", "sequence, term, nth term, arithmetic, geometric, common ratio, Fibonacci, quadratic, second difference");
+
+  addEngland("Fourth", M, PAT, [], "Graphs of functions and their transformations (Years 10 and 11)",
+    "We are learning to recognise and sketch the shapes of important graphs, and to translate and reflect them.",
+    ["I can recognise, sketch and interpret graphs of linear functions, quadratic functions, simple cubic functions, and the reciprocal function y = 1/x with x ≠ 0.", "I can recognise, sketch and interpret graphs of the exponential function y = kˣ for positive values of k, and the trigonometric functions y = sin x, y = cos x and y = tan x for angles of any size (higher).", "I can sketch translations and reflections of the graph of a given function (higher)."],
+    { start: "Match y = 2x + 1, y = x², y = x³ and y = 1/x to four sketches. What gave each one away?",
+      teach: "Make a graph gallery. For each family, plot a few points and describe the shape: a straight line, a ∪-shaped parabola, an S-shaped cubic, a reciprocal graph in two parts that never touches the axes. Higher: exponential growth that never reaches the x-axis, and sine and cosine waves repeating every 360°. y = f(x) + a moves a graph up a; y = f(x + a) moves it left a; y = −f(x) reflects it in the x-axis; y = f(−x) reflects it in the y-axis. Test each rule on y = x².",
+      practise: "The \"Graph gallery\" sheet.",
+      check: "Sketch y = x² and y = x² − 4 on the same axes. What happens to y = 1/x at x = 0, and why?" },
+    [], "Spot graph shapes in real life: the path of a ball, a cup of tea cooling, the tide going in and out.", "linear, quadratic, cubic, reciprocal, exponential, asymptote, translation, reflection");
+
+  addEngland("Fourth", M, PAT, [], "Real-life graphs: gradients, areas and rates of change (Years 10 and 11)",
+    "We are learning to use graphs of real situations, including distance-time and velocity-time graphs, to find and interpret rates of change.",
+    ["I can plot and interpret graphs, including reciprocal graphs and graphs of non-standard functions in real contexts, to find approximate solutions to problems such as simple kinematic problems involving distance, speed and acceleration.", "I can calculate or estimate gradients of graphs and areas under graphs, and interpret them in cases such as distance-time and velocity-time graphs (higher).", "I can interpret the gradient at a point on a curve as the instantaneous rate of change, and apply average and instantaneous rates of change (higher).", "I can use the kinematics formulae v = u + at, s = ut + ½at² and v² = u² + 2as when they're given."],
+    { start: "On a distance-time graph, what does a flat line mean? A steeper line?",
+      teach: "On a distance-time graph, the gradient is the speed. On a velocity-time graph, the gradient is the acceleration and the area under the graph is the distance travelled: split it into triangles and rectangles. Higher: for a curve, draw a tangent and find its gradient for the rate of change at that instant; a chord between two points gives the average rate over that time. Use v = u + at: a car at 10 m/s accelerating at 2 m/s² for 5 seconds reaches 20 m/s.",
+      practise: "The \"Graphs in motion\" sheet.",
+      check: "A cyclist speeds up steadily from rest to 8 m/s in 4 seconds, then rides at 8 m/s for 6 seconds. What is the acceleration, and how far do they go?" },
+    [], "Sketch a distance-time graph of a journey to school, showing the stops.", "gradient, rate of change, velocity, acceleration, area under a graph, tangent, chord");
+
+  addEngland("Fourth", M, FDP, [], "Growth, decay, compound interest and iteration (Years 10 and 11)",
+    "We are learning to set up and solve problems where an amount grows or shrinks by the same percentage each time, and to use iteration.",
+    ["I can set up, solve and interpret the answers in growth and decay problems, including compound interest.", "I can use the formula for compound interest: total accrued = P(1 + r/100)ⁿ.", "I can work with general iterative processes, and find approximate solutions to equations numerically using iteration (higher)."],
+    { start: "£100 earns 10% interest each year, added on at the end of the year. Is it £120 after 2 years?",
+      teach: "Use multipliers: an increase of 4% is × 1.04, and a decrease of 15% is × 0.85. Compound interest on £2000 at 3% for 5 years is 2000 × 1.03⁵ = £2318.55; compare it with simple interest (£300). A £12 000 car that loses 20% of its value a year is worth 12 000 × 0.8³ = £6144 after 3 years. Work backwards by dividing by the multiplier. Higher: iterate xₙ₊₁ = ∛(5 − 2xₙ) from x₀ = 1, putting each answer back in, to home in on a solution of x³ + 2x − 5 = 0.",
+      practise: "The \"Growing and shrinking\" sheet.",
+      check: "A town of 5000 people grows by 2% a year. Write an expression for its population after n years, and work it out for 3 years." },
+    [], "Compare two savings accounts: which pays more over 5 years, and why?", "multiplier, compound interest, simple interest, depreciation, growth, decay, iteration");
+
+  addEngland("Fourth", M, FDP, [], "Proportion, compound units and fractions in ratio (Years 10 and 11)",
+    "We are learning to use direct and inverse proportion, convert compound units, and use fractions in ratio problems.",
+    ["I understand that X is inversely proportional to Y is equivalent to X is proportional to 1/Y, and I can interpret equations that describe direct and inverse proportion (and construct them, higher).", "I can convert between related compound units (speed, rates of pay, prices, density, pressure) in numerical and algebraic contexts.", "I can identify and work with fractions in ratio problems."],
+    { start: "4 painters take 6 days to paint a house. How long would 8 painters take? What are you assuming?",
+      teach: "Direct proportion: y = kx, so doubling x doubles y. Inverse proportion: y = k/x, so doubling x halves y. Higher: if y ∝ x² and y = 50 when x = 5, then k = 2 and y = 2x². Convert 72 km/h to metres per second: 72 000 m ÷ 3600 s = 20 m/s. Density = mass ÷ volume and pressure = force ÷ area. Fractions in ratio: if boys : girls = 3 : 5, then the boys are ⅜ of the class; if ⅖ of the beads are red, then red : not red = 2 : 3.",
+      practise: "The \"Proportion and units\" sheet.",
+      check: "y is inversely proportional to x, and y = 6 when x = 4. Find y when x = 3. Convert 15 m/s to km/h." },
+    [], "Scale a recipe up or down, and talk about what would be in inverse proportion if more people shared the cooking.", "direct proportion, inverse proportion, constant of proportionality, compound unit, density, pressure, ratio");
+
+  addEngland("Fourth", M, SHAPE, [], "Similarity and enlargement (Years 10 and 11)",
+    "We are learning to use scale factors, including fractional and negative ones, and to compare the lengths, areas and volumes of similar shapes.",
+    ["I can compare lengths, areas and volumes using ratio notation and scale factors, and make links to similarity, including trigonometric ratios.", "I can apply the concepts of congruence and similarity, including the relationships between lengths in similar figures, and between areas and volumes (higher).", "I can interpret and use fractional scale factors for enlargements, and negative scale factors (higher)."],
+    { start: "A photo is enlarged so that every length doubles. Does its area double too?",
+      teach: "Check two shapes are similar by comparing corresponding sides. If lengths are multiplied by k, areas are multiplied by k² and volumes by k³: two similar jugs 10 cm and 15 cm tall have k = 1.5, so the larger holds 1.5³ = 3.375 times as much. Enlarge a triangle by a scale factor of ½ from a centre: each point ends up half as far from the centre. Higher: a negative scale factor takes each point through the centre to the other side, turning the shape upside down. Similar right-angled triangles have the same ratios of sides, which is why sin, cos and tan work.",
+      practise: "The \"Similar shapes\" sheet.",
+      check: "Two similar cylinders have radii of 3 cm and 6 cm. The small one has a volume of 40 cm³. What is the volume of the large one?" },
+    [], "Compare a model car or toy with the real thing: what's the scale, and how many times bigger is the real one's surface area?", "similar, congruent, scale factor, enlargement, centre of enlargement, corresponding, area factor, volume factor");
+
+  addEngland("Fourth", M, SHAPE, [], "Vectors and combined transformations (Years 10 and 11)",
+    "We are learning to describe translations with vectors, calculate with vectors, and describe combined transformations.",
+    ["I can describe translations as 2D vectors.", "I can apply addition and subtraction of vectors, multiplication of vectors by a scalar, and diagrammatic and column representations of vectors.", "I can use vectors to construct geometric arguments and proofs (higher).", "I can describe the changes and invariance achieved by combinations of rotations, reflections and translations (higher)."],
+    { start: "Move a counter 3 squares right and 2 down. How could you write that move?",
+      teach: "Write a translation as a column vector, with the move across on top and the move up or down below. Add vectors nose to tail, or by adding the tops and the bottoms; 2a is twice as long as a in the same direction, and −a points the opposite way. In parallelogram OABC with OA = a and OC = c, OB = a + c and AC = c − a. Higher: if M is the midpoint of AB, then OM = a + ½(b − a) = ½(a + b); two vectors are parallel when one is a multiple of the other. Reflecting in the x-axis and then the y-axis is the same as a rotation of 180° about the origin: which point doesn't move (is invariant)?",
+      practise: "The \"Vectors\" sheet.",
+      check: "With a = (2, 5) and b = (−3, 1) as column vectors, find a + b and 2a − b." },
+    [], "Give directions round the house as vectors (steps forward and across), then add them up to find the shortcut.", "vector, column vector, scalar, resultant, parallel, midpoint, translation, invariant");
+
+  addEngland("Fourth", M, SHAPE, [], "Circles: parts, arc lengths and sectors (Years 10 and 11)",
+    "We are learning the parts of a circle and how to calculate arc lengths, angles and areas of sectors.",
+    ["I can identify and apply circle definitions and properties, including: centre, radius, chord, diameter, circumference, tangent, arc, sector and segment.", "I know the formulae: circumference of a circle = 2πr = πd, and area of a circle = πr².", "I can calculate arc lengths, angles and areas of sectors of circles."],
+    { start: "What fraction of a circle is a sector with an angle of 90°? Of 120°?",
+      teach: "Label a circle: centre, radius, diameter, chord, tangent, arc, sector and segment, and say how a segment differs from a sector. Arc length = θ/360 × 2πr and sector area = θ/360 × πr². For r = 6 cm and θ = 60°, the arc is 2π cm (about 6.28 cm) and the area is 6π cm² (about 18.85 cm²). Work backwards: a sector of radius 10 cm with an area of 25π cm² is 25π ÷ 100π = ¼ of the circle, so its angle is 90°.",
+      practise: "The \"Arcs and sectors\" sheet.",
+      check: "Find the perimeter of a sector with radius 9 cm and angle 40°, exactly and to 1 decimal place." },
+    [], "Look at a slice of pizza or cake: estimate its angle and work out the length of its crust.", "radius, diameter, chord, tangent, arc, sector, segment, circumference, π");
+
+  addEngland("Fourth", M, SHAPE, [], "Circle theorems (Years 10 and 11)",
+    "We are learning the standard circle theorems, and using them to find angles and to prove results.",
+    ["I can apply the standard circle theorems concerning angles, radii, tangents and chords (higher).", "I can prove the standard circle theorems, and use them to prove related results (higher)."],
+    { start: "Draw a triangle with its corners on a circle and one side along a diameter. Measure the angle opposite the diameter. What do you notice?",
+      teach: "Teach each theorem with a sketch and an example: the angle in a semicircle is 90°; the angle at the centre is twice the angle at the circumference; angles in the same segment are equal; opposite angles of a cyclic quadrilateral add up to 180°; a tangent is perpendicular to the radius; the two tangents from a point are equal; the perpendicular from the centre to a chord bisects the chord; the angle between a tangent and a chord equals the angle in the alternate segment. Prove the angle at the centre theorem using the isosceles triangles made by radii. Always give the reason in words.",
+      practise: "The \"Circle theorems\" sheet.",
+      check: "In a cyclic quadrilateral, one angle is 68°. What is the opposite angle, and what is the reason?" },
+    [], "Teach one theorem to someone at home with a drawing, and explain why it's true.", "theorem, cyclic quadrilateral, circumference, semicircle, tangent, chord, bisect, alternate segment, proof");
+
+  addEngland("Fourth", M, MEAS, [], "3D shapes: plans, elevations, surface area and volume (Years 10 and 11)",
+    "We are learning to draw and read plans and elevations, and to calculate surface areas and volumes of spheres, pyramids, cones and composite solids.",
+    ["I can construct and interpret plans and elevations of 3D shapes.", "I can calculate surface areas and volumes of spheres, pyramids, cones and composite solids.", "I can use the formulae for a sphere and a cone when they're given, and I know that the volume of a prism = area of cross section × length."],
+    { start: "Look at a cereal box from the front, the side and above. Sketch each view.",
+      teach: "Draw the plan (from above), the front elevation and the side elevation of a shape made from cubes. Volume of a prism = area of cross section × length; a pyramid or cone holds a third of the prism or cylinder that fits around it. Use the given formulae: for a sphere, volume = 4/3πr³ and surface area = 4πr²; for a cone, volume = 1/3πr²h and curved surface area = πrl. Work out a composite solid, such as a cone on a hemisphere, part by part, counting only the outside surfaces.",
+      practise: "The \"Solid shapes\" sheet.",
+      check: "Find the volume of a cone with radius 3 cm and height 4 cm, and its curved surface area (its slant height is 5 cm), in terms of π." },
+    [], "Find a cone, a sphere and a pyramid at home (an ice-cream cone, a ball, a tent) and estimate their volumes.", "plan, elevation, prism, pyramid, cone, sphere, hemisphere, slant height, surface area, volume, composite");
+
+  addEngland("Fourth", M, SHAPE, [], "Pythagoras, trigonometry and bearings (Years 10 and 11)",
+    "We are learning to find lengths and angles in right-angled triangles with Pythagoras' Theorem and trigonometry, including with bearings.",
+    ["I can apply Pythagoras' Theorem and trigonometric ratios to find angles and lengths in right-angled triangles in two dimensional figures, and in three dimensional figures (higher).", "I know the formulae a² + b² = c², sin θ = opposite/hypotenuse, cos θ = adjacent/hypotenuse and tan θ = opposite/adjacent.", "I know the exact values of sin θ and cos θ for θ = 0°, 30°, 45°, 60° and 90°, and of tan θ for θ = 0°, 30°, 45° and 60°.", "I can interpret and use bearings."],
+    { start: "A 5 m ladder leans against a wall with its foot 3 m from the wall. How high up the wall does it reach?",
+      teach: "Label the hypotenuse, and the opposite and adjacent sides from the angle, then choose sin, cos or tan. Find a side: x = 10 sin 35° ≈ 5.74; find an angle: tan θ = 7/4, so θ ≈ 60.3°. Get the exact values from two triangles: half an equilateral triangle with sides 2 (sin 30° = ½, cos 30° = √3/2, tan 60° = √3) and a right-angled isosceles triangle with sides 1, 1 and √2 (sin 45° = cos 45° = 1/√2). Bearings are measured clockwise from north, with three figures: a ship sails 8 km east (090°) then 6 km south (180°); it's 10 km from the start, and the bearing back to the start is 307°.",
+      practise: "The \"Right-angled triangles\" sheet.",
+      check: "Without a calculator, find the side opposite a 30° angle when the hypotenuse is 12 cm. The bearing of B from A is 065°: what is the bearing of A from B?" },
+    [], "Use a compass app to find the bearing of a landmark from home, and estimate how far away it is.", "hypotenuse, opposite, adjacent, sine, cosine, tangent, Pythagoras' Theorem, exact value, bearing");
+
+  addEngland("Fourth", M, SHAPE, [], "The sine rule, cosine rule and area of any triangle (Years 10 and 11)",
+    "We are learning to find sides, angles and areas in triangles that don't have a right angle.",
+    ["I know and can apply the sine rule, a/sin A = b/sin B = c/sin C, to find unknown lengths and angles (higher).", "I know and can apply the cosine rule, a² = b² + c² − 2bc cos A, to find unknown lengths and angles (higher).", "I know and can apply Area = ½ab sin C to calculate the area, sides or angles of any triangle (higher)."],
+    { start: "Can you use sin, cos and tan as usual in a triangle with no right angle? Why not?",
+      teach: "Label each side with the small letter of the angle opposite it. Use the sine rule when you know a side and the angle opposite it: with a = 8, A = 40° and B = 65°, b = 8 sin 65° ÷ sin 40° ≈ 11.3. Use the cosine rule with two sides and the angle between them (for the third side), or with all three sides (for an angle): with b = 5, c = 7 and A = 60°, a² = 25 + 49 − 70 cos 60° = 39, so a ≈ 6.24. The area of that triangle is ½ × 5 × 7 × sin 60° ≈ 15.2.",
+      practise: "The \"Any triangle\" sheet.",
+      check: "A triangle has sides of 6 cm and 9 cm with an angle of 50° between them. Find the third side and the area." },
+    [], "Measure two sides of a triangular object (a sandwich, a road sign) and the angle between them, and work out its area.", "sine rule, cosine rule, included angle, opposite, area of a triangle");
+
+  addEngland("Fourth", M, DATA, [], "Probability: exhaustive events, models and predictions (Years 10 and 11)",
+    "We are learning to use the fact that probabilities add up to 1, and to use probability models and experiments to predict outcomes.",
+    ["I can apply the property that the probabilities of an exhaustive set of mutually exclusive events sum to one.", "I can use a probability model to predict the outcomes of future experiments.", "I understand that empirical unbiased samples tend towards theoretical probability distributions, with increasing sample size."],
+    { start: "A spinner lands on red with probability 0.3 and blue with probability 0.45. It can also land on green. What is the probability of green?",
+      teach: "Mutually exclusive events can't happen at the same time, and an exhaustive set covers every possible outcome, so their probabilities add up to 1. Solve a table with a missing probability (x and 2x). Predict: if P(six) = ⅙, expect about 50 sixes in 300 rolls. Roll a dice 10, 50 and 100 times (or pool results): the relative frequency settles closer to the theoretical probability as the number of trials grows, so a bigger sample gives a better estimate.",
+      practise: "The \"Predict and test\" sheet.",
+      check: "The probabilities of a bus being early, on time or late are 0.1, x and 0.35. Find x, and how many of 200 buses you'd expect to be late." },
+    [], "Flip a coin 20 times, then 100 times. Which relative frequency of heads is closer to 0.5?", "mutually exclusive, exhaustive, probability model, relative frequency, expected frequency, theoretical probability, sample size");
+
+  addEngland("Fourth", M, DATA, [], "Combined events: listing, tree diagrams and conditional probability (Years 10 and 11)",
+    "We are learning to list outcomes systematically and to find the probabilities of combined events.",
+    ["I can calculate the probability of independent and dependent combined events, including using tree diagrams and other representations, and know the underlying assumptions.", "I can apply systematic listing strategies, including use of the product rule for counting (higher).", "I can calculate and interpret conditional probabilities through representation using expected frequencies with two-way tables, tree diagrams and Venn diagrams (higher).", "I know that P(A or B) = P(A) + P(B) − P(A and B), and P(A and B) = P(A given B)P(B)."],
+    { start: "How many different outfits can you make from 3 tops and 4 pairs of trousers?",
+      teach: "List outcomes systematically (keep one choice fixed while the other changes) and use the product rule: 3 × 4 = 12. Draw a tree diagram for taking two counters from a bag of 4 red and 6 blue: with replacement, the second branches stay 4/10 and 6/10 (independent); without replacement, they change to 3/9 and 6/9, or 4/9 and 5/9 (dependent). Multiply along the branches and add between them. Higher: use a two-way table or Venn diagram of expected frequencies for conditional probability: of 100 pupils, 40 play football and 25 of those also swim, so P(swims given plays football) = 25/40.",
+      practise: "The \"Combined events\" sheet.",
+      check: "Two counters are taken without replacement from a bag with 3 red and 2 green. Find P(both red) and P(one of each colour)." },
+    [], "Work out how many PINs a 4-digit lock can have, and explain why the product rule works.", "independent, dependent, tree diagram, with replacement, without replacement, product rule, conditional probability, Venn diagram, two-way table");
+
+  addEngland("Fourth", M, DATA, [], "Samples, time series and scatter graphs (Years 10 and 11)",
+    "We are learning to draw conclusions about a population from a sample, read time series, and use scatter graphs carefully.",
+    ["I can infer properties of populations or distributions from a sample, whilst knowing the limitations of sampling.", "I can interpret and construct tables and line graphs for time series data.", "I can apply statistics to describe a population.", "I can use and interpret scatter graphs, recognise correlation and know that it does not indicate causation, draw estimated lines of best fit, make predictions, and interpolate and extrapolate trends whilst knowing the dangers of so doing."],
+    { start: "Ice-cream sales and cases of sunburn both go up in summer. Does ice cream cause sunburn?",
+      teach: "Talk about samples: random, big enough, and free from bias (asking people at a gym about exercise isn't fair). Estimate for a population from a sample: if 12 of 60 sampled pupils walk to school, about ⅕ of 900 pupils, 180, do. Plot a time series, such as sales each quarter for two years, and describe the trend and the pattern that repeats. Plot a scatter graph, describe the correlation, draw a line of best fit by eye and use it to predict. Predicting inside the data (interpolating) is safer than beyond it (extrapolating).",
+      practise: "The \"Data and samples\" sheet.",
+      check: "Why might a line of best fit for the ages and heights of children aged 5 to 12 give a silly prediction for a 40-year-old?" },
+    [], "Find a news story that says one thing causes another. Is there evidence of cause, or only a correlation?", "population, sample, bias, random, time series, trend, correlation, causation, line of best fit, interpolate, extrapolate");
+
+  addEngland("Fourth", M, DATA, [], "Histograms, cumulative frequency and box plots (Years 10 and 11)",
+    "We are learning to compare distributions using averages, spread, and diagrams such as histograms, cumulative frequency graphs and box plots.",
+    ["I can interpret, analyse and compare the distributions of data sets through appropriate graphical representation involving discrete, continuous and grouped data, including box plots (higher).", "I can use appropriate measures of central tendency, including the modal class, and of spread, including quartiles and inter-quartile range (higher).", "I can construct and interpret histograms with equal and unequal class intervals and cumulative frequency graphs, and know their appropriate use (higher)."],
+    { start: "Two classes both have a mean test score of 60%. Did they do equally well?",
+      teach: "Group continuous data in a table, find the modal class, and estimate the mean using midpoints. Higher: draw a cumulative frequency graph (plotting at the upper end of each class), then read off the median, the quartiles and the interquartile range. Draw box plots and compare two of them: compare an average and a spread, in context. For unequal class widths, plot frequency density = frequency ÷ class width, so the area of each bar shows its frequency.",
+      practise: "The \"Distributions\" sheet.",
+      check: "A histogram bar for 20 < t ≤ 30 has a frequency density of 1.8. How many values are in that class?" },
+    [], "Time how long it takes people at home to do a puzzle, and compare the times with a box plot.", "frequency, class width, frequency density, histogram, cumulative frequency, median, quartile, interquartile range, box plot, modal class");
+
+  addEngland("Fourth", L, READ, [], "Shakespeare: language, character and context (Years 10 and 11)",
+    "We are learning to read Shakespeare with understanding, exploring how characters and events are shaped and how the play's context informs our reading.",
+    ["I can read and appreciate the depth and power of the English literary heritage, including a play by Shakespeare.", "I can explore aspects of plot, characterisation, events and settings, the relationships between them and their effects.", "I can draw on knowledge of the purpose, audience for and context of the writing, including its social, historical and cultural context and the literary tradition to which it belongs, to inform evaluation."],
+    { start: "Shakespeare's audiences often stood for hours. What would a play need to do to hold their attention?",
+      teach: "Read a short scene from the play being studied aloud, sharing the parts. Put a few lines into modern English, then talk about what's lost: rhythm, imagery, double meanings. Follow one character through the scene: what they say, what they do, and how others react. Add one piece of context (beliefs about kings, fate or the place of women at the time, or the conventions of tragedy or comedy) and ask how it changes what the scene meant to an audience then, and means now.",
+      practise: "The \"Shakespeare scene study\" sheet, on a scene from the play being studied.",
+      check: "Ask for a quotation that shows the character's state of mind, what one word in it suggests, and how an audience at the time might have reacted." },
+    [], "Watch a filmed performance of the same scene. What did the actors and director do to make it clear?", "soliloquy, aside, dramatic irony, iambic pentameter, imagery, context, characterisation, tragedy, comedy");
+
+  addEngland("Fourth", L, READ, [], "Poetry: analysing and comparing poems (Years 10 and 11)",
+    "We are learning to analyse how poets use language, form and structure, and to compare two poems critically.",
+    ["I can analyse a writer's choice of vocabulary, form, grammatical and structural features, and evaluate their effectiveness and impact.", "I can make critical comparisons, referring to the contexts, themes, characterisation, style and literary quality of texts.", "I can re-read literature as a basis for making comparisons.", "I can explain how vocabulary, grammar, form and structure contribute to effectiveness and impact, using linguistic and literary terminology accurately."],
+    { start: "Read the two poems on the sheet once each. Which one stays with you, and why?",
+      teach: "Re-read each poem with a question in mind: what is it about, and what is it really about? Pick out a word or image and explore what it suggests, then look at form and structure: rhyme, rhythm, stanza shape, line breaks and how the poem moves (a turn, a contrast, a change of time). Model a comparison paragraph that links the poems with a point, a quotation from each, analysis of the methods and a judgement about their effect.",
+      practise: "The \"Two poems\" sheet.",
+      check: "Ask for one way the poems are alike and one way they differ, with a quotation from each and a comment on a method." },
+    [], "Choose a poem you like (a song lyric counts) and explain one technique and its effect to someone at home.", "imagery, metaphor, simile, personification, rhyme, rhythm, stanza, enjambment, caesura, tone, volta");
+
+  addEngland("Fourth", L, READ, [], "Summary and synthesis across two non-fiction texts (Years 10 and 11)",
+    "We are learning to read for a purpose, summarise and synthesise information from two texts, and judge how useful they are.",
+    ["I can read in different ways for different purposes, summarising and synthesising ideas and information, and evaluating their usefulness for particular purposes.", "I can identify the main theme or themes, summarise ideas and information from a single text, and synthesise from more than one text.", "I can understand and critically evaluate texts."],
+    { start: "Skim both texts on the sheet in one minute. What are they both about?",
+      teach: "Show three ways of reading: skimming for the gist, scanning for a detail, and close reading for meaning. Sort true and false statements about one text, finding the evidence each time. Then synthesise: pick out what the two writers say about the same thing, and write about the differences in your own words, with a short quotation or detail from each and an inference about what the difference shows. Finish by judging how useful each text would be for a given purpose.",
+      practise: "The \"Two journeys\" sheet.",
+      check: "Ask for one difference between the writers' experiences, with evidence from both, and which text is more useful for finding out what rail travel felt like then." },
+    [], "Read two reviews of the same film, game or product and summarise how they differ.", "skim, scan, summary, synthesis, inference, source, usefulness, reliability");
+
+  addEngland("Fourth", L, READ, [], "Evidence, inference and bias (Years 10 and 11)",
+    "We are learning to tell supported claims from unsupported ones, spot bias and the misuse of evidence, and back up our own inferences.",
+    ["I can distinguish between statements that are supported by evidence and those that are not, and identify bias and misuse of evidence.", "I can seek evidence in the text to support a point of view, including justifying inferences with evidence.", "I can identify and interpret themes, ideas and information, and recognise the possibility of different responses to a text."],
+    { start: "\"Everyone knows that…\" Why might a writer start a sentence like that?",
+      teach: "Read the opinion piece on the sheet. Highlight claims in two colours: supported by evidence, or not. Look at how evidence is used: is the sample big and fair, does it prove what the writer says it proves? Find bias: one-sided language, attacks on people rather than their arguments, missing views. Make an inference about the writer and justify it with a quotation. Then argue the opposite reading: why might another reader find the piece convincing?",
+      practise: "The \"Weighing the evidence\" sheet.",
+      check: "Ask for one claim with no evidence, one way evidence is misused, and an inference about the writer backed by a quotation." },
+    [], "Find an advert or opinion piece and check one of its claims: what evidence is there?", "claim, evidence, inference, bias, sample, generalisation, fact, opinion, counter-argument");
+
+  addEngland("Fourth", L, READ, [], "Whole novels: themes, characters and a personal response (Years 10 and 11)",
+    "We are learning to trace themes and characters through a whole novel, and to make an informed personal response while weighing up other readings.",
+    ["I can identify and interpret themes, ideas and information.", "I can make an informed personal response, recognising that other responses to a text are possible and evaluating these.", "I can choose and read books independently for challenge, interest and enjoyment.", "I can explore aspects of plot, characterisation, events and settings, the relationships between them and their effects."],
+    { start: "In one sentence, what is the novel you're reading really about? Is that its plot or its theme?",
+      teach: "Separate plot (what happens) from theme (the big ideas). Track one theme through the novel: three key moments from the beginning, middle and end, with a quotation and what it suggests. Track how one character changes and why, and link the change to a setting or event. Then form a personal response (what you think the writer is saying) and test it against another reading: what would someone who disagrees say, and how strong is their case?",
+      practise: "The \"Theme tracker\" sheet, on the novel being read.",
+      check: "Ask how a theme develops across the novel, with two moments as evidence, and for a different interpretation and their view of it." },
+    [], "Keep a reading log of a book chosen for interest, and recommend it (or not) to someone at home.", "theme, motif, plot, characterisation, setting, interpretation, personal response, development");
+
+  addEngland("Fourth", L, CREATE, [], "Descriptive and narrative writing (Years 10 and 11)",
+    "We are learning to write imaginative descriptions and stories at length, shaping them for effect.",
+    ["I can write accurately, fluently, effectively and at length for pleasure and information.", "I can adapt my writing for a wide range of purposes and audiences, including to describe and to narrate.", "I can use language imaginatively and creatively, maintain a consistent point of view, and keep coherence and consistency across a text.", "I can create emotional impact."],
+    { start: "Describe this room in one sentence that makes it sound threatening, then in one that makes it sound safe.",
+      teach: "Plan before writing: purpose, audience and viewpoint. For a description, zoom in and out, move through time, and use all the senses, with one strong image rather than a list of adjectives. For a story, keep to one or two characters and a short time span, and build to a turning point; start late and end with an echo of the opening. Vary sentence lengths for effect and keep the tense and viewpoint consistent. Write the opening and read it aloud.",
+      practise: "The \"Describe and narrate\" sheet.",
+      check: "Ask them to point to one choice in their opening (a word, a sentence length, a structure) and say what effect they wanted." },
+    [], "Write a short description of the same place at two different times of day.", "narrative, descriptive, viewpoint, structure, imagery, senses, tension, cyclical structure, coherence");
+
+  addEngland("Fourth", L, CREATE, [], "Writing to argue and persuade (Years 10 and 11)",
+    "We are learning to plan and write a convincing argument, choosing evidence and rhetorical devices to suit the audience.",
+    ["I can select, and use judiciously, vocabulary, grammar, form, and structural and organisational features, including rhetorical devices, to reflect audience, purpose and context, using Standard English where appropriate.", "I can select and organise ideas, facts and key points, and cite evidence, details and quotation effectively and pertinently for support and emphasis.", "I can use language creatively and persuasively, including rhetorical devices such as rhetorical questions, antithesis and parenthesis."],
+    { start: "\"Young people should be allowed to vote at 16.\" Agree or disagree in one sentence, then give your best reason.",
+      teach: "Name rhetorical devices from examples on the sheet: rhetorical question, antithesis, parenthesis, list of three, direct address, statistics and anecdote. Plan an argument: a clear view, three points in a deliberate order, each with evidence, a counter-argument dealt with fairly, and a strong ending. Choose the form (letter, article, speech) and register for the audience. Use devices on purpose, not as a checklist: one well-placed rhetorical question beats five.",
+      practise: "The \"Make the argument\" sheet.",
+      check: "Ask them to read their opening and name the devices they used and why they suit the audience." },
+    [], "Write a short letter to a local paper about something that matters in your area.", "argument, counter-argument, rebuttal, rhetorical question, antithesis, parenthesis, anecdote, register, Standard English");
+
+  addEngland("Fourth", L, CREATE, [], "Writing from notes and information provided by others (Years 10 and 11)",
+    "We are learning to make notes, draft and write a formal letter from key points someone else has given us.",
+    ["I can make notes, draft and write, including using information provided by others, such as writing a letter from key points provided.", "I can adapt my writing to explain, instruct, and give and respond to information.", "I can use information provided by others to write in different forms, maintaining coherence and consistency across a text."],
+    { start: "You have ten facts and room for five. How do you choose?",
+      teach: "Read the key points on the sheet and decide the purpose and audience of the letter. Select the points that serve the purpose, put them in a logical order, and group them into paragraphs. Model turning a note into a sentence (\"85 of 120 would come\" becomes \"Over two thirds of our members have said they would come\"). Use the conventions of a formal letter, Standard English, and a clear request at the end.",
+      practise: "The \"From key points to a letter\" sheet.",
+      check: "Ask why they left out a point, and how their final paragraph makes the request clear." },
+    [], "Take notes from a news report or podcast and use them to write a short summary for someone who missed it.", "notes, draft, key points, formal letter, purpose, audience, paragraph, Standard English");
+
+  addEngland("Fourth", L, WRITE, [], "Revising, editing and proof-reading (Years 10 and 11)",
+    "We are learning to revise our writing for impact, restructure and improve it, and proof-read it for accuracy.",
+    ["I can revise, edit and proof-read my writing.", "I can reflect on whether my draft achieves the intended impact.", "I can restructure my writing, and amend its grammar and vocabulary to improve coherence, consistency, clarity and overall effectiveness.", "I can pay attention to the accuracy and effectiveness of grammar, punctuation and spelling."],
+    { start: "What is the difference between revising, editing and proof-reading?",
+      teach: "Work through the draft on the sheet in three passes. Revise: does it achieve its purpose for its audience, and is anything in the wrong place? Edit: improve the order, the links between sentences and the vocabulary, and keep the tense and voice consistent. Proof-read: read slowly, aloud or backwards sentence by sentence, for spelling, punctuation and grammar errors. Then use the same three passes on a piece of the pupil's own writing.",
+      practise: "The \"Edit for impact\" sheet.",
+      check: "Ask them to explain three changes: one for impact, one for clarity and one for accuracy." },
+    [], "Proof-read a message or post before sending it, reading it aloud first.", "revise, edit, proof-read, coherence, consistency, clarity, tense, homophone");
+
+  addEngland("Fourth", L, WRITE, [], "Grammar and vocabulary for effect (Years 10 and 11)",
+    "We are learning to analyse how grammar and vocabulary create effects, and to use them on purpose in our own writing.",
+    ["I can consolidate and build on my knowledge of grammar and vocabulary.", "I can study the effectiveness and impact of grammar and vocabulary in the texts I read.", "I can draw on new vocabulary and grammatical constructions from my reading and listening, and use these consciously in my writing and speech to achieve particular effects.", "I can use linguistic and literary terminology accurately and confidently in discussing reading, writing and spoken language."],
+    { start: "\"He waited. Nothing. Then the handle turned.\" Why are the sentences so short?",
+      teach: "Look at grammatical choices in short extracts: short and minor sentences for tension, the passive voice to hide who did something, a fronted subordinate clause to delay the main point, an expanded noun phrase to build an image, modal verbs for certainty or possibility, fronted adverbials to control pace. Name each with the right term, then explain its effect in context. Rewrite a plain sentence three ways for three effects, and borrow one construction from a book being read.",
+      practise: "The \"Grammar for effect\" sheet.",
+      check: "Ask them to name a feature in a sentence from their reading, using the right term, and explain its effect." },
+    [], "Collect three sentences from your reading that you admire, and say what grammar makes them work.", "clause, subordinate clause, minor sentence, passive voice, modal verb, noun phrase, adverbial, terminology");
+
+  addEngland("Fourth", L, TALK, [], "Spoken and written language, registers and Standard English (Years 10 and 11)",
+    "We are learning how spoken and written language differ, how register changes with context, and when Standard English is needed.",
+    ["I can analyse some of the differences between spoken and written language, including differences associated with formal and informal registers, and between Standard English and other varieties of English.", "I can use Standard English when the context and audience require it.", "I can express ideas using Standard English whenever and wherever appropriate."],
+    { start: "How would you tell a friend you'll be late? How would you tell an employer?",
+      teach: "Read the transcript on the sheet aloud. Name features of spontaneous speech: fillers, false starts, repetition, pauses, the present tense used for past events, and quoting with \"I was like\". Separate these from features of a regional or social variety (\"me and my mate was\", \"ain't\"), which follow their own regular rules. Talk about register: formal and informal, and who decides. Rewrite the account in written Standard English and discuss what changes and what's lost.",
+      practise: "The \"Spoken, written and Standard English\" sheet.",
+      check: "Ask for two differences between the spoken and written versions, and a context where Standard English is needed and one where it isn't." },
+    [], "Listen to how people speak in two different places (at home and on the radio, say) and note the differences.", "register, formal, informal, Standard English, dialect, variety, transcript, filler, false start");
+
+  addEngland("Fourth", L, TALK, [], "Formal presentations and debates (Years 10 and 11)",
+    "We are learning to plan and give a formal presentation or debate speech, and to respond to questions and feedback.",
+    ["I can speak confidently, audibly and effectively.", "I can plan for different purposes and audiences, selecting and organising information and ideas effectively and persuasively for formal spoken presentations and debates.", "I can make presentations and speeches.", "I can listen and respond appropriately to questions and feedback."],
+    { start: "Think of a speaker you've enjoyed listening to. What did they do that worked?",
+      teach: "Choose a topic, purpose and audience. Plan on the sheet: a hook, three points with evidence, a counter-argument for a debate, and an ending with a call to action. Rehearse with cue cards rather than a script, working on volume, pace, pauses, eye contact and Standard English. Predict three questions and prepare short answers. Give the talk, take questions, then note the feedback and how to act on it.",
+      practise: "The \"Speech planner\" sheet.",
+      check: "After the talk, ask a question they didn't expect, and see how they answer it." },
+    [], "Give a two-minute talk to someone at home on a subject you know well, then ask them for one question.", "presentation, debate, audience, purpose, hook, cue card, pace, emphasis, rebuttal, Standard English");
+
+  addEngland("Fourth", L, TALK, [], "Group discussion: leading, listening and challenging (Years 10 and 11)",
+    "We are learning to work effectively in a group: leading and managing discussion, building on what others say, and challenging courteously.",
+    ["I can work effectively in groups of different sizes and take on required roles, including leading and managing discussions, involving others productively, reviewing and summarising, and contributing to meeting goals and deadlines.", "I can listen to and build on the contributions of others, ask questions to clarify and inform, and challenge courteously when necessary.", "I can listen and respond in a variety of different contexts, both formal and informal, and evaluate content, viewpoints, evidence and aspects of presentation."],
+    { start: "What makes a group discussion go badly? What makes one go well?",
+      teach: "Read the short discussion on the sheet aloud, taking parts. Find where the chair keeps the group on task, involves a quiet member, and summarises; where someone builds on an idea, asks a question to clarify, or challenges courteously; and where someone doesn't. Then hold a real discussion (the tutor and pupil, or with family), with the pupil in the chair, using the roles and phrases on the sheet, and a time limit and a goal.",
+      practise: "The \"Leading a discussion\" sheet.",
+      check: "Ask them to summarise where the discussion reached, and to name one point they challenged and how." },
+    [], "Chair a short family decision (what to eat, where to go) so that everyone is heard and you reach an answer in five minutes.", "chair, summarise, build on, clarify, challenge, courteous, consensus, goal, deadline");
+
+  addEngland("Fourth", L, TALK, [], "Performing scripts and poetry (Years 10 and 11)",
+    "We are learning to improvise, rehearse and perform scripts and poems, and to talk about how performance choices change meaning.",
+    ["I can improvise, rehearse and perform play scripts and poetry in order to generate language and discuss language use and meaning.", "I can use role, intonation, tone, volume, mood, silence, stillness and action to add impact."],
+    { start: "Say \"You could have said\" three ways: hurt, angry, joking. What changes?",
+      teach: "Read the script on the sheet together, then improvise what happened just before it to find out who the characters are. Mark up the script: words to stress, pauses, silences, volume, tone and movement. Perform it twice with different choices (is Jo angry or heartbroken?) and talk about how the meaning changes. Do the same with a poem being studied, deciding where the silences and the stillness should go.",
+      practise: "The \"Perform it\" sheet.",
+      check: "Ask them to explain one performance choice and how it changed the meaning of a line." },
+    [], "Perform a short poem or speech for someone at home, then ask what they understood from it.", "intonation, tone, volume, pace, pause, silence, stillness, gesture, improvise, subtext");
+
   // Checking understanding, not just the right answer: a question to ask at the end of each lesson,
   // and what a pupil who understands will say or do. (Know: the words to use. Do: the success criteria.)
   const UNDERSTAND = {
@@ -1955,7 +2304,45 @@ window.PopLessons = (() => {
     "england-myths-legends-and-themes-across-books-years-3-to-6": ["What lesson or theme does this myth share with another story you know?", "Names a theme and backs it with evidence from both stories."],
     "england-asking-questions-and-checking-understanding-as-i-read-years-3-to-6": ["Which of your questions helped you most, and why?", "Explains how a question focused their reading or sorted out a misunderstanding."],
     "england-planning-from-a-model-rehearsing-aloud-and-improving-years-3-and-4": ["When is it better to use the name instead of 'he' or 'she'?", "Explains that a name is clearer when a pronoun could mean more than one person."],
-    "england-editing-and-proofreading-tense-the-perfect-form-and-effect-years-5-and-6": ["Why did the writer use 'had started' and not 'started'?", "Explains the past perfect shows that one event happened before another."]
+    "england-editing-and-proofreading-tense-the-perfect-form-and-effect-years-5-and-6": ["Why did the writer use 'had started' and not 'started'?", "Explains the past perfect shows that one event happened before another."],
+    "england-powers-roots-indices-and-standard-form-years-10-and-11": ["Why is 2⁰ equal to 1, not 0?", "Uses the pattern of halving (2², 2¹, 2⁰) or the division law (2³ ÷ 2³ = 2⁰, and anything divided by itself is 1)."],
+    "england-exact-calculation-fractions-surds-and-recurring-decimals-years-10-and-11": ["Why is 6π cm a better answer than 18.8 cm when you're asked for an exact length?", "Explains that 18.8 is rounded, so it's slightly wrong, while 6π is exactly right and can be rounded later if needed."],
+    "england-limits-of-accuracy-rounding-truncating-and-bounds-years-10-and-11": ["To get the smallest possible answer to a ÷ b, which bounds of a and b do you use? Why?", "Explains that dividing the smallest a by the largest b gives the smallest answer, because a bigger divisor makes the answer smaller."],
+    "england-factorising-quadratics-and-algebraic-fractions-years-10-and-11": ["How do you know (x + 3)(x + 4) is right for x² + 7x + 12, and not (x + 2)(x + 6)?", "Checks by expanding: both pairs multiply to 12, but only 3 and 4 add to 7, the middle coefficient."],
+    "england-identities-algebraic-proof-and-functions-years-10-and-11": ["Why don't five examples that work prove that something is always true?", "Explains that examples only show it works for those numbers; algebra (using n) shows it for every number, and one counter-example disproves it."],
+    "england-straight-line-graphs-y-mx-c-parallel-and-perpendicular-lines-years-10-and-11": ["On a graph of a phone bill against minutes used, what do the gradient and the intercept mean?", "Explains the gradient is the cost per minute (the rate of change) and the intercept is the fixed charge when no minutes are used."],
+    "england-quadratics-roots-turning-points-and-solving-years-10-and-11": ["Why do we rearrange a quadratic to equal 0 before factorising?", "Explains that only when the product equals 0 can we say one of the brackets must be 0."],
+    "england-simultaneous-equations-and-inequalities-years-10-and-11": ["What does the point where two straight lines cross tell you about their equations?", "Explains that it's the one pair of x and y values that makes both equations true at once."],
+    "england-sequences-quadratic-geometric-and-the-nth-term-years-10-and-11": ["How can you tell whether a sequence is arithmetic, geometric or quadratic?", "Arithmetic: the differences are the same. Geometric: you multiply by the same ratio. Quadratic: the second differences are the same."],
+    "england-graphs-of-functions-and-their-transformations-years-10-and-11": ["Why does the graph of y = 1/x never touch the x-axis?", "Explains that 1 divided by any number can never be 0, though it gets closer to 0 as x gets bigger."],
+    "england-real-life-graphs-gradients-areas-and-rates-of-change-years-10-and-11": ["On a velocity-time graph, why does the area underneath give the distance travelled?", "Explains that distance = speed × time, which is the area of a rectangle on the graph, so the area under any part adds up the distance."],
+    "england-growth-decay-compound-interest-and-iteration-years-10-and-11": ["Why isn't a 10% rise followed by a 10% fall back to where you started?", "Explains the fall is 10% of a bigger amount, so it takes off more: × 1.1 × 0.9 = × 0.99, a 1% loss."],
+    "england-proportion-compound-units-and-fractions-in-ratio-years-10-and-11": ["If y is inversely proportional to x, what happens to y when x is multiplied by 3? Why?", "Explains y is divided by 3, because xy stays the same (the constant k)."],
+    "england-similarity-and-enlargement-years-10-and-11": ["If the lengths are doubled, why is the volume multiplied by 8 and not 2?", "Explains the volume grows in three directions, so it's multiplied by 2 × 2 × 2."],
+    "england-vectors-and-combined-transformations-years-10-and-11": ["How can you tell from two vectors that two lines are parallel?", "Explains that one vector is a multiple of the other, so they point in the same (or opposite) direction."],
+    "england-circles-parts-arc-lengths-and-sectors-years-10-and-11": ["Why do we multiply by θ/360 to find an arc length?", "Explains the sector is that fraction of the whole circle, so its arc is that fraction of the circumference."],
+    "england-circle-theorems-years-10-and-11": ["Why is the angle in a semicircle always 90°?", "Links it to the angle at the centre: the diameter makes a straight angle of 180° at the centre, and the angle at the circumference is half of that."],
+    "england-3d-shapes-plans-elevations-surface-area-and-volume-years-10-and-11": ["Why is the volume of a cone a third of the cylinder that fits around it?", "Explains or shows (by filling with sand or water, or comparing a pyramid with a prism) that three cones fill the cylinder."],
+    "england-pythagoras-trigonometry-and-bearings-years-10-and-11": ["How do you decide whether to use Pythagoras' Theorem or trigonometry?", "Pythagoras when it's only sides (two known, find the third); trigonometry when an angle is known or wanted."],
+    "england-the-sine-rule-cosine-rule-and-area-of-any-triangle-years-10-and-11": ["How do you choose between the sine rule and the cosine rule?", "Sine rule when you know a side and the angle opposite it; cosine rule when you know two sides and the angle between them, or all three sides."],
+    "england-probability-exhaustive-events-models-and-predictions-years-10-and-11": ["Why is a relative frequency from 500 trials a better estimate than one from 20?", "Explains that with more trials, chance variations even out, so the relative frequency settles near the true probability."],
+    "england-combined-events-listing-tree-diagrams-and-conditional-probability-years-10-and-11": ["Why do the probabilities on the second branches change when you don't replace the first counter?", "Explains there's one fewer counter in the bag, and one fewer of the colour taken, so the second pick depends on the first."],
+    "england-samples-time-series-and-scatter-graphs-years-10-and-11": ["Two things are strongly correlated. Does one cause the other? How could you tell?", "Explains that correlation doesn't prove cause: a third factor (such as hot weather) may cause both, and only an experiment or a clear mechanism would show cause."],
+    "england-histograms-cumulative-frequency-and-box-plots-years-10-and-11": ["Why do we compare an average and a spread, not just the averages?", "Explains that two sets can have the same average but be very different: the spread (range or interquartile range) shows how consistent the data is."],
+    "england-shakespeare-language-character-and-context-years-10-and-11": ["How might an audience in Shakespeare's time have seen this moment differently from us?", "Links a specific belief or convention of the time to a specific moment, and explains how it changes the meaning or effect."],
+    "england-poetry-analysing-and-comparing-poems-years-10-and-11": ["Why did the poet end the line there, and not a word later?", "Explains the effect of the line break or structure on meaning or emphasis, using a term such as enjambment or caesura."],
+    "england-summary-and-synthesis-across-two-non-fiction-texts-years-10-and-11": ["What's the difference between summarising and synthesising?", "Explains that a summary gives the key points of one text, while synthesis brings points from two texts together, comparing them in their own words."],
+    "england-evidence-inference-and-bias-years-10-and-11": ["The writer gives a statistic. Does that make the argument reliable?", "Questions where the figure comes from, the sample size and who was asked, and whether it really shows what the writer claims."],
+    "england-whole-novels-themes-characters-and-a-personal-response-years-10-and-11": ["What would someone who disagrees with your reading say, and are they right?", "States a different interpretation fairly, with evidence, and weighs it against their own rather than dismissing it."],
+    "england-descriptive-and-narrative-writing-years-10-and-11": ["What did you want the reader to feel at the end of your opening, and how did you do it?", "Names an intended effect and points to specific choices (a word, an image, a sentence length, the structure) that create it."],
+    "england-writing-to-argue-and-persuade-years-10-and-11": ["Why include a counter-argument when you want people to agree with you?", "Explains that answering the other side fairly makes the writer seem reasonable and the argument stronger, and deals with doubts before readers raise them."],
+    "england-writing-from-notes-and-information-provided-by-others-years-10-and-11": ["Why didn't you use every key point you were given?", "Explains that they chose the points that best served the purpose and audience, and left out ones that were weaker or off the point."],
+    "england-revising-editing-and-proof-reading-years-10-and-11": ["Why do we check whether a piece achieves its purpose before we correct the spelling?", "Explains that big changes (order, content) may remove or rewrite sentences, so it's better to fix those first and proof-read last."],
+    "england-grammar-and-vocabulary-for-effect-years-10-and-11": ["Why might a report say \"Mistakes were made\" instead of \"The manager made mistakes\"?", "Explains the passive voice can leave out who did it, to hide or avoid blame, or because it's unknown or unimportant."],
+    "england-spoken-and-written-language-registers-and-standard-english-years-10-and-11": ["Is a dialect form such as \"we was\" wrong?", "Explains it's correct in its own variety but not Standard English, and that the context and audience decide which to use."],
+    "england-formal-presentations-and-debates-years-10-and-11": ["How did you change your talk for your audience?", "Gives specific choices (vocabulary, examples, register, length, visual aids) and why they suit that audience."],
+    "england-group-discussion-leading-listening-and-challenging-years-10-and-11": ["How can you disagree with someone without shutting the discussion down?", "Acknowledges the other person's point, then gives a reason or evidence for their view, and keeps it about the idea, not the person."],
+    "england-performing-scripts-and-poetry-years-10-and-11": ["What did the silence in your performance say that words couldn't?", "Explains a specific pause or silence and the feeling or meaning (tension, hurt, hesitation) it showed the audience."]
   };
   lessons.forEach(l => { const u = UNDERSTAND[l.id.replace(/^lesson-/, "")]; if (u) [l.understand, l.lookFor] = u; });
 

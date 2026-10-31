@@ -6,6 +6,7 @@
 #   2. python -I tools/england_extract.py <folder> tools/england-statements.json
 #   3. python -I tools/england_elg.py <folder>/eyfs.txt tools/england-statements.json
 #      python -I tools/england_ks3.py <folder> tools/england-statements.json   (ks3en.pdf, ks3ma.pdf)
+#      python -I tools/england_ks4.py <folder> tools/england-statements.json   (ks4en.pdf, ks4ma.pdf; see its header for the GCSE content)
 #   4. python -I tools/build_england.py   (writes the data section of england.js)
 # Check any statement FIX below against the PDF: stacked fractions don't survive text extraction.
 import json, re, sys
@@ -29,6 +30,18 @@ FIX = {
   "ma-y6-number-fractions-including-decimals-and-percentages-5": "divide proper fractions by whole numbers [for example, 1/3 ÷ 2 = 1/6]",
   "ma-y7-9-number-9": "work interchangeably with terminating decimals and their corresponding fractions (such as 3.5 and 7/2 or 0.375 and 3/8)",
   "ma-y6-number-fractions-including-decimals-and-percentages-6": "associate a fraction with division and calculate decimal fraction equivalents [for example, 0.375] for a simple fraction [for example, 3/8]",
+  # Key stage 4 (the GCSE mathematics subject content has the same formulae, set out more clearly)
+  "ma-y10-11-number-4": "calculate exactly with fractions, {surds} and multiples of π; {simplify surd expressions involving squares [for example √12 = √(4 × 3) = √4 × √3 = 2√3] and rationalise denominators}",
+  "ma-y10-11-number-5": "calculate with numbers in standard form A × 10ⁿ, where 1 ≤ A < 10 and n is an integer",
+  "ma-y10-11-algebra-2": "factorising quadratic expressions of the form x² + bx + c, including the difference of two squares; {factorising quadratic expressions of the form ax² + bx + c}",
+  "ma-y10-11-algebra-3": "simplifying expressions involving sums, products and powers, including the laws of indices",
+  "ma-y10-11-algebra-6": "use the form y = mx + c to identify parallel {and perpendicular} lines; find the equation of the line through two given points, or through one point with a given gradient",
+  "ma-y10-11-algebra-8": "recognise, sketch and interpret graphs of linear functions, quadratic functions, simple cubic functions, the reciprocal function y = 1/x with x ≠ 0, {the exponential function y = kˣ for positive values of k, and the trigonometric functions (with arguments in degrees) y = sin x, y = cos x and y = tan x for angles of any size}",
+  "ma-y10-11-algebra-18": "recognise and use sequences of triangular, square and cube numbers, simple arithmetic progressions, Fibonacci type sequences, quadratic sequences, and simple geometric progressions (rⁿ where n is an integer, and r is a positive rational number {or a surd}) {and other sequences}",
+  "ma-y10-11-ratio-proportion-and-rates-of-change-3": "understand that X is inversely proportional to Y is equivalent to X is proportional to 1/Y; {construct and} interpret equations that describe direct and inverse proportion",
+  "ma-y10-11-geometry-and-measures-11": "know the exact values of sin θ and cos θ for θ = 0°, 30°, 45°, 60° and 90°; know the exact value of tan θ for θ = 0°, 30°, 45° and 60°",
+  "ma-y10-11-geometry-and-measures-12": "{know and apply the sine rule, a/sin A = b/sin B = c/sin C, and cosine rule, a² = b² + c² − 2bc cos A, to find unknown lengths and angles}",
+  "ma-y10-11-geometry-and-measures-13": "{know and apply Area = ½ab sin C to calculate the area, sides or angles of any triangle}",
 }
 
 ABBR = {
@@ -45,6 +58,8 @@ ABBR = {
   # Key stage 3's own domains
   "read": "reading", "writ": "writing", "gv": "grammar-and-vocabulary", "se": "spoken-english",
   "rpr": "ratio-proportion-and-rates-of-change", "gm": "geometry-and-measures",
+  # Key stage 4 uses the same domains; these are its GCSE subject content (see tools/england_ks4.py)
+  "gel": "gcse-english-language", "gf": "gcse-formulae",
 }
 def ref(s):  # "ma 3 md 1" -> ma-y3-number-multiplication-and-division-1
     subj, year, dom, n = s.split()
@@ -326,6 +341,46 @@ MAP = {
   "eg-pronouns": "en 3-4 vgp 4; en 3-4 co 11",
   "eg-tense-perfect": "en 5-6 co 14; en 5-6 vgp 4",
   "y1-days": "en 1 sp 4",
+  # England: key stage 4 (Years 10 and 11). Every statement, and the GCSE detail added with them, is taught by one of these
+  # (the eight headings, such as "speak confidently, audibly and effectively, including through:", through their bullets)
+  "lesson-england-powers-roots-indices-and-standard-form-years-10-and-11": "ma 10-11 num 3; ma 10-11 num 2; ma 10-11 num 5; ma 10-11 al 3",
+  "lesson-england-exact-calculation-fractions-surds-and-recurring-decimals-years-10-and-11": "ma 10-11 num 4; ma 10-11 num 6",
+  "lesson-england-limits-of-accuracy-rounding-truncating-and-bounds-years-10-and-11": "ma 10-11 num 8",
+  "lesson-england-factorising-quadratics-and-algebraic-fractions-years-10-and-11": "ma 10-11 al 2",
+  "lesson-england-identities-algebraic-proof-and-functions-years-10-and-11": "ma 10-11 al 4; ma 10-11 al 5",
+  "lesson-england-straight-line-graphs-y-mx-c-parallel-and-perpendicular-lines-years-10-and-11": "ma 10-11 al 6; ma 10-11 rpr 4; ma 10-11 al 12",
+  "lesson-england-quadratics-roots-turning-points-and-solving-years-10-and-11": "ma 10-11 al 13; ma 10-11 al 7; ma 10-11 gf 1",
+  "lesson-england-simultaneous-equations-and-inequalities-years-10-and-11": "ma 10-11 al 14; ma 10-11 al 16; ma 10-11 al 17",
+  "lesson-england-sequences-quadratic-geometric-and-the-nth-term-years-10-and-11": "ma 10-11 al 19; ma 10-11 al 18",
+  "lesson-england-graphs-of-functions-and-their-transformations-years-10-and-11": "ma 10-11 al 8; ma 10-11 al 9",
+  "lesson-england-real-life-graphs-gradients-areas-and-rates-of-change-years-10-and-11": "ma 10-11 al 10; ma 10-11 al 11; ma 10-11 rpr 5; ma 10-11 gf 9",
+  "lesson-england-growth-decay-compound-interest-and-iteration-years-10-and-11": "ma 10-11 rpr 6; ma 10-11 gf 6; ma 10-11 al 15",
+  "lesson-england-proportion-compound-units-and-fractions-in-ratio-years-10-and-11": "ma 10-11 rpr 3; ma 10-11 rpr 2; ma 10-11 num 7",
+  "lesson-england-similarity-and-enlargement-years-10-and-11": "ma 10-11 rpr 1; ma 10-11 gm 9; ma 10-11 gm 1",
+  "lesson-england-vectors-and-combined-transformations-years-10-and-11": "ma 10-11 gm 14; ma 10-11 gm 15; ma 10-11 gm 2",
+  "lesson-england-circles-parts-arc-lengths-and-sectors-years-10-and-11": "ma 10-11 gm 3; ma 10-11 gf 2; ma 10-11 gm 7",
+  "lesson-england-circle-theorems-years-10-and-11": "ma 10-11 gm 4",
+  "lesson-england-3d-shapes-plans-elevations-surface-area-and-volume-years-10-and-11": "ma 10-11 gm 5; ma 10-11 gm 8; ma 10-11 gf 8; ma 10-11 gf 5",
+  "lesson-england-pythagoras-trigonometry-and-bearings-years-10-and-11": "ma 10-11 gm 10; ma 10-11 gf 3; ma 10-11 gm 11; ma 10-11 gm 6",
+  "lesson-england-the-sine-rule-cosine-rule-and-area-of-any-triangle-years-10-and-11": "ma 10-11 gm 12; ma 10-11 gm 13; ma 10-11 gf 4",
+  "lesson-england-probability-exhaustive-events-models-and-predictions-years-10-and-11": "ma 10-11 prob 1; ma 10-11 prob 2",
+  "lesson-england-combined-events-listing-tree-diagrams-and-conditional-probability-years-10-and-11": "ma 10-11 prob 3; ma 10-11 num 1; ma 10-11 prob 4; ma 10-11 gf 7",
+  "lesson-england-samples-time-series-and-scatter-graphs-years-10-and-11": "ma 10-11 st 1; ma 10-11 st 2; ma 10-11 st 7; ma 10-11 st 8",
+  "lesson-england-histograms-cumulative-frequency-and-box-plots-years-10-and-11": "ma 10-11 st 3; ma 10-11 st 5; ma 10-11 st 6",
+  "lesson-england-shakespeare-language-character-and-context-years-10-and-11": "en 10-11 read 2; en 10-11 read 9; en 10-11 read 7",
+  "lesson-england-poetry-analysing-and-comparing-poems-years-10-and-11": "en 10-11 read 12; en 10-11 read 13; en 10-11 read 3; en 10-11 gel 3; en 10-11 gel 4",
+  "lesson-england-summary-and-synthesis-across-two-non-fiction-texts-years-10-and-11": "en 10-11 read 6; en 10-11 gel 2",
+  "lesson-england-evidence-inference-and-bias-years-10-and-11": "en 10-11 read 11; en 10-11 read 10; en 10-11 gel 1",
+  "lesson-england-whole-novels-themes-characters-and-a-personal-response-years-10-and-11": "en 10-11 read 8; en 10-11 read 14; en 10-11 read 4; en 10-11 read 9",
+  "lesson-england-descriptive-and-narrative-writing-years-10-and-11": "en 10-11 writ 2; en 10-11 gel 5",
+  "lesson-england-writing-to-argue-and-persuade-years-10-and-11": "en 10-11 writ 4; en 10-11 writ 3; en 10-11 gel 6",
+  "lesson-england-writing-from-notes-and-information-provided-by-others-years-10-and-11": "en 10-11 writ 5; en 10-11 writ 2; en 10-11 gel 5",
+  "lesson-england-revising-editing-and-proof-reading-years-10-and-11": "en 10-11 writ 7; en 10-11 writ 8; en 10-11 writ 9",
+  "lesson-england-grammar-and-vocabulary-for-effect-years-10-and-11": "en 10-11 gv 2; en 10-11 gv 3; en 10-11 gv 5",
+  "lesson-england-spoken-and-written-language-registers-and-standard-english-years-10-and-11": "en 10-11 gv 4; en 10-11 se 2; en 10-11 gel 9",
+  "lesson-england-formal-presentations-and-debates-years-10-and-11": "en 10-11 se 5; en 10-11 gel 7; en 10-11 gel 8",
+  "lesson-england-group-discussion-leading-listening-and-challenging-years-10-and-11": "en 10-11 se 3; en 10-11 se 4; en 10-11 se 6",
+  "lesson-england-performing-scripts-and-poetry-years-10-and-11": "en 10-11 se 7",
 }
 
 # England's statutory spelling words (window.ENGLAND_LISTS in words.js), one entry per list
@@ -347,6 +402,12 @@ for work, refs in MAP.items():
     for_id[work] = out
 if bad:
     print("UNKNOWN STATEMENTS:", bad); sys.exit(1)
+# Every key stage 4 statement is taught by a lesson (a heading, such as "speak confidently, audibly and effectively, including through:", by its bullets)
+mapped = {i for v in for_id.values() for i in v}
+bullets = lambda x: [b for b in nc if b["year"] == x["year"] and b["domain"] == x["domain"] and b.get("parent") == x["text"]]
+ks4_left = sorted(x["id"] for x in nc if x["year"] == "10-11" and x["id"] not in mapped and not (bullets(x) and all(b["id"] in mapped for b in bullets(x))))
+if ks4_left:
+    print("KEY STAGE 4 STATEMENTS WITH NO WORK:", ks4_left); sys.exit(1)
 
 def text_of(x):
     t = FIX.get(x["id"], x["text"])
