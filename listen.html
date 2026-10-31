@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=merge-1">
   <style>
     .check-head { position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--line); }
     .check-head h1 { font-size: 1.6rem; margin: 0 0 4px; }
@@ -40,6 +40,10 @@
     @media (max-width: 640px) {
       .rec { grid-template-columns: 1fr auto auto; }
       .sentence-text { grid-column: 1 / -1; }
+    }
+    @media (max-width: 420px) {
+      .rec { grid-template-columns: 1fr 1fr; }
+      .rec-word, .note { grid-column: 1 / -1; }
     }
   </style>
 </head>
@@ -141,7 +145,7 @@
           <section class="list-block"><h2>Letter names (used when a word is spelled out)</h2>
             <div class="letter-row">${"abcdefghijklmnopqrstuvwxyz".split("").map(c =>
               `<button class="play letter${state.heard[`l:${c}`] ? " played" : ""}${state.bad[`letter ${c}`] ? " bad-letter" : ""}" data-letter="${c}">▶ ${c.toUpperCase()}</button>`).join("")}</div>
-            <p class="hint">If a letter sounds wrong, note it in the box: <input type="text" id="letterNote" maxlength="80" placeholder="e.g. A sounds like eye"
+            <p class="hint">If a letter sounds wrong, note it in the box: <input type="text" id="letterNote" maxlength="80" aria-label="Letters that sound wrong" placeholder="e.g. A sounds like eye"
               value="${esc((state.bad["letter names"] || {}).note || "")}"></p>
           </section>` : "";
         $("lists").innerHTML = (onlyBad || hideHeard ? "" : letters) + blocks.map(b => {

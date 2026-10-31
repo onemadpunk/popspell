@@ -28,7 +28,7 @@ async function start() {
   const {
     initializeFirestore, persistentLocalCache, connectFirestoreEmulator, doc, getDoc, getDocFromServer, setDoc,
     updateDoc, addDoc, deleteDoc, collection, query, where, orderBy, limit, getDocs, getDocsFromServer,
-    onSnapshot, serverTimestamp, Timestamp, writeBatch
+    onSnapshot, serverTimestamp, Timestamp, writeBatch, waitForPendingWrites, terminate, clearIndexedDbPersistence
   } = db;
 
   const app = initializeApp(config);
@@ -178,7 +178,17 @@ async function start() {
         throw err;
       }
     },
-    signOut: () => { sessionStorage.removeItem("popspell-calendar-token"); return signOut(auth); },
+    // The device's copy of the classes goes too, so the next person on a shared computer can't find
+    // pupils' records in the browser's storage. Anything not yet saved gets a few seconds to send first.
+    async signOut() {
+      sessionStorage.removeItem("popspell-calendar-token");
+      await Promise.race([waitForPendingWrites(store), new Promise(r => setTimeout(r, 5000))]).catch(() => {});
+      await signOut(auth);
+      await terminate(store).then(() => clearIndexedDbPersistence(store)).catch(() => {});
+      history.replaceState(null, "", "#/");
+      location.reload();
+      return new Promise(() => {}); // the page is reloading
+    },
 
     // Asked for only when a teacher syncs lessons, never at sign-in, so signing in is unchanged.
     // Google's permission lasts about an hour; it's kept for this tab only.
@@ -374,7 +384,7 @@ async function start() {
       await batch.commit();
     },
     // Everything kept about one pupil in a class: results, saved progress, live status, plans, lesson
-    // notes, parent page and roster record. Results are matched however the name was typed.
+    // notes, phonics check screen, parent page and roster record. Results are matched however the name was typed.
     async deletePupilRecords(classId, name, parentLink) {
       const same = v => lower(v) === lower(name);
       const [sessions, diary, key] = await Promise.all([
@@ -386,7 +396,7 @@ async function start() {
       const refs = [
         ...sessions.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
         ...diary.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
-        ...["progress", "assign", "pupils"].map(c => doc(store, "classes", classId, c, key)),
+        ...["progress", "assign", "pupils", "drive"].map(c => doc(store, "classes", classId, c, key)),
         doc(store, "classes", classId, "live", pupilKey(name))
       ];
       // Firestore takes up to 500 changes at once
