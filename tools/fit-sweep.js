@@ -36,14 +36,16 @@
     sel.value = type; sel.dispatchEvent(new Event("change", { bubbles: true }));
     return [...document.querySelectorAll("[data-print]")].filter(b => !b.closest("dialog")).map(b => b.dataset.print);
   };
-  // Anything with a page over 100% (letter formation's two pages excepted), or with mixed sheet codes
+  // Anything with a page over 100% (letter formation's two pages excepted), or a single sheet with
+  // mixed sheet codes (a ready lesson's pack has several sheets, each with its own code)
   window.__sweep = type => {
     const bad = [];
     const ids = __ids(type);
     for (const id of ids) {
       try {
         const x = __over(id);
-        if (x.err || x.out.some(h => h > 100) && id !== "letter-formation" || (x.ncode && x.codes !== 1)) bad.push(x);
+        const twoPages = /^(letter-formation|lesson-early-forming-lowercase-letters)$/.test(id);
+        if (x.err || x.out.some(h => h > 100) && !twoPages || (type !== "lesson" && x.ncode && x.codes !== 1)) bad.push(x);
       } catch (e) { bad.push({ id, err: String(e) }); }
     }
     return { type, checked: ids.length, bad };

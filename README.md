@@ -238,11 +238,18 @@ Speech voices can't reliably say isolated phonemes, so the site reads whole word
 Double-click `index.html` to open it in a browser.
 
 
+## Editing lessons and sheets
+
+- **Ready lessons** live in `content/lessons/`, one JSON file per section (`01-maths-early.json` to `13-england-ks4.json`). Each lesson has its id, level, subject, strand, CfE codes, title, learning intention, success criteria, the four timed steps, the PopSpell work it uses, a home idea, words to use, its understanding check (`understand`, `lookFor`) and, for England's lessons, `england: true` and any Scottish version (`cfe`).
+- **Paper sheets** live in `sheets/`, one file per section, each part of one script (`00-start.js` holds the shared helpers, `99-end.js` closes it).
+- **CfE outcomes** are listed in `content/curriculum/cfe.json`; England's statements are built into `england.js` by `tools/build_england.py`.
+- Then run `npm run build`: it writes `lessons.js` and `paper-sheets.js` from those files and stamps every page. Don't edit `lessons.js` or `paper-sheets.js` directly: the build replaces them, and the checks fail if they don't match.
+
 ## Checks
 
 GitHub runs these on every push (`.github/workflows/checks.yml`); a red cross on the repository means something needs fixing. To run them yourself you need [Node.js](https://nodejs.org) (and Python for the England check):
 
 - `npm test`: the unit tests in `tests/`.
-- `npm run check`: the content checks (`tools/check.mjs`). Every CfE experience and outcome from Early to Fourth level has a ready lesson (`tools/cfe-outcomes.json`, from Education Scotland's documents); every lesson has an understanding check and printable work, and everything it uses exists; every paper sheet belongs to a lesson, has a unique id and title, and builds; and `england.js` matches `tools/build_england.py`, whose own checks make sure every statement exists and every key stage 4 statement is taught.
+- `npm run check`: the content checks (`tools/check.mjs`). Every CfE experience and outcome from Early to Fourth level has a ready lesson (`content/curriculum/cfe.json`, from Education Scotland's documents); every lesson has an understanding check and printable work, and everything it uses exists; every paper sheet belongs to a lesson, has a unique id and title, and builds; and `england.js` matches `tools/build_england.py`, whose own checks make sure every statement exists and every key stage 4 statement is taught.
 - `npm run rules`: the Firestore security rules tests, on Firebase's local emulator (needs Java).
 - Printed pages fitting A4 needs a browser: open `_test.html?as=owner#/teacher`, go to the Library, and follow the steps at the top of `tools/fit-sweep.js`.

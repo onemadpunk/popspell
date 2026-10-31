@@ -1,0 +1,503 @@
+{
+  "section": "Literacy and English: Second level",
+  "lessons": [
+    {
+      "id": "lesson-second-spelling-rules-ing-plurals-and-endings",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 2-21a"
+      ],
+      "title": "Spelling rules: -ing, plurals and endings",
+      "intention": "We are learning to apply spelling rules to spell most words correctly.",
+      "criteria": [
+        "I can apply spelling rules for -ing and plurals.",
+        "I can self-correct using spelling strategies."
+      ],
+      "steps": {
+        "start": "Spell 'running' and 'hoping'. Why is one doubled?",
+        "teach": "Teach the rules: double the consonant after a short vowel (run → running), drop the e (hope → hoping), add -es after s, x, sh, ch. Check a piece of writing for errors.",
+        "practise": "The Adding -ing and Plurals lists.",
+        "check": "Spell five words with endings and explain one rule."
+      },
+      "use": [
+        "ing",
+        "s-es"
+      ],
+      "home": "Spot rule-breakers in a book and talk about them.",
+      "vocab": "rule, suffix, plural, double, self-correct",
+      "understand": "Why does hop become hopping but jump becomes jumping?",
+      "lookFor": "Explains doubling after a short vowel with one consonant."
+    },
+    {
+      "id": "lesson-second-tricky-spelling-patterns-soft-c-and-g-silent-letters-ph",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 2-21a"
+      ],
+      "title": "Tricky spelling patterns: soft c and g, silent letters, ph",
+      "intention": "We are learning to spell words with tricky letter patterns.",
+      "criteria": [
+        "I can use spelling patterns and rules for soft c and g, silent letters and ph.",
+        "I can use resources to check spellings."
+      ],
+      "steps": {
+        "start": "Why does 'c' sound different in 'cat' and 'city'?",
+        "teach": "Show c and g are soft before e, i or y. Show silent k and w (knock, write) and ph making /f/. Use a dictionary to check.",
+        "practise": "The Soft c and soft g, Silent letters and ph lists.",
+        "check": "Spell city, giant, knee, wrist, phone."
+      },
+      "use": [
+        "soft-c-g",
+        "kn-wr",
+        "ph"
+      ],
+      "home": "Make a family list of words with silent letters.",
+      "vocab": "soft c, soft g, silent letter, pattern",
+      "understand": "Here are words you haven't practised: cycle, cell, giant. How would you say each one, and why?",
+      "lookFor": "Applies the soft c and soft g patterns (before e, i or y) to new words and explains them; knows some words, such as get and girl, break the pattern."
+    },
+    {
+      "id": "lesson-second-reading-fluently-with-pace-and-expression",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 2-12a",
+        "LIT 2-13a"
+      ],
+      "title": "Reading fluently, with pace and expression",
+      "intention": "We are learning to read unfamiliar texts fluently and with understanding.",
+      "criteria": [
+        "I can read with fluency, understanding and expression.",
+        "I use context clues, punctuation, grammar and layout to read unfamiliar texts."
+      ],
+      "steps": {
+        "start": "Read a sentence with no punctuation. Then with it. What changes?",
+        "teach": "Model reading a passage at the right pace. Show how commas and dialogue change reading. Work out unfamiliar words from context.",
+        "practise": "Read the story, then answer the questions.",
+        "check": "Read a passage aloud and explain an unfamiliar word using context."
+      },
+      "use": [
+        "r-puppy",
+        "s-d-puddle"
+      ],
+      "home": "Read aloud to a younger child or a pet.",
+      "vocab": "fluency, pace, expression, context",
+      "understand": "How did the way you read help a listener understand?",
+      "lookFor": "Links pace, pauses and emphasis to the meaning."
+    },
+    {
+      "id": "lesson-second-inference-reading-between-the-lines",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 2-16a",
+        "ENG 2-17a",
+        "ENG 2-19a"
+      ],
+      "title": "Inference: reading between the lines",
+      "intention": "We are learning to make inferences and support them with evidence.",
+      "criteria": [
+        "I can answer literal, inferential and evaluative questions.",
+        "I can find the main ideas with supporting detail.",
+        "I can comment on characters, setting and the writer's language."
+      ],
+      "steps": {
+        "start": "'She slammed the door.' How is she feeling? How do you know?",
+        "teach": "Read a passage. Model 'I think… because the text says…'. Find clues about a character's feelings. Comment on a word choice and its effect.",
+        "practise": "Read the story, then answer the questions.",
+        "check": "Answer an inference question and give the evidence."
+      },
+      "use": [
+        "r-puppy",
+        "s-d-phone"
+      ],
+      "home": "Ask 'how do you know?' when talking about books.",
+      "vocab": "infer, evidence, clue, character, setting, word choice",
+      "understand": "The text doesn't say it. What makes you think so?",
+      "lookFor": "Gives a clue from the text and explains what it suggests."
+    },
+    {
+      "id": "lesson-second-fact-opinion-and-persuasion",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 2-16a",
+        "LIT 2-18a"
+      ],
+      "title": "Fact, opinion and persuasion",
+      "intention": "We are learning to spot fact, opinion and techniques used to persuade.",
+      "criteria": [
+        "I can tell fact from opinion and explain why.",
+        "I can spot word choice and techniques used to influence readers.",
+        "I can judge which sources are most reliable."
+      ],
+      "steps": {
+        "start": "Look at an advert. What does it want you to do?",
+        "teach": "Sort statements into fact and opinion. Highlight persuasive words in an advert. Compare two sources on one topic: which is more reliable and why?",
+        "practise": "Highlight facts and opinions in a short persuasive text.",
+        "check": "Give one fact, one opinion and one persuasive technique from the text."
+      },
+      "use": [],
+      "home": "Talk about adverts on TV: what tricks are they using?",
+      "vocab": "fact, opinion, persuade, reliable, source, bias",
+      "understand": "Why might an advert use opinions and not just facts?",
+      "lookFor": "Explains opinions persuade, and that facts can be chosen to suit the writer."
+    },
+    {
+      "id": "lesson-second-skimming-scanning-and-notes-in-own-words",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 2-14a",
+        "LIT 2-15a"
+      ],
+      "title": "Skimming, scanning and notes in own words",
+      "intention": "We are learning to skim, scan and make notes in our own words.",
+      "criteria": [
+        "I can skim to find the purpose and main ideas.",
+        "I can scan for key information.",
+        "I can make notes in my own words and use them to write."
+      ],
+      "steps": {
+        "start": "Find the date in this leaflet as fast as you can.",
+        "teach": "Show skimming (first lines, headings) and scanning (looking for a key word). Turn a paragraph into three bullet-point notes in your own words.",
+        "practise": "Make notes from a short non-fiction text, then write a summary.",
+        "check": "Write a two-sentence summary from the notes."
+      },
+      "use": [
+        "r-storm"
+      ],
+      "home": "Find information for a family trip from a website.",
+      "vocab": "skim, scan, notes, summary, own words",
+      "understand": "When would you skim, and when would you scan?",
+      "lookFor": "Skim for the gist, scan for a specific detail, with an example of each."
+    },
+    {
+      "id": "lesson-second-commas-speech-marks-and-apostrophes",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 2-22a"
+      ],
+      "title": "Commas, speech marks and apostrophes",
+      "intention": "We are learning to use a range of punctuation accurately.",
+      "criteria": [
+        "I can use commas in lists and after openers.",
+        "I can punctuate speech with speech marks.",
+        "I can use apostrophes for contractions and possession."
+      ],
+      "steps": {
+        "start": "Punctuate: I bought eggs milk bread and jam.",
+        "teach": "Show commas in lists. Model setting out speech: \"Look out!\" shouted Sam. Show apostrophes in don't and the dog's bone.",
+        "practise": "Correct the punctuation in five sentences, then write a short conversation.",
+        "check": "Punctuate a sentence of speech and one with a possessive apostrophe."
+      },
+      "use": [],
+      "home": "Spot speech marks in a book and read the dialogue in character.",
+      "vocab": "comma, speech marks, inverted commas, apostrophe, possession",
+      "understand": "What's the difference between the girl's coats and the girls' coats?",
+      "lookFor": "Explains one owner vs. more than one owner."
+    },
+    {
+      "id": "lesson-second-varying-sentences-and-using-paragraphs",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 2-22a",
+        "LIT 2-23a"
+      ],
+      "title": "Varying sentences and using paragraphs",
+      "intention": "We are learning to vary sentences and organise writing into paragraphs.",
+      "criteria": [
+        "I can use sentences of different lengths and types.",
+        "I can vary sentence openings and link sentences with a range of conjunctions.",
+        "I can use paragraphs to separate ideas.",
+        "I can review and correct my writing."
+      ],
+      "steps": {
+        "start": "Make this more interesting: 'The dog ran. The dog barked.'",
+        "teach": "Show short sentences for effect, longer ones with although, while, since. Plan three paragraphs on a topic. Edit a paragraph together.",
+        "practise": "Joining words, then write and edit a three-paragraph piece.",
+        "check": "Point to a short sentence, a long sentence and a new paragraph."
+      },
+      "use": [
+        "w-joining"
+      ],
+      "home": "Write a short review of a film in three paragraphs.",
+      "vocab": "sentence, conjunction, opener, paragraph, edit",
+      "understand": "Why did you start a new paragraph here?",
+      "lookFor": "Gives a reason: new time, place, person or idea."
+    },
+    {
+      "id": "lesson-second-dictation-longer-sentences",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: dictation",
+      "codes": [
+        "LIT 2-21a",
+        "LIT 2-22a"
+      ],
+      "title": "Dictation: longer sentences",
+      "intention": "We are learning to write longer dictated sentences accurately.",
+      "criteria": [
+        "I can spell most words correctly using rules and strategies.",
+        "I can punctuate sentences accurately, including commas."
+      ],
+      "steps": {
+        "start": "Spell five words from the soft c and g list.",
+        "teach": "Say a sentence twice. Write it. Check spellings, capital letter, commas and full stop. Correct mistakes using a word list.",
+        "practise": "Sentence dictation.",
+        "check": "Dictate one new sentence and mark it together."
+      },
+      "use": [
+        "dictate:soft-c-g"
+      ],
+      "home": "Dictate a sentence from a favourite book.",
+      "vocab": "dictation, spelling, punctuation, check",
+      "understand": "Which part was hardest to remember, and how did you hold it in your head?",
+      "lookFor": "Uses a strategy: repeating it, chunking it, saying it while writing."
+    },
+    {
+      "id": "lesson-second-writing-to-inform-or-persuade",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 2-26a",
+        "LIT 2-28a",
+        "LIT 2-29a"
+      ],
+      "title": "Writing to inform or persuade",
+      "intention": "We are learning to write an information text or a persuasive piece.",
+      "criteria": [
+        "I can plan and organise information logically.",
+        "I can use an introduction and a conclusion.",
+        "I can use language to persuade, such as word choice and questions to the reader."
+      ],
+      "steps": {
+        "start": "Should children have longer playtimes? Give one reason.",
+        "teach": "Plan with a box for each point and a piece of evidence. Model an introduction, linking phrases (firstly, furthermore, however) and a conclusion.",
+        "practise": "Write a persuasive letter or an information leaflet from the plan.",
+        "check": "Find the introduction, two linking phrases and the conclusion."
+      },
+      "use": [],
+      "home": "Write a persuasive note asking for a family treat.",
+      "vocab": "inform, persuade, introduction, conclusion, linking phrase, evidence",
+      "understand": "Who is your reader, and how did that change what you wrote?",
+      "lookFor": "Links word choice and tone to the audience and purpose."
+    },
+    {
+      "id": "lesson-second-writing-a-story-plot-character-and-setting",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 2-27a",
+        "ENG 2-30a",
+        "ENG 2-31a"
+      ],
+      "title": "Writing a story: plot, character and setting",
+      "intention": "We are learning to write a story with convincing characters and a clear plot.",
+      "criteria": [
+        "I can create interesting characters through their feelings and actions.",
+        "I can describe a setting with detail.",
+        "I can use figurative language such as similes.",
+        "I can structure a plot with an opening, turning point and ending."
+      ],
+      "steps": {
+        "start": "Describe this picture of a forest using your five senses.",
+        "teach": "Plan a plot with a turning point. Show characterisation through actions and speech. Add a simile or metaphor to describe the setting.",
+        "practise": "Write the opening paragraph and the turning point.",
+        "check": "Point to a description of feelings, a simile and the turning point."
+      },
+      "use": [],
+      "home": "Read a story together and talk about how the writer builds tension.",
+      "vocab": "plot, character, setting, simile, metaphor, turning point",
+      "understand": "How does the setting add to the mood of your story?",
+      "lookFor": "Points to description that creates atmosphere and fits what happens."
+    },
+    {
+      "id": "lesson-second-planning-and-giving-a-short-talk",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 2-09a",
+        "LIT 2-10a"
+      ],
+      "title": "Planning and giving a short talk",
+      "intention": "We are learning to plan and deliver a short talk.",
+      "criteria": [
+        "I can plan an organised talk with relevant content.",
+        "I can speak clearly, audibly and with expression.",
+        "I can use vocabulary that suits my audience."
+      ],
+      "steps": {
+        "start": "What makes a good speaker? Think of someone you like listening to.",
+        "teach": "Plan a two-minute talk on a hobby: opening, three points, ending. Practise eye contact, volume and pace.",
+        "practise": "Give the talk and answer one question.",
+        "check": "Did it have an opening, three points and an ending? Was it clear?"
+      },
+      "use": [],
+      "home": "Give your talk to the family at teatime.",
+      "vocab": "talk, audience, eye contact, volume, pace",
+      "understand": "What did you do to keep your audience interested?",
+      "lookFor": "Names techniques: a question, an example, eye contact, changing their voice."
+    },
+    {
+      "id": "lesson-second-choosing-texts-and-authors-and-writing-my-own-choice",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 2-01a",
+        "LIT 2-11a",
+        "LIT 2-20a"
+      ],
+      "title": "Choosing texts and authors, and writing my own choice",
+      "intention": "We are learning to choose texts for enjoyment or information, explain our preferences with detail, and choose the right form for our own writing.",
+      "criteria": [
+        "I can choose texts to read, listen to or watch, for enjoyment or to find information for a purpose.",
+        "I can explain my preferences for texts, authors or sources with supporting detail.",
+        "I can choose the genre, form, structure and style of my own texts to suit my purpose and audience."
+      ],
+      "steps": {
+        "start": "Which author or series would you recommend to a friend? Convince me in one sentence.",
+        "teach": "Compare two texts the pupil knows: what does each author do that they like (characters, humour, facts, layout)? Talk about choosing sources for information: a website, a book, a podcast. Then choose a purpose and audience for their own text and decide the best form (a review, a blog post, a comic, a set of instructions).",
+        "practise": "The \"Recommend it\" sheet: a review with evidence, then a plan for their own text with its audience and form.",
+        "check": "Ask them to justify a preference with a detail from the text, and explain why the form they chose suits the audience."
+      },
+      "use": [],
+      "home": "Swap book recommendations as a family, each giving a reason.",
+      "vocab": "genre, author, source, preference, review, audience, purpose, form",
+      "understand": "Why did you choose that form for your own text?",
+      "lookFor": "Links the form and style to the audience and purpose, for example a comic for younger readers."
+    },
+    {
+      "id": "lesson-second-group-discussion-building-on-others-ideas",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 2-02a",
+        "ENG 2-03a"
+      ],
+      "title": "Group discussion: building on others' ideas",
+      "intention": "We are learning to take part in discussions, value others' ideas and build on them, and use features of spoken language well.",
+      "criteria": [
+        "I can contribute relevant ideas, information and opinions in a discussion.",
+        "I can show respect for others' views and offer my own.",
+        "I can build on what others say by asking or answering questions, clarifying points or supporting their ideas.",
+        "I can use vocabulary, eye contact, body language, emphasis, pace and tone when I talk, and spot techniques speakers use to influence me."
+      ],
+      "steps": {
+        "start": "Agree or disagree: \"Every child should learn to cook.\" Give one reason.",
+        "teach": "Teach discussion moves with sentence starters: I agree with… because…; Building on what you said…; Can you explain what you mean by…?; I see it differently because…. Discuss a question together, taking turns, and use at least three moves each. Then listen to a short persuasive speech (or perform one) and spot the techniques: emphasis, pace, tone, rhetorical questions.",
+        "practise": "The \"Discussion: building on ideas\" sheet: plan points for a discussion, use the starters, and note techniques heard.",
+        "check": "In a short discussion, do they build on what you said rather than just giving their own point?"
+      },
+      "use": [],
+      "home": "Have a family debate on something light, like the best pizza topping, with everyone building on the last speaker.",
+      "vocab": "discussion, agree, disagree, build on, clarify, viewpoint, tone, emphasis, rhetorical question",
+      "understand": "How did what I said change your thinking?",
+      "lookFor": "Refers to your point and builds on it or disagrees respectfully with a reason."
+    },
+    {
+      "id": "lesson-second-notes-from-listening-in-my-own-words",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 2-04a",
+        "LIT 2-05a",
+        "LIT 2-06a",
+        "LIT 2-25a"
+      ],
+      "title": "Notes from listening, in my own words",
+      "intention": "We are learning to make notes in our own words as we listen, organise them, and use them to create new texts, crediting our sources.",
+      "criteria": [
+        "I can find the purpose and main ideas of something I listen to or watch, with supporting detail.",
+        "I can make relevant notes in my own words and organise them under suitable headings.",
+        "I can use my notes to create a new text for a purpose.",
+        "I can say where my information came from."
+      ],
+      "steps": {
+        "start": "Listen to one sentence. Write it in three words. Did you keep the meaning?",
+        "teach": "Read the short talk on the adult's sheet aloud twice. First listen for the purpose and main ideas. The second time, the pupil makes notes in their own words and chooses their own headings. Then they use the notes to write a short paragraph for a younger reader, and add where the information came from.",
+        "practise": "The \"Notes in my own words\" sheet: notes under their own headings, then a short paragraph with its source.",
+        "check": "Compare their notes to the talk: are the main ideas there, in their own words, with the source credited?"
+      },
+      "use": [],
+      "home": "Watch a short documentary clip together and each jot down three facts in your own words.",
+      "vocab": "notes, own words, heading, purpose, main idea, detail, source",
+      "understand": "Why does it matter to say where your information came from?",
+      "lookFor": "Explains it shows the information can be checked and gives credit to the source."
+    },
+    {
+      "id": "lesson-second-questions-fact-and-opinion-in-what-i-hear",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 2-07a",
+        "LIT 2-08a"
+      ],
+      "title": "Questions, fact and opinion in what I hear",
+      "intention": "We are learning to show we understand what we hear by answering and asking different kinds of questions, and to tell fact from opinion and spot when a source is trying to influence us.",
+      "criteria": [
+        "I can answer literal, inferential and evaluative questions about something I listen to or watch.",
+        "I can ask different kinds of questions of my own.",
+        "I can tell fact from opinion and explain how I know.",
+        "I can recognise when a source is trying to influence me, and say how useful it is."
+      ],
+      "steps": {
+        "start": "\"Our juice is the tastiest in Scotland!\" Who might say this? Why?",
+        "teach": "Explain the three kinds of question: literal (it says so), inferential (clues tell you) and evaluative (what do you think, and why?). Read the radio advert on the adult's sheet aloud. The pupil answers one of each kind, sorts facts from opinions, and decides how the advert tries to influence the listener and whether it's a useful source.",
+        "practise": "The \"What I heard\" sheet: questions on a spoken advert, fact and opinion, and how it tries to influence.",
+        "check": "Ask them to write one literal, one inferential and one evaluative question about something they've heard."
+      },
+      "use": [],
+      "home": "When an advert comes on, ask: what is it trying to make us do? Is everything in it a fact?",
+      "vocab": "literal, inferential, evaluative, fact, opinion, influence, source, reliable",
+      "understand": "Was the advert a useful source? Why or why not?",
+      "lookFor": "Weighs it up: it wants to sell, so it chooses facts and adds opinions, so check elsewhere."
+    },
+    {
+      "id": "lesson-second-layout-and-presentation-to-engage-a-reader",
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 2-24a"
+      ],
+      "title": "Layout and presentation to engage a reader",
+      "intention": "We are learning to choose a layout and presentation, such as headings, bullet points, fonts, pictures and captions, that help and interest our reader.",
+      "criteria": [
+        "I can make choices about layout and presentation, on paper or on screen, to engage my reader.",
+        "I can use headings, sub-headings, bullet points, fonts, pictures and captions for a purpose.",
+        "I can explain why my layout suits my reader."
+      ],
+      "steps": {
+        "start": "Show the same information twice: once as one block of text, once as a page with a heading, bullet points and a picture. Which would you rather read? Why?",
+        "teach": "Name the features on a real leaflet, poster or web page: heading, sub-headings, bullet points, fonts, pictures, captions. For each, ask what it does for the reader (find things fast, see what matters most, want to read on). Plan a page for a younger reader from a plain piece of text: choose the main ideas, then the features that will show them best.",
+        "practise": "The \"Design a page\" sheet: turn a plain text into a leaflet page for a younger reader, then explain the choices. It can also be made on a computer or tablet.",
+        "check": "Ask: which feature helps your reader most, and why? Could you show the same idea a better way?"
+      },
+      "use": [],
+      "home": "Look at a cereal box, a leaflet or a web page together: what makes you want to read it, and what makes it easy to find things?",
+      "vocab": "layout, presentation, heading, sub-heading, bullet point, font, caption, picture, reader",
+      "understand": "Why did you make that a heading, and not put it in the middle of a paragraph?",
+      "lookFor": "Explains each choice by what the reader needs: to find information quickly, to see what matters most, or to want to read on."
+    }
+  ]
+}

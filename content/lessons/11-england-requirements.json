@@ -1,0 +1,601 @@
+{
+  "section": "England: lessons for the national curriculum's own requirements",
+  "lessons": [
+    {
+      "id": "lesson-england-year-1-grammar-plurals-un-and-capital-letters",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a"
+      ],
+      "title": "Year 1 grammar: plurals, un- and capital letters",
+      "intention": "We are learning to add -s or -es for more than one, use un- to change a word's meaning, and use capital letters for names and I.",
+      "criteria": [
+        "I can add -s or -es to make a plural.",
+        "I can add un- to make a word mean not, or undo something.",
+        "I can use a capital letter for names, days of the week and the word I."
+      ],
+      "steps": {
+        "start": "Hold up one pencil, then two. One pencil, two…? One box, two…? Listen: which needs an extra beat?",
+        "teach": "Sort words into -s and -es by clapping the beats: cats, foxes, dogs, wishes. Then add un- to kind, happy and tie, and act them out. Write a sentence about yourself with I and a friend's name: point to every capital letter.",
+        "practise": "The three Year 1 grammar sets on PopSpell.",
+        "check": "Write the plural of bus, cat and dish, and one sentence using I, a name and a day of the week."
+      },
+      "use": [
+        "eg-y1-plurals",
+        "eg-y1-un",
+        "eg-y1-capitals"
+      ],
+      "home": "Spot plurals on a walk (cars, buses, trees) and say whether they need -s or -es.",
+      "vocab": "plural, singular, prefix, capital letter, sentence",
+      "understand": "Why does box need -es but cat only -s?",
+      "lookFor": "Hears the extra beat (boxes), or knows -es comes after s, x, z, sh and ch.",
+      "cfe": {
+        "title": "Plurals, the prefix un- and capital letters",
+        "level": "First",
+        "codes": [
+          "LIT 1-21a",
+          "LIT 1-22a"
+        ],
+        "criteria": [
+          "I can use my knowledge of phonics and spelling strategies to spell words, including adding -s or -es.",
+          "I can write independently, punctuating most sentences accurately with a capital letter and a full stop."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-2-grammar-apostrophes-suffixes-and-sentence-types",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a"
+      ],
+      "title": "Year 2 grammar: apostrophes, suffixes and sentence types",
+      "intention": "We are learning to use apostrophes, suffixes and the four kinds of sentence.",
+      "criteria": [
+        "I can use an apostrophe for missing letters (can't) and to show one owner (the girl's book).",
+        "I can add -ness, -ful, -less, -er, -est and -ly.",
+        "I can tell a statement, question, exclamation and command apart.",
+        "I can use commas in a list."
+      ],
+      "steps": {
+        "start": "Say \"do not\" quickly. What do we write? Where do the missing letters go?",
+        "teach": "Write can't, I'm and it's, then cover the apostrophe and say which letters are missing. Show the girl's book against two girls. Build words with suffixes: care, careful, careless; kind, kindness, kindly. Read four sentences in different voices: statement, question, exclamation (What a…!), command.",
+        "practise": "The Year 2 grammar sets on PopSpell.",
+        "check": "Write one of each kind of sentence, using a list with commas in one of them."
+      },
+      "use": [
+        "eg-y2-apostrophes",
+        "eg-y2-suffixes",
+        "eg-y2-sentence-types",
+        "eg-y2-commas-tense"
+      ],
+      "home": "Find apostrophes in a book or on a cereal box: is it missing letters or belonging?",
+      "vocab": "apostrophe, suffix, statement, question, exclamation, command, comma",
+      "understand": "Write \"do not\" and \"they are\" the short way. Where does the apostrophe go, and why there?",
+      "lookFor": "Puts the apostrophe where letters are missed out in new words, and explains it; doesn't add apostrophes to ordinary plurals.",
+      "cfe": {
+        "title": "Sentence types, suffixes and apostrophes",
+        "level": "First",
+        "codes": [
+          "LIT 1-21a",
+          "LIT 1-22a"
+        ],
+        "criteria": [
+          "I can punctuate most sentences accurately, using a capital letter, full stop, question mark or exclamation mark.",
+          "I can use phonics and spelling strategies when spelling familiar and unfamiliar words, including words with suffixes.",
+          "I can start sentences in a variety of ways to engage the reader."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-3-grammar-a-or-an-prefixes-and-words-for-time-and-cause",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a"
+      ],
+      "title": "Year 3 grammar: a or an, prefixes, and words for time and cause",
+      "intention": "We are learning to choose a or an, use prefixes, and use conjunctions, adverbs and prepositions to say when and why.",
+      "criteria": [
+        "I can choose a or an.",
+        "I can use prefixes such as super-, anti- and auto-.",
+        "I can use words like when, before, because and during to show time and cause.",
+        "I can punctuate direct speech with inverted commas."
+      ],
+      "steps": {
+        "start": "Say: a apple, an apple. Which sounds right, and why?",
+        "teach": "Sort words by their first letter: a rock, an open box. Build prefixed words (supermarket, anti-clockwise, autograph). Tell a short story of your day using before, after, because and during. Write one line of speech with inverted commas around the words said.",
+        "practise": "The Year 3 grammar sets on PopSpell.",
+        "check": "Write two sentences about your weekend using before and because, and one with speech marks."
+      },
+      "use": [
+        "eg-y3-a-an",
+        "eg-y3-prefixes",
+        "eg-y3-time-cause",
+        "eg-y3-perfect-speech"
+      ],
+      "home": "Retell a favourite film using then, after, because and during.",
+      "vocab": "conjunction, preposition, adverb, prefix, inverted commas, direct speech",
+      "understand": "Why do we say an apple but a banana?",
+      "lookFor": "Explains an goes before a vowel sound.",
+      "cfe": {
+        "title": "Linking ideas: a or an, prefixes, and words for time and cause",
+        "level": "First",
+        "codes": [
+          "LIT 1-21a",
+          "LIT 1-22a"
+        ],
+        "criteria": [
+          "I can link sentences using common conjunctions, for example, and, because, but or so.",
+          "I can start sentences in a variety of ways to engage the reader.",
+          "I can use spelling strategies when spelling unfamiliar words, including words with prefixes."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-4-grammar-fronted-adverbials-possessive-apostrophes-and-standard-english",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 2-22a"
+      ],
+      "title": "Year 4 grammar: fronted adverbials, possessive apostrophes and Standard English",
+      "intention": "We are learning to start sentences with fronted adverbials, show plural possession, and use Standard English verbs.",
+      "criteria": [
+        "I can start a sentence with a fronted adverbial and a comma.",
+        "I can tell girl's from girls'.",
+        "I can use we were and I did in Standard English."
+      ],
+      "steps": {
+        "start": "Change \"I heard the bad news later that day\" so it starts with when.",
+        "teach": "Move adverbials to the front and add the comma: After lunch, we played. Show the dog's bone against the dogs' bones, and children's toys. Spot and fix: \"we was late\", \"I done it\".",
+        "practise": "The Year 4 grammar sets on PopSpell.",
+        "check": "Write three sentences that start with a fronted adverbial, one using a plural possessive."
+      },
+      "use": [
+        "eg-y4-fronted",
+        "eg-y4-possessive",
+        "eg-y4-standard"
+      ],
+      "home": "Write a recount of the day with every sentence starting a different way.",
+      "vocab": "fronted adverbial, comma, possession, plural, Standard English",
+      "understand": "Start a sentence of your own with \"After lunch\" or \"Without a sound\". Where does the comma go, and how does it help the reader?",
+      "lookFor": "Writes a new fronted adverbial with a comma after it, and explains that the comma shows where the opening ends.",
+      "cfe": {
+        "title": "Varying sentence openings, apostrophes and accurate grammar",
+        "level": "Second",
+        "codes": [
+          "LIT 2-22a"
+        ],
+        "criteria": [
+          "I can use sentences of different lengths and types and vary my sentence openings.",
+          "I can use a range of punctuation, including commas and apostrophes.",
+          "I can write most sentences in a grammatically accurate way."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-5-grammar-relative-clauses-possibility-and-parenthesis",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 2-22a"
+      ],
+      "title": "Year 5 grammar: relative clauses, possibility and parenthesis",
+      "intention": "We are learning to add information with relative clauses and parenthesis, and show how likely something is.",
+      "criteria": [
+        "I can add a relative clause with who, which, where, when, whose or that.",
+        "I can use modal verbs and adverbs to show how likely something is.",
+        "I can use brackets, dashes or commas for parenthesis."
+      ],
+      "steps": {
+        "start": "\"The girl won the race.\" Add who she is without starting a new sentence.",
+        "teach": "Build sentences with relative clauses for people (who), things (which), places (where) and owners (whose). Put a weather forecast on a scale: will, should, might, could. Add extra information to a sentence three ways: brackets, dashes and commas.",
+        "practise": "The Year 5 grammar sets on PopSpell.",
+        "check": "Write a sentence with a relative clause, one with a modal verb and one with parenthesis."
+      },
+      "use": [
+        "eg-y5-relative",
+        "eg-y5-possibility",
+        "eg-y5-parenthesis",
+        "eg-y5-verb-suffixes"
+      ],
+      "home": "Write a weather forecast for tomorrow using might, will and perhaps.",
+      "vocab": "relative clause, relative pronoun, modal verb, parenthesis, bracket, dash",
+      "understand": "What does the relative clause add to this sentence?",
+      "lookFor": "Explains it gives extra information about the noun.",
+      "cfe": {
+        "title": "Adding information to sentences: clauses, possibility and brackets",
+        "level": "Second",
+        "codes": [
+          "LIT 2-22a"
+        ],
+        "criteria": [
+          "I can use sentences of different lengths and types.",
+          "I can link sentences using a range of conjunctions.",
+          "I can write most sentences in a grammatically accurate way, using a range of punctuation."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-6-grammar-passive-formal-language-and-punctuation-between-clauses",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 2-22a"
+      ],
+      "title": "Year 6 grammar: passive, formal language and punctuation between clauses",
+      "intention": "We are learning to use the passive, formal language and the subjunctive, and semi-colons, colons and dashes.",
+      "criteria": [
+        "I can turn an active sentence into the passive.",
+        "I can choose formal words and use the subjunctive (If I were…).",
+        "I can use a semi-colon, colon or dash between clauses, and a hyphen to avoid ambiguity."
+      ],
+      "steps": {
+        "start": "\"I broke the window.\" How could you say it without saying who did it?",
+        "teach": "Flip active sentences into the passive and notice what comes first. Swap informal words for formal ones (find out: discover, ask for: request). Join two clauses with a semi-colon (It's raining; I'm fed up), introduce a list with a colon, and compare man eating shark with man-eating shark.",
+        "practise": "The Year 6 grammar sets on PopSpell.",
+        "check": "Write a formal letter opening that uses the passive, the subjunctive and a semi-colon."
+      },
+      "use": [
+        "eg-y6-passive",
+        "eg-y6-formal",
+        "eg-y6-punctuation",
+        "eg-y6-synonyms"
+      ],
+      "home": "Rewrite a text message to a friend as a formal letter.",
+      "vocab": "active, passive, subjunctive, formal, semi-colon, colon, hyphen",
+      "understand": "Why might a writer use the passive: \"The window was broken\"?",
+      "lookFor": "Explains it hides or doesn't need who did it."
+    },
+    {
+      "id": "lesson-england-year-1-common-exception-words",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 1-21a"
+      ],
+      "title": "Year 1 common exception words",
+      "intention": "We are learning to read and spell common exception words, noticing the tricky part.",
+      "criteria": [
+        "I can read the Year 1 common exception words.",
+        "I can spot the tricky part of a word.",
+        "I can spell some of them from memory."
+      ],
+      "steps": {
+        "start": "Read the, said and was from cards. Which part doesn't sound the way it looks?",
+        "teach": "For each word, sound out the parts that follow the rules and put a heart over the tricky part (said: s, d are regular; ai is tricky). Say it, spell it aloud, write it, then check it.",
+        "practise": "A Year 1 common exception words list on PopSpell, then read the Tricky word sentences.",
+        "check": "Read five words from the list, then write three from memory in a short dictated sentence."
+      },
+      "use": [
+        "cew-y1-1",
+        "cew-y1-2",
+        "cew-y1-3",
+        "r-tricky"
+      ],
+      "home": "Pin three tricky words on the fridge: read them every morning.",
+      "vocab": "tricky word, common exception word, sound, letter",
+      "understand": "Which part of \"said\" do you have to remember? Now find the tricky part in \"was\".",
+      "lookFor": "Finds the tricky part in a second word without being told, and sounds out the rest.",
+      "cfe": {
+        "title": "Common words with a tricky part: set 1",
+        "level": "First",
+        "codes": [
+          "LIT 1-21a"
+        ],
+        "criteria": [
+          "I can spell most commonly used words correctly.",
+          "I can use phonics and spelling strategies when spelling familiar and unfamiliar words."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-year-2-common-exception-words",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 1-21a"
+      ],
+      "title": "Year 2 common exception words",
+      "intention": "We are learning to read and spell the Year 2 common exception words.",
+      "criteria": [
+        "I can read the Year 2 common exception words.",
+        "I can explain which part of a word is tricky.",
+        "I can spell them in my writing."
+      ],
+      "steps": {
+        "start": "Read because, people and water. Which letters don't make their usual sound?",
+        "teach": "Group words that share a pattern (find, kind, mind, behind; old, cold, gold, hold, told). Mark the tricky part of the rest with a heart. Say, cover, write and check.",
+        "practise": "A Year 2 common exception words list on PopSpell.",
+        "check": "Write a sentence the tutor says that uses three of the words."
+      },
+      "use": [
+        "cew-y2-1",
+        "cew-y2-2",
+        "cew-y2-3",
+        "cew-y2-4",
+        "cew-y2-5"
+      ],
+      "home": "Spot these words in a reading book and read each one twice.",
+      "vocab": "common exception word, tricky part, pattern",
+      "understand": "How will you remember the tricky part of because?",
+      "lookFor": "Uses a strategy: saying it in syllables, a phrase or noticing the tricky part.",
+      "cfe": {
+        "title": "Common words with a tricky part: set 2",
+        "level": "First",
+        "codes": [
+          "LIT 1-21a"
+        ],
+        "criteria": [
+          "I can spell most commonly used words correctly.",
+          "I can use phonics and spelling strategies when spelling familiar and unfamiliar words."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-years-3-and-4-word-list-roots-prefixes-and-suffixes",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 2-21a"
+      ],
+      "title": "Years 3 and 4 word list: roots, prefixes and suffixes",
+      "intention": "We are learning to spell words from the Years 3 and 4 word list, using syllables, root words and the tricky part.",
+      "criteria": [
+        "I can break a long word into syllables.",
+        "I can find the root word and add prefixes and suffixes.",
+        "I can spell words from the Years 3 and 4 list."
+      ],
+      "steps": {
+        "start": "Clap the syllables of February, different and library. Which ones do people often miss out?",
+        "teach": "Take five words from the list. Say each in syllables, find any root word (accident, accidentally; possess, possession), and underline the tricky part. Use the first two or three letters to check a word in a dictionary.",
+        "practise": "The first Years 3 and 4 word lists on PopSpell; carry on through the rest over later lessons.",
+        "check": "Spell five words from today in a dictated sentence, then check them with the dictionary."
+      },
+      "use": [
+        "wl-y34-1",
+        "wl-y34-2"
+      ],
+      "home": "Choose three words from the list and write them in a sentence each.",
+      "vocab": "syllable, root word, prefix, suffix, dictionary",
+      "understand": "Which root word is in disappear? How does that help you spell it?",
+      "lookFor": "Finds the root (appear) and adds the prefix without changing it.",
+      "cfe": {
+        "title": "Spelling longer words: roots, prefixes and suffixes",
+        "level": "Second",
+        "codes": [
+          "LIT 2-21a"
+        ],
+        "criteria": [
+          "I can apply my knowledge of spelling patterns, rules and strategies to spell most words correctly."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-years-5-and-6-word-list-morphology-and-etymology",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 2-21a"
+      ],
+      "title": "Years 5 and 6 word list: morphology and etymology",
+      "intention": "We are learning to spell words from the Years 5 and 6 word list, using word parts and where words come from.",
+      "criteria": [
+        "I can use root words, prefixes and suffixes to spell long words.",
+        "I can use where a word comes from to help spell it.",
+        "I can check a spelling and meaning in a dictionary or thesaurus."
+      ],
+      "steps": {
+        "start": "Which letters are doubled in accommodate, embarrass and necessary? How could you remember?",
+        "teach": "Take five words from the list. Split them into parts (environment: environ + ment), link related words (criticise, critic), and talk about where they come from (rhythm and rhyme are from Greek). Make a memory trick for the hardest one.",
+        "practise": "The first Years 5 and 6 word lists on PopSpell; carry on through the rest over later lessons.",
+        "check": "Spell five words from today, then look up one in a dictionary and one in a thesaurus."
+      },
+      "use": [
+        "wl-y56-1",
+        "wl-y56-2"
+      ],
+      "home": "Find two of the words in a newspaper or online article.",
+      "vocab": "morphology, etymology, root word, prefix, suffix, thesaurus",
+      "understand": "Where does the word come from, and does that help you spell it?",
+      "lookFor": "Uses a word family or origin to explain a spelling.",
+      "cfe": {
+        "title": "Spelling tricky words: word parts and where words come from",
+        "level": "Second",
+        "codes": [
+          "LIT 2-21a"
+        ],
+        "criteria": [
+          "I can apply my knowledge of spelling patterns, rules and strategies to spell most words correctly."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-joined-handwriting-years-3-and-4",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Handwriting",
+      "codes": [
+        "LIT 1-24a"
+      ],
+      "title": "Joined handwriting (Years 3 and 4)",
+      "intention": "We are learning to join letters with diagonal and horizontal strokes, and keep our writing even.",
+      "criteria": [
+        "I can join letters with diagonal and horizontal strokes.",
+        "I know which letters are best left unjoined.",
+        "I keep my letters the same size and my lines parallel."
+      ],
+      "steps": {
+        "start": "Write your name your best way. Which letters already join?",
+        "teach": "Model a diagonal join (a to n, as in an) and a horizontal join (o to n, as in on). Practise joining pairs, then short words. Talk about letters many schools leave unjoined, such as capitals. Check that ascenders and descenders don't touch.",
+        "practise": "Use the letter formation sheet for any letters still formed the wrong way, then copy a short sentence in joined writing.",
+        "check": "Copy a sentence in joined writing: are the letters even, the joins smooth, and the lines parallel?"
+      },
+      "use": [
+        "handwriting-joins"
+      ],
+      "home": "Write a shopping list in joined handwriting.",
+      "vocab": "join, diagonal, horizontal, ascender, descender",
+      "understand": "Which letters don't join? Why not?",
+      "lookFor": "Names the letters their school doesn't join (often capitals and some after letters such as b, g, j, p, x, y).",
+      "cfe": {
+        "title": "Joined handwriting",
+        "level": "First",
+        "codes": [
+          "LIT 1-24a"
+        ],
+        "criteria": [
+          "I can present my writing in a clear and legible way."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-writing-legibly-fluently-and-at-speed-years-5-and-6",
+      "england": true,
+      "level": "Second",
+      "subject": "Literacy",
+      "strand": "Handwriting",
+      "codes": [
+        "LIT 2-24a"
+      ],
+      "title": "Writing legibly, fluently and at speed (Years 5 and 6)",
+      "intention": "We are learning to write legibly and fluently, getting faster, and choosing the right style for the job.",
+      "criteria": [
+        "I can write legibly and fluently at a good speed.",
+        "I can choose when to join and when to print, such as for labels.",
+        "I can choose the right pen or pencil for the task."
+      ],
+      "steps": {
+        "start": "Write the alphabet joined as fast as you can while staying neat. Time it.",
+        "teach": "Compare a quick note, a neat final copy and a labelled diagram: which style fits each? Practise speed in short bursts, keeping letters legible. Talk about choosing a pen or pencil that suits the task.",
+        "practise": "Copy a paragraph in your best joined writing, then write the same in a quick note style.",
+        "check": "Time the alphabet again. Is it faster and still easy to read?"
+      },
+      "use": [],
+      "home": "Write a birthday card in your best handwriting.",
+      "vocab": "legible, fluent, joined, print, presentation",
+      "understand": "When would you use neat print, and when quick joined writing?",
+      "lookFor": "Matches style to the task: labels or a final copy vs. notes.",
+      "cfe": {
+        "title": "Writing fluently and legibly at speed",
+        "level": "Second",
+        "codes": [
+          "LIT 2-24a"
+        ],
+        "criteria": [
+          "I can write in a fluent and legible way.",
+          "I can make appropriate choices about presentation to engage the reader."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-getting-ready-for-the-times-tables-check-year-4",
+      "england": true,
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-03a"
+      ],
+      "title": "Getting ready for the times tables check (Year 4)",
+      "intention": "We are learning to recall multiplication facts up to 12 × 12 quickly.",
+      "criteria": [
+        "I can recall multiplication facts up to 12 × 12.",
+        "I can use facts I know to work out ones I'm stuck on.",
+        "I can answer within 6 seconds."
+      ],
+      "steps": {
+        "start": "Quick-fire: 6 × 4, 7 × 8, 9 × 6, 12 × 3. Which felt hardest?",
+        "teach": "Find the facts still to learn (often the 6, 7, 8, 9 and 12 tables). Use derived facts: 6 × 7 is 5 × 7 plus 7; 9 × 8 is 10 × 8 take 8; 12 × 4 is 10 × 4 plus 2 × 4. Show that 3 × 8 and 8 × 3 are the same fact.",
+        "practise": "6, 7, 8 and 9 times tables on PopSpell, then the timed times tables check practice: 25 questions, 6 seconds each.",
+        "check": "Do the timed practice again. Which facts were missed? They go on the list for next time."
+      },
+      "use": [
+        "n-tables-6-9",
+        "n-mtc"
+      ],
+      "home": "Five minutes of tables a day: in the car, at teatime or before bed.",
+      "vocab": "multiply, times table, fact, product, commutative",
+      "understand": "You don't know 7 × 8. What fact could help?",
+      "lookFor": "Uses a known fact: 7 × 8 is double 7 × 4, or 7 × 7 + 7.",
+      "cfe": {
+        "title": "Quick recall of times tables",
+        "level": "Second",
+        "codes": [
+          "MNU 2-03a"
+        ],
+        "criteria": [
+          "I can use multiplication and division facts to the 10th multiplication table.",
+          "I can apply my knowledge of number facts to solve problems."
+        ]
+      }
+    },
+    {
+      "id": "lesson-england-getting-ready-for-the-phonics-check-year-1",
+      "england": true,
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a"
+      ],
+      "title": "Getting ready for the phonics check (Year 1)",
+      "intention": "We are learning to read real and made-up words by saying the sounds and blending them.",
+      "criteria": [
+        "I can say the sound for each letter and digraph quickly.",
+        "I can blend sounds to read real words and alien words.",
+        "I can read words with longer vowel sounds, such as ai, ee and igh."
+      ],
+      "steps": {
+        "start": "Flash grapheme cards: sh, ch, th, ai, ee, igh, oa, ar. Say the sound as fast as you can.",
+        "teach": "Read real words, then alien words that use the same sounds (ship, then shup). Remind them alien words have no meaning, so sound out every grapheme and blend: there's no guessing from a picture or a word they know.",
+        "practise": "Sound Switch on PopSpell, then the phonics check practice with you (Pupils → 🔤 Phonics check practice).",
+        "check": "Read ten words, a mix of real and alien. Which graphemes caused trouble?"
+      },
+      "use": [
+        "g-switch-first",
+        "g-switch-build"
+      ],
+      "home": "Make up alien names together and read them aloud.",
+      "vocab": "sound, grapheme, blend, real word, alien word",
+      "understand": "Why can't you guess an alien word?",
+      "lookFor": "Explains alien words aren't real, so you have to sound out every part.",
+      "cfe": {
+        "title": "Reading real and made-up words",
+        "level": "First",
+        "codes": [
+          "ENG 1-12a",
+          "LIT 1-13a"
+        ],
+        "criteria": [
+          "I can decode unknown words by locating and pronouncing familiar letter patterns and blends.",
+          "I can use a range of word recognition strategies independently."
+        ]
+      }
+    }
+  ]
+}

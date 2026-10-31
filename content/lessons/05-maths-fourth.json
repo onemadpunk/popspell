@@ -1,0 +1,689 @@
+{
+  "section": "Numeracy and mathematics: Fourth level (S3)",
+  "lessons": [
+    {
+      "id": "lesson-fourth-significant-figures-tolerance-and-error",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 4-01a"
+      ],
+      "title": "Significant figures, tolerance and error",
+      "intention": "We are learning to round to significant figures, judge the accuracy a problem needs, and work with tolerance.",
+      "criteria": [
+        "I can round answers to a given number of significant figures.",
+        "I can show that the context decides how to round.",
+        "I can show the effect of rounding too early in a multi-step calculation.",
+        "I can use a tolerance to decide whether a measurement is acceptable, as in 235 mm ± 1 mm."
+      ],
+      "steps": {
+        "start": "Round 48 263 to 1 significant figure, then 0·004 72 to 2 significant figures.",
+        "teach": "Count significant figures from the first non-zero digit. Show that 3·6 × 3·6 = 12·96, but rounding 3·64 to 3·6 first gives 12·96 instead of 13·2496: round only at the end. Explain tolerance with a machine part: 235 mm ± 1 mm means anything from 234 mm to 236 mm is accepted. Check a batch of measurements against it.",
+        "practise": "The \"Accurate enough?\" sheet.",
+        "check": "Round 0·060 49 to 3 significant figures. Is a 49·3 mm bolt acceptable at 50 mm ± 0·5 mm?"
+      },
+      "use": [
+        "n-round-100",
+        "n-estimate"
+      ],
+      "home": "Look at the tolerance printed on a measuring jug, a bag of flour or a part's packaging.",
+      "vocab": "significant figure, round, tolerance, error, accuracy, upper and lower limit",
+      "understand": "Why shouldn't you round in the middle of a calculation?",
+      "lookFor": "Explains that rounding early carries an error into every later step, so the final answer can be noticeably wrong; round only at the end."
+    },
+    {
+      "id": "lesson-fourth-multi-step-problems-and-the-order-of-operations",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 4-03a",
+        "MTH 4-03b"
+      ],
+      "title": "Multi-step problems and the order of operations",
+      "intention": "We are learning to solve unfamiliar multi-step problems and use the order of operations, including brackets.",
+      "criteria": [
+        "I can interpret and solve multi-step problems using the four operations.",
+        "I can see how a new problem is like one I've solved before, and use that.",
+        "I can apply the correct order of operations in all calculations, including those with brackets.",
+        "I can show how adding brackets changes a calculation."
+      ],
+      "steps": {
+        "start": "Work out 8 + 4 × 3 and (8 + 4) × 3. Why are they different?",
+        "teach": "Review the order of operations: brackets, powers, then multiplying and dividing, then adding and subtracting. Place brackets in 2 + 6 × 5 − 3 to make as many different answers as you can. Solve an unfamiliar problem by asking: what do I know, what do I need, which problem is this like? Model a three-step problem (planning a school trip cost with a discount and a deposit) and write each step.",
+        "practise": "Multi-step problems, then the \"Plan it step by step\" sheet.",
+        "check": "Work out 36 ÷ (4 + 2) × 3 − 2². Then solve a new multi-step problem and explain your plan."
+      },
+      "use": [
+        "en-multistep"
+      ],
+      "home": "Plan the cost of a family day out with tickets, travel and food, step by step.",
+      "vocab": "order of operations, brackets, powers, multi-step, strategy, inverse",
+      "understand": "How did you decide which step to do first in that problem?",
+      "lookFor": "Explains the plan: what was known, what was needed, and how it matched a problem solved before, as well as the order of operations."
+    },
+    {
+      "id": "lesson-fourth-powers-roots-and-scientific-notation",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 4-06a",
+        "MTH 4-06b"
+      ],
+      "title": "Powers, roots and scientific notation",
+      "intention": "We are learning to use the link between powers and roots, and to write very large and very small numbers in scientific notation.",
+      "criteria": [
+        "I can use the inverse relationship between powers and roots to evaluate roots, as in ∛27 = 3.",
+        "I understand that square roots can be positive or negative, as in √9 = ±3.",
+        "I can write numbers in scientific notation and work with them."
+      ],
+      "steps": {
+        "start": "What number squared makes 49? Is there more than one answer?",
+        "teach": "Link squaring and square roots, and cubing and cube roots, as inverses: 5² = 25, so √25 = 5 (and −5 squared is 25 too). Find ∛64 and ⁴√81. Show scientific notation as a × 10ⁿ with 1 ≤ a < 10: the Earth is about 150 000 000 km from the Sun, 1·5 × 10⁸ km; a red blood cell is about 0·000 008 m wide, 8 × 10⁻⁶ m. Multiply in scientific notation with a calculator's EXP or ×10ˣ key.",
+        "practise": "The \"Big and small numbers\" sheet.",
+        "check": "Write 0·000 46 and 3 200 000 in scientific notation. Evaluate ∛125. Why does √16 have two answers?"
+      },
+      "use": [],
+      "home": "Find a very large or very small number in a science article and write it in scientific notation.",
+      "vocab": "power, root, square root, cube root, inverse, scientific notation, standard form",
+      "understand": "Why is 4·5 × 10⁶ written that way and not as 45 × 10⁵?",
+      "lookFor": "Explains that scientific notation always has one non-zero digit before the point (1 ≤ a < 10), so numbers are easy to compare."
+    },
+    {
+      "id": "lesson-fourth-percentage-change-and-choosing-the-best-form",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 4-07a"
+      ],
+      "title": "Percentage change, and choosing the best form",
+      "intention": "We are learning to choose the most efficient form of fraction, decimal or percentage, and to calculate percentage increase and decrease.",
+      "criteria": [
+        "I can choose the most efficient form of fractions, decimals or percentages for a calculation.",
+        "I can calculate a percentage increase or decrease.",
+        "I can use my calculations to compare, decide and choose."
+      ],
+      "steps": {
+        "start": "Which is easiest to work out in your head: 25% of 48, ¼ of 48, or 0·25 × 48? Why?",
+        "teach": "Talk through when each form is quickest: ¼ for mental work, 0·25 with a calculator, % for comparing. Find a percentage change: (change ÷ original) × 100. A bike's price goes from £240 to £276: a 15% increase. Use multipliers: a 15% increase is × 1·15; a 20% decrease is × 0·8. Compare two shops' price rises.",
+        "practise": "Percentages, then the \"Up or down?\" sheet.",
+        "check": "A phone falls from £450 to £378. What is the percentage decrease? Increase £80 by 12·5% using a multiplier."
+      },
+      "use": [
+        "n-percent"
+      ],
+      "home": "Track the price of something you buy often and work out the percentage change over a few months.",
+      "vocab": "percentage increase, percentage decrease, multiplier, original value, efficient",
+      "understand": "A price rises by 10%, then falls by 10%. Is it back where it started? Why?",
+      "lookFor": "Explains no: the 10% fall is of a bigger amount, so it ends lower (× 1·1 × 0·9 = × 0·99)."
+    },
+    {
+      "id": "lesson-fourth-calculating-with-fractions-and-mixed-numbers",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MTH 4-07b"
+      ],
+      "title": "Calculating with fractions and mixed numbers",
+      "intention": "We are learning to add, subtract and multiply fractions and mixed numbers to solve problems in context.",
+      "criteria": [
+        "I can add and subtract fractions and mixed numbers in context.",
+        "I can multiply fractions and mixed numbers.",
+        "I can solve real problems involving fractions and mixed numbers."
+      ],
+      "steps": {
+        "start": "A recipe needs 1½ cups of flour. You make 2½ times the recipe. How much flour?",
+        "teach": "Review adding with a common denominator. Multiply fractions as part of a part (⅔ × ¾ = 6/12 = ½), cancelling first where you can. Change mixed numbers to improper fractions to multiply: 1½ × 2½ = 3/2 × 5/2 = 15/4 = 3¾. Solve problems: lengths of wood, recipe scaling, time in hours.",
+        "practise": "Mixed numbers and calculating with fractions, then the \"Fractions at work\" sheet.",
+        "check": "Work out 2⅓ + 1¾ and 2⅖ × 1¼. A plank is 3¾ m long; ⅖ is cut off. How long is the piece cut off?"
+      },
+      "use": [
+        "en-fractions-y6",
+        "en-fractions-y5"
+      ],
+      "home": "Use fractions when cooking: scale a recipe by 1½.",
+      "vocab": "mixed number, improper fraction, common denominator, multiply, cancel, simplify",
+      "understand": "Why can't you multiply 1½ × 2½ by doing 1 × 2 and ½ × ½?",
+      "lookFor": "Explains that you'd miss the parts that cross over (1 × ½ and ½ × 2), so change to improper fractions first."
+    },
+    {
+      "id": "lesson-fourth-direct-and-inverse-proportion",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 4-08a"
+      ],
+      "title": "Direct and inverse proportion",
+      "intention": "We are learning to calculate how a change in one quantity changes a related quantity.",
+      "criteria": [
+        "I can use proportion to calculate the change in one quantity caused by a change in a related quantity.",
+        "I can tell direct proportion from inverse proportion.",
+        "I can solve real-life proportion problems."
+      ],
+      "steps": {
+        "start": "4 painters take 6 days to paint a school. How long would 8 painters take? And how much paint would they use?",
+        "teach": "Direct proportion: both go up together at the same rate (twice the time, twice the cost); use the unitary method. Inverse proportion: one goes up as the other goes down (twice the workers, half the time); multiply to find the total amount of work first. Sort real situations into direct, inverse or neither (age and height).",
+        "practise": "Ratio and proportion, then the \"Proportion problems\" sheet.",
+        "check": "6 litres of fuel take a car 84 km. How far on 10 litres? A journey takes 3 hours at 60 km/h. How long at 45 km/h?"
+      },
+      "use": [
+        "en-ratio"
+      ],
+      "home": "Spot direct and inverse proportion at home: cooking times, sharing costs, how long chores take with more helpers.",
+      "vocab": "direct proportion, inverse proportion, unitary method, rate, constant",
+      "understand": "How do you know whether a problem is direct or inverse proportion?",
+      "lookFor": "Explains it by asking: if one quantity doubles, does the other double (direct) or halve (inverse)?"
+    },
+    {
+      "id": "lesson-fourth-earnings-deductions-and-net-pay",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 4-09b"
+      ],
+      "title": "Earnings, deductions and net pay",
+      "intention": "We are learning to calculate gross and net pay from earnings and deductions.",
+      "criteria": [
+        "I can find information on earnings and deductions.",
+        "I can calculate gross pay, including overtime.",
+        "I can calculate net income from gross pay and deductions."
+      ],
+      "steps": {
+        "start": "Two jobs: £11·50 an hour for 30 hours, or £18 000 a year. Which pays more a week?",
+        "teach": "Explain gross pay, overtime (time and a half, double time), commission, and deductions (income tax, National Insurance, pension). Use given practice rates on a payslip to work out net pay, and point out that real rates change each year and are published by the government. Read a sample payslip line by line.",
+        "practise": "The \"My payslip\" sheet, using the practice rates on it.",
+        "check": "Someone works 37 hours at £12 and 4 hours' overtime at time and a half. Find their gross pay. With £68·40 deducted, what is their net pay?"
+      },
+      "use": [
+        "n-best-value"
+      ],
+      "home": "Look at a real (or example) payslip with a grown-up and find gross pay, deductions and net pay.",
+      "vocab": "gross pay, net pay, deduction, overtime, commission, income tax, National Insurance, pension",
+      "understand": "Why is net pay what matters when budgeting?",
+      "lookFor": "Explains that net pay is what actually arrives after deductions, so it's the money there is to spend or save."
+    },
+    {
+      "id": "lesson-fourth-credit-debt-and-choosing-financial-products",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 4-09a",
+        "MNU 4-09c"
+      ],
+      "title": "Credit, debt and choosing financial products",
+      "intention": "We are learning to manage credit and debt responsibly, compare financial products, and convert currencies for best value.",
+      "criteria": [
+        "I can discuss what to consider when deciding what I can afford, to manage credit and debt.",
+        "I can budget and justify my spending and saving choices.",
+        "I can compare financial products, such as savings accounts, loans and credit cards, after calculating.",
+        "I can explain the impact of financial decisions.",
+        "I can use currency conversion to find best value."
+      ],
+      "steps": {
+        "start": "A £600 laptop: pay now, or £55 a month for 12 months. What is the difference?",
+        "teach": "Calculate the total cost of buying on credit and compare it with saving first. Compare two savings accounts with simple interest (3% a year, or 2·5% plus a £10 bonus) over a year. Discuss what 'can I afford it?' means: income, essential costs, other debts. Compare holiday money from two exchange rates with a fee. Talk about the impact of missing payments.",
+        "practise": "The \"Borrow, save or wait?\" sheet.",
+        "check": "Which costs less: a £900 loan repaid at £80 a month for 12 months, or saving £75 a month for 12 months then buying? Explain the impact of each choice."
+      },
+      "use": [
+        "n-best-value"
+      ],
+      "home": "Compare the real cost of buying something on a payment plan with saving up for it.",
+      "vocab": "credit, debt, interest, APR, savings account, loan, exchange rate, commission, budget",
+      "understand": "Why might the cheapest monthly payment not be the best deal?",
+      "lookFor": "Explains that a longer term or higher interest can make the total cost much more, and that missing payments has consequences."
+    },
+    {
+      "id": "lesson-fourth-time-zones-planning-and-speed-with-decimal-hours",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 4-10a",
+        "MNU 4-10b"
+      ],
+      "title": "Time zones, planning, and speed with decimal hours",
+      "intention": "We are learning to manage time across time zones and midnight, and to calculate speed, distance and time with decimal hours.",
+      "criteria": [
+        "I can plan using different time zones and across midnight.",
+        "I can calculate durations across hours, days and months.",
+        "I can calculate speed, distance and time using decimal fractions of an hour."
+      ],
+      "steps": {
+        "start": "A flight leaves Glasgow at 21:40 and takes 7 hours 50 minutes. New York is 5 hours behind. What is the local time when it lands?",
+        "teach": "Use a timeline to cross midnight and change time zone in separate steps. Convert minutes to decimal hours (36 minutes = 0·6 hours) and back. Calculate a speed from a time like 2 hours 24 minutes (2·4 hours). Count durations across months, remembering month lengths. Plan a revision timetable that fits around fixed times.",
+        "practise": "12-hour and 24-hour time, then the \"Around the world\" sheet.",
+        "check": "A train travels 186 km in 1 hour 33 minutes. What is its average speed? How many days from 18 March to 4 May?"
+      },
+      "use": [
+        "n-time-24",
+        "n-durations"
+      ],
+      "home": "Plan a call to someone in another time zone at a time that suits you both.",
+      "vocab": "time zone, GMT, BST, duration, decimal hours, average speed, timetable",
+      "understand": "Why is 1 hour 15 minutes written as 1·25 hours, not 1·15?",
+      "lookFor": "Explains that 15 minutes is a quarter of an hour, because there are 60 minutes in an hour, not 100."
+    },
+    {
+      "id": "lesson-fourth-surface-area-and-using-materials-efficiently",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 4-11a",
+        "MTH 4-11b"
+      ],
+      "title": "Surface area, and using materials efficiently",
+      "intention": "We are learning to find areas and surface areas, and use them to make the best use of materials.",
+      "criteria": [
+        "I can calculate the area of kites, parallelograms and trapeziums.",
+        "I can use formulae to find the surface area of cuboids, triangular prisms and cylinders.",
+        "I can make the most efficient use of materials in a real problem.",
+        "I understand the impact of rounding too early on accuracy."
+      ],
+      "steps": {
+        "start": "Which box needs less card to make: a 10 cm cube, or a 20 cm × 10 cm × 5 cm cuboid? Both hold 1000 cm³.",
+        "teach": "Derive the trapezium formula ½(a + b)h by doubling it into a parallelogram, and the kite as half the product of its diagonals. Draw nets to find surface areas: cuboid 2(lb + bh + lh); a cylinder's curved surface unrolls to a rectangle 2πr by h. Compare the card needed for packaging that holds the same amount, keeping full accuracy until the end.",
+        "practise": "Area and perimeter, then the \"Wrap it up\" sheet.",
+        "check": "Find the area of a trapezium with parallel sides 7 cm and 11 cm and height 5 cm. Find the surface area of a cylinder with radius 3 cm and height 10 cm."
+      },
+      "use": [
+        "n-area",
+        "en-area-formulae"
+      ],
+      "home": "Measure a cereal box and work out how much card it uses.",
+      "vocab": "trapezium, kite, parallelogram, net, surface area, prism, cylinder, efficient",
+      "understand": "Two boxes hold the same amount. Why might one need less card?",
+      "lookFor": "Explains that shapes closer to a cube have a smaller surface area for the same volume, so they need less material."
+    },
+    {
+      "id": "lesson-fourth-volume-of-prisms-and-cylinders",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MTH 4-11c"
+      ],
+      "title": "Volume of prisms and cylinders",
+      "intention": "We are learning to calculate the volume of prisms, including triangular prisms and cylinders, using formulae.",
+      "criteria": [
+        "I can calculate the volume of a prism as the area of its cross-section × its length.",
+        "I can calculate the volume of triangular prisms and cylinders.",
+        "I can solve practical problems with volume and capacity."
+      ],
+      "steps": {
+        "start": "A tent is shaped like a triangular prism. How could you work out how much air it holds?",
+        "teach": "Show that every prism's volume is cross-section area × length, from cuboids to triangular prisms. For a cylinder, V = πr²h. Convert between cm³ and litres (1000 cm³ = 1 litre). Solve: how many 330 ml cans fill a cylinder tank of radius 20 cm and height 50 cm?",
+        "practise": "The \"Fill it up\" sheet.",
+        "check": "Find the volume of a triangular prism with triangle base 6 cm, height 4 cm and length 15 cm, and of a cylinder with radius 5 cm and height 12 cm."
+      },
+      "use": [
+        "en-area-formulae"
+      ],
+      "home": "Work out how many litres a mug, a vase or a fish tank holds, then check with water.",
+      "vocab": "prism, cross-section, volume, cylinder, capacity, litre, cm³",
+      "understand": "Why does area of cross-section × length work for every prism?",
+      "lookFor": "Explains that the prism is the same cross-section repeated along its length, layer after layer."
+    },
+    {
+      "id": "lesson-fourth-maths-in-careers-and-the-workplace",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 4-12a"
+      ],
+      "title": "Maths in careers and the workplace",
+      "intention": "We are learning about the maths used in different careers, and to present how maths is applied at work.",
+      "criteria": [
+        "I can contribute to discussions on the role of maths in everyday life and work.",
+        "I can investigate the maths skills needed for a range of careers, including STEM careers.",
+        "I can present, with others, how maths is applied in a workplace."
+      ],
+      "steps": {
+        "start": "Name a job that uses no maths at all. Now let's test it.",
+        "teach": "Pick three careers the pupil is interested in (for example, a nurse, an electrician and a games designer). For each, find the maths: dosage calculations, Ohm's law and measurements, coordinates and algorithms. Use careers information, such as job profiles that list the skills needed. Plan a short presentation with a worked example from one job.",
+        "practise": "The \"Maths in careers\" sheet: research three careers and plan the presentation.",
+        "check": "Give the presentation. Ask: which maths skill came up in all three jobs, and why?"
+      },
+      "use": [],
+      "home": "Ask a family member or friend what maths they use at work, and add it to your research.",
+      "vocab": "career, STEM, skill, workplace, application, presentation",
+      "understand": "Which maths skill came up in most of the careers you researched? Why do you think that is?",
+      "lookFor": "Names a skill (such as percentages, measurement or data) and links it to tasks common across jobs, with evidence from the research."
+    },
+    {
+      "id": "lesson-fourth-sequences-finding-the-nth-term",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 4-13a"
+      ],
+      "title": "Sequences: finding the nth term",
+      "intention": "We are learning to find a general formula for the nth term of a linear sequence and use it to solve problems.",
+      "criteria": [
+        "I can establish a number sequence from a physical or pictorial pattern.",
+        "I can find a formula for the nth term of a linear sequence.",
+        "I can use the formula to make evaluations and solve related problems."
+      ],
+      "steps": {
+        "start": "Tables in a row seat 6, 10, 14, 18 people. How many seats for 25 tables?",
+        "teach": "Draw the tables pattern and see why it goes up by 4 each time: each new table adds 4 seats. Find the nth term as 4n + 2 by comparing with the 4 times table. Check with n = 1. Use the formula backwards: how many tables to seat 150? Repeat with a decreasing sequence.",
+        "practise": "Number patterns, then the \"nth term\" sheet.",
+        "check": "Find the nth term of 7, 11, 15, 19 … Which term is 123? Is 200 in the sequence?"
+      },
+      "use": [
+        "m-patterns"
+      ],
+      "home": "Find a growing pattern in real life (fence panels, a staircase of blocks) and write its nth term.",
+      "vocab": "sequence, nth term, general formula, linear, common difference",
+      "understand": "In 4n + 2, what does the 2 tell you?",
+      "lookFor": "Explains it is the adjustment from the 4 times table: each term is 2 more than a multiple of 4 (the 'zero term')."
+    },
+    {
+      "id": "lesson-fourth-gradient-and-straight-line-graphs",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 4-13b",
+        "MTH 4-13c",
+        "MTH 4-13d"
+      ],
+      "title": "Gradient and straight-line graphs",
+      "intention": "We are learning to calculate gradients, write equations of horizontal and vertical lines, and plot straight lines from formulae.",
+      "criteria": [
+        "I can calculate the gradient of a line on a coordinate diagram.",
+        "I can interpret a gradient in context, as in whether a ramp meets building regulations.",
+        "I can give the equation of a horizontal or vertical line, as in x = a or y = b.",
+        "I can use a formula to plot a straight line and answer questions from it."
+      ],
+      "steps": {
+        "start": "Which is steeper: a ramp that rises 1 m over 12 m, or one that rises 1 m over 15 m?",
+        "teach": "Gradient = vertical change ÷ horizontal change. Find gradients from graphs, including negative gradients. Horizontal lines have gradient 0 and equation y = b; vertical lines are x = a and have no gradient. Use y = 2x − 1 to make a table of points, plot them and read off values. Check a ramp against a maximum gradient of 1 in 12.",
+        "practise": "The \"Slopes and lines\" sheet.",
+        "check": "Find the gradient through (1, 2) and (5, 10). What is the equation of the line through (3, −1) and (3, 4)? Does a ramp rising 0·5 m over 5 m meet a 1 in 12 rule?"
+      },
+      "use": [
+        "en-coordinates"
+      ],
+      "home": "Measure a ramp or slope near you and work out its gradient.",
+      "vocab": "gradient, slope, vertical, horizontal, steepness, equation, coordinate, straight line",
+      "understand": "Why does a vertical line have no gradient?",
+      "lookFor": "Explains that the horizontal change is zero, and you can't divide by zero."
+    },
+    {
+      "id": "lesson-fourth-brackets-and-factorising",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 4-14a",
+        "MTH 4-14b"
+      ],
+      "title": "Brackets and factorising",
+      "intention": "We are learning to expand and simplify brackets, and to factorise expressions.",
+      "criteria": [
+        "I can expand brackets using the distributive law, and simplify.",
+        "I can evaluate expressions involving a bracket.",
+        "I can find the factors of algebraic terms and identify common factors.",
+        "I can factorise expressions with a numerical common factor."
+      ],
+      "steps": {
+        "start": "4 × 23 is 4 × 20 + 4 × 3. How does that help you work out 3(x + 5)?",
+        "teach": "Use area rectangles to show 3(x + 5) = 3x + 15. Expand and simplify 2(3a − 4) + 5a, and with negatives: −2(x − 3) = −2x + 6. Factorise by finding the highest common factor: 6x + 9 = 3(2x + 3), and 8y − 12 = 4(2y − 3). Check by expanding back.",
+        "practise": "The \"Expand and factorise\" sheet.",
+        "check": "Expand and simplify 4(2x + 1) − 3(x − 2). Factorise 15a − 20. Find 5(2p − 3) when p = −1."
+      },
+      "use": [],
+      "home": "Make a puzzle for someone at home: give them a factorised expression and ask them to expand it.",
+      "vocab": "expand, bracket, distributive law, factorise, common factor, simplify",
+      "understand": "How can you check that 3(2x + 3) is the right factorisation of 6x + 9?",
+      "lookFor": "Expands it back to 6x + 9, and checks that 3 is the highest common factor so nothing more comes out."
+    },
+    {
+      "id": "lesson-fourth-harder-equations-and-inequalities",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 4-15a"
+      ],
+      "title": "Harder equations and inequalities",
+      "intention": "We are learning to solve equations with unknowns on both sides and brackets, and to solve inequalities.",
+      "criteria": [
+        "I can solve equations such as ax ± b = cx ± d.",
+        "I can solve equations involving brackets.",
+        "I can solve linear inequalities, including on closed intervals.",
+        "I can express a problem as an equation, inequation or formula and solve it."
+      ],
+      "steps": {
+        "start": "Two phone plans: £15 plus £2 a gigabyte, or £25 plus £1 a gigabyte. When do they cost the same?",
+        "teach": "Write the plans as 15 + 2g = 25 + g and solve by balancing (take g from both sides first). Solve 3(x − 2) = x + 8 by expanding first. Solve inequalities like a balance too: 4x − 3 > 13 gives x > 4; show it on a number line. Solve −2 ≤ x + 3 < 5 and list the whole numbers that fit.",
+        "practise": "Missing numbers and signs, then the \"Balance it\" sheet.",
+        "check": "Solve 5x + 4 = 2x + 19 and 4(x + 1) = 2(x + 7). Solve 3x − 5 ≤ 16. When is the first phone plan cheaper?"
+      },
+      "use": [
+        "m-equations"
+      ],
+      "home": "Compare two real price plans (phones, gyms, taxis) and find where they cost the same.",
+      "vocab": "equation, inequation, inequality, balance, expand, solve, interval",
+      "understand": "When does the inequality sign flip?",
+      "lookFor": "Explains it flips when you multiply or divide both sides by a negative number, and can show why with an example."
+    },
+    {
+      "id": "lesson-fourth-pythagoras-and-trigonometry-in-right-angled-triangles",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 4-16a"
+      ],
+      "title": "Pythagoras and trigonometry in right-angled triangles",
+      "intention": "We are learning to use Pythagoras' theorem and trigonometry to find sides and angles in right-angled triangles.",
+      "criteria": [
+        "I can calculate any side of a right-angled triangle using Pythagoras' theorem.",
+        "I can calculate a side using trigonometry.",
+        "I can calculate an angle using trigonometry.",
+        "I can choose the right strategy and interpret the answer in context."
+      ],
+      "steps": {
+        "start": "A 5 m ladder leans against a wall with its foot 3 m out. How high up the wall does it reach?",
+        "teach": "Square the sides of 3, 4, 5 triangles to show a² + b² = c². Find a hypotenuse and a shorter side. Label opposite, adjacent and hypotenuse from an angle, and use SOH CAH TOA. Find a side (tan 35° × 8) and an angle (inverse tan of 5 ÷ 8). Decide which tool fits: two sides and no angle needed means Pythagoras.",
+        "practise": "The \"Pythagoras and trigonometry\" sheet.",
+        "check": "Find the hypotenuse when the other sides are 9 cm and 12 cm. A ramp rises 1·2 m over 6 m: find its angle with the ground."
+      },
+      "use": [],
+      "home": "Use a ruler and protractor to check a Pythagoras answer on a real triangle, such as a ladder's position or a slope.",
+      "vocab": "hypotenuse, Pythagoras, opposite, adjacent, sine, cosine, tangent, inverse",
+      "understand": "How do you decide between Pythagoras and trigonometry?",
+      "lookFor": "Pythagoras when you know two sides and want the third; trigonometry when an angle is involved, either known or wanted."
+    },
+    {
+      "id": "lesson-fourth-circles-circumference-and-area",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 4-16b"
+      ],
+      "title": "Circles: circumference and area",
+      "intention": "We are learning the links between radius, diameter, circumference and area, and to solve problems with circles.",
+      "criteria": [
+        "I can calculate circumference using C = πD or C = 2πr.",
+        "I can calculate area using A = πr².",
+        "I can find the diameter or radius when I know the area or circumference."
+      ],
+      "steps": {
+        "start": "Wrap string round a tin and measure it, then measure across. Divide the first by the second. What do you notice?",
+        "teach": "Find π from several round objects. Use C = πD and A = πr², taking care to use the radius for area. Work backwards: a circle of circumference 50 cm has diameter 50 ÷ π. A circle of area 100 cm² has radius √(100 ÷ π). Solve problems such as the distance a wheel travels in 100 turns.",
+        "practise": "The \"Round and round\" sheet.",
+        "check": "Find the circumference and area of a circle of diameter 14 cm. A circular pond has area 50 m². What is its radius?"
+      },
+      "use": [],
+      "home": "Measure round objects at home and check that circumference ÷ diameter is about 3·14 each time.",
+      "vocab": "radius, diameter, circumference, area, pi, π",
+      "understand": "Why must you use the radius, not the diameter, in A = πr²?",
+      "lookFor": "Explains that the formula squares the radius; using the diameter makes the area four times too big."
+    },
+    {
+      "id": "lesson-fourth-circle-angle-facts-and-similar-shapes",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 4-17a",
+        "MTH 4-17b"
+      ],
+      "title": "Circle angle facts and similar shapes",
+      "intention": "We are learning to use the facts about tangents and angles in a semicircle, and to solve problems with similar shapes.",
+      "criteria": [
+        "I know a tangent meets a radius at 90°, and use it to find missing angles.",
+        "I know the angle in a semicircle is 90°, and use it to solve problems.",
+        "I can use similarity to find unknown lengths.",
+        "I can solve problems involving the area of similar shapes."
+      ],
+      "steps": {
+        "start": "Draw a semicircle and mark a point on the curve. Join it to both ends of the diameter. Measure the angle. Try another point.",
+        "teach": "Show that the angle in a semicircle is always 90°, then combine it with triangle angle sums. Draw a tangent and its radius to show the right angle. Find missing angles in diagrams that use both facts and isosceles triangles made by radii. For similar shapes, find the scale factor from matching sides, then the unknown length. Areas scale by the square of the scale factor.",
+        "practise": "The \"Circles and similar shapes\" sheet.",
+        "check": "Find a missing angle using a tangent and a radius. Two similar photos have widths 6 cm and 15 cm. If the small one is 4 cm tall, how tall is the large one? How many times larger is its area?"
+      },
+      "use": [],
+      "home": "Find similar shapes at home (photo sizes, paper sizes such as A4 and A5) and work out their scale factor.",
+      "vocab": "tangent, radius, semicircle, similar, scale factor, corresponding, area factor",
+      "understand": "A shape is enlarged by scale factor 3. Why is its area 9 times bigger, not 3?",
+      "lookFor": "Explains that both length and width are tripled, so the area is multiplied by 3 × 3 = 9."
+    },
+    {
+      "id": "lesson-fourth-transformations-and-rotational-symmetry",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 4-18a",
+        "MTH 4-18b",
+        "MTH 4-19a"
+      ],
+      "title": "Transformations and rotational symmetry",
+      "intention": "We are learning to transform shapes on a four-quadrant grid and to describe rotational symmetry.",
+      "criteria": [
+        "I can read and plot coordinates on a four-quadrant grid.",
+        "I can reflect and translate a point or shape, and describe a transformation.",
+        "I can describe the rotational properties of shapes, pictures and patterns, including the order of rotation.",
+        "I can use rotational symmetry to complete or create designs."
+      ],
+      "steps": {
+        "start": "How many times does a square look the same as you turn it through one full turn?",
+        "teach": "Plot a shape in all four quadrants. Translate it by a vector, such as 3 right and 2 down, and reflect it in the x-axis, the y-axis and a line such as x = 1. Describe a given transformation fully. Find the order of rotational symmetry of letters, logos and regular polygons with tracing paper, then complete a design with order 4.",
+        "practise": "Coordinates: plotting, translating and reflecting, then the \"Move it and turn it\" sheet.",
+        "check": "Reflect triangle (1, 1), (3, 1), (3, 4) in the x-axis and give the new coordinates. What is the order of rotational symmetry of a regular hexagon?"
+      },
+      "use": [
+        "en-coordinates"
+      ],
+      "home": "Find logos with rotational symmetry and give each one's order.",
+      "vocab": "translate, reflect, transformation, image, vector, rotational symmetry, order of rotation",
+      "understand": "How is order of rotational symmetry different from lines of symmetry?",
+      "lookFor": "Explains that the order counts how many times a shape fits onto itself in one full turn, while lines of symmetry are about reflection."
+    },
+    {
+      "id": "lesson-fourth-averages-and-spread",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MTH 4-20b"
+      ],
+      "title": "Averages and spread",
+      "intention": "We are learning to find the mean, median, mode and range, choose the best average, and see how an average can mislead.",
+      "criteria": [
+        "I can calculate the mean, median, mode and range of a data set.",
+        "I can decide which average is most appropriate.",
+        "I can explain how using a different average could be misleading."
+      ],
+      "steps": {
+        "start": "Five people earn £18 000, £20 000, £21 000, £22 000 and £150 000. What is the 'average' pay?",
+        "teach": "Find the mean (£46 200) and median (£21 000) of the pay data and discuss which is fairer. Find the mode of shoe sizes for a shop order. Use the range to compare spread. Decide which average suits each situation: house prices (median), most popular size (mode), test scores with no extreme values (mean).",
+        "practise": "The mean, then the \"Which average?\" sheet.",
+        "check": "Find the mean, median, mode and range of 4, 7, 7, 9, 12, 15. A company says its 'average' pay is £46 200. Why could that mislead?"
+      },
+      "use": [
+        "en-mean"
+      ],
+      "home": "Collect a week of temperatures or bus journey times and find all four statistics.",
+      "vocab": "mean, median, mode, range, average, spread, outlier, misleading",
+      "understand": "When is the median a better average than the mean?",
+      "lookFor": "When there are extreme values (outliers), such as a few very high salaries, which pull the mean away from what is typical."
+    },
+    {
+      "id": "lesson-fourth-interpreting-data-correlation-and-choosing-diagrams",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 4-20a",
+        "MTH 4-21a"
+      ],
+      "title": "Interpreting data, correlation and choosing diagrams",
+      "intention": "We are learning to interpret raw and graphical data, describe relationships, and choose the best diagram for the data.",
+      "criteria": [
+        "I can interpret raw and graphical data and comment on relationships, using words such as correlation.",
+        "I can choose and justify the most appropriate diagram, such as a stem and leaf diagram.",
+        "I can display discrete, continuous and grouped data appropriately.",
+        "I can communicate my findings clearly."
+      ],
+      "steps": {
+        "start": "Do taller people have bigger feet? How could we find out, and how would we show it?",
+        "teach": "Draw a scatter graph of height against foot length and describe the correlation (positive, negative, none) and its strength. Discuss why correlation doesn't prove one causes the other. Make an ordered stem and leaf diagram of test scores and read the median from it. Sort data into discrete, continuous and grouped, and match each to a suitable chart.",
+        "practise": "Reading tables, then the \"What does the data say?\" sheet.",
+        "check": "Describe the correlation in a given scatter graph. Which diagram would you choose for 30 reaction times, and why?"
+      },
+      "use": [
+        "n-table",
+        "n-bar"
+      ],
+      "home": "Find a graph in the news and write two sentences about what it shows and one about what it doesn't.",
+      "vocab": "correlation, scatter graph, stem and leaf, discrete, continuous, grouped, frequency, trend",
+      "understand": "Ice cream sales and sunburn are positively correlated. Does ice cream cause sunburn?",
+      "lookFor": "Explains that correlation doesn't prove cause: both are linked to a third factor, hot sunny weather."
+    },
+    {
+      "id": "lesson-fourth-probability-expectation-and-risk",
+      "level": "Fourth",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 4-22a"
+      ],
+      "title": "Probability, expectation and risk",
+      "intention": "We are learning to calculate probabilities and expected outcomes, and to use them for predictions, risk and decisions.",
+      "criteria": [
+        "I can calculate the probability of an event.",
+        "I can determine how many times I expect an event to occur.",
+        "I can use probability to make predictions, assess risk and make informed decisions."
+      ],
+      "steps": {
+        "start": "A game costs £1 to play. You win £5 if you roll a 6. Over 60 games, would you expect to win or lose money?",
+        "teach": "Calculate expected frequency = probability × number of trials. Work out the expected result of the game (60 × ⅙ = 10 wins, £50 won, £60 spent). Use relative frequency from an experiment to estimate a probability. Discuss risk as probability and consequence together, with examples like insurance, weather warnings and medical tests.",
+        "practise": "How likely is it?, then the \"Risky business\" sheet.",
+        "check": "The probability a phone is faulty is 0·02. How many faulty phones would you expect in a batch of 1500? Is a 1% chance of losing £1000 worse than a 50% chance of losing £10? Explain."
+      },
+      "use": [
+        "n-chance"
+      ],
+      "home": "Look at a weather warning or an insurance offer and talk about the probability and the consequences.",
+      "vocab": "probability, expected frequency, relative frequency, risk, prediction, outcome",
+      "understand": "Why might people buy insurance even though they expect to lose money on it on average?",
+      "lookFor": "Explains that the consequence of a rare loss could be very serious, so paying a small certain cost reduces the risk."
+    }
+  ]
+}

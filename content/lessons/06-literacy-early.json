@@ -1,0 +1,429 @@
+{
+  "section": "Literacy and English: Early level",
+  "lessons": [
+    {
+      "id": "lesson-early-rhyme-and-patterns-in-words",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Listening and sounds",
+      "codes": [
+        "LIT 0-01a",
+        "LIT 0-11a",
+        "LIT 0-20a"
+      ],
+      "title": "Rhyme and patterns in words",
+      "intention": "We are learning to hear and make rhymes.",
+      "criteria": [
+        "I can hear and say rhyming words.",
+        "I can make a rhyme for a word.",
+        "I can join in with songs, rhymes and stories."
+      ],
+      "steps": {
+        "start": "Say a nursery rhyme together. Which words sound the same at the end?",
+        "teach": "Say pairs: cat–hat (rhyme?), cat–dog (rhyme?). Give a word and make up rhymes, real or silly.",
+        "practise": "Rhyming words.",
+        "check": "Ask for a word that rhymes with 'pig' and with 'sun'."
+      },
+      "use": [
+        "l-rhyme"
+      ],
+      "home": "Read rhyming books and pause so your child says the rhyming word.",
+      "vocab": "rhyme, sound, word",
+      "understand": "Do cat and cup rhyme? Why not?",
+      "lookFor": "Says they start the same but end differently; rhymes have the same ending sound."
+    },
+    {
+      "id": "lesson-early-hearing-the-sounds-in-words",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Listening and sounds",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a"
+      ],
+      "title": "Hearing the sounds in words",
+      "intention": "We are learning to hear the first sound and all the sounds in a word.",
+      "criteria": [
+        "I can hear and say the single sounds letters make.",
+        "I can hear the first sound in a word.",
+        "I can count the sounds in a short word."
+      ],
+      "steps": {
+        "start": "I spy with my little eye something beginning with /m/.",
+        "teach": "Say a word slowly, stretching each sound (m-a-p). Push a counter for each sound. Find the first sound of objects in a bag.",
+        "practise": "First sounds, then How many sounds?",
+        "check": "What's the first sound in 'fish'? How many sounds in 'dog'?"
+      },
+      "use": [
+        "l-first-sound",
+        "l-count-sounds"
+      ],
+      "home": "Play I spy using sounds, not letter names.",
+      "vocab": "sound, first sound, word, stretch",
+      "understand": "How many sounds in ship? Show me.",
+      "lookFor": "Says 3 (sh-i-p) and knows two letters can make one sound."
+    },
+    {
+      "id": "lesson-early-letter-sounds-and-blending-to-read",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "Letter sounds and blending to read",
+      "intention": "We are learning to say letter sounds and blend them to read words.",
+      "criteria": [
+        "I know the sounds of lowercase letters.",
+        "I can blend sounds to read a word.",
+        "I read from left to right and top to bottom."
+      ],
+      "steps": {
+        "start": "Flash letter cards: say the sound for each.",
+        "teach": "Show s, a, t, p, i, n. Blend s-a-t → sat, pointing left to right. Change one sound to make a new word (sat → pat).",
+        "practise": "Sound Switch: first doors, then the Short a list.",
+        "check": "Read five words such as pin, tap, sit, nap, tin."
+      },
+      "use": [
+        "g-switch-first",
+        "short-a"
+      ],
+      "home": "Point to words left to right when you read together.",
+      "vocab": "sound, letter, blend, read",
+      "understand": "Here's a word you haven't seen: sip. How will you read it?",
+      "lookFor": "Says each sound and blends them, without guessing from a picture."
+    },
+    {
+      "id": "lesson-early-two-letters-one-sound-sh-ch-and-th",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a"
+      ],
+      "title": "Two letters, one sound: sh, ch and th",
+      "intention": "We are learning that two letters can make one sound.",
+      "criteria": [
+        "I can hear and say sounds made by two letters together.",
+        "I can read words with sh, ch and th."
+      ],
+      "steps": {
+        "start": "Make a 'shh' sound. What letters do you think make it?",
+        "teach": "Show sh, ch and th as one sound tile each. Blend sh-o-p, ch-i-p, th-i-n. Sort pictures by sound.",
+        "practise": "Sound Hopper: two-letter sounds, then the sh list.",
+        "check": "Read ship, chin, moth and point to the two-letter sound."
+      },
+      "use": [
+        "g-hopper-digraphs",
+        "sh"
+      ],
+      "home": "Hunt for sh, ch and th in signs and books.",
+      "vocab": "digraph, sound, two letters",
+      "understand": "Why do we say s-h as one sound in shop?",
+      "lookFor": "Knows the two letters work together to make one sound."
+    },
+    {
+      "id": "lesson-early-reading-tricky-words",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a"
+      ],
+      "title": "Reading tricky words",
+      "intention": "We are learning to read tricky words we can't sound out.",
+      "criteria": [
+        "I can read familiar tricky words in sentences.",
+        "I know the difference between a letter, a word and a number."
+      ],
+      "steps": {
+        "start": "Is this a letter, a word or a number? (a, 7, cat)",
+        "teach": "Show the, said, was, you. Spot the tricky part. Read each in a sentence. Hide them around the room to find and read.",
+        "practise": "Tricky word sentences.",
+        "check": "Read five tricky words on cards, then in a short sentence."
+      },
+      "use": [
+        "r-tricky"
+      ],
+      "home": "Make tricky word cards and play snap or pairs.",
+      "vocab": "tricky word, letter, word, sentence",
+      "understand": "Which part of the word is tricky? Which part can you sound out?",
+      "lookFor": "Points to the tricky part (the heart part) and sounds out the rest."
+    },
+    {
+      "id": "lesson-early-talking-about-a-story",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "ENG 0-17a",
+        "LIT 0-19a"
+      ],
+      "title": "Talking about a story",
+      "intention": "We are learning to talk about stories and predict what happens.",
+      "criteria": [
+        "I can ask and answer questions about a story.",
+        "I can say what might happen next.",
+        "I can retell a story in my own way.",
+        "I can share what I liked and link it to my life."
+      ],
+      "steps": {
+        "start": "Look at the cover: what do you think this story is about?",
+        "teach": "Read the story together, stopping to ask: who is in it? What happened? What will happen next? Retell it with props or pictures.",
+        "practise": "Read and answer the questions on a first story.",
+        "check": "Ask who, where and what happened, and what they liked."
+      },
+      "use": [
+        "r-bus",
+        "s-d-hen"
+      ],
+      "home": "Read a bedtime story every night and talk about it.",
+      "vocab": "story, character, beginning, middle, end, predict",
+      "understand": "What do you think will happen next? What makes you think that?",
+      "lookFor": "Gives a prediction and a reason from the story or the pictures."
+    },
+    {
+      "id": "lesson-early-listening-taking-turns-and-following-instructions",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 0-02a",
+        "ENG 0-03a",
+        "LIT 0-04a"
+      ],
+      "title": "Listening, taking turns and following instructions",
+      "intention": "We are learning to listen, take turns and follow instructions.",
+      "criteria": [
+        "I can take turns when listening and talking.",
+        "I can look at the person talking.",
+        "I can ask and answer questions.",
+        "I can follow and give simple instructions."
+      ],
+      "steps": {
+        "start": "Play a quick game: touch your nose, then your knees, then clap.",
+        "teach": "Take turns with a talking object. Follow two-step instructions to make something. Listen to a short story and answer questions about it.",
+        "practise": "Listen to the story, then answer the questions.",
+        "check": "Give a three-step instruction to follow. Ask one question about what they heard."
+      },
+      "use": [
+        "lc-bus",
+        "lc-shell-shop"
+      ],
+      "home": "Ask your child to give you instructions to make a sandwich.",
+      "vocab": "listen, turn, instruction, question, answer",
+      "understand": "What did your partner just say? Tell me in your own words.",
+      "lookFor": "Repeats the main idea, showing they listened."
+    },
+    {
+      "id": "lesson-early-forming-lowercase-letters",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Handwriting",
+      "codes": [
+        "LIT 0-21a"
+      ],
+      "title": "Forming lowercase letters",
+      "intention": "We are learning to hold a pencil well and form letters.",
+      "criteria": [
+        "I can hold a pencil with control.",
+        "I can form most lowercase letters clearly.",
+        "I can leave a space between words."
+      ],
+      "steps": {
+        "start": "Air-write big letters with your finger.",
+        "teach": "Show where each letter starts and the direction of movement. Trace grey letters, then dotted ones, then write alone. Use a finger space between words.",
+        "practise": "The letter formation sheet.",
+        "check": "Write their name and three letters you choose, starting each in the right place."
+      },
+      "use": [
+        "letter-formation"
+      ],
+      "home": "Draw letters in sand, shaving foam or with chalk.",
+      "vocab": "letter, start, finger space, pencil grip",
+      "understand": "Why does it matter where you start a letter? Show me what goes wrong with b if you start at the bottom.",
+      "lookFor": "Explains that the right start makes each letter the same every time; can show a wrong start, spot what changed, and fix it."
+    },
+    {
+      "id": "lesson-early-writing-a-sentence",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-21a",
+        "LIT 0-21b"
+      ],
+      "title": "Writing a sentence",
+      "intention": "We are learning to write a sentence with a capital letter and full stop.",
+      "criteria": [
+        "I can try to spell familiar words.",
+        "I can write words from left to right with spaces.",
+        "I can try to use a capital letter and a full stop in a sentence."
+      ],
+      "steps": {
+        "start": "Say a sentence about your weekend. Count the words on your fingers.",
+        "teach": "Model writing the sentence: capital letter to start, sound out each word, finger spaces, full stop. Read it back together.",
+        "practise": "Capital letters and full stops, then a short dictation.",
+        "check": "Write one sentence of their own and check for a capital and full stop."
+      },
+      "use": [
+        "w-capitals",
+        "dictate:short-a"
+      ],
+      "home": "Write shopping lists or cards together.",
+      "vocab": "sentence, capital letter, full stop, finger space",
+      "understand": "How do you know where your sentence starts and ends?",
+      "lookFor": "Points to the capital letter and full stop, and reads the sentence back."
+    },
+    {
+      "id": "lesson-early-telling-and-drawing-my-own-story",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 0-09b",
+        "LIT 0-26a",
+        "LIT 0-31a"
+      ],
+      "title": "Telling and drawing my own story",
+      "intention": "We are learning to make up and share our own stories.",
+      "criteria": [
+        "I can tell a story in order.",
+        "I can share ideas in pictures, words and talk.",
+        "I can use new words I've learned."
+      ],
+      "steps": {
+        "start": "Tell me about something you did yesterday, from start to finish.",
+        "teach": "Plan a story in three pictures (beginning, middle, end). Talk it through, then label or write a sentence for each picture.",
+        "practise": "Draw and tell a three-part story.",
+        "check": "Retell the story in order, using first, then, at the end."
+      },
+      "use": [],
+      "home": "Make up a story together at bedtime.",
+      "vocab": "story, beginning, middle, end, character",
+      "understand": "What's the problem in your story, and how does it end?",
+      "lookFor": "Tells a beginning, middle and end in order."
+    },
+    {
+      "id": "lesson-early-choosing-and-sharing-stories-i-like",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 0-01b",
+        "LIT 0-11b",
+        "LIT 0-01c"
+      ],
+      "title": "Choosing and sharing stories I like",
+      "intention": "We are learning to choose stories we enjoy and share what we think about them.",
+      "criteria": [
+        "I can choose a story using its cover, title, author or illustrator.",
+        "I can share what I like and don't like about stories, songs and rhymes.",
+        "I can retell or act out a story in different ways, for example with puppets or props."
+      ],
+      "steps": {
+        "start": "Lay out three or four books. Which one would you like? What made you pick it: the cover, the title, the pictures?",
+        "teach": "Read the chosen story. Stop to talk about the characters and what happens. Then retell it together with props, puppets or the pictures, and say which part was best and which part they didn't like, and why.",
+        "practise": "The \"My favourite story\" sheet: draw a favourite part and colour a face for how they felt about it.",
+        "check": "Ask them to choose between two books and tell you why. Can they retell one part of the story in their own way?"
+      },
+      "use": [],
+      "home": "Visit the library together and let your child choose a book. Ask what made them pick it.",
+      "vocab": "story, cover, title, author, illustrator, character, like, dislike",
+      "understand": "Why did you choose that book? What did you like or not like about it?",
+      "lookFor": "Gives a reason linked to the book (the cover, the characters, a funny part), not just \"it's good\"."
+    },
+    {
+      "id": "lesson-early-asking-questions-about-stories",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 0-07a",
+        "LIT 0-16a"
+      ],
+      "title": "Asking questions about stories",
+      "intention": "We are learning to ask and answer questions about stories, and link them to what we already know.",
+      "criteria": [
+        "I can ask and answer questions about a story to show I understand it.",
+        "I can make a simple prediction about what might happen.",
+        "I can link a story to something I already know or have done."
+      ],
+      "steps": {
+        "start": "Show the cover. What do you think will happen? Have you ever been somewhere like this?",
+        "teach": "Read or listen to a short story. Model asking a question (\"I wonder why…\"), then let the child ask one. Stop before the end: what will happen next? Afterwards, link it to their life: has that ever happened to you?",
+        "practise": "Read a story and answer its questions, then listen to a story and answer.",
+        "check": "Ask one who, one what and one why question, and ask them to ask you one about the story."
+      },
+      "use": [
+        "r-bus",
+        "lc-shell-shop"
+      ],
+      "home": "At story time, ask your child to ask you a question about the story.",
+      "vocab": "question, ask, answer, predict, I wonder, remember",
+      "understand": "What question would you ask the character? Why?",
+      "lookFor": "Asks a real question about the story, and links it to something they know or have done."
+    },
+    {
+      "id": "lesson-early-sharing-my-news-and-new-words",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 0-09a",
+        "LIT 0-10a"
+      ],
+      "title": "Sharing my news and new words",
+      "intention": "We are learning to share our experiences, feelings and ideas, and to use new words we have learned.",
+      "criteria": [
+        "I can talk clearly to others, sharing my feelings, ideas and thoughts.",
+        "I can tell about something that happened in the right order.",
+        "I can share ideas in play and pretend situations.",
+        "I can use new words and phrases I have learned."
+      ],
+      "steps": {
+        "start": "Share some news of your own in three parts: first, then, at the end. How did it make you feel?",
+        "teach": "The child shares their news, using first, then and at the end. Teach two or three new words that fit it (for example delighted, enormous, crowded) and use them back. Then act out a pretend situation, such as a shop or a vet, where they explain what they want.",
+        "practise": "The \"My news\" sheet: draw the news in order, then tell it to an adult using a new word.",
+        "check": "Ask them to tell you about something they did, in order, using at least one new word."
+      },
+      "use": [],
+      "home": "At teatime, ask about the day: what happened first, next and at the end?",
+      "vocab": "news, first, then, at the end, feeling, new word",
+      "understand": "Tell me your news again, using our new word.",
+      "lookFor": "Tells events in order and uses the new word correctly, in a way that fits."
+    },
+    {
+      "id": "lesson-early-finding-information-in-signs-and-books",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 0-14a"
+      ],
+      "title": "Finding information in signs and books",
+      "intention": "We are learning to find useful information in signs, books and other texts, and use it.",
+      "criteria": [
+        "I can find information in a sign, book or other text to learn something new.",
+        "I can tell a storybook from an information book.",
+        "I can use what I find to make a choice or a plan."
+      ],
+      "steps": {
+        "start": "Show a sign (a toilet sign, a shop sign, an exit). What does it tell us? How do you know?",
+        "teach": "Put a storybook beside an information book. How are they different (photographs, labels, facts)? Find one fact in the information book together. Then read a simple poster or menu and use it to choose or plan something.",
+        "practise": "The \"Find it!\" sheet: read a poster and a menu with an adult, find the information and make a choice.",
+        "check": "Show a new sign or a page of an information book. What does it tell us? What could we do with that?"
+      },
+      "use": [],
+      "home": "Point out signs on a walk or in a shop, and ask what each one tells you.",
+      "vocab": "sign, information, fact, label, storybook, information book",
+      "understand": "How did this sign or page help us? What can we do now we know that?",
+      "lookFor": "Explains what the information tells them and uses it to choose or plan something."
+    }
+  ]
+}

@@ -1,0 +1,386 @@
+{
+  "section": "Numeracy and mathematics: Early level",
+  "lessons": [
+    {
+      "id": "lesson-early-estimate-then-count",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 0-01a"
+      ],
+      "title": "Estimate, then count",
+      "intention": "We are learning to estimate how many, then count to check.",
+      "criteria": [
+        "I can say how many are in a small group without counting.",
+        "I can estimate how many, then count to check.",
+        "I can use the words more than, less than and the same."
+      ],
+      "steps": {
+        "start": "Flash a dice pattern or a few counters for two seconds. How many? How did you know without counting?",
+        "teach": "Put up to 20 objects in a clear tub. Ask for an estimate, then count together, touching and moving each one. Compare: was it more than, less than or the same as the guess?",
+        "practise": "Play the firefly game: say how many lit up without counting.",
+        "check": "Scatter 4 or 5 counters, cover after two seconds: how many? Then estimate a bigger group and check by counting."
+      },
+      "use": [
+        "g-canopy-flash"
+      ],
+      "home": "Guess how many grapes, pegs or spoons, then count to check.",
+      "vocab": "estimate, guess, count, more than, less than, the same",
+      "understand": "Why is it fine if your guess wasn't exactly right?",
+      "lookFor": "Knows a guess is a sensible estimate, then counting checks it; can say if the count was more or less than the guess."
+    },
+    {
+      "id": "lesson-early-counting-to-20-and-beyond",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 0-02a"
+      ],
+      "title": "Counting to 20 and beyond",
+      "intention": "We are learning to count objects and say the number sequence forwards and backwards.",
+      "criteria": [
+        "I can count forwards to 30 from any number.",
+        "I can count backwards from 20.",
+        "I can touch and count objects to 20, and the last number tells me how many.",
+        "I know zero means none."
+      ],
+      "steps": {
+        "start": "Count forwards together from 0 to 30, then start from a different number (7, 12, 18).",
+        "teach": "Count a set of up to 20 objects, touching and moving each one. Ask: how many altogether? Show that counting in a different order gives the same total. Count back from 20 to 0, and talk about 0 meaning none.",
+        "practise": "Build the bridge in the Counting Canopy, counting each piece.",
+        "check": "Give a pile of 14 objects: count them. Then count back from 15."
+      },
+      "use": [
+        "g-canopy-make"
+      ],
+      "home": "Count stairs, steps or socks together, forwards and backwards.",
+      "vocab": "count, how many, altogether, zero, none, forwards, backwards",
+      "understand": "If I count these again starting from a different one, will I get the same number? Why?",
+      "lookFor": "Knows the total doesn't change with the order, and that the last number counted tells how many."
+    },
+    {
+      "id": "lesson-early-before-after-and-in-between",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 0-02a"
+      ],
+      "title": "Before, after and in between",
+      "intention": "We are learning to read, order and find numbers to 20.",
+      "criteria": [
+        "I can recognise numbers from 0 to 20.",
+        "I can say the number before, after and in between.",
+        "I can put numbers to 20 in order and find missing numbers.",
+        "I can use first, second and third."
+      ],
+      "steps": {
+        "start": "Hold up number cards 0–20 in a muddle. Which do you know?",
+        "teach": "Peg numbers on a line to 20. Hide one: which is missing? Ask: what comes after 9? before 14? between 11 and 13? Line toys up and use first, second, third.",
+        "practise": "Bigger or smaller: compare two numbers.",
+        "check": "Give five number cards to put in order, then ask for the number before and after one of them."
+      },
+      "use": [
+        "n-compare"
+      ],
+      "home": "Find house or bus numbers: what comes before and after?",
+      "vocab": "before, after, between, first, second, third, order",
+      "understand": "How do you know 14 comes after 13 and not before?",
+      "lookFor": "Uses the counting order or a number line: after means one more."
+    },
+    {
+      "id": "lesson-early-adding-and-taking-away-within-10",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 0-03a"
+      ],
+      "title": "Adding and taking away within 10",
+      "intention": "We are learning to add and take away by counting on and back.",
+      "criteria": [
+        "I can count on to add and count back to take away.",
+        "I can use the signs +, − and =.",
+        "I can add and take away in my head to 10.",
+        "I can solve a simple missing number problem."
+      ],
+      "steps": {
+        "start": "Five frame flash: show 3, add 2 more. How many now?",
+        "teach": "Use counters and a ten frame. Model 4 + 3 by counting on from 4. Model 7 − 2 by counting back. Write each as a number sentence with + − =. Try 5 + ? = 8 with counters hidden under a cup.",
+        "practise": "Adding within 10, then Taking away within 10.",
+        "check": "Ask 6 + 3, 9 − 4 and 2 + ? = 7, with counters if needed."
+      },
+      "use": [
+        "n-add-10",
+        "n-sub-10"
+      ],
+      "home": "Make up number stories with toys: 3 cars park, 2 more arrive.",
+      "vocab": "add, plus, take away, minus, equals, makes, how many left",
+      "understand": "Here is 6 + 2. Can you tell me a story that matches it?",
+      "lookFor": "Makes up a sensible story: something is added to a group, and the total is bigger."
+    },
+    {
+      "id": "lesson-early-doubles-and-splitting-numbers-to-10",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 0-03a"
+      ],
+      "title": "Doubles and splitting numbers to 10",
+      "intention": "We are learning that numbers can be split into parts, and to double.",
+      "criteria": [
+        "I can split 10 into two parts in different ways.",
+        "I can double numbers to make up to 10.",
+        "I know the total stays the same when I move the parts."
+      ],
+      "steps": {
+        "start": "Show 5 fingers on one hand and 2 on the other: how many? Do it with different numbers.",
+        "teach": "Take 10 counters and split them into two groups in every way you can (7 and 3, 6 and 4…). Record them. Then use a mirror or both hands to double 1 to 5.",
+        "practise": "Hidden fireflies: work out how many are hiding.",
+        "check": "Ask: 10 is 6 and how many? What is double 4?"
+      },
+      "use": [
+        "g-canopy-hidden",
+        "n-bonds-10"
+      ],
+      "home": "Share 10 pasta pieces between two plates in different ways.",
+      "vocab": "double, split, part, whole, altogether",
+      "understand": "Can 7 be split another way? How many ways can you find?",
+      "lookFor": "Finds more than one split (5 and 2, 4 and 3) and sees both parts together make 7."
+    },
+    {
+      "id": "lesson-early-sharing-equally-and-halves",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 0-07a"
+      ],
+      "title": "Sharing equally and halves",
+      "intention": "We are learning to share equally and find half.",
+      "criteria": [
+        "I can share a group of things out equally.",
+        "I can split a whole into parts and know equal parts are the same size.",
+        "I can find half of a shape or a group."
+      ],
+      "steps": {
+        "start": "Two teddies want to share 6 sweets. Is it fair if one gets 4?",
+        "teach": "Share objects one at a time onto two plates. Fold a paper shape in half and check the parts match. Show a sandwich cut fairly and unfairly: which is halves?",
+        "practise": "Share sets of 4, 6, 8 and 10 between two, then between three or four.",
+        "check": "Show a shape cut into two unequal pieces: is it halves? Why not?"
+      },
+      "use": [],
+      "home": "Cut toast or fruit in half at snack time: are the halves the same size?",
+      "vocab": "share, equal, fair, half, halves, whole",
+      "understand": "Is this half? How do you know?",
+      "lookFor": "Checks both parts are the same size or the same number, not just that there are two parts."
+    },
+    {
+      "id": "lesson-early-coins-and-paying-up-to-10p",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 0-09a"
+      ],
+      "title": "Coins and paying up to 10p",
+      "intention": "We are learning to know our coins and pay for things up to 10p.",
+      "criteria": [
+        "I can name all the coins to £2.",
+        "I can pay the exact amount up to 10p using 1p, 2p, 5p and 10p coins.",
+        "I can say if I have given too much, not enough or the right amount."
+      ],
+      "steps": {
+        "start": "Tip out real or toy coins. Sort them. Which do you know?",
+        "teach": "Name each coin up to £2. Set up a shop with prices up to 10p. Show paying 7p as 5p and 2p, or seven 1p coins. Talk about giving too much and getting change.",
+        "practise": "Counting money: add up the coins.",
+        "check": "Price a toy at 8p: pay for it two different ways."
+      },
+      "use": [
+        "n-money-10"
+      ],
+      "home": "Let your child pay for something small and talk about the coins.",
+      "vocab": "coin, pence, pound, pay, price, change, enough",
+      "understand": "Which is worth more, one 5p coin or three 1p coins? Why?",
+      "lookFor": "Knows a coin's value isn't how many coins there are: 5p is worth more than 3p."
+    },
+    {
+      "id": "lesson-early-days-routines-and-o-clock",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 0-10a"
+      ],
+      "title": "Days, routines and o'clock",
+      "intention": "We are learning about the order of our day, the days of the week and o'clock.",
+      "criteria": [
+        "I can put the events of my day in order.",
+        "I can say the days of the week in order and know the months and seasons.",
+        "I can read o'clock times on a clock and a digital display.",
+        "I know the hour hand and the minute hand."
+      ],
+      "steps": {
+        "start": "What did you do first today? What happens next? What happens at night?",
+        "teach": "Order picture cards of a day (wake up, breakfast, school, tea, bed). Say the days of the week and talk about the seasons. On a clock, show the minute hand pointing to 12 for o'clock and move the hour hand.",
+        "practise": "Telling the time: the o'clock questions.",
+        "check": "Set 3 o'clock on a clock: what time is it? What day comes after Tuesday?"
+      },
+      "use": [
+        "n-time-oclock"
+      ],
+      "home": "Point out o'clock times at home and talk about tomorrow's day.",
+      "vocab": "o'clock, hour hand, minute hand, morning, afternoon, night, days, months, seasons",
+      "understand": "The long hand is on 12 and the short hand is on 3. Is it o'clock? What might you be doing at 3 o'clock in the afternoon?",
+      "lookFor": "Explains that the long hand on 12 means o'clock and the short hand shows the hour, and links the time to a real part of their own day."
+    },
+    {
+      "id": "lesson-early-longer-heavier-and-holds-more",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 0-11a"
+      ],
+      "title": "Longer, heavier and holds more",
+      "intention": "We are learning to compare sizes and measure with everyday things.",
+      "criteria": [
+        "I can compare length, height, weight and how much things hold.",
+        "I can use longer, shorter, taller, heavier, lighter, more and less.",
+        "I can estimate and then measure with things like cubes or hand spans."
+      ],
+      "steps": {
+        "start": "Which is taller, you or the door? Which is heavier, a book or a feather?",
+        "teach": "Compare two pencils (longer/shorter), two bags (heavier/lighter using hands as a balance), and two cups of water (holds more/less). Estimate how many cubes long a book is, then measure.",
+        "practise": "Measure three objects in cubes or hand spans and put them in order.",
+        "check": "Give two objects: which is longer? How many cubes long is it?"
+      },
+      "use": [],
+      "home": "Baking: talk about full, empty, more and less when measuring.",
+      "vocab": "long, short, tall, heavy, light, full, empty, more, less, measure",
+      "understand": "How could we check which is longer fairly?",
+      "lookFor": "Lines the ends up together, or uses the same thing to measure both."
+    },
+    {
+      "id": "lesson-early-copying-and-continuing-patterns",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 0-13a"
+      ],
+      "title": "Copying and continuing patterns",
+      "intention": "We are learning to copy, continue and make patterns.",
+      "criteria": [
+        "I can copy and continue a pattern with objects, shapes or numbers.",
+        "I can make my own pattern.",
+        "I can find missing numbers on a number line to 20."
+      ],
+      "steps": {
+        "start": "Clap–stamp–clap–stamp: what comes next?",
+        "teach": "Make a red–blue–red–blue bead pattern. Continue it, then make AAB patterns. Count in ones along a number line and find gaps.",
+        "practise": "Number patterns: find the next number.",
+        "check": "Show a pattern with a gap: what is missing?"
+      },
+      "use": [
+        "m-patterns-early"
+      ],
+      "home": "Spot patterns on clothes, tiles and fences.",
+      "vocab": "pattern, repeat, next, missing",
+      "understand": "What comes next? How do you know?",
+      "lookFor": "Names the part that repeats and uses it to say what comes next."
+    },
+    {
+      "id": "lesson-early-sorting-2d-shapes-and-3d-objects",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 0-16a"
+      ],
+      "title": "Sorting 2D shapes and 3D objects",
+      "intention": "We are learning to name, describe and sort shapes.",
+      "criteria": [
+        "I can name common 2D shapes and 3D objects.",
+        "I can describe them as straight, round, flat or curved.",
+        "I can sort shapes in different ways."
+      ],
+      "steps": {
+        "start": "Feely bag: describe a shape you can feel without looking.",
+        "teach": "Name circle, square, triangle, rectangle; cube, sphere, cone, cylinder. Sort them: flat or not, rolls or not, straight or curved sides.",
+        "practise": "2D shapes: name the shape and count the sides.",
+        "check": "Give three shapes to name and say one thing about each."
+      },
+      "use": [
+        "m-shapes-2d"
+      ],
+      "home": "Go on a shape hunt in the kitchen or on a walk.",
+      "vocab": "circle, square, triangle, rectangle, cube, sphere, cone, cylinder, flat, curved",
+      "understand": "Is this still a triangle if I turn it round? Why?",
+      "lookFor": "Knows turning a shape doesn't change it: it still has 3 sides and 3 corners."
+    },
+    {
+      "id": "lesson-early-position-direction-and-symmetry",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 0-17a",
+        "MTH 0-19a"
+      ],
+      "title": "Position, direction and symmetry",
+      "intention": "We are learning words for position and direction, and to make symmetrical pictures.",
+      "criteria": [
+        "I can use in front, behind, above, below, left, right, forwards and backwards.",
+        "I can follow and give simple directions.",
+        "I can make a picture with one line of symmetry."
+      ],
+      "steps": {
+        "start": "Simon says: put your hand above your head, behind your back.",
+        "teach": "Hide a toy and give directions to find it. Fold paper, paint on one side and press to make a symmetrical butterfly.",
+        "practise": "Give the pupil directions to move a toy on a grid, then swap roles.",
+        "check": "Where is the cup? (in front of / behind the book). Is this picture the same on both sides?"
+      },
+      "use": [],
+      "home": "Play a hide-and-seek game giving directions.",
+      "vocab": "in front, behind, above, below, left, right, forwards, backwards, symmetry",
+      "understand": "Hide a toy and give me clues with words like behind, under and next to. Which clue helped me most? Why?",
+      "lookFor": "Chooses position words to suit a new hiding place, and can say which clue helped and why."
+    },
+    {
+      "id": "lesson-early-sorting-and-simple-charts",
+      "level": "Early",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 0-20a",
+        "MNU 0-20b",
+        "MNU 0-20c"
+      ],
+      "title": "Sorting and simple charts",
+      "intention": "We are learning to sort things and show what we found.",
+      "criteria": [
+        "I can sort objects by colour, shape or size.",
+        "I can ask a question and collect answers.",
+        "I can make a picture chart where one picture is one thing.",
+        "I can answer questions about a simple chart."
+      ],
+      "steps": {
+        "start": "Sort a pile of buttons or toys: how did you sort them?",
+        "teach": "Ask family members their favourite fruit. Show each answer with one picture. Which has most? Least? Count tally marks in fives.",
+        "practise": "Tally marks: count them in fives.",
+        "check": "Look at a picture chart: which has the most? How many like apples?"
+      },
+      "use": [
+        "n-tally"
+      ],
+      "home": "Sort the washing or toys and count each group.",
+      "vocab": "sort, group, most, least, chart, tally",
+      "understand": "What does our chart tell us? Which has the most?",
+      "lookFor": "Reads the chart to answer a question, not just describing the pictures."
+    }
+  ]
+}

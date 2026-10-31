@@ -1,17 +1,17 @@
 // Content checks: run with `npm run check` (GitHub runs them on every push).
-//   1. Every CfE experience and outcome from Early to Fourth level has a ready lesson (tools/cfe-outcomes.json).
+//   1. Every CfE experience and outcome from Early to Fourth level has a ready lesson (content/curriculum/cfe.json).
 //   2. Every lesson has an understanding check and printable work, and everything it uses exists.
 //   3. Every paper sheet belongs to a lesson, has a unique id and title, and builds.
 //   4. england.js matches tools/build_england.py's output, and that build's own checks pass
 //      (every statement exists, nothing is mapped twice, every key stage 4 statement is taught).
-//   5. Every page's ?v= stamps match its files (tools/build.mjs).
+//   5. lessons.js matches content/lessons, and every page's ?v= stamps match its files (tools/build.mjs).
 // The A4 fit of printed pages needs a browser: see tools/fit-sweep.js.
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInNewContext } from "node:vm";
-import { staleStamps } from "./build.mjs";
+import { staleStamps, staleGenerated } from "./build.mjs";
 
 const root = new URL("..", import.meta.url);
 const read = f => readFileSync(new URL(f, root), "utf8");
@@ -26,7 +26,7 @@ const { PopActivities: A, PopLessons: L, PopPaper: P } = window;
 const lessons = L.all();
 
 // 1. CfE coverage
-const outcomes = JSON.parse(read("tools/cfe-outcomes.json")).outcomes;
+const outcomes = JSON.parse(read("content/curriculum/cfe.json")).outcomes;
 const taught = new Set(lessons.flatMap(l => (l.codes || []).concat(l.cfe ? l.cfe.codes : [])));
 for (const [level, codes] of Object.entries(outcomes)) {
   const missing = codes.filter(c => !taught.has(c));
@@ -88,6 +88,8 @@ try {
 } finally { rmSync(dir, { recursive: true, force: true }); }
 
 // 5. Version stamps match the files (npm run build)
+const gen = staleGenerated();
+if (gen.length) fail("Build", `${gen.join(", ")} out of date with content/: run npm run build`);
 const stale = staleStamps();
 if (stale.length) fail("Build", `stamps out of date in ${stale.join(", ")}: run npm run build`);
 

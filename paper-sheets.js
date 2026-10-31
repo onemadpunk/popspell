@@ -5,7 +5,10 @@
    and its national curriculum statements for England. build(who, h) makes the pupil's page and,
    where there are right answers, a separate page for the adult; both come from one call, so
    anything chosen at random matches. h is the teacher area's sheet kit: sheetHead, brandHead,
-   handwritingRow and esc. */
+   handwritingRow and esc.
+
+   WRITTEN BY tools/build.mjs (npm run build) from the files in sheets/, joined in name order: edit
+   those, not paper-sheets.js. */
 window.PopPaper = (() => {
   "use strict";
   const rand = n => Math.floor(Math.random() * n);

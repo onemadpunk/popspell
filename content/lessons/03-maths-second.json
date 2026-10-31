@@ -1,0 +1,771 @@
+{
+  "section": "Numeracy and mathematics: Second level",
+  "lessons": [
+    {
+      "id": "lesson-second-rounding-large-numbers-and-decimals",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-01a"
+      ],
+      "title": "Rounding large numbers and decimals",
+      "intention": "We are learning to round to estimate and check calculations.",
+      "criteria": [
+        "I can round whole numbers to the nearest 1000, 10 000 and 100 000.",
+        "I can round decimals to the nearest whole number, 1 and 2 decimal places.",
+        "I can estimate an answer that suits the problem."
+      ],
+      "steps": {
+        "start": "Round 4 682 to the nearest 1000. How do you know?",
+        "teach": "Use number lines for large numbers and for decimals (3·46 → 3·5 → 3). Estimate 598 × 4 as 600 × 4. Talk about when to round up (buying enough paint).",
+        "practise": "Rounding to 100 and 1000, then Estimating answers.",
+        "check": "Round 56 349 to the nearest 10 000 and 7·286 to 2 decimal places."
+      },
+      "use": [
+        "n-round-100",
+        "n-estimate"
+      ],
+      "home": "Estimate the shopping bill before you get to the till.",
+      "vocab": "round, nearest, estimate, decimal place, approximately",
+      "understand": "When is rounding useful, and when do you need the exact number?",
+      "lookFor": "Gives sensible examples: estimating a shopping total vs. paying the exact amount."
+    },
+    {
+      "id": "lesson-second-place-value-to-a-million",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-02a"
+      ],
+      "title": "Place value to a million",
+      "intention": "We are learning to read, write and order numbers to 1 000 000.",
+      "criteria": [
+        "I can read, write and order whole numbers to 1 000 000.",
+        "I can explain what each digit is worth.",
+        "I can add and subtract multiples of 10, 100 and 1000."
+      ],
+      "steps": {
+        "start": "Read 305 061 aloud. What is the 5 worth?",
+        "teach": "Use a place value chart to a million. Partition 482 350. Order five large numbers. Add 3000 to 67 400.",
+        "practise": "Hundreds, tens and ones, then build bigger numbers on the chart.",
+        "check": "Write 'two hundred and six thousand and forty' in digits."
+      },
+      "use": [
+        "n-hundreds"
+      ],
+      "home": "Read populations or prices of houses and cars.",
+      "vocab": "million, thousand, digit, value, place, partition",
+      "understand": "Is 300 000 bigger than 299 999? How can you tell without counting?",
+      "lookFor": "Compares from the biggest place value first."
+    },
+    {
+      "id": "lesson-second-decimals-to-three-places",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 2-02a",
+        "MNU 2-03b"
+      ],
+      "title": "Decimals to three places",
+      "intention": "We are learning what each digit is worth in decimals.",
+      "criteria": [
+        "I can read, write and order decimals to three places.",
+        "I can explain the value of tenths, hundredths and thousandths.",
+        "I can partition decimals, as in 3·6 = 3 ones and 6 tenths = 36 tenths."
+      ],
+      "steps": {
+        "start": "Show 0·5 and ½ on a number line. Are they the same?",
+        "teach": "Extend the place value chart past the decimal point. Order 0·45, 0·405 and 0·5. Partition 3·6 in different ways.",
+        "practise": "Decimal fractions.",
+        "check": "Which is larger, 0·7 or 0·65? Why?"
+      },
+      "use": [
+        "n-decimals"
+      ],
+      "home": "Compare prices and times in a race to the hundredth of a second.",
+      "vocab": "decimal point, tenths, hundredths, thousandths",
+      "understand": "Which is bigger, 0.4 or 0.35? Why?",
+      "lookFor": "Explains 0.4 is 4 tenths and 0.35 is 3 tenths and 5 hundredths, so 0.4 is bigger."
+    },
+    {
+      "id": "lesson-second-adding-and-subtracting-large-numbers-and-decimals",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-03a",
+        "MNU 2-03b"
+      ],
+      "title": "Adding and subtracting large numbers and decimals",
+      "intention": "We are learning to add and subtract whole numbers and decimals.",
+      "criteria": [
+        "I can add and subtract whole numbers to 1 000 000.",
+        "I can add and subtract decimals to two places.",
+        "I can choose a mental or written method and explain it."
+      ],
+      "steps": {
+        "start": "What is 4·5 + 2·7? How did you do it?",
+        "teach": "Model a written method lining up place values, then with decimals (lining up the point). Compare with a mental method for 3 000 − 1 998.",
+        "practise": "Adding and taking away bigger numbers.",
+        "check": "Work out 24 587 + 6 345 and 12·5 − 3·75."
+      },
+      "use": [
+        "n-big-add"
+      ],
+      "home": "Add up the receipt and check the total.",
+      "vocab": "add, subtract, method, decimal point, total, difference",
+      "understand": "Why do the decimal points need to line up?",
+      "lookFor": "Explains digits of the same value must be added together."
+    },
+    {
+      "id": "lesson-second-multiplication-and-division-facts-and-10-100-1000",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-03a"
+      ],
+      "title": "Multiplication and division facts, and ×÷ 10, 100, 1000",
+      "intention": "We are learning to use all the times tables and to multiply and divide by 10, 100 and 1000.",
+      "criteria": [
+        "I can use multiplication and division facts to 10 × 10.",
+        "I can multiply and divide whole numbers and decimals by 10, 100 and 1000."
+      ],
+      "steps": {
+        "start": "Quick-fire 6, 7, 8 and 9 times tables.",
+        "teach": "Use known facts to work out others (7 × 8 = 7 × 4 doubled). Use a place value chart for 3·45 × 100 and 560 ÷ 1000.",
+        "practise": "6, 7, 8 and 9 times tables, Division facts, then Multiplying and dividing by 10 and 100.",
+        "check": "Ask 8 × 7, 63 ÷ 9 and 2·5 × 100."
+      },
+      "use": [
+        "n-tables-6-9",
+        "n-division",
+        "n-x10"
+      ],
+      "home": "Practise one times table a day, out loud, for five minutes.",
+      "vocab": "multiply, divide, product, quotient, factor",
+      "understand": "What is 3.5 × 10? Why doesn't \"add a zero\" work here?",
+      "lookFor": "Says 35, explaining each digit becomes ten times bigger."
+    },
+    {
+      "id": "lesson-second-multiplying-by-2-digits-and-dividing-with-decimal-answers",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-03a",
+        "MNU 2-03b"
+      ],
+      "title": "Multiplying by 2 digits and dividing with decimal answers",
+      "intention": "We are learning to multiply by two-digit numbers and divide by a single digit.",
+      "criteria": [
+        "I can multiply whole numbers by two-digit numbers.",
+        "I can multiply decimals by a single digit.",
+        "I can divide by a single digit, giving decimal answers, as in 43 ÷ 5 = 8·6."
+      ],
+      "steps": {
+        "start": "What is 23 × 10? And 23 × 2?",
+        "teach": "Model 23 × 12 as 23 × 10 + 23 × 2, then with a grid or written method. Show 43 ÷ 5 as 8 remainder 3, then 8·6.",
+        "practise": "Work through a set of 6 calculations on paper, checking with estimates.",
+        "check": "Work out 34 × 15 and 27 ÷ 4."
+      },
+      "use": [
+        "n-division"
+      ],
+      "home": "Work out costs for several of the same item.",
+      "vocab": "multiply, product, divide, remainder, decimal",
+      "understand": "Estimate 38 × 21 first. Is your answer close?",
+      "lookFor": "Rounds to 40 × 20 = 800 and uses it to check."
+    },
+    {
+      "id": "lesson-second-order-of-operations",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 2-03c"
+      ],
+      "title": "Order of operations",
+      "intention": "We are learning the order to do calculations in.",
+      "criteria": [
+        "I can apply the correct order of operations, including brackets, in multi-step calculations."
+      ],
+      "steps": {
+        "start": "Is 2 + 3 × 4 equal to 20 or 14?",
+        "teach": "Explain the order: brackets, then multiply and divide, then add and subtract. Work through examples with and without brackets.",
+        "practise": "Solve 8 calculations, then write two of your own with brackets that change the answer.",
+        "check": "Work out (6 + 2) × 3 and 6 + 2 × 3."
+      },
+      "use": [],
+      "home": "Make up number puzzles with brackets for the family.",
+      "vocab": "brackets, order of operations, multiply, divide, add, subtract",
+      "understand": "Why does 2 + 3 × 4 not equal 20?",
+      "lookFor": "Explains multiplication is done before addition unless brackets say otherwise."
+    },
+    {
+      "id": "lesson-second-negative-numbers",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 2-04a"
+      ],
+      "title": "Negative numbers",
+      "intention": "We are learning about numbers less than zero.",
+      "criteria": [
+        "I can say where negative numbers are used, such as temperatures.",
+        "I can order negative numbers and place them on a number line."
+      ],
+      "steps": {
+        "start": "What happens to the temperature at night in winter?",
+        "teach": "Draw a vertical number line like a thermometer from −10 to 10. Count back through zero. Order −3, 2, −7, 0. Find differences in temperature.",
+        "practise": "Negative numbers.",
+        "check": "Which is colder, −4°C or −1°C? What is 3 less than 1?"
+      },
+      "use": [
+        "n-negative"
+      ],
+      "home": "Check the weather forecast for temperatures below zero.",
+      "vocab": "negative, minus, below zero, temperature, number line",
+      "understand": "Which is warmer, −2 °C or −7 °C? Why?",
+      "lookFor": "Uses a number line or thermometer: −2 is nearer zero, so warmer."
+    },
+    {
+      "id": "lesson-second-multiples-factors-and-primes",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 2-05a"
+      ],
+      "title": "Multiples, factors and primes",
+      "intention": "We are learning to find multiples and factors.",
+      "criteria": [
+        "I can find multiples and factors of whole numbers.",
+        "I can use them to solve problems.",
+        "I can recognise prime numbers."
+      ],
+      "steps": {
+        "start": "List the first five multiples of 6.",
+        "teach": "Find all factors of 24 using arrays or factor pairs. Show a prime has only two factors. Use a common multiple to solve a problem (buses every 4 and 6 minutes).",
+        "practise": "Multiples, factors and primes.",
+        "check": "List the factors of 18. Is 21 prime?"
+      },
+      "use": [
+        "n-multiples"
+      ],
+      "home": "Find the factors of the house number.",
+      "vocab": "multiple, factor, factor pair, prime, common multiple",
+      "understand": "Why is 9 not a prime number?",
+      "lookFor": "Explains 9 has a factor other than 1 and itself (3)."
+    },
+    {
+      "id": "lesson-second-fractions-decimals-and-percentages-are-linked",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 2-07b"
+      ],
+      "title": "Fractions, decimals and percentages are linked",
+      "intention": "We are learning that fractions, decimals and percentages can show the same amount.",
+      "criteria": [
+        "I can show equivalent forms, as in ¾ = 0·75 = 75%.",
+        "I can choose the easiest form for a problem and explain why."
+      ],
+      "steps": {
+        "start": "What is ½ as a decimal? As a percentage?",
+        "teach": "Use a 100 square: shade 25 squares and write ¼, 0·25 and 25%. Build a table for ½, ¼, ¾, ⅒, ⅕.",
+        "practise": "Percentages, then Decimal fractions.",
+        "check": "Write 0·2 as a fraction and a percentage."
+      },
+      "use": [
+        "n-percent",
+        "n-decimals"
+      ],
+      "home": "Spot percentages on food labels and sales signs.",
+      "vocab": "equivalent, fraction, decimal, percentage, per cent",
+      "understand": "Show me a half three different ways.",
+      "lookFor": "Writes 1/2, 0.5 and 50%, and explains they are the same amount."
+    },
+    {
+      "id": "lesson-second-percentages-and-fractions-of-amounts",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 2-07a"
+      ],
+      "title": "Percentages and fractions of amounts",
+      "intention": "We are learning to find fractions and percentages of amounts.",
+      "criteria": [
+        "I can find simple fractions of a quantity, as in ⅗ of 60.",
+        "I can find simple percentages of a quantity and use them, as in a 15% discount."
+      ],
+      "steps": {
+        "start": "What is ½ of 80? 10% of 80?",
+        "teach": "Find ⅕ of 60 then ⅗ of 60. Find 10% and 5% of £40, then 15%. Work out a sale price.",
+        "practise": "Percentages, then Halves, quarters and thirds.",
+        "check": "A £30 game has 20% off. What is the sale price?"
+      },
+      "use": [
+        "n-percent",
+        "n-fractions"
+      ],
+      "home": "Work out sale prices when shopping.",
+      "vocab": "fraction of, percentage of, discount, sale price",
+      "understand": "Is 25% of 80 the same as a quarter of 80? Why?",
+      "lookFor": "Yes: 25% and a quarter are the same proportion."
+    },
+    {
+      "id": "lesson-second-equivalent-fractions-and-simplest-form",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MTH 2-07c"
+      ],
+      "title": "Equivalent fractions and simplest form",
+      "intention": "We are learning to make equivalent fractions, simplify and order them.",
+      "criteria": [
+        "I can create equivalent fractions.",
+        "I can write a fraction in its simplest form.",
+        "I can put common fractions in order."
+      ],
+      "steps": {
+        "start": "Fold a strip: show ½ = 2/4 = 4/8.",
+        "teach": "Multiply or divide top and bottom by the same number. Simplify 12/16 using common factors. Order ⅔, ¾ and 5/8 using equivalent fractions.",
+        "practise": "Equivalent fractions.",
+        "check": "Simplify 15/20. Put ½, ⅖ and 3/4 in order."
+      },
+      "use": [
+        "n-equivalent"
+      ],
+      "home": "Share a pizza: is 2/8 the same as 1/4?",
+      "vocab": "equivalent, simplest form, numerator, denominator, common factor",
+      "understand": "Why are 2/4 and 1/2 the same?",
+      "lookFor": "Draws or explains the same amount split into more parts."
+    },
+    {
+      "id": "lesson-second-budgets-best-value-profit-and-loss",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 2-09a",
+        "MNU 2-09b",
+        "MNU 2-09c"
+      ],
+      "title": "Budgets, best value, profit and loss",
+      "intention": "We are learning to manage money, compare costs and work out profit and loss.",
+      "criteria": [
+        "I can do money calculations with all four operations.",
+        "I can compare costs and decide what I can afford in a budget.",
+        "I understand the benefits and risks of bank cards and paying digitally.",
+        "I can work out profit and loss."
+      ],
+      "steps": {
+        "start": "You have £20 for a party. What would you buy?",
+        "teach": "Compare two pack sizes to find the better value. Plan a budget with a list of prices. Sell 20 cakes at 50p that cost £6 to make: profit or loss? Talk about card payments and keeping PINs safe.",
+        "practise": "Counting money, then plan a £25 budget from a price list.",
+        "check": "Which is better value: 6 for £1·50 or 10 for £2·20?"
+      },
+      "use": [
+        "n-best-value",
+        "n-money"
+      ],
+      "home": "Compare unit prices together when shopping.",
+      "vocab": "budget, afford, best value, profit, loss, bank card",
+      "understand": "Is the bigger pack always better value? How can you tell?",
+      "lookFor": "Compares the price per item or per gram, not just the total."
+    },
+    {
+      "id": "lesson-second-12-and-24-hour-time-and-timetables",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 2-10a"
+      ],
+      "title": "12- and 24-hour time and timetables",
+      "intention": "We are learning to use 12- and 24-hour time and read timetables.",
+      "criteria": [
+        "I can read and write time in 12- and 24-hour notation and change between them.",
+        "I can use timetables and calendars to plan and solve problems."
+      ],
+      "steps": {
+        "start": "What is 3:45 pm in 24-hour time?",
+        "teach": "Show a 24-hour clock line from 00:00 to 23:59. Convert times both ways. Read a bus or train timetable: which bus gets there by 14:30?",
+        "practise": "12-hour and 24-hour time.",
+        "check": "Write 18:20 in 12-hour time. Which train arrives first?"
+      },
+      "use": [
+        "n-time-24"
+      ],
+      "home": "Plan a trip using a real bus or train timetable.",
+      "vocab": "24-hour, am, pm, timetable, depart, arrive",
+      "understand": "What time is 15:45 on a 12-hour clock? How did you work it out?",
+      "lookFor": "Takes 12 off the hours: quarter to four in the afternoon."
+    },
+    {
+      "id": "lesson-second-durations-units-of-time-speed-and-distance",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 2-10a",
+        "MNU 2-10b",
+        "MNU 2-10c"
+      ],
+      "title": "Durations, units of time, speed and distance",
+      "intention": "We are learning to work out durations and how long journeys take.",
+      "criteria": [
+        "I can convert units of time, as in 1¾ hours = 105 minutes.",
+        "I can work out durations across hours, in 12- and 24-hour time.",
+        "I can choose the right timer and unit, including hundredths of a second.",
+        "I can estimate journey times using speed, distance and time."
+      ],
+      "steps": {
+        "start": "How many minutes in 2½ hours?",
+        "teach": "Use a time line to find 10:45 to 13:20. Convert hours and minutes. If a car goes 50 km in an hour, how long for 150 km?",
+        "practise": "How long? Time intervals.",
+        "check": "A film starts at 18:50 and lasts 1 hour 45 minutes. When does it end?"
+      },
+      "use": [
+        "n-durations"
+      ],
+      "home": "Time a journey and work out how long it took.",
+      "vocab": "duration, hours, minutes, speed, distance, time",
+      "understand": "Why can't you subtract 10:50 from 11:20 like ordinary numbers?",
+      "lookFor": "Explains there are 60 minutes in an hour, so counts on through the hour."
+    },
+    {
+      "id": "lesson-second-estimate-measure-and-convert-metric-units",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 2-11a",
+        "MNU 2-11b"
+      ],
+      "title": "Estimate, measure and convert metric units",
+      "intention": "We are learning to estimate, measure accurately and convert units.",
+      "criteria": [
+        "I can estimate using familiar objects.",
+        "I can measure length, mass and capacity in the right units.",
+        "I can convert between units using decimals, as in 550 cm = 5·5 m.",
+        "I can read a range of scales accurately."
+      ],
+      "steps": {
+        "start": "Estimate the height of the door in metres.",
+        "teach": "Measure to the nearest mm. Convert km–m–cm–mm, kg–g and l–ml using the place value chart. Read scales with different steps.",
+        "practise": "Changing units, then Measuring: rulers, jugs and units.",
+        "check": "Convert 3·009 kg to grams and 2 400 m to km."
+      },
+      "use": [
+        "n-units",
+        "n-measure"
+      ],
+      "home": "Read food labels: how many grams? Convert to kilograms.",
+      "vocab": "millimetre, centimetre, metre, kilometre, gram, kilogram, millilitre, litre, convert",
+      "understand": "How many millimetres in 4.5 cm? How do you know?",
+      "lookFor": "Says 45 and explains there are 10 mm in each centimetre."
+    },
+    {
+      "id": "lesson-second-perimeter-area-and-volume",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 2-11b",
+        "MNU 2-11c"
+      ],
+      "title": "Perimeter, area and volume",
+      "intention": "We are learning to calculate perimeter, area and volume.",
+      "criteria": [
+        "I can calculate the perimeter of straight-sided shapes.",
+        "I can calculate the area of squares, rectangles and right-angled triangles.",
+        "I can calculate the volume of cubes and cuboids.",
+        "I can draw shapes with a given perimeter or area."
+      ],
+      "steps": {
+        "start": "How could you find the distance round the table?",
+        "teach": "Find perimeter by adding sides. Find area of a rectangle as length × breadth, and a right-angled triangle as half of that. Build a cuboid with cubes to show length × breadth × height.",
+        "practise": "Area and perimeter.",
+        "check": "A rectangle is 7 cm by 4 cm: find its perimeter and area."
+      },
+      "use": [
+        "n-area"
+      ],
+      "home": "Measure a room and work out the area of carpet needed.",
+      "vocab": "perimeter, area, volume, square centimetre, cubic centimetre, length, breadth, height",
+      "understand": "Can two rectangles have the same perimeter but a different area?",
+      "lookFor": "Yes, with an example: 1 × 5 and 2 × 4 both have a perimeter of 12 but areas of 5 and 8."
+    },
+    {
+      "id": "lesson-second-square-triangular-and-fibonacci-numbers",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 2-13a"
+      ],
+      "title": "Square, triangular and Fibonacci numbers",
+      "intention": "We are learning to explain and use the rules for famous number sequences.",
+      "criteria": [
+        "I can extend square, triangular and Fibonacci sequences and explain the rule.",
+        "I can use multiples, square and triangular numbers to make patterns."
+      ],
+      "steps": {
+        "start": "Build squares with counters: 1, 4, 9… what comes next?",
+        "teach": "Build square and triangular numbers with counters. Show Fibonacci (each number is the sum of the two before). Find the rule for sequences like 3, 7, 11, 15.",
+        "practise": "Number patterns.",
+        "check": "Give the next two numbers of 1, 3, 6, 10 and of 1, 1, 2, 3, 5, with the rule."
+      },
+      "use": [
+        "m-patterns"
+      ],
+      "home": "Look for Fibonacci spirals in pinecones and flowers.",
+      "vocab": "sequence, rule, square number, triangular number, Fibonacci",
+      "understand": "Why are they called square numbers?",
+      "lookFor": "Shows the number as a square array of dots."
+    },
+    {
+      "id": "lesson-second-solving-simple-equations",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 2-15a"
+      ],
+      "title": "Solving simple equations",
+      "intention": "We are learning to find an unknown value shown by a letter or symbol.",
+      "criteria": [
+        "I can solve simple equations with one unknown, as in a − 30 = 40 and 4b = 20."
+      ],
+      "steps": {
+        "start": "I'm thinking of a number. I add 8 and get 20. What's my number?",
+        "teach": "Use a balance: what you do to one side you do to the other. Solve a + 15 = 40, b − 30 = 40, 4c = 20 using inverse operations.",
+        "practise": "Missing numbers and signs.",
+        "check": "Solve 3n = 27 and x − 12 = 19."
+      },
+      "use": [
+        "m-equations"
+      ],
+      "home": "Play 'think of a number' puzzles.",
+      "vocab": "equation, unknown, solve, inverse, balance",
+      "understand": "In 3n + 2 = 14, how do you find n? How can you check?",
+      "lookFor": "Undoes the steps in reverse, then puts the value back in to check."
+    },
+    {
+      "id": "lesson-second-shape-properties-nets-and-circles",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 2-16a",
+        "MTH 2-16b",
+        "MTH 2-16c"
+      ],
+      "title": "Shape properties, nets and circles",
+      "intention": "We are learning to describe shapes precisely and link 3D objects to their nets.",
+      "criteria": [
+        "I can use regular, irregular, diagonal, radius, diameter and circumference.",
+        "I know the radius is half the diameter.",
+        "I can match 3D objects to their nets.",
+        "I can draw 2D shapes and represent 3D objects."
+      ],
+      "steps": {
+        "start": "Is a square a regular shape? Why?",
+        "teach": "Compare regular and irregular shapes. Measure the radius and diameter of a circle. Unfold a cereal box to see its net, and draw a net for a cube.",
+        "practise": "3D objects, then draw two different nets for a cube.",
+        "check": "A circle's diameter is 12 cm: what is its radius? Which net makes a cube?"
+      },
+      "use": [
+        "m-shapes-3d"
+      ],
+      "home": "Unfold boxes at home to see their nets.",
+      "vocab": "regular, irregular, diagonal, radius, diameter, circumference, net",
+      "understand": "Will this net fold into a cube? How do you know?",
+      "lookFor": "Imagines or tests the folding and spots faces that would overlap."
+    },
+    {
+      "id": "lesson-second-classifying-and-measuring-angles",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 2-17a",
+        "MTH 2-17b"
+      ],
+      "title": "Classifying and measuring angles",
+      "intention": "We are learning to name, measure and calculate angles.",
+      "criteria": [
+        "I can classify angles as acute, right, obtuse, straight and reflex.",
+        "I can measure and draw angles to within 2°.",
+        "I know complementary angles make 90° and supplementary angles make 180°, and can find missing angles."
+      ],
+      "steps": {
+        "start": "Find an acute and an obtuse angle in the room.",
+        "teach": "Classify angles. Show how to use a protractor (zero line, which scale). Find a missing angle on a straight line.",
+        "practise": "Angles and turns, then measure and draw five angles.",
+        "check": "Measure an angle. Two angles on a straight line: one is 115°, what is the other?"
+      },
+      "use": [
+        "m-angles"
+      ],
+      "home": "Spot angles in roofs, scissors and clock hands.",
+      "vocab": "acute, obtuse, reflex, straight, protractor, degree, complementary, supplementary",
+      "understand": "Without measuring, is this angle more or less than 90°?",
+      "lookFor": "Compares to a right angle first, then measures to check."
+    },
+    {
+      "id": "lesson-second-compass-points-scale-and-coordinates",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 2-17c",
+        "MTH 2-17d",
+        "MTH 2-18a"
+      ],
+      "title": "Compass points, scale and coordinates",
+      "intention": "We are learning to use eight compass points, maps with scales and coordinates.",
+      "criteria": [
+        "I can use the eight compass points and their angles.",
+        "I can read maps and plans with simple scales, as in 1 cm : 2 km.",
+        "I can plot and describe points with coordinates in the first quadrant."
+      ],
+      "steps": {
+        "start": "Which direction is halfway between North and East?",
+        "teach": "Draw the eight compass points with angles between them. Measure on a map and use the scale. Plot (3, 5) and (5, 3) — along first, then up.",
+        "practise": "Angles and turns, then plot a shape from coordinates.",
+        "check": "On a 1 cm : 2 km map, 4·5 cm is how far? Plot (2, 6)."
+      },
+      "use": [
+        "m-angles"
+      ],
+      "home": "Use a map on a walk and work out real distances.",
+      "vocab": "North-East, South-West, scale, coordinates, axis, plot",
+      "understand": "On a scale of 1 cm to 2 km, how far is 3.5 cm?",
+      "lookFor": "Multiplies by the scale: 7 km, and explains why."
+    },
+    {
+      "id": "lesson-second-lines-of-symmetry",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 2-19a"
+      ],
+      "title": "Lines of symmetry",
+      "intention": "We are learning to find lines of symmetry and complete symmetrical patterns.",
+      "criteria": [
+        "I can draw lines of symmetry on 2D shapes.",
+        "I can complete symmetrical pictures and patterns."
+      ],
+      "steps": {
+        "start": "How many lines of symmetry does a square have?",
+        "teach": "Fold and use mirrors to find lines of symmetry in regular and irregular shapes. Complete patterns on squared paper across vertical, horizontal and diagonal lines.",
+        "practise": "Complete three symmetrical patterns on squared paper.",
+        "check": "Draw the lines of symmetry on a rectangle and a regular hexagon."
+      },
+      "use": [],
+      "home": "Look for symmetry in flags, logos and leaves.",
+      "vocab": "symmetry, line of symmetry, reflect, mirror line",
+      "understand": "Does a rectangle have a diagonal line of symmetry? Prove it.",
+      "lookFor": "Folds or reflects to show the halves don't match, so no."
+    },
+    {
+      "id": "lesson-second-graphs-pie-charts-and-reliable-data",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 2-20a",
+        "MNU 2-20b",
+        "MTH 2-21a"
+      ],
+      "title": "Graphs, pie charts and reliable data",
+      "intention": "We are learning to collect, display and interpret data, and judge if it's reliable.",
+      "criteria": [
+        "I can collect data in a suitable way.",
+        "I can display data in tables, bar graphs, line graphs, frequency tables and simple pie charts, with a suitable scale.",
+        "I can draw conclusions from data.",
+        "I can judge how reliable data is, thinking about who made it and the sample size."
+      ],
+      "steps": {
+        "start": "Is a survey of 3 people enough to know the favourite food of a whole school?",
+        "teach": "Make a frequency table, then a bar graph and a line graph for change over time. Read a simple pie chart. Spot a misleading graph scale.",
+        "practise": "Reading tables, then Bar charts.",
+        "check": "Read values from a line graph and explain one conclusion."
+      },
+      "use": [
+        "n-table",
+        "n-bar"
+      ],
+      "home": "Look at a graph in the news: is it fair or misleading?",
+      "vocab": "frequency table, line graph, pie chart, scale, reliable, sample",
+      "understand": "Could this data be misleading? Why?",
+      "lookFor": "Looks at the sample size, who collected it and the scale."
+    },
+    {
+      "id": "lesson-second-probability-and-chance-experiments",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 2-22a"
+      ],
+      "title": "Probability and chance experiments",
+      "intention": "We are learning to describe probability and test it with experiments.",
+      "criteria": [
+        "I can describe likelihood with equal chance, fifty-fifty, one in two, percentages and fractions like ⅙.",
+        "I can plan and carry out experiments with repeated trials.",
+        "I can use data to predict outcomes."
+      ],
+      "steps": {
+        "start": "What is the chance of rolling a 6? Of an even number?",
+        "teach": "Predict how many 6s in 30 rolls, then test it. Record results in a tally. Compare with the prediction and talk about why they differ.",
+        "practise": "How likely is it?",
+        "check": "A bag has 3 red and 1 blue counter. What is the chance of blue, as a fraction and a percentage?"
+      },
+      "use": [
+        "n-chance"
+      ],
+      "home": "Flip a coin 20 times and record heads and tails.",
+      "vocab": "probability, chance, fifty-fifty, one in, likely, outcome, trial",
+      "understand": "You flipped 4 heads in a row. Is tails more likely next? Why?",
+      "lookFor": "Knows each flip is still an even chance: what happened before doesn't change it."
+    },
+    {
+      "id": "lesson-second-maths-in-inventions-life-and-work",
+      "level": "Second",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 2-12a"
+      ],
+      "title": "Maths in inventions, life and work",
+      "intention": "We are learning how maths shapes the world, now and in the past.",
+      "criteria": [
+        "I can find and present examples of how maths is used in life and work.",
+        "I can discuss the part maths played in important inventions."
+      ],
+      "steps": {
+        "start": "Which jobs need maths? Which inventions needed it?",
+        "teach": "Choose an invention (bridges, computers, GPS) and find the maths it needs. Plan a short presentation.",
+        "practise": "Make a fact poster or slide about one example.",
+        "check": "Explain one way maths is used in a job you'd like."
+      },
+      "use": [],
+      "home": "Ask family members how they use maths at work or at home.",
+      "vocab": "invention, engineer, data, measurement",
+      "understand": "What maths would someone use in this job? Give an example.",
+      "lookFor": "Names the maths (measuring, angles, money, data) and a real task it's used for."
+    }
+  ]
+}

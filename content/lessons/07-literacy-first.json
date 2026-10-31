@@ -1,0 +1,594 @@
+{
+  "section": "Literacy and English: First level",
+  "lessons": [
+    {
+      "id": "lesson-first-silent-e-a-e-i-e-o-e-u-e",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "Silent e: a–e, i–e, o–e, u–e",
+      "intention": "We are learning to read and spell words with a split vowel sound.",
+      "criteria": [
+        "I can decode words with familiar letter patterns.",
+        "I can spell words with split vowel sounds using what I know about phonics."
+      ],
+      "steps": {
+        "start": "Read cap, then cape. What changed?",
+        "teach": "Show how the e at the end changes the vowel sound (hop → hope). Map the sounds: c-a_e-k. Sort words by short and long vowel.",
+        "practise": "Sound Hopper: long a, then the a–e and i–e lists.",
+        "check": "Read and spell five words with a split vowel."
+      },
+      "use": [
+        "g-hopper-long-a",
+        "a-e",
+        "i-e"
+      ],
+      "home": "Find words with a magic e in a book.",
+      "vocab": "vowel, long vowel, split digraph, silent e",
+      "understand": "What does the e do in hope? Read hop and hope.",
+      "lookFor": "Explains the e changes the vowel sound, and reads both correctly."
+    },
+    {
+      "id": "lesson-first-vowel-teams-ai-ee-oa-igh",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "Vowel teams: ai, ee, oa, igh",
+      "intention": "We are learning to read and spell words with vowel teams.",
+      "criteria": [
+        "I can decode words with vowel teams.",
+        "I can choose a sensible spelling for a long vowel sound."
+      ],
+      "steps": {
+        "start": "Say rain, tree, boat, night. What sound is in the middle of each?",
+        "teach": "Show each team as one sound tile. Map r-ai-n, t-r-ee. Talk about ai in the middle and ay at the end of words.",
+        "practise": "The ai and ee lists.",
+        "check": "Read and spell train, sheep, coat, light."
+      },
+      "use": [
+        "ai",
+        "ee"
+      ],
+      "home": "Spot vowel teams on cereal boxes and signs.",
+      "vocab": "vowel team, long vowel sound",
+      "understand": "How do you know whether to write ai or ay?",
+      "lookFor": "Knows ay usually comes at the end of a word and ai in the middle."
+    },
+    {
+      "id": "lesson-first-vowels-with-r-ar-or-er-ir-ur",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-21a"
+      ],
+      "title": "Vowels with r: ar, or, er, ir, ur",
+      "intention": "We are learning to read and spell words where r changes the vowel.",
+      "criteria": [
+        "I can read words with ar, or, er, ir and ur.",
+        "I can choose between er, ir and ur, and check spellings in a word list."
+      ],
+      "steps": {
+        "start": "Say car, fork, her, bird, fur.",
+        "teach": "Show each spelling. Sort words into er, ir and ur. Build a reminder list for tricky ones.",
+        "practise": "Sound Hopper: r sounds, then the ar list.",
+        "check": "Read and spell star, storm, girl, turn."
+      },
+      "use": [
+        "g-hopper-r",
+        "ar"
+      ],
+      "home": "Play 'r sound' I spy around the house.",
+      "vocab": "vowel, r sound",
+      "understand": "Bird, her and turn all have the same sound. Why are they spelled differently?",
+      "lookFor": "Knows one sound can be written in more than one way, and learns which way each word uses."
+    },
+    {
+      "id": "lesson-first-common-words-and-spelling-strategies",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 1-21a"
+      ],
+      "title": "Common words and spelling strategies",
+      "intention": "We are learning to spell common words and use strategies for tricky ones.",
+      "criteria": [
+        "I can spell most commonly used words.",
+        "I can use phonics and spelling strategies for new words.",
+        "I can use alphabetical order to find a word in a dictionary or word list."
+      ],
+      "steps": {
+        "start": "Try to spell 'because'. Which part is tricky?",
+        "teach": "Look, say, cover, write, check. Split words into syllables (be-cause). Practise alphabetical order with first and second letters, then find words in a dictionary.",
+        "practise": "The Tricky words list.",
+        "check": "Spell five common words. Put five words in alphabetical order."
+      },
+      "use": [
+        "tricky"
+      ],
+      "home": "Practise three tricky words a day with look, say, cover, write, check.",
+      "vocab": "spelling, syllable, alphabetical order, dictionary",
+      "understand": "You're stuck on a word. What could you try?",
+      "lookFor": "Names a strategy: sound it out, think of a word like it, write it and check if it looks right."
+    },
+    {
+      "id": "lesson-first-reading-aloud-with-expression",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a"
+      ],
+      "title": "Reading aloud with expression",
+      "intention": "We are learning to read aloud fluently and with expression.",
+      "criteria": [
+        "I can read a familiar text aloud with expression.",
+        "I can work out new words using letter patterns and context.",
+        "I use punctuation to help me read with meaning."
+      ],
+      "steps": {
+        "start": "Read 'Help!' in a calm voice, then a frightened one. Which fits?",
+        "teach": "Model reading a page with expression. Show how question marks and exclamation marks change your voice. Show how to work out a new word from its sounds and the sentence.",
+        "practise": "Read a story by yourself, then answer the questions.",
+        "check": "Read a short passage aloud and explain how a word was worked out."
+      },
+      "use": [
+        "s-d-gull",
+        "s-d-boat"
+      ],
+      "home": "Take turns reading pages aloud, using funny voices for characters.",
+      "vocab": "expression, fluency, punctuation, context",
+      "understand": "Why did you change your voice there?",
+      "lookFor": "Links expression to the punctuation or a character's feelings."
+    },
+    {
+      "id": "lesson-first-answering-questions-about-a-text",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 1-16a",
+        "ENG 1-17a",
+        "ENG 1-19a"
+      ],
+      "title": "Answering questions about a text",
+      "intention": "We are learning to answer literal, inferential and evaluative questions.",
+      "criteria": [
+        "I can find the main ideas of a text.",
+        "I can answer questions where the answer is in the text and where I have to think.",
+        "I can tell fact from opinion.",
+        "I can share ideas about characters and the writer's message."
+      ],
+      "steps": {
+        "start": "What's the difference between 'What colour was the kite?' and 'How did Jake feel?'",
+        "teach": "Read a passage. Ask a 'right there' question, a 'think and search' question, and an 'on my own' question. Show how to find evidence in the text.",
+        "practise": "Read the story, then answer the questions.",
+        "check": "Ask one question of each kind and ask them to point to the evidence."
+      },
+      "use": [
+        "r-kite",
+        "r-rain"
+      ],
+      "home": "Ask 'why do you think…?' questions about books.",
+      "vocab": "main idea, fact, opinion, character, evidence",
+      "understand": "How do you know? Show me the words that tell you.",
+      "lookFor": "Points to evidence in the text, not just memory."
+    },
+    {
+      "id": "lesson-first-finding-information-and-making-notes",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 1-14a",
+        "LIT 1-15a"
+      ],
+      "title": "Finding information and making notes",
+      "intention": "We are learning to find key information and make notes.",
+      "criteria": [
+        "I can find key information using contents, headings and pictures.",
+        "I can make notes under headings and use them."
+      ],
+      "steps": {
+        "start": "How would you find out about sharks in a book?",
+        "teach": "Show contents, headings and captions. Read a short non-fiction page and make notes under 'where they live', 'what they eat'.",
+        "practise": "Read a passage and fill in notes under three headings.",
+        "check": "Use notes to tell three facts about the topic."
+      },
+      "use": [
+        "r-storm"
+      ],
+      "home": "Read a leaflet or website together to find one fact.",
+      "vocab": "contents, heading, caption, notes, fact",
+      "understand": "Why didn't you copy the whole sentence?",
+      "lookFor": "Explains notes keep the key words only."
+    },
+    {
+      "id": "lesson-first-full-stops-question-marks-and-exclamation-marks",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a"
+      ],
+      "title": "Full stops, question marks and exclamation marks",
+      "intention": "We are learning to punctuate the ends of sentences.",
+      "criteria": [
+        "I can start sentences with a capital letter.",
+        "I can end sentences with a full stop, question mark or exclamation mark."
+      ],
+      "steps": {
+        "start": "Read 'where is my bag' — what's missing?",
+        "teach": "Show a statement, a question and an exclamation. Read each aloud with the right voice. Fix sentences with missing punctuation.",
+        "practise": "Full stop, question mark or exclamation mark?, then Capital letters and full stops.",
+        "check": "Write a question, a statement and an exclamation."
+      },
+      "use": [
+        "w-end-marks",
+        "w-capitals"
+      ],
+      "home": "Write a note with a question in it for someone at home.",
+      "vocab": "capital letter, full stop, question mark, exclamation mark",
+      "understand": "\"You're going home.\" \"You're going home?\" \"You're going home!\" How does each mark change what it means?",
+      "lookFor": "Explains how the end mark changes the meaning or how it's said, and chooses the right mark for a new sentence of their own."
+    },
+    {
+      "id": "lesson-first-joining-sentences-and-but-because-so",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a"
+      ],
+      "title": "Joining sentences: and, but, because, so",
+      "intention": "We are learning to link ideas with conjunctions.",
+      "criteria": [
+        "I can link sentences with and, but, because and so.",
+        "I can start sentences in different ways."
+      ],
+      "steps": {
+        "start": "'I was hungry. I ate a sandwich.' Join them with one word.",
+        "teach": "Show how each joining word changes meaning. Practise finishing sentence starters. Try different openers: Then, After that, Suddenly.",
+        "practise": "Joining words: and, but, because, so.",
+        "check": "Write two sentences joined with because, and one with a new opener."
+      },
+      "use": [
+        "w-joining"
+      ],
+      "home": "Play 'because' — say a sentence and add a reason.",
+      "vocab": "conjunction, join, because, but, so, and, opener",
+      "understand": "What's the difference between \"I was cold so I wore a coat\" and \"I was cold but I wore a coat\"?",
+      "lookFor": "Explains so gives a result and but shows a contrast."
+    },
+    {
+      "id": "lesson-first-past-tense-and-checking-my-writing",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 1-22a",
+        "LIT 1-23a"
+      ],
+      "title": "Past tense, and checking my writing",
+      "intention": "We are learning to write in the past tense and check our writing makes sense.",
+      "criteria": [
+        "I can add -ed to show something happened in the past.",
+        "I can check my writing makes sense and correct it."
+      ],
+      "steps": {
+        "start": "Today I jump. Yesterday I…?",
+        "teach": "Show adding -ed. Write three sentences about yesterday. Read them back to check they make sense and fix one mistake.",
+        "practise": "Past tense: adding -ed.",
+        "check": "Write two past-tense sentences and correct a sentence with a mistake."
+      },
+      "use": [
+        "w-past-ed"
+      ],
+      "home": "Talk about what happened today using past-tense words.",
+      "vocab": "past tense, -ed, check, edit",
+      "understand": "How do you know this sentence is about the past?",
+      "lookFor": "Points to the past-tense verbs, and spots one that doesn't match."
+    },
+    {
+      "id": "lesson-first-dictation-spelling-and-punctuation-together",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: dictation",
+      "codes": [
+        "LIT 1-21a",
+        "LIT 1-22a"
+      ],
+      "title": "Dictation: spelling and punctuation together",
+      "intention": "We are learning to write a whole sentence we hear, with correct spelling and punctuation.",
+      "criteria": [
+        "I can spell the words in a sentence using what I know.",
+        "I can punctuate the sentence accurately."
+      ],
+      "steps": {
+        "start": "Spell three words from this week's list.",
+        "teach": "Say a sentence twice. Count the words. Write it, then check capital letter, spellings and full stop together.",
+        "practise": "Sentence dictation.",
+        "check": "Dictate one new sentence and mark it together."
+      },
+      "use": [
+        "dictate:ai"
+      ],
+      "home": "Dictate a short sentence for your child to write.",
+      "vocab": "dictation, sentence, capital letter, full stop",
+      "understand": "Read your sentence back. What did you check?",
+      "lookFor": "Checks capital letter, spellings and full stop without being told."
+    },
+    {
+      "id": "lesson-first-planning-and-writing-a-recount",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 1-26a",
+        "ENG 1-30a"
+      ],
+      "title": "Planning and writing a recount",
+      "intention": "We are learning to plan and write about something that happened to us.",
+      "criteria": [
+        "I can plan my ideas using a simple format.",
+        "I can write about an experience in a logical order.",
+        "I can use interesting words."
+      ],
+      "steps": {
+        "start": "Tell me about a day out. What happened first?",
+        "teach": "Plan with four boxes: who, where, what happened, how I felt. Use time words (first, next, after that, finally). Write it up from the plan.",
+        "practise": "Write a short recount from the plan.",
+        "check": "Check the order is clear and there are time words."
+      },
+      "use": [],
+      "home": "Keep a weekend diary together.",
+      "vocab": "recount, plan, order, time words",
+      "understand": "Why does a recount need time words?",
+      "lookFor": "Explains they show the order things happened in."
+    },
+    {
+      "id": "lesson-first-writing-a-story-with-characters-and-a-setting",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 1-31a",
+        "LIT 1-28a"
+      ],
+      "title": "Writing a story with characters and a setting",
+      "intention": "We are learning to write a story with a clear structure.",
+      "criteria": [
+        "I can create a story with a beginning, middle and end.",
+        "I can describe a character's feelings and actions.",
+        "I can describe where it happens."
+      ],
+      "steps": {
+        "start": "Who could be the main character? Where could it happen?",
+        "teach": "Plan a story mountain: opening, problem, solution, ending. Describe the character with feelings and actions, not just looks.",
+        "practise": "Write the opening and the problem of the story.",
+        "check": "Point to the opening, problem and ending, and a feeling word."
+      },
+      "use": [],
+      "home": "Make up stories with toys and write one down.",
+      "vocab": "character, setting, beginning, problem, ending",
+      "understand": "How did you show your character was scared, without saying \"scared\"?",
+      "lookFor": "Points to actions, words or feelings that show it."
+    },
+    {
+      "id": "lesson-first-listening-for-main-ideas-and-fact-or-opinion",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 1-04a",
+        "LIT 1-07a",
+        "LIT 1-08a",
+        "LIT 1-09a"
+      ],
+      "title": "Listening for main ideas, and fact or opinion",
+      "intention": "We are learning to listen for main ideas and tell fact from opinion.",
+      "criteria": [
+        "I can find the purpose and main ideas of something I hear.",
+        "I can answer different types of questions about it.",
+        "I can tell simple facts from opinions."
+      ],
+      "steps": {
+        "start": "'Dogs have four legs.' 'Dogs are the best pets.' Which is a fact?",
+        "teach": "Listen to a short recording or story. Note three main ideas. Sort statements into fact or opinion.",
+        "practise": "Listen to the story, then answer the questions.",
+        "check": "Retell the main idea and give one fact and one opinion."
+      },
+      "use": [
+        "lc-bus"
+      ],
+      "home": "Listen to a radio clip or audiobook together and talk about it.",
+      "vocab": "main idea, purpose, fact, opinion",
+      "understand": "Is \"dogs are the best pets\" a fact or an opinion? How do you know?",
+      "lookFor": "Explains an opinion can't be proved true; a fact can be checked."
+    },
+    {
+      "id": "lesson-first-clear-legible-handwriting",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Handwriting",
+      "codes": [
+        "LIT 1-24a"
+      ],
+      "title": "Clear, legible handwriting",
+      "intention": "We are learning to present writing clearly for a reader.",
+      "criteria": [
+        "I can write clearly so others can read it.",
+        "I can lay out my work neatly, using pictures or headings where they help."
+      ],
+      "steps": {
+        "start": "Look at two pieces of writing. Which is easier to read? Why?",
+        "teach": "Practise letters on four-line ruling, with even size and spacing. Copy a short piece neatly with a heading.",
+        "practise": "Handwriting sheet for this week's spelling list.",
+        "check": "Copy a sentence neatly with even spacing."
+      },
+      "use": [
+        "handwriting-spacing"
+      ],
+      "home": "Write a birthday card in best handwriting.",
+      "vocab": "handwriting, spacing, size, neat, legible",
+      "understand": "Why does it matter that your letters are the right size?",
+      "lookFor": "Explains it helps a reader read it easily."
+    },
+    {
+      "id": "lesson-first-choosing-texts-and-explaining-why",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 1-01a",
+        "LIT 1-11a",
+        "LIT 1-20a"
+      ],
+      "title": "Choosing texts and explaining why",
+      "intention": "We are learning to choose texts we enjoy, explain why, and choose how to make our own.",
+      "criteria": [
+        "I can choose texts to listen to, watch or read, for enjoyment or to find something out.",
+        "I can use the cover, title, author, illustrator or blurb to help me choose.",
+        "I can explain why I prefer certain texts and authors.",
+        "I can choose my own subject, purpose and format when I create a text."
+      ],
+      "steps": {
+        "start": "What's the best book, programme or podcast you've read, watched or listened to lately? What made it good?",
+        "teach": "Look at three books together. Use the cover, title, author and blurb to predict what each is like, then choose one and explain why. Talk about favourite authors and what they have in common. Then plan a text of their own choice: what will it be about, who is it for, and will it be a poster, a comic, a story or a letter?",
+        "practise": "The \"My choices\" sheet: a reading and listening log with reasons, then a plan for a text of their own choosing.",
+        "check": "Ask them to recommend a text to you and give two reasons. Ask why they chose the format for their own text."
+      },
+      "use": [],
+      "home": "Keep a list of books and programmes your child enjoys, and talk about why.",
+      "vocab": "choose, prefer, author, blurb, genre, format, recommend",
+      "understand": "Why would you recommend that book to a friend, and not this one?",
+      "lookFor": "Gives reasons about the text itself (the author's style, the topic, the pictures), comparing the two."
+    },
+    {
+      "id": "lesson-first-listening-and-talking-in-a-group",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 1-02a",
+        "ENG 1-03a",
+        "LIT 1-10a"
+      ],
+      "title": "Listening and talking in a group",
+      "intention": "We are learning when and how to listen and talk with others, and to talk clearly so others are interested.",
+      "criteria": [
+        "I can take turns and talk at the right time.",
+        "I can listen and respond respectfully, for example by nodding, agreeing, asking and answering questions.",
+        "I can use eye contact, expression and body language to engage others.",
+        "I can speak clearly and audibly, choosing objects or pictures to help if I need them."
+      ],
+      "steps": {
+        "start": "Say \"I like pizza\" in a bored voice, then in an excited voice. Which is more interesting to listen to? Why?",
+        "teach": "Agree the rules for talking together: one speaker at a time, look at the speaker, wait for a pause, ask a question that fits. Discuss a simple question together (Should we have school on Saturdays?). Model pace, expression and gesture, then the pupil explains something to you with an object or picture to help.",
+        "practise": "The \"Talking together\" sheet: a short talk about a chosen object, and a checklist for how the talk went.",
+        "check": "Have a two-minute conversation. Do they wait their turn, respond to what you said and speak clearly?"
+      },
+      "use": [],
+      "home": "Play a game of \"tell me about it\" at dinner: everyone takes a turn and asks one question.",
+      "vocab": "turn, listen, respond, eye contact, expression, gesture, clearly",
+      "understand": "What did I just say? What would be a good question to ask me about it?",
+      "lookFor": "Sums up what you said and asks a question that follows on from it."
+    },
+    {
+      "id": "lesson-first-notes-from-listening-then-using-them",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 1-05a",
+        "LIT 1-06a",
+        "LIT 1-25a"
+      ],
+      "title": "Notes from listening, then using them",
+      "intention": "We are learning to make notes under headings as we listen, then use them to create something new.",
+      "criteria": [
+        "I can find the purpose and main ideas of something I listen to or watch.",
+        "I can make notes under given headings.",
+        "I can use my notes to put ideas in a logical order and create a new text."
+      ],
+      "steps": {
+        "start": "Listen to two sentences about hedgehogs. Which words are the most important to remember?",
+        "teach": "Explain notes are key words, not whole sentences. Read the short talk on the adult's sheet aloud twice. The first time, just listen for the main idea. The second time, write key words under the headings. Then turn the notes into three sentences, in order, for someone who didn't hear it.",
+        "practise": "The \"Notes from listening\" sheet: notes under headings while the adult reads, then sentences from the notes.",
+        "check": "From their notes alone, can they tell you the main ideas in a sensible order?"
+      },
+      "use": [],
+      "home": "Listen to the weather or a short news clip and jot down three key words together.",
+      "vocab": "notes, heading, key word, main idea, purpose, order",
+      "understand": "Why are notes just key words? Could someone else understand your notes?",
+      "lookFor": "Explains notes save time and keep the main ideas; uses them to retell in order."
+    },
+    {
+      "id": "lesson-first-fact-and-opinion-in-what-i-read",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 1-18a"
+      ],
+      "title": "Fact and opinion in what I read",
+      "intention": "We are learning to recognise the difference between fact and opinion in what we read.",
+      "criteria": [
+        "I can tell a fact from an opinion in a text.",
+        "I can explain how I know: a fact can be checked, an opinion is what someone thinks.",
+        "I can spot words that often show an opinion, such as best, I think and should."
+      ],
+      "steps": {
+        "start": "\"Penguins are birds.\" \"Penguins are the cutest animals.\" Which one could we check in a book?",
+        "teach": "Read a short text about an animal or place. Underline the facts in one colour and the opinions in another. Collect opinion words (best, worst, I think, amazing, should). Ask: why might a writer put opinions in?",
+        "practise": "The \"Fact or opinion? Penguins\" sheet: sort sentences from a short text, then write one fact and one opinion of their own.",
+        "check": "Give three new sentences. Which are facts and which are opinions, and how do they know?"
+      },
+      "use": [],
+      "home": "Spot facts and opinions on food packets and adverts together.",
+      "vocab": "fact, opinion, true, check, think, believe",
+      "understand": "Is \"Edinburgh is the best city\" a fact or an opinion? How could you check?",
+      "lookFor": "Explains it's an opinion because it can't be checked; a fact can be found in a reliable book."
+    },
+    {
+      "id": "lesson-first-writing-to-share-information-or-an-opinion",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 1-29a"
+      ],
+      "title": "Writing to share information or an opinion",
+      "intention": "We are learning to write to give information, describe something, share our opinion or persuade.",
+      "criteria": [
+        "I can choose and organise information and share it in different ways.",
+        "I can use words that suit what I'm writing for.",
+        "I can give my own opinion and try to persuade the reader."
+      ],
+      "steps": {
+        "start": "Show a poster and an information leaflet. What is each one trying to do?",
+        "teach": "Choose a topic the pupil knows well (a pet, a game, a place). First write two or three facts to inform. Then write their opinion with a reason, and add one sentence to persuade the reader (You should… because…). Talk about how the words change between informing and persuading.",
+        "practise": "The \"Inform or persuade\" sheet: facts in one box, an opinion and reasons in another, then a short poster.",
+        "check": "Can they tell you which sentences inform and which persuade, and why?"
+      },
+      "use": [],
+      "home": "Make a poster together for something at home: a family film night, or a room tidy rota.",
+      "vocab": "inform, describe, opinion, persuade, reason, because, should",
+      "understand": "Which of your sentences informs, and which persuades? How can you tell?",
+      "lookFor": "Points to facts that inform and to reasons and \"you should\" that persuade."
+    }
+  ]
+}

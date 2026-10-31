@@ -1,0 +1,642 @@
+{
+  "section": "Numeracy and mathematics: Third level (S1 to S3)",
+  "lessons": [
+    {
+      "id": "lesson-third-rounding-to-decimal-places-and-estimating",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 3-01a"
+      ],
+      "title": "Rounding to decimal places and estimating",
+      "intention": "We are learning to round to a sensible degree of accuracy and to estimate answers.",
+      "criteria": [
+        "I can round decimal fractions to three decimal places.",
+        "I can choose how accurately to round, thinking about the problem.",
+        "I can round to estimate the answer to a calculation, then use the estimate to check."
+      ],
+      "steps": {
+        "start": "Round 4·276 to the nearest whole number, then to one decimal place.",
+        "teach": "Zoom in on a number line between 4·27 and 4·28 to show why 4·276 rounds to 4·28. Round 3·14159 to 1, 2 and 3 decimal places. Talk about context: money to 2 places, a shelf to the nearest centimetre, buses for 130 people always rounded up. Estimate 38·7 × 5·2 as 40 × 5 = 200 before calculating.",
+        "practise": "Rounding to 100 and 1000, then Estimating answers, then the \"Round it sensibly\" sheet.",
+        "check": "Round 7·0459 to 2 decimal places. Estimate 61·8 ÷ 2·9: how does the estimate tell you a calculator answer is sensible?"
+      },
+      "use": [
+        "n-round-100",
+        "n-estimate"
+      ],
+      "home": "Estimate the shopping bill before you reach the till, then compare.",
+      "vocab": "round, decimal place, degree of accuracy, estimate, approximately",
+      "understand": "Why would you round 2·3 buses up to 3, but £2·346 to £2·35?",
+      "lookFor": "Explains that the context decides: you can't have part of a bus, and money is counted to the penny."
+    },
+    {
+      "id": "lesson-third-calculating-with-whole-numbers-and-decimals",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 3-03a",
+        "MNU 3-03b"
+      ],
+      "title": "Calculating with whole numbers and decimals",
+      "intention": "We are learning to recall facts quickly, choose a method, calculate accurately with decimals and explain our working.",
+      "criteria": [
+        "I can recall multiplication and division facts quickly, and use facts to the 12 times table.",
+        "I can add and subtract whole numbers and decimals to three decimal places.",
+        "I can multiply and divide whole numbers and decimals to three decimal places.",
+        "I can explain my method and my answer clearly."
+      ],
+      "steps": {
+        "start": "Quick fire: 7 × 8, 72 ÷ 9, 11 × 12, 144 ÷ 12.",
+        "teach": "Line up the decimal points for 12·45 + 3·078 and 20 − 6·375, filling gaps with zeros. Multiply 4·26 × 7 by working out 426 × 7, then placing the point by estimating. Divide 9·36 ÷ 4 by short division. Ask the pupil to say each step aloud, then write a one-line explanation of the method.",
+        "practise": "6, 7, 8 and 9 times tables and Division facts for speed, then the \"Decimal calculations\" sheet.",
+        "check": "Work out 15·8 − 7·256 and 3·45 × 6. How did you check each answer?"
+      },
+      "use": [
+        "n-tables-6-9",
+        "n-division",
+        "n-big-add"
+      ],
+      "home": "Split a bill, or work out the cost of several items with prices in pounds and pence.",
+      "vocab": "decimal point, place value, method, estimate, inverse, check",
+      "understand": "When you work out 4·26 × 7 as 426 × 7, how do you know where the point goes?",
+      "lookFor": "Uses an estimate (about 4 × 7 = 28) or explains that 4·26 is 426 hundredths, so the answer is hundredths too."
+    },
+    {
+      "id": "lesson-third-negative-numbers-in-calculations",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 3-04a"
+      ],
+      "title": "Negative numbers in calculations",
+      "intention": "We are learning to add, subtract, multiply and divide with negative numbers, and use them to solve problems.",
+      "criteria": [
+        "I can add and subtract with integers, as in −3 + 8 and 4 − 9.",
+        "I can multiply and divide with integers, as in −4 × 3 and −12 ÷ −4.",
+        "I can use negative numbers to solve problems about temperature, money or height."
+      ],
+      "steps": {
+        "start": "The temperature is −2°C and falls 5 degrees. What is it now?",
+        "teach": "Use a vertical number line, like a thermometer, for adding and subtracting. Show subtracting a negative as finding the gap: 3 − (−2) is the distance from −2 up to 3, which is 5. Find the multiplying rules from a pattern: 3 × −2 = −6, 2 × −2 = −4, 1 × −2 = −2, 0 × −2 = 0, so −1 × −2 = 2. Link division to the multiplication facts.",
+        "practise": "Negative numbers, then the \"Below zero\" sheet.",
+        "check": "Work out −6 − 4, 5 − (−3) and −20 ÷ 5. A diver is 12 m below the surface and rises 7 m: where are they now?"
+      },
+      "use": [
+        "n-negative"
+      ],
+      "home": "Look up temperatures in cold places around the world and find the differences.",
+      "vocab": "integer, negative, positive, below zero, difference, number line",
+      "understand": "Why is 5 − (−3) bigger than 5?",
+      "lookFor": "Explains that taking away a negative is finding the gap from −3 up to 5, or that removing a debt leaves you better off."
+    },
+    {
+      "id": "lesson-third-common-multiples-common-factors-and-primes",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 3-05a",
+        "MTH 3-05b"
+      ],
+      "title": "Common multiples, common factors and primes",
+      "intention": "We are learning to find common multiples and factors, identify primes, and use them to solve problems.",
+      "criteria": [
+        "I can find common multiples, including the lowest common multiple, and explain my method.",
+        "I can find common factors, including the highest common factor, and explain my method.",
+        "I can identify prime numbers to 100 and explain how I know.",
+        "I can write a number as a product of its prime factors.",
+        "I can solve problems using multiples and factors."
+      ],
+      "steps": {
+        "start": "Is 51 prime? Convince me.",
+        "teach": "List multiples of 6 and 8 to find the lowest common multiple (24), and factor pairs of 36 and 48 to find the highest common factor (12). Draw a factor tree for 60 to write it as 2 × 2 × 3 × 5. Sieve a 100 square for primes. Solve: buses every 12 and 18 minutes leave together at 9:00. When do they next leave together?",
+        "practise": "Multiples, factors and primes, then the \"Factor trees and primes\" sheet.",
+        "check": "Find the highest common factor and lowest common multiple of 18 and 24. Write 84 as a product of primes."
+      },
+      "use": [
+        "n-multiples"
+      ],
+      "home": "Find the prime dates on this month's calendar.",
+      "vocab": "multiple, factor, common, lowest common multiple, highest common factor, prime, prime factor, factor tree",
+      "understand": "Is 1 a prime number? Why or why not?",
+      "lookFor": "Explains that a prime has exactly two different factors, and 1 has only one."
+    },
+    {
+      "id": "lesson-third-powers-and-indices",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 3-06a"
+      ],
+      "title": "Powers and indices",
+      "intention": "We are learning what powers mean, and to work them out mentally or with a calculator.",
+      "criteria": [
+        "I can explain index notation and use the words index, exponent, power and base.",
+        "I can evaluate whole number powers, as in 2⁴ = 16.",
+        "I can write whole numbers as powers, as in 27 = 3³."
+      ],
+      "steps": {
+        "start": "Fold a sheet of paper in half, again and again. How many layers after 1, 2, 3 and 4 folds?",
+        "teach": "Record the folds as 2, 2 × 2, 2 × 2 × 2 and write 2³: the base is 2 and the index (or exponent) is 3. Contrast 3² = 9 with 3 × 2 = 6. Work out powers mentally, then with a calculator's power key. Write 64 as 8², 4³ and 2⁶. Talk about why powers are useful: they're short, and show fast growth and very big numbers.",
+        "practise": "The \"Powers\" sheet, then check the answers with a calculator.",
+        "check": "Work out 5³ and 10⁴. Write 81 as a power of 3, and as a power of 9."
+      },
+      "use": [],
+      "home": "Work out how many great-great-grandparents you have, using powers of 2.",
+      "vocab": "power, index, exponent, base, squared, cubed",
+      "understand": "Why is 3² not the same as 3 × 2?",
+      "lookFor": "Explains that the index says how many times the base is multiplied by itself: 3 × 3 = 9."
+    },
+    {
+      "id": "lesson-third-fractions-decimals-and-percentages-in-real-life",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 3-07a",
+        "MTH 3-07c"
+      ],
+      "title": "Fractions, decimals and percentages in real life",
+      "intention": "We are learning to convert between fractions, decimals and percentages, and use them to make choices.",
+      "criteria": [
+        "I can convert fractions, decimal fractions and percentages into each other.",
+        "I can convert between whole or mixed numbers, improper fractions and decimal fractions.",
+        "I can calculate with fractions, decimals and percentages, with and without a calculator.",
+        "I can use my answers to compare and make informed choices."
+      ],
+      "steps": {
+        "start": "Which is bigger: ⅜, 0·4 or 35%?",
+        "teach": "Divide to turn ⅜ into 0·375 and 37·5%. Change 2¾ into 11/4 and 2·75 with a bar model. Find 17·5% of £240 by building it from 10%, 5% and 2·5%, then by calculator (0·175 × 240). Compare two offers on a £45 jacket: ⅓ off, or 30% off?",
+        "practise": "Percentages and Equivalent fractions, then the \"Which deal?\" sheet.",
+        "check": "Write 7/8 as a decimal and as a percentage. Which is better: 25% off £60, or £14 off?"
+      },
+      "use": [
+        "n-percent",
+        "n-equivalent",
+        "en-fractions-y6"
+      ],
+      "home": "Compare discounts on a shopping website or in a shop window.",
+      "vocab": "equivalent, convert, mixed number, improper fraction, decimal fraction, percentage, discount",
+      "understand": "Why is ⅓ off a better deal than 30% off?",
+      "lookFor": "Explains that ⅓ is about 33%, so it takes off more, whatever the price."
+    },
+    {
+      "id": "lesson-third-adding-and-subtracting-fractions",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MTH 3-07b"
+      ],
+      "title": "Adding and subtracting fractions",
+      "intention": "We are learning to add and subtract fractions with different denominators.",
+      "criteria": [
+        "I can use equivalent fractions and common multiples to find a common denominator.",
+        "I can add and subtract whole numbers and fractions, including when I need to change a denominator.",
+        "I can simplify my answer, and change an improper fraction to a mixed number."
+      ],
+      "steps": {
+        "start": "Shade ⅓ and ¼ of the same bar. Why can't we just add the tops and the bottoms?",
+        "teach": "Use the lowest common multiple of 3 and 4 to rename both: 4/12 + 3/12 = 7/12. Work through ⅚ − ¼, then 2½ + 1⅔ (whole numbers first, then the fractions). Simplify, and change improper answers into mixed numbers.",
+        "practise": "Mixed numbers and calculating with fractions, then the \"Fraction sums\" sheet.",
+        "check": "Work out ⅖ + ⅓ and 3¼ − 1⅔."
+      },
+      "use": [
+        "en-fractions-y5",
+        "n-equivalent"
+      ],
+      "home": "Follow a recipe with fractions of a cup or spoon, and add up the total.",
+      "vocab": "denominator, numerator, common denominator, lowest common multiple, equivalent, simplify, mixed number",
+      "understand": "Why can't you add ⅓ and ¼ to get 2/7?",
+      "lookFor": "Explains that the parts are different sizes, so they must be changed into the same size (twelfths) before adding."
+    },
+    {
+      "id": "lesson-third-proportion-and-ratio",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 3-08a"
+      ],
+      "title": "Proportion and ratio",
+      "intention": "We are learning to increase and decrease quantities in proportion, and to use ratio.",
+      "criteria": [
+        "I can solve problems where related quantities increase or decrease in proportion.",
+        "I can write quantities as a ratio and simplify it.",
+        "I can use proportion and ratio in everyday problems, such as recipes and prices."
+      ],
+      "steps": {
+        "start": "A recipe for 4 people uses 300 g of pasta. How much for 6 people?",
+        "teach": "Use the unitary method (find one, then many) and a ratio table for the recipe. Write the ratio of 6 teachers to 60 children as 6 : 60 = 1 : 10, and of teachers to everyone in the school as 6 : 66 = 1 : 11. Share £45 in the ratio 2 : 3 by counting parts. Talk about when things are not in proportion, such as a taxi with a fixed charge.",
+        "practise": "Ratio and proportion, then the \"Recipe for a crowd\" sheet.",
+        "check": "5 pens cost £3·60. What do 8 cost? Simplify 18 : 24."
+      },
+      "use": [
+        "en-ratio"
+      ],
+      "home": "Scale a family recipe up or down for a different number of people.",
+      "vocab": "ratio, proportion, simplify, unitary method, scale up, scale down, share",
+      "understand": "If teachers to children is 1 : 10, why aren't teachers 1/10 of the school?",
+      "lookFor": "Explains there are 11 parts altogether, so teachers are 1/11 of everyone."
+    },
+    {
+      "id": "lesson-third-best-value-budgets-and-money-words",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 3-09a",
+        "MNU 3-09b"
+      ],
+      "title": "Best value, budgets and money words",
+      "intention": "We are learning to compare deals, plan a budget, and understand financial words.",
+      "criteria": [
+        "I can compare products, contracts and services to find the best value for me, and justify my choice.",
+        "I can make a budget, using technology where it helps, and plan for future costs.",
+        "I know financial words such as debit, credit, APR, per annum, direct debit, standing order and interest rate.",
+        "I can convert between currencies."
+      ],
+      "steps": {
+        "start": "Phone A: £12 a month for 24 months. Phone B: £180 now, then £5 a month for 24 months. Which costs less overall?",
+        "teach": "Work out the total cost of each deal over the contract, then discuss what else matters: data, how long you're tied in, paying up front. Build a monthly budget in a spreadsheet or table with income, fixed costs and saving for a future cost. Explain each financial word with an everyday example. Convert £150 to euros at a given rate, then back.",
+        "practise": "Best value, budgets, profit and loss, then the \"Plan a budget\" sheet.",
+        "check": "Explain the difference between a direct debit and a standing order. At €1·16 to £1, how many euros do you get for £250?"
+      },
+      "use": [
+        "n-best-value"
+      ],
+      "home": "Compare two phone or streaming deals at home and work out the yearly cost of each.",
+      "vocab": "budget, income, expense, contract, APR, interest, per annum, debit, credit, direct debit, standing order, exchange rate",
+      "understand": "Is the cheapest deal always the best value? Why?",
+      "lookFor": "Explains that best value depends on what you need: total cost, length of contract, what's included, and your own situation."
+    },
+    {
+      "id": "lesson-third-speed-distance-and-time",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 3-10a"
+      ],
+      "title": "Speed, distance and time",
+      "intention": "We are learning to use the link between speed, distance and time, and to work out durations.",
+      "criteria": [
+        "I can use the link between speed, distance and time to find any one of them.",
+        "I can calculate durations across hours and days.",
+        "I can work out how long a journey will take, how far it is, or the average speed."
+      ],
+      "steps": {
+        "start": "A car travels 60 miles in one hour. How far does it go in 2½ hours?",
+        "teach": "Show where distance = speed × time comes from (60 mph means 60 miles every hour), then rearrange it to find speed and time. Work in hours: 45 minutes = 0·75 hours. Find the time for 150 km at 60 km/h. Work out durations across midnight and across days on a timeline, such as 22:40 on Monday to 06:15 on Tuesday.",
+        "practise": "12-hour and 24-hour time, then the \"Journey planner\" sheet.",
+        "check": "A cyclist rides 36 km in 1 hour 30 minutes. What is their average speed? How long is it from 21:50 on Friday to 07:20 on Saturday?"
+      },
+      "use": [
+        "n-time-24",
+        "n-durations"
+      ],
+      "home": "Plan a real journey with a timetable or map: distance, time and average speed.",
+      "vocab": "speed, distance, time, average speed, km/h, mph, duration",
+      "understand": "Why can't you write 1 hour 30 minutes as 1·3 hours in a speed calculation?",
+      "lookFor": "Explains that 30 minutes is half an hour, so it's 1·5 hours: minutes are sixtieths, not tenths."
+    },
+    {
+      "id": "lesson-third-area-and-volume-including-compound-shapes",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 3-11a",
+        "MTH 3-11b"
+      ],
+      "title": "Area and volume, including compound shapes",
+      "intention": "We are learning to choose units, convert them, and find the area and volume of compound shapes.",
+      "criteria": [
+        "I can choose sensible units for length, area and volume.",
+        "I can convert between units, as in 2·5 m = 250 cm and 1500 ml = 1·5 litres, and use them in calculations.",
+        "I can find an area when the measurements are in different units.",
+        "I can find the area of compound 2D shapes made from squares, rectangles and triangles.",
+        "I can find the volume of compound 3D objects made from cubes and cuboids."
+      ],
+      "steps": {
+        "start": "Which unit would you use for the area of a stamp, a classroom, and a farm?",
+        "teach": "Split an L-shape into two rectangles in two different ways, and check both give the same area. Add a triangle (½ × base × height). Convert first when lengths are in metres and centimetres. Build a compound solid from cubes and find its volume by splitting it into cuboids (length × breadth × height). Link 1 cm³ to 1 ml.",
+        "practise": "Area and perimeter and Changing units, then the \"Floor plans and boxes\" sheet.",
+        "check": "Find the area of an L-shape and the volume of a step made from two cuboids. Which units did you use, and why?"
+      },
+      "use": [
+        "n-area",
+        "n-units",
+        "en-area-formulae"
+      ],
+      "home": "Measure a room and work out how much flooring it would need.",
+      "vocab": "area, volume, compound, cm², m², cm³, litre, length, breadth, height, formula",
+      "understand": "You split the L-shape a different way from me. Will we get the same area? Why?",
+      "lookFor": "Explains that the area of the whole shape doesn't change however you split it, as long as no part is counted twice or missed."
+    },
+    {
+      "id": "lesson-third-researching-a-mathematician-or-a-maths-topic",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 3-12a"
+      ],
+      "title": "Researching a mathematician or a maths topic",
+      "intention": "We are learning to research a mathematician or a maths topic, and present its impact on the world.",
+      "criteria": [
+        "I can research a famous mathematician or a maths topic, using reliable sources.",
+        "I can explain the maths using the right words and notation.",
+        "I can explain the difference it has made to society.",
+        "I can prepare and give a short presentation."
+      ],
+      "steps": {
+        "start": "What do GPS, music streaming and weather forecasts have in common? (They all depend on maths.)",
+        "teach": "Agree a choice, such as Mary Somerville, John Napier, Ada Lovelace, Katherine Johnson or al-Khwarizmi, or a topic such as codes or logarithms. Model making notes from two sources and checking they agree. Plan a three-minute talk: who or what, the maths itself with one worked example, and its impact today. Rehearse with the tutor as the audience.",
+        "practise": "The \"Maths that changed the world\" sheet: notes, one worked example and a plan for the talk.",
+        "check": "Give the talk. Ask: what was the maths, and why does it still matter?"
+      },
+      "use": [],
+      "home": "Give the talk to someone at home and ask them one thing they learned.",
+      "vocab": "research, source, notation, impact, presentation",
+      "understand": "How do you know your information about this mathematician is accurate?",
+      "lookFor": "Checked more than one source, chose reliable ones, and can say where each fact came from."
+    },
+    {
+      "id": "lesson-third-sequences-and-their-rules",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 3-13a"
+      ],
+      "title": "Sequences and their rules",
+      "intention": "We are learning to make sequences from rules, and to find and write the rule for a sequence.",
+      "criteria": [
+        "I can generate a sequence from a rule, as in T = 4n + 6.",
+        "I can extend a pattern and describe its rule.",
+        "I can write a sequence rule in algebra, as in C = 0·05m + 75."
+      ],
+      "steps": {
+        "start": "Squares made from matchsticks in a row use 4, 7, 10 … matches. How many for 10 squares?",
+        "teach": "Make the pattern, record it in a table of n and T, and spot the difference (+3). Show the rule T = 3n + 1 and why the +1 is needed. Generate terms from T = 4n + 6. Write a car-hire rule (£75 plus 5p a mile) as C = 0·05m + 75 and use it.",
+        "practise": "Number patterns, then the \"Find the rule\" sheet.",
+        "check": "Find the rule for 5, 9, 13, 17 … and use it to find the 20th term."
+      },
+      "use": [
+        "m-patterns"
+      ],
+      "home": "Find a pattern at home (stairs, tiles, fence posts) and write its rule.",
+      "vocab": "sequence, term, rule, nth term, difference, formula",
+      "understand": "In T = 3n + 1, why is the number in front of n the same as the difference between terms?",
+      "lookFor": "Explains that each time n goes up by 1, 3n goes up by 3, so the terms go up by 3."
+    },
+    {
+      "id": "lesson-third-simplifying-and-evaluating-expressions",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 3-14a"
+      ],
+      "title": "Simplifying and evaluating expressions",
+      "intention": "We are learning to collect like terms, and to evaluate expressions by substituting.",
+      "criteria": [
+        "I can collect like terms, including squared terms, to simplify an expression.",
+        "I can evaluate an expression with two variables, using positive and negative numbers."
+      ],
+      "steps": {
+        "start": "3 apples + 2 bananas + 4 apples. How could you write that more simply?",
+        "teach": "Simplify 3a + 2b + 4a = 7a + 2b, then 5x² + 3x − 2x² + x = 3x² + 4x, stressing that x and x² are unlike terms. Substitute a = 3 and b = −2 into 4a − 3b and a² + 2b, writing each step with brackets.",
+        "practise": "The \"Simplify and substitute\" sheet.",
+        "check": "Simplify 6p − 2q + p + 5q. Find 2x² − y when x = −3 and y = 4."
+      },
+      "use": [],
+      "home": "Write an expression for a family shop (a apples, b loaves) and work it out with real prices.",
+      "vocab": "term, like terms, expression, simplify, variable, substitute, evaluate",
+      "understand": "Why can't 3x² + 4x be simplified to 7x³?",
+      "lookFor": "Explains that x² and x are unlike terms, as different as apples and bananas, so they can't be collected."
+    },
+    {
+      "id": "lesson-third-solving-equations-and-using-formulae",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 3-15a",
+        "MTH 3-15b"
+      ],
+      "title": "Solving equations and using formulae",
+      "intention": "We are learning to write and solve equations, and to create and use formulae.",
+      "criteria": [
+        "I can solve linear equations, as in 3x + 5 = 26 and 4x − 7 = −15.",
+        "I can write an equation for a problem and solve it.",
+        "I can create a simple formula from a diagram, problem or statement.",
+        "I can evaluate a formula, as in C = 0·05m + 75."
+      ],
+      "steps": {
+        "start": "I think of a number, multiply it by 3 and add 5. I get 26. What was my number?",
+        "teach": "Use a balance: whatever you do to one side, do to the other. Solve 3x + 5 = 26, then 4x − 7 = −15. Turn a word problem into an equation: a rectangle's perimeter is 30 cm and its length is twice its width. Write a formula for a taxi fare of £3 plus £1·20 a mile, then use it.",
+        "practise": "Missing numbers and signs, then the \"Equations and formulae\" sheet.",
+        "check": "Solve 5y − 9 = 16. Write a formula for the number of legs on c chairs (4 legs) and t stools (3 legs)."
+      },
+      "use": [
+        "m-equations",
+        "en-area-formulae"
+      ],
+      "home": "Write a formula for a phone plan or taxi fare and check it against a real price.",
+      "vocab": "equation, solve, balance, inverse, formula, variable, substitute",
+      "understand": "Why do you take away 5 before dividing by 3 when solving 3x + 5 = 26?",
+      "lookFor": "Explains that you undo the steps in reverse order: the number was multiplied by 3 first, then 5 was added."
+    },
+    {
+      "id": "lesson-third-drawing-shapes-accurately",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 3-16a"
+      ],
+      "title": "Drawing shapes accurately",
+      "intention": "We are learning to draw triangles and regular polygons accurately with mathematical instruments.",
+      "criteria": [
+        "I can draw triangles accurately with a ruler and protractor, or a ruler and compasses.",
+        "I can draw a regular polygon when I know its interior angle.",
+        "I can choose the right instruments and method for the shape."
+      ],
+      "steps": {
+        "start": "Can you draw a triangle with sides of 3 cm, 4 cm and 10 cm? Why not?",
+        "teach": "Model drawing a triangle from two sides and the angle between them with a protractor, then from three sides with compasses. Draw a regular hexagon (interior angle 120°) one side at a time with a protractor, then inside a circle with compasses. Check by measuring.",
+        "practise": "The \"Triangles and polygons, accurately\" sheet. Measure and check each other's drawings.",
+        "check": "Draw triangle ABC with AB = 7 cm, angle A = 50° and AC = 5 cm. Measure BC."
+      },
+      "use": [
+        "m-angles"
+      ],
+      "home": "Draw a regular pentagon (interior angle 108°) and turn it into a badge.",
+      "vocab": "protractor, compasses, construct, interior angle, regular polygon, accurate",
+      "understand": "Why can't you draw a triangle with sides 3 cm, 4 cm and 10 cm?",
+      "lookFor": "Explains that the two shorter sides together must be longer than the longest side, or they can't meet."
+    },
+    {
+      "id": "lesson-third-angles-in-shapes-and-with-parallel-lines",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 3-17a"
+      ],
+      "title": "Angles in shapes and with parallel lines",
+      "intention": "We are learning to name angles and find missing angles using angle facts.",
+      "criteria": [
+        "I can name angles with three letters, as in angle ABC.",
+        "I can identify corresponding, alternate and vertically opposite angles, and use them to find missing angles.",
+        "I can use the angle properties of triangles and quadrilaterals to find missing angles."
+      ],
+      "steps": {
+        "start": "Tear the three corners off a paper triangle and put them together. What do you notice?",
+        "teach": "Name angles with three letters. Draw two parallel lines crossed by a third line and mark the F (corresponding), Z (alternate) and X (vertically opposite) angles. Find all eight angles from one. Use 180° in a triangle and 360° in a quadrilateral to find missing angles, giving a reason each time.",
+        "practise": "Angles and turns, then the \"Missing angles\" sheet.",
+        "check": "Find the missing angles and give a reason for each: which fact did you use?"
+      },
+      "use": [
+        "m-angles"
+      ],
+      "home": "Spot parallel lines and their angles on a gate, a window or road markings.",
+      "vocab": "corresponding, alternate, vertically opposite, parallel, transversal, angle sum",
+      "understand": "How do you know these two angles are equal? Which fact tells you?",
+      "lookFor": "Names the fact (alternate, corresponding or vertically opposite) and points to the parallel lines it depends on."
+    },
+    {
+      "id": "lesson-third-bearings-scale-drawings-and-enlargement",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 3-17b",
+        "MTH 3-17c"
+      ],
+      "title": "Bearings, scale drawings and enlargement",
+      "intention": "We are learning to use bearings and scale to read and make plans, and to enlarge and reduce shapes.",
+      "criteria": [
+        "I can use and give three-figure bearings.",
+        "I can read maps and plans, and make accurate scale drawings of routes.",
+        "I can enlarge and reduce shapes using a scale factor."
+      ],
+      "steps": {
+        "start": "A map's scale is 1 : 50 000. What does 1 cm on the map stand for?",
+        "teach": "Measure bearings clockwise from north as three figures (east is 090°). Draw a route at 1 cm to 1 km: 4 km on a bearing of 060°, then 3 km on 150°. Measure the distance and bearing back to the start. Enlarge a shape on squared paper by scale factor 2 and reduce it by ½, comparing the lengths.",
+        "practise": "The \"Route and scale\" sheet: a scale drawing from bearings, then an enlargement.",
+        "check": "What is the bearing of west? A 3 cm by 5 cm photo is enlarged by scale factor 3. What size is it now?"
+      },
+      "use": [
+        "en-ratio"
+      ],
+      "home": "Use a map of your area to find the bearing and distance from home to school.",
+      "vocab": "bearing, north, clockwise, scale, scale drawing, scale factor, enlarge, reduce",
+      "understand": "When a shape is enlarged by scale factor 2, does its area double too?",
+      "lookFor": "Explains, or finds by drawing, that the area is four times as big, because the length and width both double."
+    },
+    {
+      "id": "lesson-third-coordinates-in-four-quadrants-and-symmetry",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 3-18a",
+        "MTH 3-19a"
+      ],
+      "title": "Coordinates in four quadrants, and symmetry",
+      "intention": "We are learning to plot and describe points anywhere on a grid, and to use lines of symmetry.",
+      "criteria": [
+        "I can plot and describe the position of points in all four quadrants.",
+        "I can identify all the lines of symmetry in 2D shapes.",
+        "I can create and complete symmetrical patterns and pictures."
+      ],
+      "steps": {
+        "start": "Where is (−3, 2)? Which way do you go first?",
+        "teach": "Draw axes from −6 to 6. Plot points in all four quadrants and join them to make a shape. Reflect it in the y-axis: what happens to the coordinates? Find every line of symmetry of a square, a rectangle, a kite and a regular hexagon. Complete a pattern that is symmetrical about two lines.",
+        "practise": "Coordinates: plotting, translating and reflecting, then the \"Four quadrants and symmetry\" sheet.",
+        "check": "Plot (2, −3) and reflect it in the y-axis. How many lines of symmetry does a regular pentagon have?"
+      },
+      "use": [
+        "en-coordinates"
+      ],
+      "home": "Find symmetrical logos or flags and draw in their lines of symmetry.",
+      "vocab": "coordinates, quadrant, axis, origin, reflect, line of symmetry",
+      "understand": "Why does reflecting a point in the y-axis change the sign of its x-coordinate only?",
+      "lookFor": "Explains that the point moves left or right across the axis to the same distance on the other side, but its height doesn't change."
+    },
+    {
+      "id": "lesson-third-data-fair-samples-clear-graphs-and-misleading-claims",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 3-20a",
+        "MTH 3-20b",
+        "MTH 3-21a"
+      ],
+      "title": "Data: fair samples, clear graphs and misleading claims",
+      "intention": "We are learning to collect and display data fairly, and to judge whether information can be trusted.",
+      "criteria": [
+        "I can find or collect data, using technology where it helps.",
+        "I can interpret data and describe trends, as in an increasing trend.",
+        "I can decide if information is robust, vague or misleading, thinking about the source, scale, sample size and how it is shown.",
+        "I can choose a representative sample to avoid bias.",
+        "I can display data clearly, choosing graphs such as compound bar charts, line graphs and pie charts."
+      ],
+      "steps": {
+        "start": "\"9 out of 10 people prefer Fizz!\" What would you want to know before you believed it?",
+        "teach": "Show two graphs of the same data, one with an axis that doesn't start at zero. Which looks misleading, and why? Discuss sample size and how a sample was chosen (asking only a football club about favourite sports). Plan a fair survey. Draw a line graph of temperatures and describe the trend, then a pie chart of a small survey (angle = fraction × 360°).",
+        "practise": "Reading tables and Bar charts, then the \"Can you trust it?\" sheet.",
+        "check": "Give two reasons a graph or claim might mislead. Describe the trend in a line graph."
+      },
+      "use": [
+        "n-table",
+        "n-bar",
+        "en-mean"
+      ],
+      "home": "Find a graph in a news story or advert and decide if it's fair.",
+      "vocab": "data, sample, bias, representative, robust, misleading, trend, pie chart, line graph, compound bar chart",
+      "understand": "Why might asking 10 people give a less reliable answer than asking 100?",
+      "lookFor": "Explains that a small sample may not represent everyone, so the result could be due to chance."
+    },
+    {
+      "id": "lesson-third-probability-from-0-to-1",
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 3-22a"
+      ],
+      "title": "Probability from 0 to 1",
+      "intention": "We are learning to calculate probabilities and use them to make decisions.",
+      "criteria": [
+        "I can use the probability scale from 0 to 1, writing probability as a fraction or a decimal.",
+        "I can calculate the probability of a simple event, as in throwing a prime number on a 12-sided dice.",
+        "I can list all the outcomes of an event and find the probability of each.",
+        "I can use a probability to work out an expected number, as in days of rain.",
+        "I can explain how the consequences of an event, as well as its probability, affect decisions."
+      ],
+      "steps": {
+        "start": "Put these on a line from 0 to 1: rolling a 7 on a normal dice, a coin landing heads, the sun rising tomorrow.",
+        "teach": "Probability = favourable outcomes ÷ all outcomes. Find the probability of a prime on a 12-sided dice (5/12). List all the outcomes of a spinner and check the probabilities add to 1. Toss a coin 50 times and compare the frequency of heads with ½. Expected number: if the probability of rain on a June day is 0·25, expect about 7 or 8 rainy days in June. Discuss decisions: a 10% chance of a storm matters more for a sailing trip than a cinema trip.",
+        "practise": "How likely is it?, then the \"Chances and choices\" sheet.",
+        "check": "A bag has 3 red, 5 blue and 2 green counters. Find the probability of blue as a fraction and as a decimal. In 50 picks (putting it back each time), about how many blues?"
+      },
+      "use": [
+        "n-chance"
+      ],
+      "home": "Look at the forecast's chance of rain and decide what to plan.",
+      "vocab": "probability, outcome, event, equally likely, expected, frequency, fraction, decimal",
+      "understand": "The probability of rain is 0·25. Why might you still take a coat?",
+      "lookFor": "Explains that unlikely isn't impossible, and the consequence of getting soaked matters as well as the probability."
+    }
+  ]
+}

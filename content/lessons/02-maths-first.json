@@ -1,0 +1,723 @@
+{
+  "section": "Numeracy and mathematics: First level",
+  "lessons": [
+    {
+      "id": "lesson-first-rounding-to-estimate",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-01a"
+      ],
+      "title": "Rounding to estimate",
+      "intention": "We are learning to round to the nearest 10 and 100 to estimate and check answers.",
+      "criteria": [
+        "I can round whole numbers to the nearest 10 and 100.",
+        "I can use rounding or doubling to estimate an answer.",
+        "I can check if my answer is sensible."
+      ],
+      "steps": {
+        "start": "Is 48 nearer 40 or 50? Show it on a number line.",
+        "teach": "Use a number line to round 2-digit numbers to 10, then 3-digit numbers to 100. Model estimating 38 + 41 as 40 + 40, then working it out and comparing.",
+        "practise": "Rounding to the nearest 10.",
+        "check": "Round 67 and 352. Estimate 29 + 52, then check."
+      },
+      "use": [
+        "n-round-10",
+        "n-round-10-100"
+      ],
+      "home": "Round prices in the shop to estimate the total.",
+      "vocab": "round, nearest, estimate, about, check, sensible",
+      "understand": "Why would you round before you work it out?",
+      "lookFor": "Uses rounding to check whether an answer is sensible."
+    },
+    {
+      "id": "lesson-first-place-value-to-1000",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-02a"
+      ],
+      "title": "Place value to 1000",
+      "intention": "We are learning what each digit is worth in numbers to 1000.",
+      "criteria": [
+        "I can read, write and order numbers to 1000.",
+        "I know zero holds a place, as in 405.",
+        "I can say what each digit is worth, as in 867 = 800 + 60 + 7."
+      ],
+      "steps": {
+        "start": "Make 34 with tens and ones. How many tens? How many ones?",
+        "teach": "Use hundreds, tens and ones (blocks or place value cards) to build 3-digit numbers. Show 405 and why the zero matters. Order four 3-digit numbers.",
+        "practise": "Tens and ones, then Hundreds, tens and ones.",
+        "check": "What is the 6 worth in 263? Write 'four hundred and nine' in digits."
+      },
+      "use": [
+        "n-place-value",
+        "n-hundreds"
+      ],
+      "home": "Read big numbers on signs and prices together.",
+      "vocab": "digit, place, value, hundreds, tens, ones, zero",
+      "understand": "What is the 4 worth in 346? What if it moved to the hundreds?",
+      "lookFor": "Explains the value of a digit depends on its place."
+    },
+    {
+      "id": "lesson-first-counting-in-2s-5s-10s-and-100s",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MNU 1-02a",
+        "MTH 1-13b"
+      ],
+      "title": "Counting in 2s, 5s, 10s and 100s",
+      "intention": "We are learning to count forwards and backwards in steps.",
+      "criteria": [
+        "I can count forwards and backwards in 2s, 5s and 10s from any number to 1000.",
+        "I can count in 100s.",
+        "I can spot the pattern in the steps."
+      ],
+      "steps": {
+        "start": "Count in 10s from 0, then from 3 (3, 13, 23…).",
+        "teach": "Use a hundred square to show counting in 2s, 5s and 10s. Count back too. Count in 100s from 50.",
+        "practise": "Number patterns.",
+        "check": "Count on in 5s from 35. Count back in 2s from 20."
+      },
+      "use": [
+        "m-patterns"
+      ],
+      "home": "Count in 2s using pairs of socks or shoes.",
+      "vocab": "count on, count back, steps, pattern, multiple",
+      "understand": "What do you notice about numbers when you count in 5s?",
+      "lookFor": "Spots the pattern (they end in 0 or 5) and uses it to continue or check."
+    },
+    {
+      "id": "lesson-first-adding-and-subtracting-within-20",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-02a",
+        "MNU 1-03a"
+      ],
+      "title": "Adding and subtracting within 20",
+      "intention": "We are learning to add and subtract quickly within 20.",
+      "criteria": [
+        "I know number bonds to 10 and 20.",
+        "I can add and subtract within 20 using what I know.",
+        "I know addition can be done in any order, as in 6 + 3 = 3 + 6."
+      ],
+      "steps": {
+        "start": "Quick-fire bonds to 10: 7 and ? make 10.",
+        "teach": "Use a bead string or ten frames. Show bridging through 10: 8 + 5 = 8 + 2 + 3. Show 6 + 3 = 3 + 6. Use 'I know 7 + 3 = 10, so 17 + 3 = 20'.",
+        "practise": "Number bonds to 20, Adding within 20, Taking away within 20.",
+        "check": "Ask 9 + 6, 15 − 7 and 13 + ? = 20, and how they worked it out."
+      },
+      "use": [
+        "n-bonds-20",
+        "n-add-20",
+        "n-sub-20"
+      ],
+      "home": "Play a quick bonds game in the car: I say 6, you say 4.",
+      "vocab": "add, subtract, sum, total, difference, bond, bridge",
+      "understand": "If 8 + 6 = 14, what else do you know?",
+      "lookFor": "Uses the fact to find others: 6 + 8 = 14, 14 − 6 = 8, 14 − 8 = 6."
+    },
+    {
+      "id": "lesson-first-adding-and-subtracting-to-1000",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-02a",
+        "MNU 1-03a"
+      ],
+      "title": "Adding and subtracting to 1000",
+      "intention": "We are learning to add and subtract 3-digit numbers.",
+      "criteria": [
+        "I can add and subtract multiples of 10 and 100 to and from numbers to 1000.",
+        "I can add and subtract 3-digit numbers.",
+        "I can use the inverse to check."
+      ],
+      "steps": {
+        "start": "What is 340 + 100? 340 + 10? 340 − 20?",
+        "teach": "Model partitioning: 253 + 125 = 200 + 100, 50 + 20, 3 + 5. Then a written method. Check 378 − 125 = 253 by adding back.",
+        "practise": "Adding and taking away bigger numbers.",
+        "check": "Work out 436 + 251 and 587 − 230, and check one with the inverse."
+      },
+      "use": [
+        "n-big-add"
+      ],
+      "home": "Add up two prices or two distances from a map.",
+      "vocab": "add, subtract, partition, inverse, check",
+      "understand": "How could you check your answer?",
+      "lookFor": "Uses the inverse (adds back) or an estimate to check, and explains why the check works."
+    },
+    {
+      "id": "lesson-first-multiplication-facts-2-3-4-5-and-10",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-02a",
+        "MNU 1-03a"
+      ],
+      "title": "Multiplication facts: 2, 3, 4, 5 and 10",
+      "intention": "We are learning to work out and remember multiplication facts.",
+      "criteria": [
+        "I can work out multiplication facts using repeated addition, groups and arrays.",
+        "I know 2 × 4 = 4 × 2.",
+        "I can recall facts for the 2, 3, 4, 5 and 10 times tables."
+      ],
+      "steps": {
+        "start": "Count in 5s to 50 on your fingers.",
+        "teach": "Build arrays with counters: 3 rows of 4. Write it as 4 + 4 + 4 and 3 × 4, then turn it to show 4 × 3. Link doubles to the 2 and 4 times tables.",
+        "practise": "2, 5 and 10 times tables, then 3 and 4 times tables.",
+        "check": "Show an array: write two multiplication facts. Ask 4 × 5 and 3 × 6."
+      },
+      "use": [
+        "n-tables-2-5-10",
+        "n-tables-3-4",
+        "n-doubles"
+      ],
+      "home": "Spot arrays at home: egg boxes, muffin trays, windows.",
+      "vocab": "multiply, times, groups of, lots of, array, product",
+      "understand": "How could 2 × 5 help you work out 4 × 5?",
+      "lookFor": "Uses doubling or facts they know to find a new fact, rather than counting from the start."
+    },
+    {
+      "id": "lesson-first-division-sharing-and-grouping",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-02a",
+        "MNU 1-03a"
+      ],
+      "title": "Division: sharing and grouping",
+      "intention": "We are learning to divide by sharing and grouping.",
+      "criteria": [
+        "I can divide by sharing equally and by making equal groups.",
+        "I can use multiplication facts to divide.",
+        "I know division undoes multiplication."
+      ],
+      "steps": {
+        "start": "Share 12 counters between 3 people. How many each?",
+        "teach": "Show 12 ÷ 3 two ways: sharing into 3 groups, and making groups of 3. Link to 3 × 4 = 12. Try a remainder: 13 ÷ 3.",
+        "practise": "Division facts.",
+        "check": "Ask 20 ÷ 5 and 18 ÷ 2, and which times table fact helps."
+      },
+      "use": [
+        "n-division"
+      ],
+      "home": "Share snacks fairly between the family.",
+      "vocab": "divide, share, equal groups, shared equally, remainder",
+      "understand": "Here is 12 ÷ 3. Show it as sharing, then as grouping.",
+      "lookFor": "Can show both and knows the answer is the same."
+    },
+    {
+      "id": "lesson-first-multiplying-and-dividing-by-10-and-100",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-03a"
+      ],
+      "title": "Multiplying and dividing by 10 and 100",
+      "intention": "We are learning to multiply and divide whole numbers by 10 and 100.",
+      "criteria": [
+        "I can multiply and divide whole numbers by 10 and 100.",
+        "I can explain how the digits move."
+      ],
+      "steps": {
+        "start": "What is 10 lots of 3? 10 lots of 30?",
+        "teach": "Use a place value grid. Show 23 × 10 = 230: the digits move one place left. ×100 moves two places. Dividing moves them right.",
+        "practise": "Multiplying and dividing by 10 and 100.",
+        "check": "Ask 45 × 10, 6 × 100 and 700 ÷ 10."
+      },
+      "use": [
+        "n-x10"
+      ],
+      "home": "How many 10p coins make £3? How many pence in £5?",
+      "vocab": "multiply, divide, place, digit, ten times",
+      "understand": "What happens to the digits when you multiply by 10?",
+      "lookFor": "Says the digits move one place bigger, rather than just \"add a zero\"."
+    },
+    {
+      "id": "lesson-first-solving-two-step-problems",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MNU 1-03a"
+      ],
+      "title": "Solving two-step problems",
+      "intention": "We are learning to choose what to do in a problem and solve it in two steps.",
+      "criteria": [
+        "I can decide which calculation a problem needs.",
+        "I can solve two-step problems.",
+        "I can check my answer makes sense."
+      ],
+      "steps": {
+        "start": "Tell a one-step story: 5 apples, 3 more. Now add a second step: then 2 are eaten.",
+        "teach": "Read a problem together. Underline the important numbers. Draw a bar model or picture. Decide step 1 and step 2. Check with an estimate.",
+        "practise": "Missing numbers and signs, then make up a two-step problem for the tutor to solve.",
+        "check": "Sam has 24 stickers, gets 10 more and gives away 8. How many now?"
+      },
+      "use": [
+        "m-equations"
+      ],
+      "home": "Make up shopping problems: two things, then change.",
+      "vocab": "problem, calculate, step, total, left, more, fewer",
+      "understand": "Before you work it out: what are the two steps, and why that order?",
+      "lookFor": "Explains which operation each step needs and why."
+    },
+    {
+      "id": "lesson-first-what-fractions-are",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 1-07a"
+      ],
+      "title": "What fractions are",
+      "intention": "We are learning to name, write and compare fractions.",
+      "criteria": [
+        "I can explain what a fraction is using pictures or objects.",
+        "I know the more equal parts, the smaller each part.",
+        "I can write fractions like ½, ⅔ and ⅝, and say what the numerator and denominator mean.",
+        "I can compare fractions and place them on a number line."
+      ],
+      "steps": {
+        "start": "Fold a paper strip in half, then quarters, then eighths. What happens to the parts?",
+        "teach": "Use fraction strips. Write ½, ¼, ⅛ and show which is biggest. Explain numerator (parts we have) and denominator (equal parts in the whole). Place ½ and ¼ on a 0–1 number line.",
+        "practise": "Halves, quarters and thirds.",
+        "check": "Which is bigger, ⅓ or ⅕? Show ¾ of a shape."
+      },
+      "use": [
+        "n-fractions"
+      ],
+      "home": "Cut a pizza or cake into equal parts and name the fractions.",
+      "vocab": "fraction, half, quarter, third, numerator, denominator, equal parts",
+      "understand": "Which is bigger, one half or one quarter of the same pizza? Why?",
+      "lookFor": "Explains more equal parts means each part is smaller."
+    },
+    {
+      "id": "lesson-first-fractions-of-amounts-and-equivalent-fractions",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [
+        "MNU 1-07b",
+        "MTH 1-07c"
+      ],
+      "title": "Fractions of amounts and equivalent fractions",
+      "intention": "We are learning to find a fraction of a number and to spot fractions that are the same.",
+      "criteria": [
+        "I can find a fraction of an amount using division, as in ¼ of 12.",
+        "I can show simple equivalent fractions, as in ½ = 2/4."
+      ],
+      "steps": {
+        "start": "Share 12 sweets into 4 equal groups. What is ¼ of 12?",
+        "teach": "Link ¼ of 20 to 20 ÷ 4. Then use fraction strips to show ½ = 2/4 = 4/8.",
+        "practise": "Halves, quarters and thirds, then Equivalent fractions.",
+        "check": "Ask ⅓ of 15 and draw a picture to show ½ = 3/6."
+      },
+      "use": [
+        "n-fractions",
+        "n-equivalent"
+      ],
+      "home": "Find half or a quarter of a bag of pasta shapes.",
+      "vocab": "fraction of, share, equivalent, same as",
+      "understand": "How do you find a quarter of 20? Why does that work?",
+      "lookFor": "Links finding a quarter to sharing into 4 equal groups."
+    },
+    {
+      "id": "lesson-first-paying-and-change-within-10",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Money",
+      "codes": [
+        "MNU 1-09a",
+        "MNU 1-09b"
+      ],
+      "title": "Paying and change within £10",
+      "intention": "We are learning to pay for things and work out change.",
+      "criteria": [
+        "I know all coins and notes to £20.",
+        "I can write amounts correctly, as in 149p = £1·49.",
+        "I can pay for things and work out change within £10.",
+        "I know things can be paid for with cards and phones."
+      ],
+      "steps": {
+        "start": "Make £1 in three different ways with coins.",
+        "teach": "Write prices both ways (75p, £0·75). Total two items. Count on to find change from £5 or £10 (from £3·60: 40p makes £4, then £1 makes £5).",
+        "practise": "Counting money.",
+        "check": "A book costs £3·45. What change from £5?"
+      },
+      "use": [
+        "n-money"
+      ],
+      "home": "Let your child work out the change when you pay.",
+      "vocab": "pounds, pence, total, change, cost, note, card",
+      "understand": "You pay with 10p for something that costs 7p. How much change? How did you work it out?",
+      "lookFor": "Counts on from the cost to the amount paid, or takes away, and explains which."
+    },
+    {
+      "id": "lesson-first-half-past-quarter-past-and-quarter-to",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 1-10a"
+      ],
+      "title": "Half past, quarter past and quarter to",
+      "intention": "We are learning to tell the time to the quarter hour.",
+      "criteria": [
+        "I can tell half past, quarter past and quarter to on analogue and digital clocks.",
+        "I can use am and pm.",
+        "I know 24-hour times are used on phones and computers."
+      ],
+      "steps": {
+        "start": "Show o'clock times and read them.",
+        "teach": "Show the clock face split into quarters. Move the minute hand: quarter past, half past, quarter to. Show the matching digital times (2:15, 2:30, 2:45). Talk about am and pm.",
+        "practise": "Telling the time, then Digital time.",
+        "check": "Set quarter to 4 on a clock. What is 7:30 on an analogue clock?"
+      },
+      "use": [
+        "n-time",
+        "n-time-digital"
+      ],
+      "home": "Ask your child the time at quarter past, half past and quarter to.",
+      "vocab": "quarter past, half past, quarter to, am, pm, analogue, digital",
+      "understand": "Why is the hour hand between two numbers at half past?",
+      "lookFor": "Knows the hour hand moves on through the hour, not just the minute hand."
+    },
+    {
+      "id": "lesson-first-calendars-dates-and-how-long",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Time",
+      "codes": [
+        "MNU 1-10b",
+        "MNU 1-10c"
+      ],
+      "title": "Calendars, dates and how long",
+      "intention": "We are learning to use calendars and work out how long things take.",
+      "criteria": [
+        "I can write the date in words and numbers.",
+        "I can use a calendar to plan.",
+        "I know seconds in a minute, minutes in an hour, hours in a day, days in each month and in a year.",
+        "I can choose and use a timer."
+      ],
+      "steps": {
+        "start": "What is today's date? Write it two ways.",
+        "teach": "Use a calendar to find birthdays and count days between. Learn the time facts. Use a timer: how many star jumps in 30 seconds?",
+        "practise": "How long? Time intervals.",
+        "check": "How many days in June? How many minutes in an hour? What is the date one week from today?"
+      },
+      "use": [
+        "n-durations"
+      ],
+      "home": "Put family birthdays on a calendar and count down.",
+      "vocab": "date, calendar, month, season, minute, hour, second, timer",
+      "understand": "How long is it from Monday to Thursday? How do you know?",
+      "lookFor": "Counts the gaps (days passing), not the days named."
+    },
+    {
+      "id": "lesson-first-measuring-with-rulers-scales-and-jugs",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 1-11a"
+      ],
+      "title": "Measuring with rulers, scales and jugs",
+      "intention": "We are learning to estimate and measure in standard units.",
+      "criteria": [
+        "I can estimate length, height, weight and capacity.",
+        "I can measure with rulers, metre sticks, scales and jugs to the nearest unit.",
+        "I can make simple conversions, as in 1 m 58 cm = 158 cm.",
+        "I can read scales, including halves."
+      ],
+      "steps": {
+        "start": "Estimate how long a pencil is in cm. Measure it.",
+        "teach": "Show starting a ruler at 0. Weigh fruit in grams, measure water in ml. Read a jug scale with ½ litre marked. Convert 1 m 20 cm to 120 cm.",
+        "practise": "Measuring: rulers, jugs and units.",
+        "check": "Measure a book in cm. Read a scale at 250 ml."
+      },
+      "use": [
+        "n-measure"
+      ],
+      "home": "Bake together, measuring grams and millilitres.",
+      "vocab": "estimate, measure, centimetre, metre, gram, kilogram, millilitre, litre, scale",
+      "understand": "Why do we use centimetres instead of hand spans?",
+      "lookFor": "Explains standard units give the same answer whoever measures."
+    },
+    {
+      "id": "lesson-first-area-by-counting-squares",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Measurement",
+      "codes": [
+        "MNU 1-11b"
+      ],
+      "title": "Area by counting squares",
+      "intention": "We are learning to find area by counting squares.",
+      "criteria": [
+        "I can estimate and count squares to find the area of a shape, to the nearest half square.",
+        "I can make shapes with a given area.",
+        "I know different shapes can have the same area."
+      ],
+      "steps": {
+        "start": "How many squares cover this sticky note?",
+        "teach": "Draw shapes on squared paper. Count whole squares, then pair up halves. Make two different shapes with an area of 6 squares.",
+        "practise": "Draw three shapes with an area of 8 squares on squared paper.",
+        "check": "Count the area of a shape with some half squares."
+      },
+      "use": [],
+      "home": "Count the tiles on a floor or wall to find its area.",
+      "vocab": "area, square, cover, half square",
+      "understand": "Can two different shapes have the same area?",
+      "lookFor": "Yes: area is how many squares are covered, not what the shape looks like."
+    },
+    {
+      "id": "lesson-first-number-patterns-and-rules",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 1-13a",
+        "MTH 1-13b"
+      ],
+      "title": "Number patterns and rules",
+      "intention": "We are learning to continue number patterns and explain the rule.",
+      "criteria": [
+        "I can continue and make repeating patterns with shapes and symbols.",
+        "I can describe patterns in tables and the hundred square.",
+        "I can continue a number sequence and say its rule."
+      ],
+      "steps": {
+        "start": "2, 4, 6, 8… what comes next? What is the rule?",
+        "teach": "Show sequences that add, subtract, double and halve. Find the rule and the next two numbers. Colour the 5 times table on a hundred square.",
+        "practise": "Number patterns.",
+        "check": "Continue 30, 27, 24… and say the rule."
+      },
+      "use": [
+        "m-patterns"
+      ],
+      "home": "Make up a number pattern for someone at home to solve.",
+      "vocab": "pattern, sequence, rule, next, double, halve",
+      "understand": "What's the rule? What will the 10th number be?",
+      "lookFor": "States the rule in words and uses it to predict, without listing every number."
+    },
+    {
+      "id": "lesson-first-equals-greater-than-and-missing-numbers",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [
+        "MTH 1-15a",
+        "MTH 1-15b"
+      ],
+      "title": "Equals, greater than and missing numbers",
+      "intention": "We are learning to compare numbers and find missing numbers.",
+      "criteria": [
+        "I can use =, ≠, < and > correctly.",
+        "I know the equals sign means both sides balance.",
+        "I can find a missing number, as in □ + 17 = 30."
+      ],
+      "steps": {
+        "start": "Which is bigger, 45 or 54? Show it with < or >.",
+        "teach": "Use a balance picture: 8 + 2 = 5 + 5. Then □ + 6 = 15 and □ × 6 = 30, using number facts and the inverse.",
+        "practise": "Missing numbers and signs.",
+        "check": "Fill in 23 □ 32 and □ − 8 = 12."
+      },
+      "use": [
+        "m-equations"
+      ],
+      "home": "Make balance puzzles with coins.",
+      "vocab": "equals, not equal to, less than, greater than, balance, missing",
+      "understand": "What does = mean in 7 + 3 = 6 + 4?",
+      "lookFor": "Explains both sides are worth the same, not \"the answer comes next\"."
+    },
+    {
+      "id": "lesson-first-describing-2d-shapes-and-3d-objects",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 1-16a",
+        "MTH 1-16b"
+      ],
+      "title": "Describing 2D shapes and 3D objects",
+      "intention": "We are learning to name and describe shapes and objects.",
+      "criteria": [
+        "I can name and sort 2D shapes and 3D objects in any size or way round.",
+        "I can use side, face, edge, vertex, base and angle.",
+        "I can find 2D shapes in 3D objects.",
+        "I can make a tiling pattern with two shapes."
+      ],
+      "steps": {
+        "start": "Show a triangle upside down: is it still a triangle?",
+        "teach": "Count faces, edges and vertices of a cube and a cylinder. Find the 2D faces of 3D objects. Tile with squares and triangles.",
+        "practise": "2D shapes, then 3D objects.",
+        "check": "How many faces, edges and vertices on a cuboid?"
+      },
+      "use": [
+        "m-shapes-2d",
+        "m-shapes-3d"
+      ],
+      "home": "Find cuboids, cylinders and spheres in the kitchen.",
+      "vocab": "side, face, edge, vertex, base, angle, tiling",
+      "understand": "How is a cube different from a square?",
+      "lookFor": "Knows a cube is 3D with faces, edges and corners, and its faces are squares."
+    },
+    {
+      "id": "lesson-first-turns-right-angles-and-compass-points",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 1-17a"
+      ],
+      "title": "Turns, right angles and compass points",
+      "intention": "We are learning to describe turns and directions.",
+      "criteria": [
+        "I can describe full, half and quarter turns, clockwise and anticlockwise.",
+        "I know a right angle is 90°.",
+        "I can use North, South, East and West.",
+        "I can find right angles in shapes and around me."
+      ],
+      "steps": {
+        "start": "Stand up: make a quarter turn clockwise, then a half turn.",
+        "teach": "Make a right-angle checker by folding paper. Find right angles in the room. Mark N, S, E, W on the walls and give directions.",
+        "practise": "Angles and turns.",
+        "check": "Face North, turn a quarter turn clockwise: which way now?"
+      },
+      "use": [
+        "m-angles"
+      ],
+      "home": "Give directions on a walk: turn left, quarter turn right.",
+      "vocab": "turn, clockwise, anticlockwise, right angle, North, South, East, West",
+      "understand": "If you face north and make a quarter turn clockwise, which way do you face?",
+      "lookFor": "Says east, and can show the turn with their body or a pointer."
+    },
+    {
+      "id": "lesson-first-grid-references-and-symmetry",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Shape and angles",
+      "codes": [
+        "MTH 1-18a",
+        "MTH 1-19a"
+      ],
+      "title": "Grid references and symmetry",
+      "intention": "We are learning to use grid references and to make symmetrical designs.",
+      "criteria": [
+        "I know where grid references are used.",
+        "I can find and give two-figure grid references.",
+        "I can find symmetry in pictures, nature and shapes.",
+        "I can make a design with more than one line of symmetry."
+      ],
+      "steps": {
+        "start": "Look at a simple map with a grid. Where is the park?",
+        "teach": "Draw a 5 × 5 grid with letters along and numbers up. Place items and name their squares (along the corridor, then up the stairs). Fold shapes to find lines of symmetry.",
+        "practise": "Play a grid hide-and-seek: hide treasure in a square and guess each other's.",
+        "check": "Which square is the tree in? Draw the other half of a symmetrical pattern."
+      },
+      "use": [],
+      "home": "Look at a street map together and find places by their squares.",
+      "vocab": "grid, reference, along, up, symmetry, line of symmetry",
+      "understand": "Why does the order of a grid reference matter?",
+      "lookFor": "Explains B3 and 3B point to different places if the order is swapped: across first, then up."
+    },
+    {
+      "id": "lesson-first-collecting-and-showing-data",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 1-20a",
+        "MNU 1-20b",
+        "MTH 1-21a"
+      ],
+      "title": "Collecting and showing data",
+      "intention": "We are learning to collect, sort and show data, and answer questions about it.",
+      "criteria": [
+        "I can answer questions using charts, bar graphs and tables.",
+        "I can collect data with a survey or tally.",
+        "I can show data in bar graphs, tables, Carroll diagrams and Venn diagrams.",
+        "I can give a graph a title, labels and a sensible scale."
+      ],
+      "steps": {
+        "start": "What is the favourite pet of people you know?",
+        "teach": "Collect answers with a tally. Draw a bar graph with a title, labelled axes and a scale going up in 2s. Sort numbers in a Venn diagram (even / more than 10).",
+        "practise": "Tally marks, then Bar charts.",
+        "check": "Ask three questions about a bar graph, including one about the difference between two bars."
+      },
+      "use": [
+        "n-tally",
+        "n-bar"
+      ],
+      "home": "Do a family survey and make a chart.",
+      "vocab": "data, survey, tally, bar graph, table, axis, scale, Venn diagram, Carroll diagram",
+      "understand": "What question could someone answer from your chart?",
+      "lookFor": "Asks and answers a question the data really shows, such as which is most popular."
+    },
+    {
+      "id": "lesson-first-how-likely-is-it",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [
+        "MNU 1-22a"
+      ],
+      "title": "How likely is it?",
+      "intention": "We are learning to describe how likely things are.",
+      "criteria": [
+        "I can use likely, unlikely, certain, uncertain, possible, impossible, fair and unfair.",
+        "I can use what I know to predict how likely something is."
+      ],
+      "steps": {
+        "start": "Will it snow tomorrow? Will the sun rise tomorrow?",
+        "teach": "Put events on a line from impossible to certain. Is a game with one red and five blue counters fair?",
+        "practise": "How likely is it?",
+        "check": "Give three events to place on the likelihood line, with reasons."
+      },
+      "use": [
+        "n-chance"
+      ],
+      "home": "Talk about the weather forecast: how likely is rain?",
+      "vocab": "likely, unlikely, certain, possible, impossible, fair, unfair, chance",
+      "understand": "Is it impossible or just unlikely that it will snow tomorrow? Why?",
+      "lookFor": "Explains the difference: unlikely can still happen, impossible can't."
+    },
+    {
+      "id": "lesson-first-numbers-in-life-work-and-history",
+      "level": "First",
+      "subject": "Maths",
+      "strand": "Number",
+      "codes": [
+        "MTH 1-12a"
+      ],
+      "title": "Numbers in life, work and history",
+      "intention": "We are learning how numbers are used in the world and in the past.",
+      "criteria": [
+        "I can talk about how numbers are used in learning, life and work.",
+        "I can explore a number system from history, such as Roman numerals."
+      ],
+      "steps": {
+        "start": "Where did you see numbers today?",
+        "teach": "List jobs that use numbers. Show Roman numerals I to XX on clocks and old buildings. Write today's day number in Roman numerals.",
+        "practise": "Write five numbers in Roman numerals and five jobs that use maths.",
+        "check": "What is XIV? Name a job that uses measuring."
+      },
+      "use": [],
+      "home": "Spot Roman numerals on clocks, films or buildings.",
+      "vocab": "number system, Roman numerals",
+      "understand": "Where have you seen numbers used today? What were they for?",
+      "lookFor": "Gives real examples and what the number told someone (time, price, a bus number)."
+    }
+  ]
+}

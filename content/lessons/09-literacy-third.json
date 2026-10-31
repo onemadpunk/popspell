@@ -1,0 +1,522 @@
+{
+  "section": "Literacy and English: Third level (S1 to S3)",
+  "lessons": [
+    {
+      "id": "lesson-third-choosing-texts-and-explaining-how-well-they-meet-my-needs",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 3-01a",
+        "LIT 3-11a",
+        "LIT 3-20a"
+      ],
+      "title": "Choosing texts and explaining how well they meet my needs",
+      "intention": "We are learning to choose texts regularly, explain how well they meet our needs, and choose the form of our own texts.",
+      "criteria": [
+        "I can regularly choose texts to read, watch or listen to, for enjoyment or to find information.",
+        "I can give a personal response to a text, with reasons and evidence.",
+        "I can explain how well a text or source met my needs and expectations.",
+        "I can choose the purpose, form and style of a text of my own to suit my audience."
+      ],
+      "steps": {
+        "start": "What's the last thing you read, watched or listened to by choice? Would you recommend it?",
+        "teach": "Model a short review of a podcast, article or novel: what I wanted from it, what it gave me, an example or quotation as evidence, and who else it would suit. Look at ways to find more (library catalogues, author pages, review sites) and how far to trust each. Choose a form for the pupil's own text (a review, blog post, short story or report) and discuss why it suits the audience.",
+        "practise": "The \"My reading and viewing\" sheet: a log, a review with evidence, and a plan for a text of my own.",
+        "check": "Ask: did it meet your expectations? What in the text shows that?"
+      },
+      "use": [],
+      "home": "Keep a reading and viewing log for a fortnight, with a line on how well each one met your needs.",
+      "vocab": "genre, review, evidence, purpose, audience, expectations, source",
+      "understand": "What would make you stop reading something halfway through?",
+      "lookFor": "Explains with reference to their own needs and expectations, such as purpose, interest or difficulty, with an example."
+    },
+    {
+      "id": "lesson-third-discussion-contributing-building-on-others-and-respecting-other-views",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 3-02a",
+        "ENG 3-03a"
+      ],
+      "title": "Discussion: contributing, building on others and respecting other views",
+      "intention": "We are learning to contribute to discussions with evidence, build on others' ideas, and use features of spoken language.",
+      "criteria": [
+        "I can contribute relevant ideas, knowledge or opinions with supporting evidence.",
+        "I can respond to others' views, and develop or adapt my own thinking.",
+        "I can build on others' contributions by asking, clarifying, summarising, supporting or challenging.",
+        "I can identify features of spoken language, such as body language, emphasis, pace, tone and rhetorical devices, and use them.",
+        "I can use a register that suits my purpose and audience."
+      ],
+      "steps": {
+        "start": "Should mobile phones be allowed in school? Give one point and a reason.",
+        "teach": "Agree discussion roles (chair, summariser, challenger). Model phrases: \"Building on that…\", \"Can you clarify…?\", \"I see it differently because…\". Watch a short clip of a debate or interview and name the features of spoken language: gesture, emphasis, pace, pauses, rhetorical questions. Compare registers by making the same point to a friend and to a head teacher.",
+        "practise": "Hold a 10-minute discussion on a real issue, using the \"Discussion: plan and reflect\" sheet before and after.",
+        "check": "Ask: when did you change or add to your thinking? Which feature of spoken language did you use on purpose?"
+      },
+      "use": [],
+      "home": "Watch part of a debate or interview and note one technique each speaker uses.",
+      "vocab": "contribute, evidence, clarify, summarise, challenge, register, tone, pace, emphasis, rhetorical question",
+      "understand": "How did someone else's point change your view, even slightly?",
+      "lookFor": "Gives a specific example of adapting or developing their thinking, and acknowledges the other person's right to disagree."
+    },
+    {
+      "id": "lesson-third-listening-for-purpose-and-main-ideas-and-making-notes",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 3-04a",
+        "LIT 3-05a",
+        "LIT 3-06a"
+      ],
+      "title": "Listening for purpose and main ideas, and making notes",
+      "intention": "We are learning to identify the purpose and main ideas of what we hear, compare spoken texts, and make and use notes.",
+      "criteria": [
+        "I can give an accurate account of the purpose and main ideas of a spoken text, and justify it.",
+        "I can make inferences from key statements.",
+        "I can identify similarities and differences between spoken texts in content, style or language.",
+        "I can make and organise notes in my own words, selecting key information.",
+        "I can use my notes to create a new text that shows I understand the subject."
+      ],
+      "steps": {
+        "start": "Listen to a one-minute news item. In one sentence, what was it for?",
+        "teach": "Model notes while listening: headings, key words, abbreviations and arrows, not full sentences. Listen to two short talks on one topic (a factual report and a personal opinion) and compare purpose, content and style in a two-column table. Pick out a key statement and infer what the speaker believes. Turn the notes into a short summary for someone who missed it.",
+        "practise": "The \"Listen, note, compare\" sheet: the adult reads the two short talks aloud.",
+        "check": "Ask: what was each speaker's purpose? What did one suggest without saying it?"
+      },
+      "use": [],
+      "home": "Listen to a radio or podcast item and tell someone the main points from your notes.",
+      "vocab": "purpose, main idea, infer, key statement, notes, summarise, compare",
+      "understand": "Why are notes better in your own words than copied word for word?",
+      "lookFor": "Explains that putting it in your own words shows you understood it and helps you remember it."
+    },
+    {
+      "id": "lesson-third-commenting-on-spoken-texts-and-recognising-persuasion",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 3-07a",
+        "LIT 3-08a"
+      ],
+      "title": "Commenting on spoken texts and recognising persuasion",
+      "intention": "We are learning to comment on what we hear with evidence, recognise persuasion, and judge our sources.",
+      "criteria": [
+        "I can comment on the content, form and style of spoken texts, with evidence.",
+        "I can identify persuasive techniques, such as word choice, emotive language, repetition, rhetorical questions and statistics.",
+        "I can comment on how reliable and useful a source is."
+      ],
+      "steps": {
+        "start": "Play or read out an advert. What does it want you to do? How does it try to make you?",
+        "teach": "Name persuasive techniques in a charity appeal or campaign speech: emotive words, repetition, rhetorical questions, statistics, speaking directly to \"you\". Ask of each: what effect is this meant to have on me? Compare a campaign video with a news report about the same issue: who made each, why, and which is more reliable?",
+        "practise": "The \"Spot the persuasion\" sheet: the adult reads a short campaign speech aloud.",
+        "check": "Ask: name two techniques and their effect. Is the speaker a reliable source on this? Why?"
+      },
+      "use": [],
+      "home": "Watch adverts with someone and score each for how many persuasive techniques it uses.",
+      "vocab": "persuade, emotive language, repetition, rhetorical question, statistic, bias, reliable, source",
+      "understand": "A speaker uses a statistic. Does that make them right?",
+      "lookFor": "Explains that it depends on where the statistic came from and how it's used, and that statistics can be chosen to persuade."
+    },
+    {
+      "id": "lesson-third-giving-a-talk-clear-structured-and-engaging",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 3-09a",
+        "LIT 3-10a"
+      ],
+      "title": "Giving a talk: clear, structured and engaging",
+      "intention": "We are learning to plan and give a talk that is clear, well structured and engaging for the audience.",
+      "criteria": [
+        "I can communicate information, ideas or opinions, explain a process, and summarise or draw conclusions.",
+        "I can organise a talk in a logical order, with signposts such as topic sentences and linking phrases.",
+        "I can open and close a talk in a way that engages my audience.",
+        "I can use tone, vocabulary and non-verbal techniques to suit my audience.",
+        "I can choose resources that help my audience."
+      ],
+      "steps": {
+        "start": "Think of a good talk or video you've watched. What made you keep listening?",
+        "teach": "Plan a three-minute talk: a hook, three signposted points (\"Firstly…\", \"This leads to…\"), and a conclusion that sums up. Choose one resource: a picture, an object, or three slides with few words. Practise pace, pauses, eye contact and stressing key words. Give one strength and one next step.",
+        "practise": "Plan with the \"Talk planner\" sheet, rehearse, then give the talk.",
+        "check": "Ask: how did your opening grab attention? Where did you signpost a new point?"
+      },
+      "use": [],
+      "home": "Give the talk to someone at home and ask them to tell you your three main points.",
+      "vocab": "hook, signpost, topic sentence, conclusion, audience, tone, pace, eye contact, resource",
+      "understand": "Why do talks need signposts more than written texts do?",
+      "lookFor": "Explains that listeners can't flick back, so they need to hear where the talk is going and when a new point starts."
+    },
+    {
+      "id": "lesson-third-reading-fluently-and-using-reading-strategies",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "ENG 3-12a",
+        "LIT 3-13a"
+      ],
+      "title": "Reading fluently and using reading strategies",
+      "intention": "We are learning to read unfamiliar texts with fluency and expression, and to choose strategies that help us understand.",
+      "criteria": [
+        "I can read aloud with fluency, understanding and expression, at a suitable pace and tone.",
+        "I can use context clues, word roots, grammar, punctuation and text structure to understand unfamiliar texts.",
+        "I can choose strategies such as skimming, scanning, predicting, clarifying, summarising and analysing, before and as I read."
+      ],
+      "steps": {
+        "start": "Here's a word you may not know: benevolent. What clues help you work out what it means?",
+        "teach": "Model skimming an article for the gist, then scanning it for one fact. Work out unfamiliar words from roots (bene means well, as in benefit) and context. Read a paragraph aloud, marking pauses for punctuation and words to stress, then read it again with more expression. Stop after each paragraph to clarify anything unclear and sum it up in a sentence.",
+        "practise": "The \"Reading toolkit\" sheet.",
+        "check": "Ask: which strategy helped most, and when? Read a new paragraph aloud with expression."
+      },
+      "use": [],
+      "home": "Read a newspaper article aloud to someone, then sum up each paragraph in a sentence.",
+      "vocab": "skim, scan, predict, clarify, summarise, context clue, word root, fluency, expression",
+      "understand": "When would you skim, and when would you scan?",
+      "lookFor": "Skims for the general idea of a text; scans to find a particular fact or word quickly."
+    },
+    {
+      "id": "lesson-third-finding-summarising-and-noting-information-from-more-than-one-source",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 3-14a",
+        "LIT 3-15a"
+      ],
+      "title": "Finding, summarising and noting information from more than one source",
+      "intention": "We are learning to find and sort information from different sources, summarise it, and make linked notes.",
+      "criteria": [
+        "I can find, select and sort relevant information from different sources.",
+        "I can summarise key information in my own words.",
+        "I can make and organise notes, linking ideas from more than one source.",
+        "I can use my notes to create a new text that draws on more than one source."
+      ],
+      "steps": {
+        "start": "You need to find out how much plastic reaches the sea each year. Where would you look first?",
+        "teach": "Use the features of non-fiction (headings, contents, index, captions, tables) to find information fast. Read two short sources on one question, mark the key points, and make linked notes in a grid: source 1, source 2, and where they agree. Write a short summary in your own words that uses both, naming the sources.",
+        "practise": "The \"Two sources\" sheet.",
+        "check": "Ask: where did the sources agree or differ? Which point in your summary came from each?"
+      },
+      "use": [],
+      "home": "Research a question for a family decision on two websites, and sum up what you found.",
+      "vocab": "source, select, sort, summarise, notes, link, own words",
+      "understand": "Why use two sources and not just one?",
+      "lookFor": "Explains that comparing sources checks accuracy, shows different views and gives a fuller picture."
+    },
+    {
+      "id": "lesson-third-close-reading-purpose-inference-and-language",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 3-16a",
+        "ENG 3-17a"
+      ],
+      "title": "Close reading: purpose, inference and language",
+      "intention": "We are learning to work out purpose and main ideas, make inferences, and explain the effect of a writer's language.",
+      "criteria": [
+        "I can identify the purpose and audience of a text, and justify my answer.",
+        "I can give an accurate account of the main ideas.",
+        "I can make inferences and deductions, with evidence.",
+        "I can compare texts and comment on content, style and language.",
+        "I can answer literal, inferential and evaluative questions, and explain the effect of word choice, sentence structure, punctuation and imagery."
+      ],
+      "steps": {
+        "start": "\"The wind screamed through the trees.\" What is the writer doing here, and why?",
+        "teach": "Sort questions into literal (it's in the text), inferential (read between the lines) and evaluative (judge it). Model answering a language question in three steps: quote, name the technique, explain the effect. Look at a short sentence after long ones, a colon introducing a list, and a metaphor. Compare the openings of two texts on the same topic.",
+        "practise": "The \"Close reading\" sheet.",
+        "check": "Ask a question of each type about a new paragraph. Listen for the quotation, the technique and the effect."
+      },
+      "use": [],
+      "home": "Choose a line from a song or an advert and explain why the writer chose those words.",
+      "vocab": "literal, inferential, evaluative, word choice, sentence structure, imagery, effect, purpose, audience",
+      "understand": "What is the difference between naming a technique and explaining its effect?",
+      "lookFor": "Explains that naming it says what the writer did; the effect says what it makes the reader think or feel, and why."
+    },
+    {
+      "id": "lesson-third-persuasion-and-reliable-sources-in-reading",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 3-18a"
+      ],
+      "title": "Persuasion and reliable sources in reading",
+      "intention": "We are learning to recognise persuasion in what we read and judge how far to trust a source.",
+      "criteria": [
+        "I can identify persuasive language, such as word choice, emotive language, repetition, rhetorical questions and statistics, and comment on it.",
+        "I can judge how reliable, relevant and useful a source is, and justify my view.",
+        "I can use this to form an informed view of my own."
+      ],
+      "steps": {
+        "start": "Two web pages about an energy drink: one from the company that makes it, one from a health service. Which do you trust more? Why?",
+        "teach": "Make a checklist for sources: who wrote it, why, when, what evidence it gives, and whether other sources agree. Mark the persuasive language in an article and explain its effect. Separate facts from claims. Write an informed view that weighs up both sources.",
+        "practise": "The \"Can I trust this?\" sheet.",
+        "check": "Ask: name a technique, quote it and explain how it works on the reader. How reliable is the source, and why?"
+      },
+      "use": [],
+      "home": "Read the same news story on two different websites and compare how each tells it.",
+      "vocab": "persuasive, emotive, bias, reliable, credible, relevant, claim, evidence, informed view",
+      "understand": "Can a source be persuasive and reliable at the same time?",
+      "lookFor": "Explains yes: a source can argue a view and still use accurate evidence, so you judge the evidence as well as the language."
+    },
+    {
+      "id": "lesson-third-character-setting-theme-and-the-writer-s-style",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "ENG 3-19a"
+      ],
+      "title": "Character, setting, theme and the writer's style",
+      "intention": "We are learning to evaluate character, setting and structure, identify the theme, and comment on the writer's style.",
+      "criteria": [
+        "I can make evaluative comments about structure, characterisation and setting, referring to the text.",
+        "I can identify the theme and link it to my own or others' experiences.",
+        "I can comment on the writer's style and language, and the features of the genre, with evidence."
+      ],
+      "steps": {
+        "start": "Think of a story you know well. Underneath the plot, what is it really about?",
+        "teach": "Read a short story or extract. Track how a character changes, with a quotation from the start, middle and end. Ask how the setting builds the mood. Put the theme into a sentence (\"Fear can stop us from…\") and connect it to real life. Comment on one feature of the writer's style, such as first-person narration, short chapters or dialogue, and its effect.",
+        "practise": "The \"Under the surface\" sheet, with any short story or novel the pupil is reading.",
+        "check": "Ask: what is the theme, and which moment shows it most clearly? Why might the writer have structured it this way?"
+      },
+      "use": [],
+      "home": "Talk about a film or series at home: what's its theme, and which character changes most?",
+      "vocab": "character, characterisation, setting, mood, structure, theme, style, genre, evidence",
+      "understand": "What's the difference between the plot and the theme?",
+      "lookFor": "Explains that the plot is what happens; the theme is the bigger idea about life the story explores."
+    },
+    {
+      "id": "lesson-third-spelling-specialist-and-tricky-words-accurately",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 3-21a"
+      ],
+      "title": "Spelling specialist and tricky words accurately",
+      "intention": "We are learning to use strategies and resources to spell most words correctly, including specialist vocabulary.",
+      "criteria": [
+        "I can use a range of strategies and resources to spell most words correctly.",
+        "I can spell unfamiliar and specialist words from different subjects.",
+        "I can check and correct my own spelling."
+      ],
+      "steps": {
+        "start": "Spell photosynthesis, parliament, rhythm and necessary. Which strategy did you use for each?",
+        "teach": "Teach the strategies: break words into syllables (pho-to-syn-the-sis), spot roots and affixes (photo means light), use memory tricks (necessary has one collar and two sleeves: one c, two s's), and look, say, cover, write, check. Show when to use a dictionary or spellchecker, and what a spellchecker misses (their or there). Start a personal list of specialist words from the pupil's subjects.",
+        "practise": "The \"Subject spellings\" sheet: words from science, maths, social subjects and English, with a strategy for each.",
+        "check": "Say five new specialist words for the pupil to spell. Ask them to check them and explain one correction."
+      },
+      "use": [],
+      "home": "Collect five tricky words from homework each week and test each other.",
+      "vocab": "syllable, root, prefix, suffix, memory trick, specialist vocabulary, proofread",
+      "understand": "Why might a spellchecker miss a mistake in 'Their going to the match'?",
+      "lookFor": "Explains that 'their' is a real word, so the checker doesn't flag it; you need to know which word the meaning needs."
+    },
+    {
+      "id": "lesson-third-sentences-punctuation-and-paragraphs",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 3-22a"
+      ],
+      "title": "Sentences, punctuation and paragraphs",
+      "intention": "We are learning to write accurate, varied sentences, use more complex punctuation, and structure writing in paragraphs.",
+      "criteria": [
+        "I can write almost all sentences in a grammatically accurate way.",
+        "I can vary my sentence structures, openings and lengths.",
+        "I can use more complex punctuation, such as colons, brackets, ellipses and inverted commas, mostly accurately.",
+        "I can use paragraphs, topic sentences and linking phrases to show the structure of my writing.",
+        "I can write fluently and legibly."
+      ],
+      "steps": {
+        "start": "Fix this: \"the match was cancelled, it rained all day, we went home\".",
+        "teach": "Fix run-on sentences with full stops, semicolons or conjunctions. Combine simple sentences into complex ones (\"Although it rained, …\"). Practise colons for lists and explanations, brackets for extra information, and an ellipsis for suspense. Plan three paragraphs with topic sentences, and link them (\"However,\", \"As a result,\").",
+        "practise": "The \"Sentence workshop\" sheet.",
+        "check": "Ask the pupil to write a paragraph with a topic sentence, one complex sentence, a colon and a pair of brackets."
+      },
+      "use": [],
+      "home": "Write a short paragraph about your day, starting each sentence in a different way.",
+      "vocab": "simple sentence, complex sentence, run-on sentence, colon, semicolon, brackets, ellipsis, topic sentence, paragraph, linking phrase",
+      "understand": "Why is 'It rained, we went home' not a correct sentence?",
+      "lookFor": "Explains that two complete sentences need a full stop, a semicolon or a conjunction between them, not just a comma."
+    },
+    {
+      "id": "lesson-third-editing-and-layout-that-helps-the-reader",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 3-23a",
+        "LIT 3-24a"
+      ],
+      "title": "Editing, and layout that helps the reader",
+      "intention": "We are learning to review and edit our writing, and to choose layout and presentation for our reader.",
+      "criteria": [
+        "I can review and edit my writing so that it is clear, accurate and meets its purpose.",
+        "I can improve the content and language of my writing.",
+        "I can choose layout and presentation features, including in digital texts, to suit my purpose and audience."
+      ],
+      "steps": {
+        "start": "Read this paragraph once. Was the meaning clear first time? What got in the way?",
+        "teach": "Edit in three passes: meaning first (does it make sense, is anything missing?), then language (stronger words, no repetition), then accuracy (spelling, punctuation, grammar). Then plan a layout of the same content for a different reader, with headings, bullet points, text boxes or graphics, and explain each choice.",
+        "practise": "The \"Edit and design\" sheet.",
+        "check": "Ask: which edit improved it most? Why did you choose that layout for that reader?"
+      },
+      "use": [],
+      "home": "Before sending a message or email, read it once as the person who'll receive it, and edit it.",
+      "vocab": "review, edit, proofread, clarity, layout, heading, bullet point, text box, graphic, audience",
+      "understand": "Why edit for meaning before checking spelling?",
+      "lookFor": "Explains that changing the content can remove or add sentences, so the accuracy check should come last."
+    },
+    {
+      "id": "lesson-third-using-notes-and-sources-in-my-writing",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 3-25a",
+        "LIT 3-26a"
+      ],
+      "title": "Using notes and sources in my writing",
+      "intention": "We are learning to use notes and sources to create new writing, quoting or using our own words, and acknowledging sources.",
+      "criteria": [
+        "I can use notes and other sources to generate ideas and support new writing.",
+        "I can decide when to quote from a source and when to put points in my own words.",
+        "I can acknowledge my sources.",
+        "I can select relevant ideas, information and supporting detail, and organise them in a logical order."
+      ],
+      "steps": {
+        "start": "Why does it matter where information came from?",
+        "teach": "Show the difference between copying, putting it in your own words and quoting, with a short source. Practise rewording a sentence, and quoting a short phrase in quotation marks. Record each source: title, author or organisation, date and web address. Sort notes into an order for a short report: introduction, two or three points with detail, and a conclusion.",
+        "practise": "The \"From notes to writing\" sheet.",
+        "check": "Ask: when did you quote and when did you use your own words, and why? Where is your list of sources?"
+      },
+      "use": [],
+      "home": "Write a short fact file for a younger relative from two sources, listing them at the end.",
+      "vocab": "source, quote, quotation marks, own words, acknowledge, list of sources, plan",
+      "understand": "When is it better to quote than to use your own words?",
+      "lookFor": "Explains that a quotation is best when the exact words matter, such as a striking phrase or an expert's view; otherwise own words show understanding."
+    },
+    {
+      "id": "lesson-third-writing-to-inform-describe-and-explain",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 3-28a",
+        "ENG 3-27a"
+      ],
+      "title": "Writing to inform, describe and explain",
+      "intention": "We are learning to write clear information and explanations that suit our reader.",
+      "criteria": [
+        "I can write to convey information, describe events, or explain processes or ideas.",
+        "I can use a style and format that suit my purpose and audience, with features of the genre.",
+        "I can include relevant information and supporting detail in a logical order, with linking words.",
+        "I can use topic sentences to signpost my paragraphs.",
+        "I can engage my reader through my language, style and tone."
+      ],
+      "steps": {
+        "start": "How does a dishwasher get plates clean? Explain it to me in three sentences.",
+        "teach": "Read a model explanation and label its features: title, introduction, paragraphs in order with topic sentences, linking words for cause (because, as a result, this means), technical words, and a diagram. Plan an explanation of a process the pupil knows (how bike gears work, how a law is made) and write the first two paragraphs together.",
+        "practise": "The \"Explain it\" sheet: plan, then write the explanation.",
+        "check": "Ask: who is your reader, and how did you make it clear for them? Point to a topic sentence and a linking word."
+      },
+      "use": [],
+      "home": "Write an explanation of something you can do that someone at home can't.",
+      "vocab": "inform, explain, process, sequence, topic sentence, linking word, technical vocabulary, format",
+      "understand": "How would your explanation change for a seven-year-old reader?",
+      "lookFor": "Explains changes to vocabulary, sentence length, examples and layout to suit the reader."
+    },
+    {
+      "id": "lesson-third-writing-to-persuade-and-argue",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 3-29a"
+      ],
+      "title": "Writing to persuade and argue",
+      "intention": "We are learning to write persuasive and argumentative texts with a clear line of thought and evidence.",
+      "criteria": [
+        "I can present a point of view with relevant supporting detail or evidence.",
+        "I can organise my ideas in a logical order, with signposts such as topic sentences and linking phrases.",
+        "I can write an introduction that makes my purpose clear and engages the reader, and a conclusion that sums up my line of thought.",
+        "I can use language to persuade, such as word choice, repetition, rhetorical questions and emotive language."
+      ],
+      "steps": {
+        "start": "Should the school day start later? Give your view and your best reason.",
+        "teach": "Read a model persuasive article and label its structure: hook, clear view, points with evidence, the other side and an answer to it, and conclusion. Collect evidence: a statistic, an expert, an example. Plan each paragraph as point, evidence, explain. Write the introduction and one paragraph together, using one persuasive technique on purpose.",
+        "practise": "The \"Make your case\" sheet: plan, then write the article.",
+        "check": "Ask: where is your strongest evidence? How did you answer the other side?"
+      },
+      "use": [],
+      "home": "Write to your local council about something you'd like changed where you live.",
+      "vocab": "persuade, argue, point of view, evidence, counter-argument, rhetorical question, emotive language, conclusion",
+      "understand": "Why mention the other side in a persuasive text?",
+      "lookFor": "Explains that answering the opposing view makes the argument stronger and more convincing to a doubtful reader."
+    },
+    {
+      "id": "lesson-third-writing-about-a-personal-experience",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 3-30a"
+      ],
+      "title": "Writing about a personal experience",
+      "intention": "We are learning to write about a personal experience so the reader shares our feelings and reflections.",
+      "criteria": [
+        "I can set a clear context and setting for the events.",
+        "I can describe events, making my feelings and reactions clear.",
+        "I can reflect on my experience and feelings.",
+        "I can engage my reader through language, style and tone."
+      ],
+      "steps": {
+        "start": "Think of a time something didn't go as planned. Where were you, and how did you feel?",
+        "teach": "Read a short personal piece and find where the writer sets the scene, shows feelings (not just \"I was scared\" but what their body did), and reflects (\"Looking back, I realise…\"). Plan a timeline of the experience, with the feelings at each point. Write the opening together using details from the senses.",
+        "practise": "The \"A moment that mattered\" sheet: plan with a feelings timeline, then write.",
+        "check": "Ask: where does the reader feel what you felt? Where do you reflect on it?"
+      },
+      "use": [],
+      "home": "Tell someone at home about the experience before you write, and notice which details they ask about.",
+      "vocab": "personal, reflective, setting, context, feelings, reaction, reflect, sensory detail, tone",
+      "understand": "What is the difference between telling the reader you were nervous and showing it?",
+      "lookFor": "Explains that showing uses actions, thoughts or physical details so the reader feels it, not just reads the word."
+    },
+    {
+      "id": "lesson-third-creating-texts-in-a-genre-characters-and-settings",
+      "level": "Third",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 3-31a"
+      ],
+      "title": "Creating texts in a genre: characters and settings",
+      "intention": "We are learning to write in a chosen genre, with convincing characters and settings that come to life.",
+      "criteria": [
+        "I can use the key features of my chosen genre.",
+        "I can create interesting and convincing characters.",
+        "I can create a clear sense of setting with descriptive detail.",
+        "I can engage the reader through the structure of my story, its mood and my language."
+      ],
+      "steps": {
+        "start": "Name a genre: mystery, science fiction, horror or adventure. What do readers expect from it?",
+        "teach": "List the features of the chosen genre. Build a character from the inside out: what they want, what they fear, a secret, and how they speak. Describe a setting with three senses and one detail that hints at the mood. Plan the structure: a hook, a problem, rising tension, a turning point, and an ending or cliffhanger.",
+        "practise": "The \"Story builder\" sheet: plan the genre, character and setting, then write the opening scene.",
+        "check": "Ask: which features of the genre did you use? What makes your character convincing?"
+      },
+      "use": [],
+      "home": "Read the opening of a book in the same genre and compare it with yours.",
+      "vocab": "genre, convention, character, motive, setting, mood, atmosphere, structure, tension, cliffhanger",
+      "understand": "What makes a character convincing, even in science fiction?",
+      "lookFor": "Explains that believable wants, fears and reactions make a character feel real, whatever the setting."
+    }
+  ]
+}

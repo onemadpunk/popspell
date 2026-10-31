@@ -1,0 +1,519 @@
+{
+  "section": "Literacy and English: Fourth level (S3)",
+  "lessons": [
+    {
+      "id": "lesson-fourth-reading-widely-and-developing-my-own-style",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 4-01a",
+        "LIT 4-11a",
+        "LIT 4-20a"
+      ],
+      "title": "Reading widely and developing my own style",
+      "intention": "We are learning to choose texts independently, justify our response with reference to the text, and make well-considered choices in our own writing.",
+      "criteria": [
+        "I can select texts regularly and independently, for enjoyment or to inform my thinking.",
+        "I can give a personal response, justifying my opinion with relevant reference to the text.",
+        "I can independently find sources to widen my reading.",
+        "I can make well-considered choices about genre, form, structure and style in my own writing, to meet my audience's needs."
+      ],
+      "steps": {
+        "start": "Which writer, podcaster or film-maker do you think has a style of their own? What makes it theirs?",
+        "teach": "Look at the pupil's reading and viewing over the last term: what's missing (a genre, a period, non-fiction)? Find two new sources to fill the gap, using reviews, prize lists or library recommendations. Model a short response that quotes the text to justify an opinion. Then look at one feature of a favourite writer's style and try it in a paragraph of the pupil's own.",
+        "practise": "The \"Reading with purpose\" sheet: a reading plan, a justified response, and a style experiment.",
+        "check": "Ask: what in the text supports your opinion? Which choice in your own paragraph was deliberate, and why?"
+      },
+      "use": [],
+      "home": "Choose a book or long article from a genre you haven't tried, and tell someone at home whether it met your expectations.",
+      "vocab": "genre, style, voice, justify, reference, source, audience, form",
+      "understand": "What's one thing you've taken from another writer's style into your own writing?",
+      "lookFor": "Names a specific technique, gives an example from the source and from their own writing, and explains the effect they wanted."
+    },
+    {
+      "id": "lesson-fourth-leading-and-sustaining-a-discussion",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 4-02a",
+        "ENG 4-03a"
+      ],
+      "title": "Leading and sustaining a discussion",
+      "intention": "We are learning to lead and take part in discussion so everyone contributes, and to explain the effect of features of spoken language.",
+      "criteria": [
+        "I can contribute relevant ideas with convincing supporting evidence.",
+        "I can make sure everyone has a chance to contribute, and encourage people to consider other views.",
+        "I can respond positively when challenged, adapting my thinking when appropriate.",
+        "I can explore, expand on, clarify, summarise or challenge others' contributions.",
+        "I can identify features of spoken language, explain their effect, and sustain a suitable register."
+      ],
+      "steps": {
+        "start": "Think of a discussion that went badly. What went wrong, and what could the chair have done?",
+        "teach": "Take the chair's role: open with the question, invite quieter voices by name, summarise at intervals, and bring in the opposing view. Practise responding to a challenge without getting defensive (\"That's a fair point; I'd still argue…\"). Watch a short clip of a panel discussion and explain the effect of one speaker's pace, pauses or rhetorical questions on the listener.",
+        "practise": "Lead a 15-minute discussion, using the \"Chair's toolkit\" sheet to prepare and then to evaluate.",
+        "check": "Ask: how did you make sure every view was heard? When you were challenged, what did you do?"
+      },
+      "use": [],
+      "home": "Lead a family discussion on a real decision (a holiday, a rule) and make sure everyone has a say.",
+      "vocab": "chair, contribute, evidence, challenge, summarise, expand, register, rhetorical device, effect",
+      "understand": "Why is it the chair's job to bring in views they disagree with?",
+      "lookFor": "Explains that a good discussion tests ideas against each other, and the chair makes sure all views are heard fairly."
+    },
+    {
+      "id": "lesson-fourth-listening-comparing-texts-and-synthesising-notes",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 4-04a",
+        "LIT 4-05a",
+        "LIT 4-06a"
+      ],
+      "title": "Listening: comparing texts and synthesising notes",
+      "intention": "We are learning to identify purpose, audience and main ideas in spoken texts, compare them, and synthesise notes from more than one source.",
+      "criteria": [
+        "I can state the purpose, audience and main ideas of spoken texts, justifying my views with reference to the text.",
+        "I can make inferences from key statements.",
+        "I can compare and contrast the content, style and language of different spoken texts.",
+        "I can make notes in my own words that synthesise key information from more than one source.",
+        "I can use my notes to create a new text that draws on more than one source."
+      ],
+      "steps": {
+        "start": "Listen to the first minute of two podcasts on the same subject. Who is each one for? How can you tell?",
+        "teach": "Listen to two spoken texts on one issue (an expert interview and a campaign video, or two radio items). Make notes in a synthesis grid: points both make, points only one makes, and where they disagree. Compare style: formal or informal, and how each uses evidence. Write a short briefing that combines both sources, in your own words.",
+        "practise": "The \"Two voices\" sheet: the adult reads two short talks aloud.",
+        "check": "Ask: where do the speakers disagree, and whose evidence is stronger? Which sentence in your briefing combines both?"
+      },
+      "use": [],
+      "home": "Listen to two news programmes cover the same story and compare what each one chose to include.",
+      "vocab": "purpose, audience, infer, compare, contrast, synthesise, briefing, own words",
+      "understand": "What's the difference between summarising two sources and synthesising them?",
+      "lookFor": "Explains that a summary deals with each source in turn, while a synthesis combines them by theme and shows where they agree or differ."
+    },
+    {
+      "id": "lesson-fourth-evaluating-spoken-texts-persuasion-and-credibility",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 4-07a",
+        "LIT 4-08a"
+      ],
+      "title": "Evaluating spoken texts: persuasion and credibility",
+      "intention": "We are learning to make detailed evaluative comments on spoken texts and to judge the credibility of sources.",
+      "criteria": [
+        "I can make detailed evaluative comments, with evidence, on the content, form and style of spoken texts.",
+        "I can identify techniques used to influence or persuade, such as emotive language, rhetorical questions, statistics and hyperbole.",
+        "I can comment on the relevance, reliability and credibility of sources, justifying my opinion."
+      ],
+      "steps": {
+        "start": "Is a celebrity a credible source on climate science? On their own life? What's the difference?",
+        "teach": "Listen to a political speech or a persuasive video. Identify the techniques, including hyperbole, and evaluate how effective each is for its audience, not just name it. Judge credibility: the speaker's expertise, purpose, evidence and what's left out. Write two evaluative sentences that quote the text and explain both effect and effectiveness.",
+        "practise": "The \"Weighing a speech\" sheet: the adult reads a short speech aloud.",
+        "check": "Ask: which technique works best on this audience, and why? How credible is the speaker on this topic?"
+      },
+      "use": [],
+      "home": "Watch a political or campaign broadcast and judge how credible each claim is.",
+      "vocab": "evaluate, effectiveness, persuade, hyperbole, emotive, credibility, reliability, bias",
+      "understand": "What's the difference between identifying a technique and evaluating it?",
+      "lookFor": "Explains that identifying names it, while evaluating judges how well it works for this audience and purpose, with evidence."
+    },
+    {
+      "id": "lesson-fourth-presenting-with-confidence-sustaining-a-point-of-view",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Listening and talking",
+      "codes": [
+        "LIT 4-09a",
+        "LIT 4-10a"
+      ],
+      "title": "Presenting with confidence: sustaining a point of view",
+      "intention": "We are learning to present confidently, sustain a point of view with evidence, and engage an audience.",
+      "criteria": [
+        "I can communicate detailed information, ideas or opinions, and explain with supporting detail.",
+        "I can sum up ideas, issues, findings or conclusions.",
+        "I can structure a talk clearly, with signposts that support a line of thought.",
+        "I can introduce and conclude a talk in a way that engages the audience.",
+        "I can adapt tone, vocabulary and non-verbal skills, and choose resources well."
+      ],
+      "steps": {
+        "start": "Watch the first 30 seconds of a strong talk. What did the speaker do to make you keep listening?",
+        "teach": "Plan a five-minute persuasive talk with a clear position. Build each section from a point, evidence and a link back to the position. Write a hook and a conclusion that returns to it. Practise adapting the same opening for two audiences (a class and a council meeting). Rehearse with timing, pauses and eye contact, and give feedback on one strength and one target.",
+        "practise": "Plan with the \"Five-minute talk\" sheet, rehearse, then present.",
+        "check": "Ask: how did your conclusion link back to your opening? Where did you change your tone for the audience?"
+      },
+      "use": [],
+      "home": "Present your talk to someone at home and ask what they remember most, and why.",
+      "vocab": "position, sustain, signpost, hook, conclusion, adapt, audience, register, resource",
+      "understand": "How do you keep a point of view going through a whole talk?",
+      "lookFor": "Explains linking each section back to the position with signposts, and ending by returning to the opening."
+    },
+    {
+      "id": "lesson-fourth-reading-complex-texts-annotating-and-interrogating",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "ENG 4-12a",
+        "LIT 4-13a"
+      ],
+      "title": "Reading complex texts: annotating and interrogating",
+      "intention": "We are learning to read a wide range of complex texts with understanding, using strategies such as annotating independently.",
+      "criteria": [
+        "I can read with fluency, understanding and expression across a wide range of texts.",
+        "I can use word roots, grammar, punctuation, tone, and sentence and text structure to understand texts.",
+        "I can choose and use strategies independently, such as skimming, scanning, predicting, clarifying, summarising, analysing and annotating."
+      ],
+      "steps": {
+        "start": "Here is a paragraph from a broadsheet opinion column. What's your first impression of the writer's tone?",
+        "teach": "Model annotating a challenging article: circle unfamiliar words and work out meanings from roots and context, underline the main claim, mark shifts in tone, and note questions in the margin. Summarise each paragraph in five words. Read a key paragraph aloud with expression that shows the tone.",
+        "practise": "The \"Annotate it\" sheet.",
+        "check": "Ask: where does the writer's tone change, and how can you tell? Which annotation helped you most?"
+      },
+      "use": [],
+      "home": "Annotate an article or a page of a book with a pencil: questions, key words and reactions.",
+      "vocab": "annotate, interrogate, tone, context, word root, summarise, analyse",
+      "understand": "How did annotating change what you understood?",
+      "lookFor": "Gives a specific example where a question or note in the margin led to a clearer or deeper understanding."
+    },
+    {
+      "id": "lesson-fourth-synthesising-information-from-different-sources",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 4-14a",
+        "LIT 4-15a"
+      ],
+      "title": "Synthesising information from different sources",
+      "intention": "We are learning to find, sort and summarise essential information from several sources, and synthesise it in our own words.",
+      "criteria": [
+        "I can find, select and sort essential information from a variety of sources.",
+        "I can summarise key information from more than one source in my own words.",
+        "I can make notes that synthesise key information from different sources.",
+        "I can use my notes to create a new text that shows understanding of the topic."
+      ],
+      "steps": {
+        "start": "If three sources each give a different figure for the same thing, what do you do?",
+        "teach": "Give three short sources on one question (an official report summary, a news article and an opinion blog). Sort essential from interesting-but-not-needed information. Build a synthesis table by theme, not by source. Write a summary paragraph whose sentences each combine at least two sources, and say how you dealt with any disagreement.",
+        "practise": "The \"Three sources\" sheet.",
+        "check": "Ask: which sentence in your summary draws on more than one source? How did you handle the sources that disagreed?"
+      },
+      "use": [],
+      "home": "Research a question you care about using three different kinds of source, and summarise what you found.",
+      "vocab": "essential, synthesise, theme, summarise, source, reliable, own words",
+      "understand": "Two sources disagree on a figure. How do you decide what to write?",
+      "lookFor": "Checks which is more credible and up to date, and may report both and say why they differ."
+    },
+    {
+      "id": "lesson-fourth-close-reading-detailed-analysis-and-evaluation",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 4-16a",
+        "ENG 4-17a"
+      ],
+      "title": "Close reading: detailed analysis and evaluation",
+      "intention": "We are learning to state purpose and main ideas precisely, make accurate inferences, compare texts, and give detailed evaluative answers.",
+      "criteria": [
+        "I can state the purpose, audience and main ideas of texts clearly, with justification.",
+        "I can make accurate inferences with justification, in my own words.",
+        "I can compare and contrast the content, style and language of different texts with supporting detail.",
+        "I can respond in detail to close reading questions, and evaluate the effect of word choice, sentence structure, punctuation, grammar and imagery."
+      ],
+      "steps": {
+        "start": "\"Explain how the writer's word choice conveys their attitude.\" What does a full-mark answer need?",
+        "teach": "Unpick question types: understanding (own words), analysis (quote, technique, effect), evaluation (how effective, for whom). Model a detailed analysis answer on imagery, showing how to explore connotations. Practise an own-words answer that doesn't lift phrases. Compare how two writers present the same subject.",
+        "practise": "The \"Close reading in depth\" sheet.",
+        "check": "Ask an analysis question and an evaluation question on a new paragraph. Listen for connotations, not just a technique name."
+      },
+      "use": [],
+      "home": "Choose a headline and explore the connotations of its key word with someone at home.",
+      "vocab": "connotation, imagery, analysis, evaluation, inference, own words, attitude, tone",
+      "understand": "What does exploring connotations add to an analysis answer?",
+      "lookFor": "Explains that connotations show the associations a word carries, which reveal the writer's attitude or the effect on the reader."
+    },
+    {
+      "id": "lesson-fourth-bias-persuasion-and-credibility-in-what-i-read",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "LIT 4-18a"
+      ],
+      "title": "Bias, persuasion and credibility in what I read",
+      "intention": "We are learning to recognise persuasion and bias, comment on the techniques used, and judge the credibility of sources.",
+      "criteria": [
+        "I can recognise persuasion and bias.",
+        "I can identify and comment on techniques used to influence my opinion, such as emotive language, statistics and hyperbole.",
+        "I can make evaluative comments on the relevance, reliability and credibility of sources, with justification."
+      ],
+      "steps": {
+        "start": "Two headlines about the same event: \"Council slashes park budget\" and \"Council saves £2m for schools\". What's going on?",
+        "teach": "Compare two articles on the same story from sources with different viewpoints. Mark bias: loaded words, what each chooses to include or leave out, whose voices are quoted, and how statistics are framed. Evaluate credibility with a checklist (author, purpose, evidence, date, corroboration). Write an informed view that recognises bias in both.",
+        "practise": "The \"Spot the slant\" sheet.",
+        "check": "Ask: what is each article's bias, and how do you know? Which is more credible on the facts, and why?"
+      },
+      "use": [],
+      "home": "Compare how two different news sites report the same story.",
+      "vocab": "bias, slant, loaded language, framing, credibility, corroborate, persuasion, hyperbole",
+      "understand": "Can an article be biased without saying anything false?",
+      "lookFor": "Explains yes: through what it chooses to include or leave out, whose voices it quotes, and loaded words."
+    },
+    {
+      "id": "lesson-fourth-critical-response-to-literature-structure-theme-and-style",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Reading: understanding stories",
+      "codes": [
+        "ENG 4-19a"
+      ],
+      "title": "Critical response to literature: structure, theme and style",
+      "intention": "We are learning to evaluate the effectiveness of structure, characterisation and setting, explain how the theme is developed, and evaluate the writer's style with terminology.",
+      "criteria": [
+        "I can evaluate the effectiveness of structure, characterisation and setting with relevant reference to the text.",
+        "I can show how the writer's theme is developed and relate it to my own and others' experiences.",
+        "I can make evaluative comments on the writer's style and features of the genre, with detailed reference to the text and appropriate terminology."
+      ],
+      "steps": {
+        "start": "What's a key moment in a book or film you know well? Why did the writer put it exactly there?",
+        "teach": "Work on a short story, novel or play the pupil is studying. Trace the theme through three key moments, with quotations. Evaluate one structural choice (a flashback, a twist, the ending) and one stylistic choice (narrative voice, imagery, dialogue), using terms such as foreshadowing and juxtaposition. Plan a critical paragraph: point, evidence, analysis, evaluation and link to theme.",
+        "practise": "The \"Critical response planner\" sheet, with any text the pupil is studying.",
+        "check": "Ask: how does this moment develop the theme? How effective is the ending, and why?"
+      },
+      "use": [],
+      "home": "Talk about how a series or film builds its theme across episodes.",
+      "vocab": "theme, structure, characterisation, setting, foreshadowing, juxtaposition, narrative voice, evaluate, terminology",
+      "understand": "Why is 'the writer uses imagery' not enough in a critical essay?",
+      "lookFor": "Explains that you need the example, its effect, and how it develops the theme or how effective it is."
+    },
+    {
+      "id": "lesson-fourth-independent-spelling-accuracy",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Spelling",
+      "codes": [
+        "LIT 4-21a"
+      ],
+      "title": "Independent spelling accuracy",
+      "intention": "We are learning to use strategies and resources independently to make sure our spelling, including specialist vocabulary, is accurate.",
+      "criteria": [
+        "I can use a range of strategies and resources independently to spell accurately.",
+        "I can spell specialist vocabulary from all my subjects accurately.",
+        "I can proofread my own extended writing for spelling and correct it."
+      ],
+      "steps": {
+        "start": "Which words do you get wrong most often? Look back through recent writing: is there a pattern?",
+        "teach": "Build a personal error log from the pupil's own writing and sort errors by type: homophones, double letters, suffix rules, unstressed vowels, specialist words. Choose a strategy for each type. Practise proofreading in a separate pass for spelling only, reading backwards sentence by sentence. Use a dictionary to confirm meanings of easily confused pairs (affect and effect, practice and practise).",
+        "practise": "The \"My spelling log\" sheet, with a piece of the pupil's recent writing.",
+        "check": "Give a short proofreading passage with specialist words and homophones. Ask the pupil to correct it and explain two corrections."
+      },
+      "use": [],
+      "home": "Keep your error log going: add any word you get wrong, with the strategy that will fix it.",
+      "vocab": "proofread, homophone, suffix, unstressed vowel, specialist vocabulary, error log, strategy",
+      "understand": "Why proofread for spelling in a separate pass?",
+      "lookFor": "Explains that when you read for meaning your brain fills in what you expect, so a separate slow pass catches errors you'd miss."
+    },
+    {
+      "id": "lesson-fourth-sentences-and-punctuation-for-effect",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 4-22a"
+      ],
+      "title": "Sentences and punctuation for effect",
+      "intention": "We are learning to use a variety of accurate sentence structures and punctuation to clarify meaning and enhance our writing.",
+      "criteria": [
+        "I can write grammatically accurate sentences.",
+        "I can use a variety of punctuation accurately, including semicolons, colons, dashes, brackets and ellipses.",
+        "I can use a variety of sentence structures for effect, including minor sentences, lists and repetition.",
+        "I can structure my writing with linking phrases and topic sentences to signpost a clear line of thought."
+      ],
+      "steps": {
+        "start": "\"Silence.\" Is that a sentence? Why might a writer use it?",
+        "teach": "Look at sentence types in a model text: a long complex sentence building detail, a short sentence for impact, a minor sentence, a list for accumulation. Practise semicolons between related clauses and in complex lists, a dash for an aside or a sharp turn, and a colon to introduce an explanation. Revise a flat paragraph to use three deliberate sentence choices, and explain each one's effect.",
+        "practise": "The \"Punctuation for effect\" sheet.",
+        "check": "Ask the pupil to write a paragraph using a semicolon, a dash and a minor sentence, and explain the effect of each."
+      },
+      "use": [],
+      "home": "Find a sentence in a book that uses punctuation for effect and copy it into a notebook with a note on why it works.",
+      "vocab": "semicolon, colon, dash, parenthesis, ellipsis, minor sentence, complex sentence, accumulation, effect",
+      "understand": "When is a semicolon better than a full stop?",
+      "lookFor": "When two complete clauses are closely related and the writer wants to show that link, not separate them."
+    },
+    {
+      "id": "lesson-fourth-independent-editing-and-justifying-layout",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: sentences and punctuation",
+      "codes": [
+        "LIT 4-23a",
+        "LIT 4-24a"
+      ],
+      "title": "Independent editing, and justifying layout",
+      "intention": "We are learning to review and edit our writing independently, and to justify our choices of layout and presentation.",
+      "criteria": [
+        "I can review and edit my writing independently so it is clear, accurate and meets its purpose.",
+        "I can improve content, language and structure, not just correct errors.",
+        "I can choose layout and presentation features, including in digital texts, and justify them in terms of their impact on the reader."
+      ],
+      "steps": {
+        "start": "What is the difference between proofreading and editing?",
+        "teach": "Edit a first draft at three levels: structure (is the order the strongest? does each paragraph earn its place?), language (precise vocabulary, varied sentences, cut padding) and accuracy. Keep a record of the changes and why. Then design the same content as a web page and as a printed leaflet, and justify each layout choice by its effect on the reader.",
+        "practise": "The \"Edit like an editor\" sheet, with a draft of the pupil's own.",
+        "check": "Ask: what was your biggest structural change, and why? Justify one layout choice by its impact on the reader."
+      },
+      "use": [],
+      "home": "Edit a piece of your homework for structure before handing it in, and note what you changed.",
+      "vocab": "edit, revise, structure, precise, padding, layout, presentation, justify, impact",
+      "understand": "Why edit structure before proofreading?",
+      "lookFor": "Explains that structural changes move or remove whole sections, so fixing small errors first can be wasted effort."
+    },
+    {
+      "id": "lesson-fourth-responsible-use-of-sources-referencing-and-synthesising",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 4-25a",
+        "LIT 4-26a"
+      ],
+      "title": "Responsible use of sources: referencing and synthesising",
+      "intention": "We are learning to use notes and sources to develop ideas, use sources responsibly, and reference them appropriately.",
+      "criteria": [
+        "I can use notes and other sources to generate ideas and support new texts.",
+        "I can make responsible use of sources, acknowledging and referencing them appropriately.",
+        "I can select relevant ideas and essential detail, and organise them into a structured line of thought.",
+        "I can use varied and appropriate vocabulary to communicate effectively."
+      ],
+      "steps": {
+        "start": "What's the difference between using a source and copying it? Where's the line?",
+        "teach": "Discuss plagiarism and why referencing matters (credit, credibility, letting readers check). Practise paraphrasing, quoting and summarising one source, and write a simple reference (author or organisation, title, date, web address and date accessed). Plan a short report from notes on several sources, organising by argument, not by source. Discuss responsible use of AI tools and search results: check them against original sources.",
+        "practise": "The \"Using sources well\" sheet.",
+        "check": "Ask: which ideas came from your sources, and how does the reader know? Show me a reference you've written."
+      },
+      "use": [],
+      "home": "Write a short report for a school subject and add a reference list at the end.",
+      "vocab": "plagiarism, reference, paraphrase, quote, summarise, acknowledge, synthesise, credible",
+      "understand": "Why reference sources even when you've put the ideas in your own words?",
+      "lookFor": "Explains that the ideas still belong to someone else; referencing gives credit, adds credibility, and lets readers check."
+    },
+    {
+      "id": "lesson-fourth-writing-reports-information-with-evidence",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 4-28a",
+        "ENG 4-27a"
+      ],
+      "title": "Writing reports: information with evidence",
+      "intention": "We are learning to convey information, explain processes or concepts with substantiating evidence, and synthesise ideas in a report.",
+      "criteria": [
+        "I can convey information, describe events and explain processes or concepts with substantiating evidence.",
+        "I can synthesise ideas or opinions in different ways.",
+        "I can use a style and format well suited to my purpose and audience.",
+        "I can structure writing effectively with linking phrases and topic sentences.",
+        "I can engage or influence the reader through language, style and tone to create particular effects."
+      ],
+      "steps": {
+        "start": "What makes a report trustworthy? Think of a good one you've read.",
+        "teach": "Read a model report and label its features: a clear purpose, sections with headings, topic sentences, evidence (data, quotation, example) for each claim, and an objective tone. Plan a report on an issue in the pupil's school or community: what's happening, why, and what could be done, with evidence for each section. Write the introduction and one section together.",
+        "practise": "The \"Report planner\" sheet: plan, then write the report.",
+        "check": "Ask: where is your strongest evidence? How did you keep the tone objective?"
+      },
+      "use": [],
+      "home": "Write a report on something you could improve at home or in your community, with evidence.",
+      "vocab": "report, objective, evidence, substantiate, synthesise, topic sentence, heading, formal",
+      "understand": "How is a report's tone different from a persuasive article's?",
+      "lookFor": "Explains a report is objective and lets evidence lead, while a persuasive article argues one side with emotive language."
+    },
+    {
+      "id": "lesson-fourth-discursive-and-argumentative-essays",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "LIT 4-29a"
+      ],
+      "title": "Discursive and argumentative essays",
+      "intention": "We are learning to argue, evaluate and explore issues within a convincing line of thought, with relevant evidence.",
+      "criteria": [
+        "I can present ideas or sustain a point of view with essential detail and supporting evidence.",
+        "I can convey a clear line of thought with effective linking phrases and topic sentences.",
+        "I can write an effective introduction and conclusion.",
+        "I can use language to create effects or influence the reader, such as word choice, emotive language and rhetorical devices."
+      ],
+      "steps": {
+        "start": "Is it better to be balanced or persuasive? When would you choose each?",
+        "teach": "Compare a discursive essay (both sides, then a judgement) with a persuasive one (one side, answering objections). Plan a discursive essay on a real issue: introduction setting out the debate, alternating paragraphs for and against with evidence, and a conclusion that weighs them and reaches a justified view. Practise linking phrases that show a line of thought: 'However', 'Furthermore', 'Admittedly…, yet'.",
+        "practise": "The \"Weigh it up\" sheet: plan, then write the essay.",
+        "check": "Ask: where does your line of thought turn? How does your conclusion weigh both sides rather than just repeat them?"
+      },
+      "use": [],
+      "home": "Discuss a real issue at home and write down the strongest point on each side.",
+      "vocab": "discursive, argumentative, line of thought, counter-argument, evidence, evaluate, conclusion, linking phrase",
+      "understand": "What makes a conclusion more than a summary?",
+      "lookFor": "Explains that it weighs the arguments and reaches a justified judgement, showing which side is stronger and why."
+    },
+    {
+      "id": "lesson-fourth-reflective-personal-writing",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 4-30a"
+      ],
+      "title": "Reflective personal writing",
+      "intention": "We are learning to create a convincing impression of a personal experience and reflect on our response to changing circumstances.",
+      "criteria": [
+        "I can recount events convincingly, clearly establishing the context and setting.",
+        "I can convey my feelings and reactions, and reflect on them with a sense of involvement.",
+        "I can engage the reader through language, style and tone."
+      ],
+      "steps": {
+        "start": "What's an experience that changed how you see something? What were you like before, and after?",
+        "teach": "Read a model reflective essay and find how the writer moves between narrating events and reflecting on them, and how the reflection deepens. Plan an essay around a turning point: the before, the moment itself, and what changed. Write the turning point in slow motion with sensory detail, then a reflective paragraph that goes beyond 'I learned a lesson'.",
+        "practise": "The \"Looking back\" sheet: plan, then write.",
+        "check": "Ask: where does your reflection go deeper than a simple lesson? How did your feelings change through the experience?"
+      },
+      "use": [],
+      "home": "Talk to a grown-up about an experience you both remember and compare how you each saw it.",
+      "vocab": "reflective, personal, turning point, involvement, insight, sensory detail, tone",
+      "understand": "What's the difference between recounting and reflecting?",
+      "lookFor": "Explains that recounting says what happened, while reflecting explores what it meant and how the writer's thinking changed."
+    },
+    {
+      "id": "lesson-fourth-creative-writing-mood-dialogue-and-narrative-structure",
+      "level": "Fourth",
+      "subject": "Literacy",
+      "strand": "Writing: creating texts",
+      "codes": [
+        "ENG 4-31a"
+      ],
+      "title": "Creative writing: mood, dialogue and narrative structure",
+      "intention": "We are learning to use the conventions of a genre successfully, create mood and atmosphere, and write convincing relationships and dialogue.",
+      "criteria": [
+        "I can use the conventions of my chosen genre effectively.",
+        "I can create an appropriate mood or atmosphere.",
+        "I can create convincing relationships, actions and dialogue for my characters.",
+        "I can use narrative structure and devices to engage the reader and achieve particular effects."
+      ],
+      "steps": {
+        "start": "Read two lines of dialogue. What do they tell you about the relationship, without saying it?",
+        "teach": "Experiment with structure: start in the middle of the action, or use a flashback or a shift in point of view. Build atmosphere through setting, weather, pace and sentence length. Write dialogue with subtext, where characters don't say exactly what they mean, and set it out correctly. Plan a story around one change in a relationship.",
+        "practise": "The \"Story craft\" sheet: plan the structure, then write a scene with dialogue.",
+        "check": "Ask: what is the subtext in your dialogue? Which narrative device did you choose, and what effect does it have?"
+      },
+      "use": [],
+      "home": "Listen to a conversation in a film or a play and notice what the characters don't say.",
+      "vocab": "genre, convention, mood, atmosphere, subtext, dialogue, flashback, point of view, narrative device",
+      "understand": "What is subtext, and why does it make dialogue convincing?",
+      "lookFor": "Explains that subtext is what characters mean but don't say; real people rarely say exactly what they feel."
+    }
+  ]
+}
