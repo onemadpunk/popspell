@@ -57,6 +57,7 @@ PHRASES = {
     # Pip's speech bubbles (PIP_LINES in app.js reads them out): keep the wording in step
     "pip-name": "Hi! I'm Pip. What's your name?",
     "pip-journey": "Pick a stop on our journey. I'll hop along with you!",
+    "pip-practise": "Pick a stage to practise, or carry on with your teacher's work.",
     "pip-quest": "Hi! Will you help me visit my five islands?",
     "pip-quest-done": "We did it! Thank you for helping me!",
     "pip-start": "Ready? Press the big button to start!",

@@ -1635,3 +1635,53 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .roster-more-body > * { min-width: 0; }
 [data-results-of] { scroll-margin-top: 90px; }
 .t-flash { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- The older look (body.look-older: set by the teacher, usually from S1 and Year 7) ----------
+   The 12–17 brand: calmer colours, the horizontal logo and line icons, Poppins headings, no mascot,
+   speech bubbles or stickers. Work and levels are unchanged; only how the screens look. */
+body.look-older {
+  --bg: #f7faff; --line: #d9e9f7; --primary-soft: #eaf3ff; --radius: 16px;
+  --shadow: 0 1px 2px rgba(11, 46, 107, .05), 0 8px 24px rgba(11, 46, 107, .06);
+}
+.look-older .topbar { border-bottom: 1px solid var(--line); }
+.look-older .brand img { width: 150px; height: 40px; }
+.look-older h1, .look-older h2, .look-older h3 { font-family: "Poppins", var(--font); font-weight: 600; letter-spacing: -.01em; }
+.look-older .pip-wrap .pip, .look-older .stop-pip, .look-older .forest-home-pip { display: none; }
+.look-older .speech { margin: 0; max-width: none; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: none;
+  color: var(--muted); font-weight: 600; text-align: left; }
+.look-older .speech::before { display: none; }
+.look-older .welcome { grid-template-columns: minmax(0, 1fr); background: var(--surface); border: 1px solid var(--line); border-radius: 20px; }
+.look-older .welcome .pip-wrap { order: 2; align-items: stretch; }
+.look-older .welcome .me-card, .look-older .me-card { border-width: 1px; border-radius: 14px; box-shadow: none; }
+.look-older .me-icon img { display: block; width: 40px; height: 40px; }
+.look-older .steps { display: none; }
+
+/* ---------- The teacher area (body.area-teacher) ----------
+   Its own, plainer look, and a band on every page saying where you are, so it's always clear
+   (on a shared screen too) that this is the teacher's side. */
+body.area-teacher {
+  --bg: #eef1f6; --line: #d5dce6; --primary-soft: #e6ecf5; --radius: 12px;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 12px rgba(16, 24, 40, .06);
+}
+.area-teacher .topbar { border-bottom: 0; }
+.area-teacher .navlink[href="#/sounds"] { display: none; }
+.area-teacher .navlink[href="#/teacher"] { background: var(--primary); color: var(--primary-ink); }
+.area-band {
+  position: sticky; top: 0; z-index: 4; /* top: the header's height, set by app.js */
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px;
+  padding: 8px max(16px, calc((100vw - 1180px) / 2));
+  background: #1f2a44; color: #fff; font-size: .95rem;
+}
+.area-band b { color: #fff; }
+.area-band a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.area-band a:focus-visible { outline: 3px solid #ffc837; outline-offset: 2px; }
+.area-teacher h1, .area-teacher h2, .area-teacher h3 { font-weight: 800; }
+@media print { .area-band { display: none; } }
+body.area-teacher { background-image: none; }
+.area-teacher .t-pip { display: none; }
+.area-teacher .t-top { background: var(--surface); border: 1px solid var(--line); }
+.area-teacher .btn { border-width: 1px; }
+body.look-older { background-image: none; }
+.look-older .assigned.home-section { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--primary); }
+.look-older .list-card { border-width: 1px 1px 1px 4px; border-radius: 12px; }
+.look-older .hero-kicker { background: var(--primary-soft); color: var(--primary); }

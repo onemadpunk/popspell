@@ -2529,6 +2529,18 @@
   const ENGLAND_YEARS = () => (E_() ? E_().YEARS.map(y => y[0]) : []);
   const yearOptions = chosen => `<optgroup label="Scotland (Curriculum for Excellence)">${YEAR_GROUPS.map(y => `<option${chosen === y ? " selected" : ""}>${y}</option>`).join("")}</optgroup>
     ${ENGLAND_YEARS().length ? `<optgroup label="England (national curriculum)">${ENGLAND_YEARS().map(y => `<option${chosen === y ? " selected" : ""}>${y}</option>`).join("")}</optgroup>` : ""}`;
+  // The next school year, for the New school year button ("" after the last year of school)
+  const nextYear = y => {
+    const scot = YEAR_GROUPS.indexOf(y);
+    if (scot >= 0) return YEAR_GROUPS[scot + 1] || "";
+    const en = ENGLAND_YEARS().indexOf(y);
+    return en >= 0 ? ENGLAND_YEARS()[en + 1] || "" : "";
+  };
+  // Pupils from S1 and Year 7 up see the older look: no mascot or stickers, calmer colours. Their
+  // work still follows the level they're working at; this is only how the screens look.
+  const OLDER_FROM = new Set(["S1", "S2", "S3", "S4", "S5", "S6", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11"]);
+  const LOOK_CHOICES = [["auto", "Automatic (from their year group)"], ["younger", "PopSpell's usual look, with Pip"], ["older", "Older look, no mascot or stickers"]];
+  const lookFor = (choice, yearGroup) => (choice === "older" || (choice !== "younger" && OLDER_FROM.has(yearGroup)) ? "older" : "");
   const NEED_CHIPS = ["Dyslexia (or suspected)", "English as an additional language", "ADHD", "Speech and language", "Hearing", "Sight", "Anxious about learning", "Needs short tasks"];
   // The quest's link: joins the class, signs the device in as the child, and opens the quest
   const assessLink = name => `${homeLink(name)}&then=assess`;
@@ -3333,18 +3345,62 @@
   const openRoster = new Set();
   const PERIODS =[[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
 
+  // New school year: moves pupils up a year group (P7 to S1, Year 6 to Year 7…). Their levels,
+  // programme, results and progress stay exactly as they are; only the year group changes, so what's
+  // expected for their age (and, for "Automatic", how their screens look) follows.
+  function newSchoolYear(roster, lookRow, done) {
+    const moving = roster.filter(r => nextYear(r.yearGroup));
+    const staying = roster.filter(r => r.yearGroup && !nextYear(r.yearGroup));
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog assign-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🎓 New school year</h2>
+        <button class="btn small" type="button" data-close>Close</button></div>
+      <p class="hint">Moves each ticked pupil in <b>${esc(current.name)}</b> up a year group. Their level, programme, results and progress don't change. Untick anyone who is staying in the same year.</p>
+      <div class="assign-names">${moving.map(r => `<label class="check"><input type="checkbox" value="${esc(r.key)}" checked>
+        ${esc(r.name)}: ${esc(r.yearGroup)} → <b>${esc(nextYear(r.yearGroup))}</b></label>`).join("")}</div>
+      ${staying.length ? `<p class="hint">In their last school year, so not moved: ${esc(staying.map(r => `${r.name} (${r.yearGroup})`).join(", "))}.</p>` : ""}
+      <div class="row end"><button class="btn primary" type="button" data-go>Move up a year</button></div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-go]").onclick = async () => {
+      const keys = [...dialog.querySelectorAll("input:checked")].map(el => el.value);
+      if (!keys.length) return dialog.close();
+      const go = dialog.querySelector("[data-go]");
+      go.disabled = true;
+      try {
+        for (const r of moving.filter(p => keys.includes(p.key))) {
+          const yearGroup = nextYear(r.yearGroup), row = lookRow(r);
+          await cloud.savePupil(current.id, { name: r.name, yearGroup });
+          const look = lookFor(row.lookChoice, yearGroup);
+          if (look !== (row.look || "")) await cloud.saveLook(current.id, r.name, row.lookChoice, look);
+        }
+        dialog.close();
+        notice(`Moved ${keys.length} pupil${keys.length === 1 ? "" : "s"} up a year group. Levels and progress are unchanged.`);
+        done();
+      } catch (err) { go.disabled = false; showError(err); }
+    };
+    dialog.showModal();
+  }
+
   async function drawPupils(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
-    let sessions, roster;
-    try { [sessions, roster] = await Promise.all([cloud.sessions(current.id, days), cloud.pupils(current.id)]); }
+    let sessions, roster, assigns;
+    try { [sessions, roster, assigns] = await Promise.all([cloud.sessions(current.id, days), cloud.pupils(current.id), cloud.assignments(current.id)]); }
     catch (err) { return showError(err); }
     if (tab !== "pupils") return;
     const pupils = summarise(sessions);
+    // Each pupil's look setting (kept with their assigned work, which their device reads)
+    const lookRow = r => assigns.find(a => a.key !== "everyone" && sameName(a.who, r.name)) || { lookChoice: "auto", look: "" };
+    // Keep each pupil's look in step with their year group (for "Automatic")
+    roster.forEach(r => { const row = lookRow(r), want = lookFor(row.lookChoice, r.yearGroup);
+      if (want !== (row.look || "")) cloud.saveLook(current.id, r.name, row.lookChoice, want).catch(() => {}); });
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
       <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><div class="row">
         <button class="btn" id="calAll">🗓️ Lessons to my calendar</button>
         <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
+        ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
       <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
@@ -3358,8 +3414,11 @@
             <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button>
             ${pupils.some(p => sameName(p.pupil, r.name)) ? `<button class="btn small" data-results="${esc(r.name)}">📊 Results</button>` : ""}</div></div>
         <details class="roster-more" data-key="${esc(r.key)}"${openRoster.has(r.key) ? " open" : ""}>
-          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}Lesson date, homework, home login and parent page</summary>
+          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}Year group, lesson date, homework, home login and parent page</summary>
           <div class="roster-more-body">
+        <div class="add-row"><label>Year group <select data-year><option value="">Not set</option>${yearOptions(r.yearGroup)}</select></label>
+          <label>${esc(r.name)}'s screens <select data-look>${LOOK_CHOICES.map(([v, t]) => `<option value="${v}"${lookRow(r).lookChoice === v ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
+        <p class="hint">Automatic gives S1 and Year 7 upwards the older look. Their work still follows the level they're working at.</p>
         <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
         <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
@@ -3448,6 +3507,7 @@
       if (card) { card.scrollIntoView({ block: "start" }); card.focus({ preventScroll: true }); card.classList.add("t-flash"); setTimeout(() => card.classList.remove("t-flash"), 1600); }
     }; });
     $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
+    if ($("#newYear")) $("#newYear").onclick = () => newSchoolYear(roster, lookRow, () => drawPupils(body));
     // Roster pupils, plus anyone with results who isn't on the roster yet
     const reportPupil = name => roster.find(r => sameName(r.name, name)) || { name };
     body.querySelectorAll("[data-pn]").forEach(b => { b.onclick = () => parentsNight([reportPupil(b.dataset.pn)]); });
@@ -3481,9 +3541,13 @@
         nextLessonDate: card.querySelector("[data-lesson-date]").value,
         lessonTime: card.querySelector("[data-lesson-time]").value,
         homeworkList: card.querySelector("[data-homework]").value,
-        parentNote: card.querySelector("[data-parent-note]").value };
+        parentNote: card.querySelector("[data-parent-note]").value,
+        yearGroup: card.querySelector("[data-year]").value };
+      const choice = card.querySelector("[data-look]").value;
       try {
         await cloud.savePupil(current.id, details);
+        const row = lookRow(pupil), look = lookFor(choice, details.yearGroup);
+        if (choice !== row.lookChoice || look !== (row.look || "")) await cloud.saveLook(current.id, pupil.name, choice, look);
         if (pupil.parentLink) { const [s, a] = await parentData(); await publishParent(Object.assign({}, pupil, details), s, a); }
         if (details.nextLessonDate !== (pupil.nextLessonDate || "") || details.lessonTime !== (pupil.lessonTime || "") || details.homeworkList !== (pupil.homeworkList || ""))
           await calendarAfterSave(Object.assign({}, pupil, details));

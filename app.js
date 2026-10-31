@@ -506,6 +506,54 @@
   const addDays = (key, n) => { const [y, m, d] = key.split("-").map(Number); return dayKey(new Date(y, m - 1, d + n)); };
   const pupilKey = () => (getPupil() || "this device").toLowerCase();
 
+  /* ---------- How the screens look ---------- */
+  // "older" (set by the teacher, usually from S1 and Year 7): no mascot or stickers, calmer colours, the
+  // 12–17 brand's logo and icons. Kept on the device per pupil, so it applies at once and offline.
+  // The teacher area has its own look (body.area-teacher), whoever is signed in on the device.
+  const LOOK_KEY = "popspell-look-v1";
+  const savedLooks = () => { try { return JSON.parse(localStorage.getItem(LOOK_KEY)) || {}; } catch { return {}; } };
+  const isOlder = () => savedLooks()[pupilKey()] === "older";
+  const LOGO = { usual: "assets/brand/wordmark.png", older: "assets/brand/teen/logo-horizontal.webp" };
+  function applyLook() {
+    const teacher = /^#\/(teacher|make)/.test(location.hash);
+    const older = isOlder() && !teacher;
+    document.body.classList.toggle("look-older", older);
+    document.body.classList.toggle("area-teacher", teacher);
+    const logo = document.querySelector(".brand img");
+    if (logo) {
+      const src = older ? LOGO.older : LOGO.usual;
+      if (logo.getAttribute("src") !== src) {
+        logo.setAttribute("src", src);
+        if (older) logo.setAttribute("srcset", "assets/brand/teen/logo-horizontal@2x.webp 2x"); else logo.removeAttribute("srcset");
+      }
+    }
+    // A band saying where you are, with a way back, on every teacher-area page
+    let band = document.getElementById("areaBand");
+    if (teacher && !band) {
+      band = document.createElement("div");
+      band.id = "areaBand";
+      band.className = "area-band";
+      band.innerHTML = `<span><b>Teacher area</b> · only you can see this</span><a href="#/">← Back to the pupil screen</a>`;
+      document.querySelector(".topbar").after(band);
+    } else if (!teacher && band) band.remove();
+    if (band && teacher) band.style.top = `${document.querySelector(".topbar").offsetHeight}px`;
+  }
+  window.addEventListener("resize", () => { const band = document.getElementById("areaBand"); if (band) band.style.top = `${document.querySelector(".topbar").offsetHeight}px`; });
+  // The teacher's latest setting for this pupil, saved for next time
+  function refreshLook(name) {
+    if (!REPORTING || !name || !cloud.look) return;
+    cloud.look(CLASS.id, name).then(look => {
+      if (look === null || getPupil() !== name) return;
+      const all = savedLooks();
+      if ((all[name.toLowerCase()] || "") === look) return;
+      if (look) all[name.toLowerCase()] = look; else delete all[name.toLowerCase()];
+      try { localStorage.setItem(LOOK_KEY, JSON.stringify(all)); } catch { /* private mode */ }
+      applyLook();
+      // Redraw through the router, so work still loading for the old screen doesn't land on the new one
+      if (location.hash === "" || location.hash === "#/") route();
+    }).catch(() => {});
+  }
+
   const readAllProgress = () => { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; } };
   const loadProgress = () => Object.assign({ words: {}, sounds: {} }, readAllProgress()[pupilKey()]);
   function saveProgress(prog) {
@@ -799,6 +847,7 @@
     const parts = path.split("/").filter(Boolean);
     const params = new URLSearchParams(query);
     previewMode = params.get("preview") === "1";
+    applyLook();
 
     const activity = parts[0] === "activity" && window.PopActivities ? window.PopActivities.get(decodeURIComponent(parts[1] || "")) : null;
     if (parts[0] === "list" && LISTS[parts[1]]) showStart(LISTS[parts[1]]);
@@ -1047,12 +1096,15 @@
   // Eponine recordings: keep in step with PIP_LINES in tools/make_audio.py. A child's name is left
   // out of the recording ("Hi Ava! …" plays "Hi! …"); anything else uses the device voice.
   const START_LINE = "Ready? Press the big button to start!";
+  // The older look's home line (no mascot, so no journey with Pip)
+  const PRACTISE_LINE = "Pick a stage to practise, or carry on with your teacher's work.";
   const dueLine = n => `You've got ${plural(n, "word", "words")} to practise again. Let's go!`;
   const setLine = n => `Your teacher has set you ${plural(n, "thing", "things")} for today. ${n === 1 ? "It's" : "They're"} just below!`;
   let pipKeys = null; // built on first use, once QUEST exists
   function pipKeyFor(text) {
     if (!pipKeys) {
       pipKeys = new Map([["Hi! I'm Pip. What's your name?", "pip-name"], ["Pick a stop on our journey. I'll hop along with you!", "pip-journey"],
+        [PRACTISE_LINE, "pip-practise"],
         ["Hi! Will you help me visit my five islands?", "pip-quest"], ["We did it! Thank you for helping me!", "pip-quest-done"], [START_LINE, "pip-start"]]);
       for (let n = 1; n <= 12; n++) { pipKeys.set(dueLine(n), `pip-due-${n}`); pipKeys.set(setLine(n), `pip-set-${n}`); }
       QUEST.forEach(isl => pipKeys.set(isl.intro, `pip-island-${isl.key}`));
@@ -1181,8 +1233,8 @@
         </ol>`}
       ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${name ? "Looking for today's work…" : "Type your name to see it."}</p>` : `
         <section class="home-section journey-section">
-          <h2>🗺️ Pip's sound journey</h2>
-          <p class="hint">Six stops, from short vowels to tricky endings. Tap a stop to see its lists.</p>
+          <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
+          <p class="hint">${isOlder() ? "Six stages, from short vowels to tricky endings. Choose a stage to see its lists." : "Six stops, from short vowels to tricky endings. Tap a stop to see its lists."}</p>
           <div id="journey"></div>
         </section>
         <section class="home-section">
@@ -1223,23 +1275,27 @@
     const due = dueItems(prog).length;
     const secure = secureSounds(prog).size;
     const week = weekStats(loadBests(prog));
-    const tile = (href, icon, title, detail, extra = "") => `<a class="me-card${extra}" href="${href}">
-      <span class="me-icon" aria-hidden="true">${icon}</span><span class="me-text"><b>${title}</b><span>${detail}</span></span></a>`;
+    const older = isOlder();
+    const ICONS = { "🔁": "replay", "✅": "check", "⭐": "progress", "🏅": "streak", "📚": "spell" };
+    const icon = e => (older && ICONS[e] ? `<img src="assets/brand/teen/icon-${ICONS[e]}.svg" alt="" width="40" height="40">` : e);
+    const tile = (href, emoji, title, detail, extra = "") => `<a class="me-card${extra}" href="${href}">
+      <span class="me-icon" aria-hidden="true">${icon(emoji)}</span><span class="me-text"><b>${title}</b><span>${detail}</span></span></a>`;
     $("#meCards").innerHTML = `
       ${due ? tile("#/review", "🔁", "Practise again", `${plural(due, "word", "words")} waiting`, " review")
-        : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">✅</span><span class="me-text"><b>All caught up</b><span>No review words today</span></span></div>`}
-      ${tile("#/sounds", "⭐", "My sounds", plural(secure, "star", "stars"))}
-      ${tile("#/bests", "🏅", "My bests", `${plural(week.thisWeek, "go", "goes")} this week`)}
-      ${tile("#/forest", "🌲", "Pip's Forest", `${FOREST.balance(forestState(prog))} glow seeds to use`)}
+        : `<div class="me-card quiet"><span class="me-icon" aria-hidden="true">${icon("✅")}</span><span class="me-text"><b>All caught up</b><span>No review words today</span></span></div>`}
+      ${tile("#/sounds", "⭐", "My sounds", older ? `${secure} secure` : plural(secure, "star", "stars"))}
+      ${tile("#/bests", "🏅", older ? "My progress" : "My bests", `${plural(week.thisWeek, "go", "goes")} this week`)}
+      ${older ? "" : tile("#/forest", "🌲", "Pip's Forest", `${FOREST.balance(forestState(prog))} glow seeds to use`)}
       ${storyActivities().length && !locked ? tile("#/stories", "📚", "My stories", `${readyStories(prog).length} ready to read`) : ""}
-      ${locked ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
-      ${locked ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
-      ${locked ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}`;
+      ${locked || older ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
+      ${locked || older ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
+      ${locked || older ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}`;
     // Pip says what's most useful right now (and changes if the teacher has set work)
     const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
       const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
       app.querySelector(".welcome .pip-wrap").append(p); return p; })(); bubble.textContent = text; };
-    say(due ? dueLine(due) : "Pick a stop on our journey. I'll hop along with you!");
+    say(due ? dueLine(due) : older ? PRACTISE_LINE : "Pick a stop on our journey. I'll hop along with you!");
+    refreshLook(getPupil());
 
     // Lists the teacher has set for this pupil, if the sheet is connected
     const my = phase;

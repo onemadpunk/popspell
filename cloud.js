@@ -122,6 +122,14 @@ async function start() {
       await addDoc(collection(store, "classes", classId, "sessions"), Object.assign({}, payload, { at: serverTimestamp() }));
     },
 
+    // The look the teacher has set for this pupil's screens ("older" or "")
+    async look(classId, pupil) {
+      await pupilAuth();
+      try {
+        const s = await getDoc(doc(store, "classes", classId, "assign", await fingerprint(pupil)));
+        return s.exists() && s.data().look === "older" ? "older" : "";
+      } catch { return null; }
+    },
     async assigned(classId, pupil) {
       await pupilAuth();
       const read = async key => {
@@ -249,13 +257,22 @@ async function start() {
     async assignments(classId) {
       const snap = await getDocs(collection(store, "classes", classId, "assign"));
       return snap.docs.map(d => ({ key: d.id, who: d.data().who || d.id,
-        lists: d.data().lists || [], plans: d.data().plans || [] }))
+        lists: d.data().lists || [], plans: d.data().plans || [], look: d.data().look || "", lookChoice: d.data().lookChoice || "auto" }))
         .sort((a, b) => (a.key === "everyone" ? -1 : b.key === "everyone" ? 1 : a.who.localeCompare(b.who)));
     },
     async saveAssignment(classId, who, lists) {
       const key = lower(who) === "everyone" ? "everyone" : await fingerprint(who);
       const ref = doc(store, "classes", classId, "assign", key);
       await setDoc(ref, { who: String(who).trim().slice(0, 40), lists: lists.slice(0, 20),
+        updated: serverTimestamp() }, { merge: true });
+    },
+    // How the pupil's screens look: "older" (no mascot or stickers, calmer colours) or "" (PopSpell's
+    // usual look). choice is the teacher's setting ("auto" follows the year group); look is the result,
+    // which the pupil's device reads with its assigned work.
+    async saveLook(classId, who, choice, look) {
+      const key = await fingerprint(who);
+      await setDoc(doc(store, "classes", classId, "assign", key), { who: String(who).trim().slice(0, 40),
+        lookChoice: ["auto", "younger", "older"].includes(choice) ? choice : "auto", look: look === "older" ? "older" : "",
         updated: serverTimestamp() }, { merge: true });
     },
     async savePlans(classId, who, plans) {
