@@ -100,35 +100,73 @@
   const HELP_SECTIONS = { library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
     diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
 
+  // Line icons for the teacher area's menu (24×24, drawn with the text colour)
+  const ICON = {
+    live: '<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/>',
+    next: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+    programme: '<path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/>',
+    plans: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    library: '<path d="M4 4h4v16H4zM10 4h4v16h-4zM15.5 5.2l3.8-1 3.9 15.4-3.8 1z"/>',
+    assign: '<path d="M12 16v6M8 3h8l-1.2 6.5L18 13H6l3.2-3.5z"/>',
+    pupils: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6"/>',
+    diary: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+    classes: '<path d="M3 21h18M5 21V9l7-5 7 5v12M10 21v-5h4v5"/>',
+    teachers: '<circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 14 0M16 11l2 2 4-4"/>',
+    make: '<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
+    help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>',
+    back: '<path d="M10 19l-7-7 7-7M3 12h18"/>',
+    out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>'
+  };
+  const icon = k => `<svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICON[k]}</svg>`;
+
   function draw() {
     stopWatching();
-    // Short names with icons, so every tab fits on one row (it scrolls sideways on a phone)
-    const tabs = [["library", "📚", "Library"], ["live", "🟢", "Live"], ["next", "🧭", "Next steps"], ["programme", "📘", "Programme"], ["assign", "📌", "Assign"],
-      ["plans", "🗓️", "Plans & sheets"], ["diary", "📝", "Diary"], ["pupils", "👧", "Pupils"], ["classes", "🏫", "Classes"]];
-    if (canAdmin()) tabs.push(["teachers", "👩‍🏫", "Teachers"]);
-    const [, , tabName] = tabs.find(([k]) => k === tab) || tabs[0];
+    // The menu, in groups: teaching day to day, finding work, pupils' records, and running classes
+    const groups = [["Teach", [["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"]]],
+      ["Resources", [["library", "Library"], ["assign", "Assign"]]],
+      ["Records", [["pupils", "Pupils"], ["diary", "Diary"]]],
+      ["Manage", [["classes", "Classes"]].concat(canAdmin() ? [["teachers", "Teachers"]] : [])]];
+    const tabs = groups.flatMap(([, items]) => items);
+    const [, tabName] = tabs.find(([k]) => k === tab) || tabs[0];
+    const initial = (shortName(me.name) || "?").slice(0, 1).toUpperCase();
     root.innerHTML = `
-      <section class="t-wrap">
-        <div class="t-top">
-          <img class="t-pip" src="assets/brand/pip-mascot-small.webp" alt="" width="64" height="64">
-          <div class="t-hello">
-            <h1>Hello, ${esc(shortName(me.name))}${canAdmin() ? ` <span class="t-role">${roleLabel(me.role)}</span>` : ""}</h1>
-            <p class="meta">${esc(me.email)} · <a href="help.html#${HELP_SECTIONS[tab] || "start"}" target="_blank" rel="noopener">❓ Help with ${esc(tabName)}</a> · <button class="linklike" id="signOut">Sign out</button></p>
-          </div>
+      <section class="t-wrap t-app">
+        <aside class="t-side">
+          <a class="t-brand" href="#/teacher"><img src="assets/brand/app-icon-192.png" alt="" width="34" height="34"><span>PopSpell <b>Teacher</b></span></a>
           ${classes.length ? `
-            <label class="t-class">Class
+            <label class="t-class"><span>Class</span>
               <select id="classPick">${classes.map(c => `<option value="${esc(c.id)}"${current && c.id === current.id ? " selected" : ""}>${esc(c.name)}${c.teacher !== me.uid ? ` — ${esc(c.teacherName)}` : ""}</option>`).join("")}</select>
             </label>` : ""}
+          <nav class="t-tabs" aria-label="Teacher area">${groups.map(([name, items]) => `<p class="t-navhead">${name}</p>
+            ${items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("")}`).join("")}</nav>
+          <div class="t-side-foot">
+            <a class="t-sidelink" href="#/make">${icon("make")}<span>Make a list</span></a>
+            <button class="t-sidelink" type="button" id="tSettings">${icon("settings")}<span>Settings</span></button>
+            <a class="t-sidelink" href="help.html" target="_blank" rel="noopener">${icon("help")}<span>Help</span></a>
+            <div class="t-me"><span class="t-avatar" aria-hidden="true">${esc(initial)}</span>
+              <span class="t-me-text"><b>${esc(me.name || shortName(me.name))}</b><small>${canAdmin() ? `${roleLabel(me.role)} · ` : ""}${esc(me.email)}</small></span>
+              <button class="t-out" type="button" id="signOut" title="Sign out" aria-label="Sign out">${icon("out")}</button></div>
+          </div>
+        </aside>
+        <div class="t-main">
+          <header class="t-pagehead">
+            <div><p class="t-crumb">${current ? esc(current.name) : "No class yet"}</p><h1>${esc(tabName)}</h1></div>
+            <div class="t-headacts">
+              <a class="btn small" href="help.html#${HELP_SECTIONS[tab] || "start"}" target="_blank" rel="noopener">${icon("help")} Help with ${esc(tabName)}</a>
+              <a class="btn small" href="#/">${icon("back")} Pupil screen</a>
+            </div>
+          </header>
+          <div class="t-error" id="tError" hidden></div>
+          <div id="tBody" class="t-body"></div>
         </div>
-        <nav class="t-tabs" role="tablist">${tabs.map(([k, icon, t]) => `<button class="t-tab" role="tab" data-tab="${k}" aria-selected="${k === tab}"><span aria-hidden="true">${icon}</span> ${t}</button>`).join("")}</nav>
-        <div class="t-error" id="tError" hidden></div>
-        <div id="tBody" class="t-body"></div>
       </section>`;
     $("#signOut").onclick = async () => { stopWatching(); await cloud.signOut(); location.hash = "#/"; };
+    $("#tSettings").onclick = () => { const b = document.getElementById("settingsBtn"); if (b) b.click(); };
     root.querySelectorAll(".t-tab").forEach(b => { b.onclick = () => { tab = b.dataset.tab; draw(); }; });
-    // On a phone the tab row scrolls sideways: keep the chosen tab in view
-    const chosen = root.querySelector('.t-tab[aria-selected="true"]');
-    if (chosen) chosen.parentElement.scrollLeft = chosen.offsetLeft - 24;
+    // On a phone the menu is a row that scrolls sideways: keep the chosen page in view
+    const chosen = root.querySelector('.t-tab[aria-current="page"]');
+    if (chosen && chosen.parentElement.scrollWidth > chosen.parentElement.clientWidth) chosen.parentElement.scrollLeft = chosen.offsetLeft - 24;
     const pick = $("#classPick");
     if (pick) pick.onchange = () => {
       current = classes.find(c => c.id === pick.value);

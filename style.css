@@ -1656,32 +1656,121 @@ body.look-older {
 .look-older .me-icon img { display: block; width: 40px; height: 40px; }
 .look-older .steps { display: none; }
 
-/* ---------- The teacher area (body.area-teacher) ----------
-   Its own, plainer look, and a band on every page saying where you are, so it's always clear
-   (on a shared screen too) that this is the teacher's side. */
-body.area-teacher {
-  --bg: #eef1f6; --line: #d5dce6; --primary-soft: #e6ecf5; --radius: 12px;
-  --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 4px 12px rgba(16, 24, 40, .06);
-}
-.area-teacher .topbar { border-bottom: 0; }
-.area-teacher .navlink[href="#/sounds"] { display: none; }
-.area-teacher .navlink[href="#/teacher"] { background: var(--primary); color: var(--primary-ink); }
-.area-band {
-  position: sticky; top: 0; z-index: 4; /* top: the header's height, set by app.js */
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px;
-  padding: 8px max(16px, calc((100vw - 1180px) / 2));
-  background: #1f2a44; color: #fff; font-size: .95rem;
-}
-.area-band b { color: #fff; }
-.area-band a { color: #fff; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.area-band a:focus-visible { outline: 3px solid #ffc837; outline-offset: 2px; }
-.area-teacher h1, .area-teacher h2, .area-teacher h3 { font-weight: 800; }
-@media print { .area-band { display: none; } }
-body.area-teacher { background-image: none; }
-.area-teacher .t-pip { display: none; }
-.area-teacher .t-top { background: var(--surface); border: 1px solid var(--line); }
-.area-teacher .btn { border-width: 1px; }
+
 body.look-older { background-image: none; }
 .look-older .assigned.home-section { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--primary); }
 .look-older .list-card { border-width: 1px 1px 1px 4px; border-radius: 12px; }
 .look-older .hero-kicker { background: var(--primary-soft); color: var(--primary); }
+
+/* ---------- The teacher area: its own app (body.area-teacher, .t-app) ----------
+   A working tool, not a page for children: a navy sidebar with the menu in groups, a page header,
+   the Inter typeface, a cool grey canvas, white cards, compact controls and plain tables. The pupil
+   site's header is hidden here, so it's always obvious which side of PopSpell you're on. */
+body.area-teacher {
+  --t-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #f3f5f9; --surface: #ffffff; --ink: #172036; --muted: #5b6577; --line: #e2e7ef;
+  --primary: #0b2e6b; --primary-ink: #ffffff; --primary-soft: #eef3fb; --radius: 12px;
+  --t-blue: #1d4ed8; --t-side-ink: #c8d3e8;
+  --shadow: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .04);
+  background-image: none; font-family: var(--t-font); font-size: 15.5px;
+}
+body.area-teacher:has(.t-app) .topbar { display: none; }
+#app:has(> .t-app) { max-width: none; padding: 0; }
+.t-app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; max-width: none; margin: 0; }
+
+/* The sidebar */
+.t-side {
+  position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+  padding: 14px 12px 12px; background: linear-gradient(180deg, #0b1d3f 0%, #0e2550 100%); color: var(--t-side-ink);
+}
+.t-brand { display: flex; align-items: center; gap: 10px; padding: 2px 6px; color: #fff; text-decoration: none; font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+.t-brand img { border-radius: 9px; background: #fff; }
+.t-brand b { color: #ffc837; font-weight: 700; }
+.t-side .t-class { display: grid; gap: 4px; margin: 0; font: 600 .7rem var(--t-font); text-transform: uppercase; letter-spacing: .08em; color: #8fa0bf; }
+.t-side .t-class select { width: 100%; background: #132a55; color: #fff; border: 1px solid #27407a; border-radius: 8px; padding: 8px 10px;
+  font: 500 .92rem var(--t-font); text-transform: none; letter-spacing: 0; }
+.t-app .t-tabs { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.t-navhead { margin: 8px 10px 2px; font: 600 .68rem var(--t-font); text-transform: uppercase; letter-spacing: .09em; color: #7d8db0; }
+.t-app .t-tab {
+  display: flex; flex: none; flex-direction: row; align-items: center; gap: 10px; width: 100%; min-width: 0; padding: 7px 10px;
+  border: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--t-side-ink); font: 500 .93rem var(--t-font); text-align: left; cursor: pointer;
+}
+.t-app .t-tab:hover { background: rgba(255, 255, 255, .07); color: #fff; }
+.t-app .t-tab[aria-current="page"] { background: rgba(255, 255, 255, .12); color: #fff; box-shadow: inset 3px 0 0 #ffc837; }
+.t-app .t-tab > span { font-size: inherit; line-height: 1.3; }
+.t-side { scrollbar-width: thin; scrollbar-color: #27407a transparent; }
+.t-ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.t-side-foot { margin-top: auto; display: grid; gap: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .1); }
+.t-sidelink { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 0; border-radius: 8px; background: none; color: var(--t-side-ink);
+  font: 500 .9rem var(--t-font); text-decoration: none; text-align: left; cursor: pointer; }
+.t-sidelink:hover { background: rgba(255, 255, 255, .07); color: #fff; }
+.t-me { display: flex; align-items: center; gap: 10px; margin-top: 6px; padding: 8px 6px 0; }
+.t-avatar { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; background: #ffc837; color: #0b1d3f; font-weight: 700; }
+.t-me-text { display: grid; min-width: 0; line-height: 1.25; }
+.t-me-text b { color: #fff; font-weight: 600; font-size: .88rem; }
+.t-me-text small { color: #8fa0bf; font-size: .74rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.t-out { margin-left: auto; padding: 6px; border: 0; border-radius: 8px; background: none; color: var(--t-side-ink); cursor: pointer; }
+.t-out:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.t-side :focus-visible { outline: 2px solid #ffc837; outline-offset: 2px; }
+
+/* The page */
+.t-main { min-width: 0; padding: 26px clamp(16px, 3vw, 40px) 64px; }
+.t-pagehead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 20px; }
+.t-crumb { margin: 0; font: 600 .75rem var(--t-font); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.t-pagehead h1 { margin: 2px 0 0; font: 700 1.8rem/1.2 var(--t-font); color: var(--ink); letter-spacing: -.02em; }
+.t-headacts { display: flex; flex-wrap: wrap; gap: 8px; }
+.area-teacher h1, .area-teacher h2, .area-teacher h3 { font-family: var(--t-font); color: var(--ink); font-weight: 700; letter-spacing: -.01em; }
+.area-teacher .t-h2, .area-teacher .t-body h2 { font-size: 1.15rem; }
+.area-teacher .t-body h3 { font-size: 1rem; }
+.area-teacher .t-body { padding: 0; border-radius: 0; background: none; box-shadow: none; }
+.area-teacher .t-error { border: 1px solid #f4c7c3; border-radius: 10px; background: #fef3f2; color: #912018; }
+
+/* Cards, empty states and tables */
+.area-teacher .pcard, .area-teacher .t-body .pcard, .area-teacher .library-card { border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); background: var(--surface); }
+.area-teacher .t-body .empty { border: 1px dashed #cdd5e1; border-radius: 12px; background: var(--surface); color: var(--muted); }
+.area-teacher .t-body .empty::before { display: none; }
+.area-teacher .t-table, .area-teacher .t-body .t-table { border: 1px solid var(--line); border-radius: 10px; font-size: .9rem; }
+.area-teacher .t-table th { background: #f6f8fb; color: var(--muted); font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.area-teacher .t-table td { border-bottom-color: var(--line); }
+.area-teacher .pill { border-radius: 999px; font-size: .85rem; font-weight: 600; }
+.area-teacher .lib-group { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+
+/* Controls: compact and businesslike */
+.area-teacher .btn { min-height: 36px; gap: 6px; padding: 6px 14px; border: 1px solid #cfd7e3; border-radius: 8px; background: var(--surface); color: var(--ink); font: 600 .9rem var(--t-font); }
+.area-teacher .btn:hover { background: #f6f8fb; }
+.area-teacher .btn .t-ico { width: 16px; height: 16px; }
+.area-teacher .btn.primary { background: var(--t-blue); border-color: var(--t-blue); color: #fff; }
+.area-teacher .btn.primary:hover { background: #1e40af; filter: none; }
+.area-teacher .btn.small { min-height: 32px; padding: 4px 10px; font-size: .84rem; }
+.area-teacher .btn.big { min-height: 44px; padding: 8px 20px; font-size: 1rem; }
+.area-teacher .btn.danger { border-color: #f1c4bf; color: #b42318; }
+.area-teacher input:not([type=checkbox]):not([type=radio]), .area-teacher select, .area-teacher textarea {
+  border: 1px solid #cfd7e3; border-radius: 8px; background: var(--surface); color: var(--ink); font: 400 .92rem var(--t-font); }
+.area-teacher input:focus-visible, .area-teacher select:focus-visible, .area-teacher textarea:focus-visible, .area-teacher .btn:focus-visible { outline: 2px solid var(--t-blue); outline-offset: 2px; }
+.area-teacher .lib-seg button { min-width: 0; border-width: 1px; border-radius: 8px; color: var(--ink); font: 600 .88rem var(--t-font); }
+.area-teacher .lib-seg button[aria-pressed="true"] { background: var(--t-blue); border-color: var(--t-blue); color: #fff; }
+.area-teacher .linklike, .area-teacher .t-main a:not(.btn) { color: var(--t-blue); }
+
+/* Sign-in and other messages: a plain card */
+.area-teacher .t-message { max-width: 480px; margin: 8vh auto; padding: 32px; text-align: center; border: 1px solid var(--line); border-radius: 16px;
+  background: var(--surface); box-shadow: 0 10px 30px rgba(16, 24, 40, .08); }
+
+/* Tablets and phones: the sidebar becomes a dark bar at the top, with the menu in a sideways-scrolling row */
+@media (max-width: 900px) {
+  .t-app { display: block; }
+  .t-side { position: sticky; top: 0; z-index: 6; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; overflow: visible; }
+  .t-side .t-class { flex: 1 1 140px; }
+  .t-side .t-class > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .t-side-foot { order: 2; display: flex; align-items: center; gap: 2px; margin: 0; padding: 0; border: 0; }
+  .t-sidelink span, .t-me-text { display: none; }
+  .t-me { margin: 0; padding: 0 0 0 4px; }
+  .t-avatar { width: 30px; height: 30px; }
+  .t-app .t-tabs { order: 3; flex: 1 1 100%; flex-direction: row; flex-wrap: nowrap; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .t-app .t-tabs::-webkit-scrollbar { display: none; }
+  .t-navhead { display: none; }
+  .t-app .t-tab { width: auto; padding: 7px 10px; white-space: nowrap; }
+  .t-app .t-tab[aria-current="page"] { box-shadow: inset 0 -2px 0 #ffc837; }
+  .t-main { padding: 18px 14px 48px; }
+  .t-pagehead h1 { font-size: 1.45rem; }
+}
+@media print { .t-side, .t-pagehead { display: none; } }

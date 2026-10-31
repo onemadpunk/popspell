@@ -527,18 +527,7 @@
         if (older) logo.setAttribute("srcset", "assets/brand/teen/logo-horizontal@2x.webp 2x"); else logo.removeAttribute("srcset");
       }
     }
-    // A band saying where you are, with a way back, on every teacher-area page
-    let band = document.getElementById("areaBand");
-    if (teacher && !band) {
-      band = document.createElement("div");
-      band.id = "areaBand";
-      band.className = "area-band";
-      band.innerHTML = `<span><b>Teacher area</b> · only you can see this</span><a href="#/">← Back to the pupil screen</a>`;
-      document.querySelector(".topbar").after(band);
-    } else if (!teacher && band) band.remove();
-    if (band && teacher) band.style.top = `${document.querySelector(".topbar").offsetHeight}px`;
   }
-  window.addEventListener("resize", () => { const band = document.getElementById("areaBand"); if (band) band.style.top = `${document.querySelector(".topbar").offsetHeight}px`; });
   // The teacher's latest setting for this pupil, saved for next time
   function refreshLook(name) {
     if (!REPORTING || !name || !cloud.look) return;
