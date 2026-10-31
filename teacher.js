@@ -420,7 +420,7 @@
   const EN_PRACTICE = "England's curriculum (practice only)";
 
   const LIB_KEY = "popspell-library";
-  const LIB_BLANK = { cur: "", level: "", subject: "", strand: "", type: "" };
+  const LIB_BLANK = { cur: "", level: "", range: "exact", pupil: "", pupilClass: "", subject: "", strand: "", type: "" };
   function libraryPrefs() {
     try { return Object.assign({}, LIB_BLANK, JSON.parse(localStorage.getItem(LIB_KEY))); }
     catch { return Object.assign({}, LIB_BLANK); }
@@ -428,8 +428,25 @@
   const saveLibraryPrefs = p => { try { localStorage.setItem(LIB_KEY, JSON.stringify(p)); } catch { /* fine */ } };
 
   const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14", "Key stage 4": "Age 14–16" };
-  function drawLibrary(body) {
+  const pupilLibraryLevel = pupil => {
+    if (E_() && E_().isEngland(pupil.yearGroup)) {
+      const year = E_().pupilYear(pupil.yearGroup);
+      return { cur: "england", level: (E_().BANDS.find(([, lo, hi]) => year >= lo && year <= hi) || [""])[0] };
+    }
+    return { cur: "", level: CFE_YEARS[String(pupil.yearGroup || "").toLowerCase()] || (/^S[4-6]$/.test(pupil.yearGroup || "") ? "Third" : "") };
+  };
+  async function drawLibrary(body) {
     const prefs = libraryPrefs();
+    const classId = current && current.id;
+    let pupils = [];
+    if (classId) {
+      body.innerHTML = `<div class="empty">Loading library…</div>`;
+      try { pupils = await cloud.pupils(classId); } catch (err) { showError(err); }
+      if (tab !== "library" || body !== $("#tBody") || !current || current.id !== classId) return;
+    }
+    if (prefs.pupil && (!classId || prefs.pupilClass !== classId || !pupils.some(p => sameName(p.name, prefs.pupil)))) {
+      prefs.pupil = ""; prefs.pupilClass = ""; prefs.level = ""; prefs.range = "exact";
+    }
     // Scotland (CfE levels and organisers) or England (national curriculum years and domains).
     // England's own work (grammar by year, statutory words, the national checks, its lessons) shows in
     // both, placed by CfE level and strand in Scotland's view and tagged as from England's curriculum.
@@ -444,11 +461,15 @@
       `<button type="button" data-${name}="${esc(value)}" aria-pressed="${prefs[name] === value}"><span>${esc(text).replace(/^All (.+)/, "All<span class=\"lib-wide\"> $1</span>")}</span>${small ? `<small>${esc(small)}</small>` : ""}</button>`).join("")}</div>`;
     body.innerHTML = `<div class="work-flow lib-find">
       <h2>Find work</h2>
-      <p class="hint">Choose a curriculum, a ${en ? "year" : "level"} and a subject, then test, assign or print anything. Not sure of a pupil's level? Start with <b>${FIND_LEVEL}</b>. Test runs do not save pupil results.</p>
+      <p class="hint">Choose a pupil to start at their year group, then show that level and below. Change the level if they are working ahead or need earlier work. ${prefs.pupil && !pupils.find(p => sameName(p.name, prefs.pupil))?.yearGroup ? `Add ${esc(prefs.pupil)}'s year group in Pupils, or choose a level here. ` : ""}The lesson programme and starting checks can guide your choice.</p>
+      ${pupils.length ? `<div class="add-row lib-more"><label>Find lessons for
+        <select id="libPupil"><option value="">Choose a pupil (optional)</option>${pupils.map(p => `<option value="${esc(p.name)}"${sameName(p.name, prefs.pupil) ? " selected" : ""}>${esc(p.name)}${p.yearGroup ? ` · ${esc(p.yearGroup)}` : ""}</option>`).join("")}</select></label>
+        <label>Show levels <select id="libRange"><option value="exact"${prefs.range !== "upto" ? " selected" : ""}>Selected level only</option><option value="upto"${prefs.range === "upto" ? " selected" : ""}>Selected level and below</option></select></label></div>`
+        : `<div class="add-row lib-more"><label>Show levels <select id="libRange"><option value="exact"${prefs.range !== "upto" ? " selected" : ""}>Selected level only</option><option value="upto"${prefs.range === "upto" ? " selected" : ""}>Selected level and below</option></select></label></div>`}
       ${E_() ? `<div class="lib-seg lib-cur" role="group" aria-label="Curriculum">
         <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
         <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
-      ${segment("level", en ? "Year" : "Level", [["", en ? "All years" : "All levels"]].concat(levels), " lib-years")}
+      ${segment("level", prefs.range === "upto" ? (en ? "Up to year" : "Up to level") : (en ? "Year" : "Level"), [["", en ? "All years" : "All levels"]].concat(levels), " lib-years")}
       ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s])))}
       <div class="add-row lib-more">
         <label>Strand <select id="libStrand"></select></label>
@@ -483,6 +504,7 @@
       if (prefs.strand && !strands.includes(prefs.strand)) prefs.strand = "";
       $("#libStrand").innerHTML = `<option value="">All strands</option>${strands.map(s => `<option${s === prefs.strand ? " selected" : ""}>${esc(s)}</option>`).join("")}`;
       $("#libType").value = prefs.type;
+      body.querySelector(".lib-years").setAttribute("aria-label", `${prefs.range === "upto" ? "Up to " : ""}${en ? "year" : "level"}`);
       body.querySelectorAll("[data-level]").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === prefs.level));
       body.querySelectorAll("[data-subject]").forEach(b => b.setAttribute("aria-pressed", b.dataset.subject === prefs.subject));
       const query = $("#librarySearch").value.trim();
@@ -490,7 +512,14 @@
       // Starting checks show at every level: they're how a teacher finds the level
       // Starting checks have no level, so they show at every one; in England, work beyond the
       // primary curriculum shows only under "All years"
-      const levelFits = e => !prefs.level || (e.type === "check" ? true : en ? e.band === prefs.level : !e.level || e.level === prefs.level);
+      const levelFits = e => {
+        if (!prefs.level || e.type === "check") return true;
+        if (prefs.range === "upto") {
+          const rank = levels.findIndex(([l]) => l === levelOfEntry(e));
+          return rank >= 0 && rank <= levels.findIndex(([l]) => l === prefs.level);
+        }
+        return en ? e.band === prefs.level : !e.level || e.level === prefs.level;
+      };
       const shown = entries.filter(e => levelFits(e) && (!prefs.subject || e.subject === prefs.subject)
         && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && found(e))
         .sort((a, b) => order.indexOf(strandOfEntry(a)) - order.indexOf(strandOfEntry(b)) || levelRank(a) - levelRank(b)
@@ -511,9 +540,20 @@
     // Switching curriculum changes the year or level buttons and the strands, so it redraws
     body.querySelectorAll("[data-cur]").forEach(b => { b.onclick = () => {
       if (b.dataset.cur === prefs.cur) return;
-      saveLibraryPrefs(Object.assign(prefs, { cur: b.dataset.cur, level: "", strand: "" }));
+      saveLibraryPrefs(Object.assign(prefs, { cur: b.dataset.cur, level: "", strand: "", pupil: "", pupilClass: "" }));
       drawLibrary(body);
     }; });
+    const pupilPick = $("#libPupil");
+    if (pupilPick) pupilPick.onchange = () => {
+      const pupil = pupils.find(p => sameName(p.name, pupilPick.value));
+      if (!pupil) { Object.assign(prefs, { pupil: "", pupilClass: "", level: "", range: "exact" }); render(); return; }
+      const target = pupilLibraryLevel(pupil);
+      Object.assign(prefs, { pupil: pupil.name, pupilClass: classId, cur: target.cur, level: target.level,
+        range: "upto", subject: "", strand: "", type: "lesson" });
+      saveLibraryPrefs(prefs);
+      drawLibrary(body);
+    };
+    $("#libRange").onchange = e => { prefs.range = e.target.value; render(); };
     body.querySelectorAll("[data-level]").forEach(b => { b.onclick = () => { prefs.level = b.dataset.level; render(); }; });
     body.querySelectorAll("[data-subject]").forEach(b => { b.onclick = () => { prefs.subject = b.dataset.subject; render(); }; });
     $("#libStrand").onchange = e => { prefs.strand = e.target.value; render(); };
@@ -524,7 +564,7 @@
       if (!button) return;
       const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
       if (button.dataset.lesson) lessonDialog(entry.lesson, prefs.cur);
-      else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; render(); }
+      else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", range: "exact", pupil: "", pupilClass: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; drawLibrary(body); }
       else if (button.dataset.assign) assignDialog(entry);
       else if (button.dataset.print) printEntry(entry, en ? "england" : "");
     };
@@ -2270,8 +2310,8 @@
       const browse = c.england
         ? [[prog.focus !== "maths" && "Literacy", prog.spelling], [prog.focus !== "literacy" && "Maths", prog.maths]].filter(([a]) => a)
           .map(([area, id]) => [area, E_().bandOf(enWork(id))]).filter(([, band]) => band)
-          .map(([area, band]) => `<button class="linklike" type="button" data-browse="${esc(area)}|${esc(band)}|england">Every ${esc(band)} ${esc(area.toLowerCase())} lesson</button>`)
-        : c.areas.map(a => `<button class="linklike" type="button" data-browse="${esc(a.area)}|${esc(a.level)}">Every ${esc(a.level)} level ${esc(a.area.toLowerCase())} lesson</button>`);
+          .map(([area, band]) => `<button class="linklike" type="button" data-browse="${esc(area)}|${esc(band)}|england">${esc(area)} lessons up to ${esc(band)}</button>`)
+        : c.areas.map(a => `<button class="linklike" type="button" data-browse="${esc(a.area)}|${esc(a.level)}">${esc(a.area)} lessons up to ${esc(a.level)} level</button>`);
       return `<details class="prog-more prog-ready" open><summary>📚 Ready lessons for ${esc(x.r.name)}</summary>
         ${list.length ? `<ul>${list.map(l => `<li><b>${esc(c.england ? l.title : asCfe(l).title)}</b> <span class="hint">${esc(c.england ? where(l) : asCfe(l).level)} · ${esc(l.subject)}</span>
           <button class="linklike" type="button" data-open-lesson="${esc(l.id)}">Open</button> ·
@@ -2325,10 +2365,11 @@
     body.querySelectorAll("[data-print-lesson]").forEach(b => { b.onclick = () => {
       lessonPrintDialog(window.PopLessons.get(b.dataset.printLesson), b.closest(".prog-card").dataset.name, curOf(b));
     }; });
-    // Opens the library at every ready lesson for that subject and level (or England band)
+    // Opens the library for this pupil at their working level and everything below it.
     body.querySelectorAll("[data-browse]").forEach(b => { b.onclick = () => {
       const [subject, level, cur = ""] = b.dataset.browse.split("|");
-      saveLibraryPrefs({ cur, level, subject, strand: "", type: "lesson" });
+      saveLibraryPrefs({ cur, level, range: "upto", pupil: b.closest(".prog-card").dataset.name, pupilClass: current.id,
+        subject, strand: "", type: "lesson" });
       tab = "library";
       draw();
     }; });
