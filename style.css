@@ -1196,7 +1196,7 @@ a.me-card:hover { border-color: var(--primary); }
   .lib-seg button { min-width: 0; padding: 6px 4px; font-size: .9rem; }
   .lib-seg button small { font-size: .68rem; white-space: nowrap; }
   .lib-seg .lib-wide { display: none; }
-  .lib-seg.lib-years { grid-template-columns: repeat(3, 1fr); } /* England's six choices, in two rows */
+  .lib-seg.lib-years { grid-template-columns: repeat(3, 1fr); } /* the levels or years, in two rows */
   .lib-more label, .lib-more select, .lib-more input { width: 100%; }
 }
 .lib-more label { display: grid; gap: 2px; font-size: .85rem; font-weight: 700; color: var(--muted); }
@@ -1205,6 +1205,7 @@ a.me-card:hover { border-color: var(--primary); }
 .lib-level.lv-early { background: #e3f6ee; color: #11683f; }
 .lib-level.lv-first { background: #e4efff; color: #1d4fa3; }
 .lib-level.lv-second { background: #f3e8ff; color: #6b2fb3; }
+.lib-level.lv-third { background: #fde7ef; color: #9d174d; }
 /* England's bands, in the same colour steps */
 .lib-level.lv-reception { background: #fff1d6; color: #8a4b00; }
 .lib-level.lv-year-1, .lib-level.lv-year-2 { background: #e3f6ee; color: #11683f; }
@@ -1561,6 +1562,9 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .pp-cut { stroke: #222; stroke-width: 2; stroke-dasharray: 5 4; }
 .pp-grid { stroke: #b9c4d3; stroke-width: 1; }
 .pp-fill { fill: #9db7dc; stroke: #3c5b86; stroke-width: 1; }
+.pp-axis { stroke: #222; stroke-width: 1.5; }
+.pp-dash { fill: none; stroke: #222; stroke-width: 1.5; stroke-dasharray: 5 4; }
+.pp-small { font: 11px Arial, sans-serif; fill: #333; }
 .pp-mirror { stroke: #d14; stroke-width: 2.5; stroke-dasharray: 6 4; }
 .pp-beam { stroke: #333; stroke-width: 3; fill: none; }
 .pp-ribbon { fill: #f2a7c6; stroke: #333; stroke-width: 1.5; }

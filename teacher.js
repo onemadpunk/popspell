@@ -243,7 +243,7 @@
 
   /* ---------- Library: every resource, found by level, subject, strand and type ---------- */
 
-  const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"]];
+  const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"], ["Third", "S1–S3"]];
   const LIB_SUBJECTS = ["Literacy", "Maths"];
   const LIB_TYPES = { lesson: "Ready lesson", check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
     game: "Game", dictation: "Dictation", paper: "Paper sheet" };
@@ -361,7 +361,7 @@
       ${E_() ? `<div class="lib-seg lib-cur" role="group" aria-label="Curriculum">
         <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
         <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
-      ${segment("level", en ? "Year" : "Level", [["", en ? "All years" : "All levels"]].concat(levels), en ? " lib-years" : "")}
+      ${segment("level", en ? "Year" : "Level", [["", en ? "All years" : "All levels"]].concat(levels), " lib-years")}
       ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s])))}
       <div class="add-row lib-more">
         <label>Strand <select id="libStrand"></select></label>
@@ -1720,7 +1720,7 @@
   // lesson); the warm-up, story and number facts are chosen to match. The shape follows Making
   // Maths Count (short, frequent revisiting of number facts, talking about thinking) and Reading
   // Schools (reading for pleasure every lesson), and each part names its CfE outcomes.
-  const LEVEL_ORDER = ["Early", "First", "Second"];
+  const LEVEL_ORDER = ["Early", "First", "Second", "Third"];
   const spellingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id));
   const englandOrder = () => (P().EXTRA_STAGES || []).flatMap(st => st.lists.map(l => l.id));
   // A pupil moves on within the sequence their list is in, never from one into the other
@@ -2355,7 +2355,7 @@
         (w.missed || []).forEach(m => { r.skills[m] = (r.skills[m] || 0) + 1; });
       });
     });
-    const levelOrder = ["Early", "First", "Second"];
+    const levelOrder = ["Early", "First", "Second", "Third"];
     return Object.values(rows).map(r => Object.assign(r, {
       status: cfeStatus(r), pct: r.items ? Math.round((r.first / r.items) * 100) : 0,
       levelText: en ? (r.years.size ? E_().rangeLabel(Math.min(...r.years), Math.max(...r.years)) : "")

@@ -1,6 +1,6 @@
 /*
   READY LESSONS — a lesson for every area of the Curriculum for Excellence literacy and numeracy
-  benchmarks, at Early, First and Second level, so a tutor can support any gap straight away.
+  benchmarks, at Early, First, Second and Third level, so a tutor can support any gap straight away.
 
   Each lesson is built from the official guidance only (Education Scotland's Experiences and
   Outcomes and Benchmarks, June 2017): the success criteria are the benchmark statements for that
@@ -8,7 +8,7 @@
   check (5). It links to PopSpell's online work and printable sheets where they fit ("use"), and
   ends with something to do at home.
 
-    level     Early | First | Second
+    level     Early | First | Second | Third
     subject   Literacy | Maths
     strand    the library strand it appears under
     codes     the Experiences and Outcomes it covers
@@ -603,6 +603,197 @@ window.PopLessons = (() => {
       check: "Explain one way maths is used in a job you'd like." },
     [], "Ask family members how they use maths at work or at home.", "invention, engineer, data, measurement");
 
+  /* ===================== Numeracy and mathematics: Third level (S1 to S3) ===================== */
+
+  add("Third", M, NUM, ["MNU 3-01a"], "Rounding to decimal places and estimating",
+    "We are learning to round to a sensible degree of accuracy and to estimate answers.",
+    ["I can round decimal fractions to three decimal places.", "I can choose how accurately to round, thinking about the problem.", "I can round to estimate the answer to a calculation, then use the estimate to check."],
+    { start: "Round 4·276 to the nearest whole number, then to one decimal place.",
+      teach: "Zoom in on a number line between 4·27 and 4·28 to show why 4·276 rounds to 4·28. Round 3·14159 to 1, 2 and 3 decimal places. Talk about context: money to 2 places, a shelf to the nearest centimetre, buses for 130 people always rounded up. Estimate 38·7 × 5·2 as 40 × 5 = 200 before calculating.",
+      practise: "Rounding to 100 and 1000, then Estimating answers, then the \"Round it sensibly\" sheet.",
+      check: "Round 7·0459 to 2 decimal places. Estimate 61·8 ÷ 2·9: how does the estimate tell you a calculator answer is sensible?" },
+    ["n-round-100", "n-estimate"], "Estimate the shopping bill before you reach the till, then compare.", "round, decimal place, degree of accuracy, estimate, approximately");
+
+  add("Third", M, NUM, ["MNU 3-03a", "MNU 3-03b"], "Calculating with whole numbers and decimals",
+    "We are learning to recall facts quickly, choose a method, calculate accurately with decimals and explain our working.",
+    ["I can recall multiplication and division facts quickly, and use facts to the 12 times table.", "I can add and subtract whole numbers and decimals to three decimal places.", "I can multiply and divide whole numbers and decimals to three decimal places.", "I can explain my method and my answer clearly."],
+    { start: "Quick fire: 7 × 8, 72 ÷ 9, 11 × 12, 144 ÷ 12.",
+      teach: "Line up the decimal points for 12·45 + 3·078 and 20 − 6·375, filling gaps with zeros. Multiply 4·26 × 7 by working out 426 × 7, then placing the point by estimating. Divide 9·36 ÷ 4 by short division. Ask the pupil to say each step aloud, then write a one-line explanation of the method.",
+      practise: "6, 7, 8 and 9 times tables and Division facts for speed, then the \"Decimal calculations\" sheet.",
+      check: "Work out 15·8 − 7·256 and 3·45 × 6. How did you check each answer?" },
+    ["n-tables-6-9", "n-division", "n-big-add"], "Split a bill, or work out the cost of several items with prices in pounds and pence.", "decimal point, place value, method, estimate, inverse, check");
+
+  add("Third", M, NUM, ["MNU 3-04a"], "Negative numbers in calculations",
+    "We are learning to add, subtract, multiply and divide with negative numbers, and use them to solve problems.",
+    ["I can add and subtract with integers, as in −3 + 8 and 4 − 9.", "I can multiply and divide with integers, as in −4 × 3 and −12 ÷ −4.", "I can use negative numbers to solve problems about temperature, money or height."],
+    { start: "The temperature is −2°C and falls 5 degrees. What is it now?",
+      teach: "Use a vertical number line, like a thermometer, for adding and subtracting. Show subtracting a negative as finding the gap: 3 − (−2) is the distance from −2 up to 3, which is 5. Find the multiplying rules from a pattern: 3 × −2 = −6, 2 × −2 = −4, 1 × −2 = −2, 0 × −2 = 0, so −1 × −2 = 2. Link division to the multiplication facts.",
+      practise: "Negative numbers, then the \"Below zero\" sheet.",
+      check: "Work out −6 − 4, 5 − (−3) and −20 ÷ 5. A diver is 12 m below the surface and rises 7 m: where are they now?" },
+    ["n-negative"], "Look up temperatures in cold places around the world and find the differences.", "integer, negative, positive, below zero, difference, number line");
+
+  add("Third", M, NUM, ["MTH 3-05a", "MTH 3-05b"], "Common multiples, common factors and primes",
+    "We are learning to find common multiples and factors, identify primes, and use them to solve problems.",
+    ["I can find common multiples, including the lowest common multiple, and explain my method.", "I can find common factors, including the highest common factor, and explain my method.", "I can identify prime numbers to 100 and explain how I know.", "I can write a number as a product of its prime factors.", "I can solve problems using multiples and factors."],
+    { start: "Is 51 prime? Convince me.",
+      teach: "List multiples of 6 and 8 to find the lowest common multiple (24), and factor pairs of 36 and 48 to find the highest common factor (12). Draw a factor tree for 60 to write it as 2 × 2 × 3 × 5. Sieve a 100 square for primes. Solve: buses every 12 and 18 minutes leave together at 9:00. When do they next leave together?",
+      practise: "Multiples, factors and primes, then the \"Factor trees and primes\" sheet.",
+      check: "Find the highest common factor and lowest common multiple of 18 and 24. Write 84 as a product of primes." },
+    ["n-multiples"], "Find the prime dates on this month's calendar.", "multiple, factor, common, lowest common multiple, highest common factor, prime, prime factor, factor tree");
+
+  add("Third", M, NUM, ["MTH 3-06a"], "Powers and indices",
+    "We are learning what powers mean, and to work them out mentally or with a calculator.",
+    ["I can explain index notation and use the words index, exponent, power and base.", "I can evaluate whole number powers, as in 2⁴ = 16.", "I can write whole numbers as powers, as in 27 = 3³."],
+    { start: "Fold a sheet of paper in half, again and again. How many layers after 1, 2, 3 and 4 folds?",
+      teach: "Record the folds as 2, 2 × 2, 2 × 2 × 2 and write 2³: the base is 2 and the index (or exponent) is 3. Contrast 3² = 9 with 3 × 2 = 6. Work out powers mentally, then with a calculator's power key. Write 64 as 8², 4³ and 2⁶. Talk about why powers are useful: they're short, and show fast growth and very big numbers.",
+      practise: "The \"Powers\" sheet, then check the answers with a calculator.",
+      check: "Work out 5³ and 10⁴. Write 81 as a power of 3, and as a power of 9." },
+    [], "Work out how many great-great-grandparents you have, using powers of 2.", "power, index, exponent, base, squared, cubed");
+
+  add("Third", M, FDP, ["MNU 3-07a", "MTH 3-07c"], "Fractions, decimals and percentages in real life",
+    "We are learning to convert between fractions, decimals and percentages, and use them to make choices.",
+    ["I can convert fractions, decimal fractions and percentages into each other.", "I can convert between whole or mixed numbers, improper fractions and decimal fractions.", "I can calculate with fractions, decimals and percentages, with and without a calculator.", "I can use my answers to compare and make informed choices."],
+    { start: "Which is bigger: ⅜, 0·4 or 35%?",
+      teach: "Divide to turn ⅜ into 0·375 and 37·5%. Change 2¾ into 11/4 and 2·75 with a bar model. Find 17·5% of £240 by building it from 10%, 5% and 2·5%, then by calculator (0·175 × 240). Compare two offers on a £45 jacket: ⅓ off, or 30% off?",
+      practise: "Percentages and Equivalent fractions, then the \"Which deal?\" sheet.",
+      check: "Write 7/8 as a decimal and as a percentage. Which is better: 25% off £60, or £14 off?" },
+    ["n-percent", "n-equivalent", "en-fractions-y6"], "Compare discounts on a shopping website or in a shop window.", "equivalent, convert, mixed number, improper fraction, decimal fraction, percentage, discount");
+
+  add("Third", M, FDP, ["MTH 3-07b"], "Adding and subtracting fractions",
+    "We are learning to add and subtract fractions with different denominators.",
+    ["I can use equivalent fractions and common multiples to find a common denominator.", "I can add and subtract whole numbers and fractions, including when I need to change a denominator.", "I can simplify my answer, and change an improper fraction to a mixed number."],
+    { start: "Shade ⅓ and ¼ of the same bar. Why can't we just add the tops and the bottoms?",
+      teach: "Use the lowest common multiple of 3 and 4 to rename both: 4/12 + 3/12 = 7/12. Work through ⅚ − ¼, then 2½ + 1⅔ (whole numbers first, then the fractions). Simplify, and change improper answers into mixed numbers.",
+      practise: "Mixed numbers and calculating with fractions, then the \"Fraction sums\" sheet.",
+      check: "Work out ⅖ + ⅓ and 3¼ − 1⅔." },
+    ["en-fractions-y5", "n-equivalent"], "Follow a recipe with fractions of a cup or spoon, and add up the total.", "denominator, numerator, common denominator, lowest common multiple, equivalent, simplify, mixed number");
+
+  add("Third", M, FDP, ["MNU 3-08a"], "Proportion and ratio",
+    "We are learning to increase and decrease quantities in proportion, and to use ratio.",
+    ["I can solve problems where related quantities increase or decrease in proportion.", "I can write quantities as a ratio and simplify it.", "I can use proportion and ratio in everyday problems, such as recipes and prices."],
+    { start: "A recipe for 4 people uses 300 g of pasta. How much for 6 people?",
+      teach: "Use the unitary method (find one, then many) and a ratio table for the recipe. Write the ratio of 6 teachers to 60 children as 6 : 60 = 1 : 10, and of teachers to everyone in the school as 6 : 66 = 1 : 11. Share £45 in the ratio 2 : 3 by counting parts. Talk about when things are not in proportion, such as a taxi with a fixed charge.",
+      practise: "Ratio and proportion, then the \"Recipe for a crowd\" sheet.",
+      check: "5 pens cost £3·60. What do 8 cost? Simplify 18 : 24." },
+    ["en-ratio"], "Scale a family recipe up or down for a different number of people.", "ratio, proportion, simplify, unitary method, scale up, scale down, share");
+
+  add("Third", M, MONEY, ["MNU 3-09a", "MNU 3-09b"], "Best value, budgets and money words",
+    "We are learning to compare deals, plan a budget, and understand financial words.",
+    ["I can compare products, contracts and services to find the best value for me, and justify my choice.", "I can make a budget, using technology where it helps, and plan for future costs.", "I know financial words such as debit, credit, APR, per annum, direct debit, standing order and interest rate.", "I can convert between currencies."],
+    { start: "Phone A: £12 a month for 24 months. Phone B: £180 now, then £5 a month for 24 months. Which costs less overall?",
+      teach: "Work out the total cost of each deal over the contract, then discuss what else matters: data, how long you're tied in, paying up front. Build a monthly budget in a spreadsheet or table with income, fixed costs and saving for a future cost. Explain each financial word with an everyday example. Convert £150 to euros at a given rate, then back.",
+      practise: "Best value, budgets, profit and loss, then the \"Plan a budget\" sheet.",
+      check: "Explain the difference between a direct debit and a standing order. At €1·16 to £1, how many euros do you get for £250?" },
+    ["n-best-value"], "Compare two phone or streaming deals at home and work out the yearly cost of each.", "budget, income, expense, contract, APR, interest, per annum, debit, credit, direct debit, standing order, exchange rate");
+
+  add("Third", M, TIME, ["MNU 3-10a"], "Speed, distance and time",
+    "We are learning to use the link between speed, distance and time, and to work out durations.",
+    ["I can use the link between speed, distance and time to find any one of them.", "I can calculate durations across hours and days.", "I can work out how long a journey will take, how far it is, or the average speed."],
+    { start: "A car travels 60 miles in one hour. How far does it go in 2½ hours?",
+      teach: "Show where distance = speed × time comes from (60 mph means 60 miles every hour), then rearrange it to find speed and time. Work in hours: 45 minutes = 0·75 hours. Find the time for 150 km at 60 km/h. Work out durations across midnight and across days on a timeline, such as 22:40 on Monday to 06:15 on Tuesday.",
+      practise: "12-hour and 24-hour time, then the \"Journey planner\" sheet.",
+      check: "A cyclist rides 36 km in 1 hour 30 minutes. What is their average speed? How long is it from 21:50 on Friday to 07:20 on Saturday?" },
+    ["n-time-24", "n-durations"], "Plan a real journey with a timetable or map: distance, time and average speed.", "speed, distance, time, average speed, km/h, mph, duration");
+
+  add("Third", M, MEAS, ["MNU 3-11a", "MTH 3-11b"], "Area and volume, including compound shapes",
+    "We are learning to choose units, convert them, and find the area and volume of compound shapes.",
+    ["I can choose sensible units for length, area and volume.", "I can convert between units, as in 2·5 m = 250 cm and 1500 ml = 1·5 litres, and use them in calculations.", "I can find an area when the measurements are in different units.", "I can find the area of compound 2D shapes made from squares, rectangles and triangles.", "I can find the volume of compound 3D objects made from cubes and cuboids."],
+    { start: "Which unit would you use for the area of a stamp, a classroom, and a farm?",
+      teach: "Split an L-shape into two rectangles in two different ways, and check both give the same area. Add a triangle (½ × base × height). Convert first when lengths are in metres and centimetres. Build a compound solid from cubes and find its volume by splitting it into cuboids (length × breadth × height). Link 1 cm³ to 1 ml.",
+      practise: "Area and perimeter and Changing units, then the \"Floor plans and boxes\" sheet.",
+      check: "Find the area of an L-shape and the volume of a step made from two cuboids. Which units did you use, and why?" },
+    ["n-area", "n-units", "en-area-formulae"], "Measure a room and work out how much flooring it would need.", "area, volume, compound, cm², m², cm³, litre, length, breadth, height, formula");
+
+  add("Third", M, NUM, ["MTH 3-12a"], "Researching a mathematician or a maths topic",
+    "We are learning to research a mathematician or a maths topic, and present its impact on the world.",
+    ["I can research a famous mathematician or a maths topic, using reliable sources.", "I can explain the maths using the right words and notation.", "I can explain the difference it has made to society.", "I can prepare and give a short presentation."],
+    { start: "What do GPS, music streaming and weather forecasts have in common? (They all depend on maths.)",
+      teach: "Agree a choice, such as Mary Somerville, John Napier, Ada Lovelace, Katherine Johnson or al-Khwarizmi, or a topic such as codes or logarithms. Model making notes from two sources and checking they agree. Plan a three-minute talk: who or what, the maths itself with one worked example, and its impact today. Rehearse with the tutor as the audience.",
+      practise: "The \"Maths that changed the world\" sheet: notes, one worked example and a plan for the talk.",
+      check: "Give the talk. Ask: what was the maths, and why does it still matter?" },
+    [], "Give the talk to someone at home and ask them one thing they learned.", "research, source, notation, impact, presentation");
+
+  add("Third", M, PAT, ["MTH 3-13a"], "Sequences and their rules",
+    "We are learning to make sequences from rules, and to find and write the rule for a sequence.",
+    ["I can generate a sequence from a rule, as in T = 4n + 6.", "I can extend a pattern and describe its rule.", "I can write a sequence rule in algebra, as in C = 0·05m + 75."],
+    { start: "Squares made from matchsticks in a row use 4, 7, 10 … matches. How many for 10 squares?",
+      teach: "Make the pattern, record it in a table of n and T, and spot the difference (+3). Show the rule T = 3n + 1 and why the +1 is needed. Generate terms from T = 4n + 6. Write a car-hire rule (£75 plus 5p a mile) as C = 0·05m + 75 and use it.",
+      practise: "Number patterns, then the \"Find the rule\" sheet.",
+      check: "Find the rule for 5, 9, 13, 17 … and use it to find the 20th term." },
+    ["m-patterns"], "Find a pattern at home (stairs, tiles, fence posts) and write its rule.", "sequence, term, rule, nth term, difference, formula");
+
+  add("Third", M, PAT, ["MTH 3-14a"], "Simplifying and evaluating expressions",
+    "We are learning to collect like terms, and to evaluate expressions by substituting.",
+    ["I can collect like terms, including squared terms, to simplify an expression.", "I can evaluate an expression with two variables, using positive and negative numbers."],
+    { start: "3 apples + 2 bananas + 4 apples. How could you write that more simply?",
+      teach: "Simplify 3a + 2b + 4a = 7a + 2b, then 5x² + 3x − 2x² + x = 3x² + 4x, stressing that x and x² are unlike terms. Substitute a = 3 and b = −2 into 4a − 3b and a² + 2b, writing each step with brackets.",
+      practise: "The \"Simplify and substitute\" sheet.",
+      check: "Simplify 6p − 2q + p + 5q. Find 2x² − y when x = −3 and y = 4." },
+    [], "Write an expression for a family shop (a apples, b loaves) and work it out with real prices.", "term, like terms, expression, simplify, variable, substitute, evaluate");
+
+  add("Third", M, PAT, ["MTH 3-15a", "MTH 3-15b"], "Solving equations and using formulae",
+    "We are learning to write and solve equations, and to create and use formulae.",
+    ["I can solve linear equations, as in 3x + 5 = 26 and 4x − 7 = −15.", "I can write an equation for a problem and solve it.", "I can create a simple formula from a diagram, problem or statement.", "I can evaluate a formula, as in C = 0·05m + 75."],
+    { start: "I think of a number, multiply it by 3 and add 5. I get 26. What was my number?",
+      teach: "Use a balance: whatever you do to one side, do to the other. Solve 3x + 5 = 26, then 4x − 7 = −15. Turn a word problem into an equation: a rectangle's perimeter is 30 cm and its length is twice its width. Write a formula for a taxi fare of £3 plus £1·20 a mile, then use it.",
+      practise: "Missing numbers and signs, then the \"Equations and formulae\" sheet.",
+      check: "Solve 5y − 9 = 16. Write a formula for the number of legs on c chairs (4 legs) and t stools (3 legs)." },
+    ["m-equations", "en-area-formulae"], "Write a formula for a phone plan or taxi fare and check it against a real price.", "equation, solve, balance, inverse, formula, variable, substitute");
+
+  add("Third", M, SHAPE, ["MTH 3-16a"], "Drawing shapes accurately",
+    "We are learning to draw triangles and regular polygons accurately with mathematical instruments.",
+    ["I can draw triangles accurately with a ruler and protractor, or a ruler and compasses.", "I can draw a regular polygon when I know its interior angle.", "I can choose the right instruments and method for the shape."],
+    { start: "Can you draw a triangle with sides of 3 cm, 4 cm and 10 cm? Why not?",
+      teach: "Model drawing a triangle from two sides and the angle between them with a protractor, then from three sides with compasses. Draw a regular hexagon (interior angle 120°) one side at a time with a protractor, then inside a circle with compasses. Check by measuring.",
+      practise: "The \"Triangles and polygons, accurately\" sheet. Measure and check each other's drawings.",
+      check: "Draw triangle ABC with AB = 7 cm, angle A = 50° and AC = 5 cm. Measure BC." },
+    ["m-angles"], "Draw a regular pentagon (interior angle 108°) and turn it into a badge.", "protractor, compasses, construct, interior angle, regular polygon, accurate");
+
+  add("Third", M, SHAPE, ["MTH 3-17a"], "Angles in shapes and with parallel lines",
+    "We are learning to name angles and find missing angles using angle facts.",
+    ["I can name angles with three letters, as in angle ABC.", "I can identify corresponding, alternate and vertically opposite angles, and use them to find missing angles.", "I can use the angle properties of triangles and quadrilaterals to find missing angles."],
+    { start: "Tear the three corners off a paper triangle and put them together. What do you notice?",
+      teach: "Name angles with three letters. Draw two parallel lines crossed by a third line and mark the F (corresponding), Z (alternate) and X (vertically opposite) angles. Find all eight angles from one. Use 180° in a triangle and 360° in a quadrilateral to find missing angles, giving a reason each time.",
+      practise: "Angles and turns, then the \"Missing angles\" sheet.",
+      check: "Find the missing angles and give a reason for each: which fact did you use?" },
+    ["m-angles"], "Spot parallel lines and their angles on a gate, a window or road markings.", "corresponding, alternate, vertically opposite, parallel, transversal, angle sum");
+
+  add("Third", M, SHAPE, ["MTH 3-17b", "MTH 3-17c"], "Bearings, scale drawings and enlargement",
+    "We are learning to use bearings and scale to read and make plans, and to enlarge and reduce shapes.",
+    ["I can use and give three-figure bearings.", "I can read maps and plans, and make accurate scale drawings of routes.", "I can enlarge and reduce shapes using a scale factor."],
+    { start: "A map's scale is 1 : 50 000. What does 1 cm on the map stand for?",
+      teach: "Measure bearings clockwise from north as three figures (east is 090°). Draw a route at 1 cm to 1 km: 4 km on a bearing of 060°, then 3 km on 150°. Measure the distance and bearing back to the start. Enlarge a shape on squared paper by scale factor 2 and reduce it by ½, comparing the lengths.",
+      practise: "The \"Route and scale\" sheet: a scale drawing from bearings, then an enlargement.",
+      check: "What is the bearing of west? A 3 cm by 5 cm photo is enlarged by scale factor 3. What size is it now?" },
+    ["en-ratio"], "Use a map of your area to find the bearing and distance from home to school.", "bearing, north, clockwise, scale, scale drawing, scale factor, enlarge, reduce");
+
+  add("Third", M, SHAPE, ["MTH 3-18a", "MTH 3-19a"], "Coordinates in four quadrants, and symmetry",
+    "We are learning to plot and describe points anywhere on a grid, and to use lines of symmetry.",
+    ["I can plot and describe the position of points in all four quadrants.", "I can identify all the lines of symmetry in 2D shapes.", "I can create and complete symmetrical patterns and pictures."],
+    { start: "Where is (−3, 2)? Which way do you go first?",
+      teach: "Draw axes from −6 to 6. Plot points in all four quadrants and join them to make a shape. Reflect it in the y-axis: what happens to the coordinates? Find every line of symmetry of a square, a rectangle, a kite and a regular hexagon. Complete a pattern that is symmetrical about two lines.",
+      practise: "Coordinates: plotting, translating and reflecting, then the \"Four quadrants and symmetry\" sheet.",
+      check: "Plot (2, −3) and reflect it in the y-axis. How many lines of symmetry does a regular pentagon have?" },
+    ["en-coordinates"], "Find symmetrical logos or flags and draw in their lines of symmetry.", "coordinates, quadrant, axis, origin, reflect, line of symmetry");
+
+  add("Third", M, DATA, ["MNU 3-20a", "MTH 3-20b", "MTH 3-21a"], "Data: fair samples, clear graphs and misleading claims",
+    "We are learning to collect and display data fairly, and to judge whether information can be trusted.",
+    ["I can find or collect data, using technology where it helps.", "I can interpret data and describe trends, as in an increasing trend.", "I can decide if information is robust, vague or misleading, thinking about the source, scale, sample size and how it is shown.", "I can choose a representative sample to avoid bias.", "I can display data clearly, choosing graphs such as compound bar charts, line graphs and pie charts."],
+    { start: "\"9 out of 10 people prefer Fizz!\" What would you want to know before you believed it?",
+      teach: "Show two graphs of the same data, one with an axis that doesn't start at zero. Which looks misleading, and why? Discuss sample size and how a sample was chosen (asking only a football club about favourite sports). Plan a fair survey. Draw a line graph of temperatures and describe the trend, then a pie chart of a small survey (angle = fraction × 360°).",
+      practise: "Reading tables and Bar charts, then the \"Can you trust it?\" sheet.",
+      check: "Give two reasons a graph or claim might mislead. Describe the trend in a line graph." },
+    ["n-table", "n-bar", "en-mean"], "Find a graph in a news story or advert and decide if it's fair.", "data, sample, bias, representative, robust, misleading, trend, pie chart, line graph, compound bar chart");
+
+  add("Third", M, DATA, ["MNU 3-22a"], "Probability from 0 to 1",
+    "We are learning to calculate probabilities and use them to make decisions.",
+    ["I can use the probability scale from 0 to 1, writing probability as a fraction or a decimal.", "I can calculate the probability of a simple event, as in throwing a prime number on a 12-sided dice.", "I can list all the outcomes of an event and find the probability of each.", "I can use a probability to work out an expected number, as in days of rain.", "I can explain how the consequences of an event, as well as its probability, affect decisions."],
+    { start: "Put these on a line from 0 to 1: rolling a 7 on a normal dice, a coin landing heads, the sun rising tomorrow.",
+      teach: "Probability = favourable outcomes ÷ all outcomes. Find the probability of a prime on a 12-sided dice (5/12). List all the outcomes of a spinner and check the probabilities add to 1. Toss a coin 50 times and compare the frequency of heads with ½. Expected number: if the probability of rain on a June day is 0·25, expect about 7 or 8 rainy days in June. Discuss decisions: a 10% chance of a storm matters more for a sailing trip than a cinema trip.",
+      practise: "How likely is it?, then the \"Chances and choices\" sheet.",
+      check: "A bag has 3 red, 5 blue and 2 green counters. Find the probability of blue as a fraction and as a decimal. In 50 picks (putting it back each time), about how many blues?" },
+    ["n-chance"], "Look at the forecast's chance of rain and decide what to plan.", "probability, outcome, event, equally likely, expected, frequency, fraction, decimal");
+
   /* ===================== Literacy and English: Early level ===================== */
 
   add("Early", L, LISTEN, ["LIT 0-01a", "LIT 0-11a", "LIT 0-20a"], "Rhyme and patterns in words",
@@ -1084,6 +1275,170 @@ window.PopLessons = (() => {
       check: "Ask: which feature helps your reader most, and why? Could you show the same idea a better way?" },
     [], "Look at a cereal box, a leaflet or a web page together: what makes you want to read it, and what makes it easy to find things?", "layout, presentation, heading, sub-heading, bullet point, font, caption, picture, reader");
 
+  /* ===================== Literacy and English: Third level (S1 to S3) ===================== */
+
+  add("Third", L, READ, ["LIT 3-01a", "LIT 3-11a", "LIT 3-20a"], "Choosing texts and explaining how well they meet my needs",
+    "We are learning to choose texts regularly, explain how well they meet our needs, and choose the form of our own texts.",
+    ["I can regularly choose texts to read, watch or listen to, for enjoyment or to find information.", "I can give a personal response to a text, with reasons and evidence.", "I can explain how well a text or source met my needs and expectations.", "I can choose the purpose, form and style of a text of my own to suit my audience."],
+    { start: "What's the last thing you read, watched or listened to by choice? Would you recommend it?",
+      teach: "Model a short review of a podcast, article or novel: what I wanted from it, what it gave me, an example or quotation as evidence, and who else it would suit. Look at ways to find more (library catalogues, author pages, review sites) and how far to trust each. Choose a form for the pupil's own text (a review, blog post, short story or report) and discuss why it suits the audience.",
+      practise: "The \"My reading and viewing\" sheet: a log, a review with evidence, and a plan for a text of my own.",
+      check: "Ask: did it meet your expectations? What in the text shows that?" },
+    [], "Keep a reading and viewing log for a fortnight, with a line on how well each one met your needs.", "genre, review, evidence, purpose, audience, expectations, source");
+
+  add("Third", L, TALK, ["LIT 3-02a", "ENG 3-03a"], "Discussion: contributing, building on others and respecting other views",
+    "We are learning to contribute to discussions with evidence, build on others' ideas, and use features of spoken language.",
+    ["I can contribute relevant ideas, knowledge or opinions with supporting evidence.", "I can respond to others' views, and develop or adapt my own thinking.", "I can build on others' contributions by asking, clarifying, summarising, supporting or challenging.", "I can identify features of spoken language, such as body language, emphasis, pace, tone and rhetorical devices, and use them.", "I can use a register that suits my purpose and audience."],
+    { start: "Should mobile phones be allowed in school? Give one point and a reason.",
+      teach: "Agree discussion roles (chair, summariser, challenger). Model phrases: \"Building on that…\", \"Can you clarify…?\", \"I see it differently because…\". Watch a short clip of a debate or interview and name the features of spoken language: gesture, emphasis, pace, pauses, rhetorical questions. Compare registers by making the same point to a friend and to a head teacher.",
+      practise: "Hold a 10-minute discussion on a real issue, using the \"Discussion: plan and reflect\" sheet before and after.",
+      check: "Ask: when did you change or add to your thinking? Which feature of spoken language did you use on purpose?" },
+    [], "Watch part of a debate or interview and note one technique each speaker uses.", "contribute, evidence, clarify, summarise, challenge, register, tone, pace, emphasis, rhetorical question");
+
+  add("Third", L, TALK, ["LIT 3-04a", "LIT 3-05a", "LIT 3-06a"], "Listening for purpose and main ideas, and making notes",
+    "We are learning to identify the purpose and main ideas of what we hear, compare spoken texts, and make and use notes.",
+    ["I can give an accurate account of the purpose and main ideas of a spoken text, and justify it.", "I can make inferences from key statements.", "I can identify similarities and differences between spoken texts in content, style or language.", "I can make and organise notes in my own words, selecting key information.", "I can use my notes to create a new text that shows I understand the subject."],
+    { start: "Listen to a one-minute news item. In one sentence, what was it for?",
+      teach: "Model notes while listening: headings, key words, abbreviations and arrows, not full sentences. Listen to two short talks on one topic (a factual report and a personal opinion) and compare purpose, content and style in a two-column table. Pick out a key statement and infer what the speaker believes. Turn the notes into a short summary for someone who missed it.",
+      practise: "The \"Listen, note, compare\" sheet: the adult reads the two short talks aloud.",
+      check: "Ask: what was each speaker's purpose? What did one suggest without saying it?" },
+    [], "Listen to a radio or podcast item and tell someone the main points from your notes.", "purpose, main idea, infer, key statement, notes, summarise, compare");
+
+  add("Third", L, TALK, ["LIT 3-07a", "LIT 3-08a"], "Commenting on spoken texts and recognising persuasion",
+    "We are learning to comment on what we hear with evidence, recognise persuasion, and judge our sources.",
+    ["I can comment on the content, form and style of spoken texts, with evidence.", "I can identify persuasive techniques, such as word choice, emotive language, repetition, rhetorical questions and statistics.", "I can comment on how reliable and useful a source is."],
+    { start: "Play or read out an advert. What does it want you to do? How does it try to make you?",
+      teach: "Name persuasive techniques in a charity appeal or campaign speech: emotive words, repetition, rhetorical questions, statistics, speaking directly to \"you\". Ask of each: what effect is this meant to have on me? Compare a campaign video with a news report about the same issue: who made each, why, and which is more reliable?",
+      practise: "The \"Spot the persuasion\" sheet: the adult reads a short campaign speech aloud.",
+      check: "Ask: name two techniques and their effect. Is the speaker a reliable source on this? Why?" },
+    [], "Watch adverts with someone and score each for how many persuasive techniques it uses.", "persuade, emotive language, repetition, rhetorical question, statistic, bias, reliable, source");
+
+  add("Third", L, TALK, ["LIT 3-09a", "LIT 3-10a"], "Giving a talk: clear, structured and engaging",
+    "We are learning to plan and give a talk that is clear, well structured and engaging for the audience.",
+    ["I can communicate information, ideas or opinions, explain a process, and summarise or draw conclusions.", "I can organise a talk in a logical order, with signposts such as topic sentences and linking phrases.", "I can open and close a talk in a way that engages my audience.", "I can use tone, vocabulary and non-verbal techniques to suit my audience.", "I can choose resources that help my audience."],
+    { start: "Think of a good talk or video you've watched. What made you keep listening?",
+      teach: "Plan a three-minute talk: a hook, three signposted points (\"Firstly…\", \"This leads to…\"), and a conclusion that sums up. Choose one resource: a picture, an object, or three slides with few words. Practise pace, pauses, eye contact and stressing key words. Give one strength and one next step.",
+      practise: "Plan with the \"Talk planner\" sheet, rehearse, then give the talk.",
+      check: "Ask: how did your opening grab attention? Where did you signpost a new point?" },
+    [], "Give the talk to someone at home and ask them to tell you your three main points.", "hook, signpost, topic sentence, conclusion, audience, tone, pace, eye contact, resource");
+
+  add("Third", L, READ, ["ENG 3-12a", "LIT 3-13a"], "Reading fluently and using reading strategies",
+    "We are learning to read unfamiliar texts with fluency and expression, and to choose strategies that help us understand.",
+    ["I can read aloud with fluency, understanding and expression, at a suitable pace and tone.", "I can use context clues, word roots, grammar, punctuation and text structure to understand unfamiliar texts.", "I can choose strategies such as skimming, scanning, predicting, clarifying, summarising and analysing, before and as I read."],
+    { start: "Here's a word you may not know: benevolent. What clues help you work out what it means?",
+      teach: "Model skimming an article for the gist, then scanning it for one fact. Work out unfamiliar words from roots (bene means well, as in benefit) and context. Read a paragraph aloud, marking pauses for punctuation and words to stress, then read it again with more expression. Stop after each paragraph to clarify anything unclear and sum it up in a sentence.",
+      practise: "The \"Reading toolkit\" sheet.",
+      check: "Ask: which strategy helped most, and when? Read a new paragraph aloud with expression." },
+    [], "Read a newspaper article aloud to someone, then sum up each paragraph in a sentence.", "skim, scan, predict, clarify, summarise, context clue, word root, fluency, expression");
+
+  add("Third", L, READ, ["LIT 3-14a", "LIT 3-15a"], "Finding, summarising and noting information from more than one source",
+    "We are learning to find and sort information from different sources, summarise it, and make linked notes.",
+    ["I can find, select and sort relevant information from different sources.", "I can summarise key information in my own words.", "I can make and organise notes, linking ideas from more than one source.", "I can use my notes to create a new text that draws on more than one source."],
+    { start: "You need to find out how much plastic reaches the sea each year. Where would you look first?",
+      teach: "Use the features of non-fiction (headings, contents, index, captions, tables) to find information fast. Read two short sources on one question, mark the key points, and make linked notes in a grid: source 1, source 2, and where they agree. Write a short summary in your own words that uses both, naming the sources.",
+      practise: "The \"Two sources\" sheet.",
+      check: "Ask: where did the sources agree or differ? Which point in your summary came from each?" },
+    [], "Research a question for a family decision on two websites, and sum up what you found.", "source, select, sort, summarise, notes, link, own words");
+
+  add("Third", L, READ, ["LIT 3-16a", "ENG 3-17a"], "Close reading: purpose, inference and language",
+    "We are learning to work out purpose and main ideas, make inferences, and explain the effect of a writer's language.",
+    ["I can identify the purpose and audience of a text, and justify my answer.", "I can give an accurate account of the main ideas.", "I can make inferences and deductions, with evidence.", "I can compare texts and comment on content, style and language.", "I can answer literal, inferential and evaluative questions, and explain the effect of word choice, sentence structure, punctuation and imagery."],
+    { start: "\"The wind screamed through the trees.\" What is the writer doing here, and why?",
+      teach: "Sort questions into literal (it's in the text), inferential (read between the lines) and evaluative (judge it). Model answering a language question in three steps: quote, name the technique, explain the effect. Look at a short sentence after long ones, a colon introducing a list, and a metaphor. Compare the openings of two texts on the same topic.",
+      practise: "The \"Close reading\" sheet.",
+      check: "Ask a question of each type about a new paragraph. Listen for the quotation, the technique and the effect." },
+    [], "Choose a line from a song or an advert and explain why the writer chose those words.", "literal, inferential, evaluative, word choice, sentence structure, imagery, effect, purpose, audience");
+
+  add("Third", L, READ, ["LIT 3-18a"], "Persuasion and reliable sources in reading",
+    "We are learning to recognise persuasion in what we read and judge how far to trust a source.",
+    ["I can identify persuasive language, such as word choice, emotive language, repetition, rhetorical questions and statistics, and comment on it.", "I can judge how reliable, relevant and useful a source is, and justify my view.", "I can use this to form an informed view of my own."],
+    { start: "Two web pages about an energy drink: one from the company that makes it, one from a health service. Which do you trust more? Why?",
+      teach: "Make a checklist for sources: who wrote it, why, when, what evidence it gives, and whether other sources agree. Mark the persuasive language in an article and explain its effect. Separate facts from claims. Write an informed view that weighs up both sources.",
+      practise: "The \"Can I trust this?\" sheet.",
+      check: "Ask: name a technique, quote it and explain how it works on the reader. How reliable is the source, and why?" },
+    [], "Read the same news story on two different websites and compare how each tells it.", "persuasive, emotive, bias, reliable, credible, relevant, claim, evidence, informed view");
+
+  add("Third", L, READ, ["ENG 3-19a"], "Character, setting, theme and the writer's style",
+    "We are learning to evaluate character, setting and structure, identify the theme, and comment on the writer's style.",
+    ["I can make evaluative comments about structure, characterisation and setting, referring to the text.", "I can identify the theme and link it to my own or others' experiences.", "I can comment on the writer's style and language, and the features of the genre, with evidence."],
+    { start: "Think of a story you know well. Underneath the plot, what is it really about?",
+      teach: "Read a short story or extract. Track how a character changes, with a quotation from the start, middle and end. Ask how the setting builds the mood. Put the theme into a sentence (\"Fear can stop us from…\") and connect it to real life. Comment on one feature of the writer's style, such as first-person narration, short chapters or dialogue, and its effect.",
+      practise: "The \"Under the surface\" sheet, with any short story or novel the pupil is reading.",
+      check: "Ask: what is the theme, and which moment shows it most clearly? Why might the writer have structured it this way?" },
+    [], "Talk about a film or series at home: what's its theme, and which character changes most?", "character, characterisation, setting, mood, structure, theme, style, genre, evidence");
+
+  add("Third", L, SPELL, ["LIT 3-21a"], "Spelling specialist and tricky words accurately",
+    "We are learning to use strategies and resources to spell most words correctly, including specialist vocabulary.",
+    ["I can use a range of strategies and resources to spell most words correctly.", "I can spell unfamiliar and specialist words from different subjects.", "I can check and correct my own spelling."],
+    { start: "Spell photosynthesis, parliament, rhythm and necessary. Which strategy did you use for each?",
+      teach: "Teach the strategies: break words into syllables (pho-to-syn-the-sis), spot roots and affixes (photo means light), use memory tricks (necessary has one collar and two sleeves: one c, two s's), and look, say, cover, write, check. Show when to use a dictionary or spellchecker, and what a spellchecker misses (their or there). Start a personal list of specialist words from the pupil's subjects.",
+      practise: "The \"Subject spellings\" sheet: words from science, maths, social subjects and English, with a strategy for each.",
+      check: "Say five new specialist words for the pupil to spell. Ask them to check them and explain one correction." },
+    [], "Collect five tricky words from homework each week and test each other.", "syllable, root, prefix, suffix, memory trick, specialist vocabulary, proofread");
+
+  add("Third", L, WRITE, ["LIT 3-22a"], "Sentences, punctuation and paragraphs",
+    "We are learning to write accurate, varied sentences, use more complex punctuation, and structure writing in paragraphs.",
+    ["I can write almost all sentences in a grammatically accurate way.", "I can vary my sentence structures, openings and lengths.", "I can use more complex punctuation, such as colons, brackets, ellipses and inverted commas, mostly accurately.", "I can use paragraphs, topic sentences and linking phrases to show the structure of my writing.", "I can write fluently and legibly."],
+    { start: "Fix this: \"the match was cancelled, it rained all day, we went home\".",
+      teach: "Fix run-on sentences with full stops, semicolons or conjunctions. Combine simple sentences into complex ones (\"Although it rained, …\"). Practise colons for lists and explanations, brackets for extra information, and an ellipsis for suspense. Plan three paragraphs with topic sentences, and link them (\"However,\", \"As a result,\").",
+      practise: "The \"Sentence workshop\" sheet.",
+      check: "Ask the pupil to write a paragraph with a topic sentence, one complex sentence, a colon and a pair of brackets." },
+    [], "Write a short paragraph about your day, starting each sentence in a different way.", "simple sentence, complex sentence, run-on sentence, colon, semicolon, brackets, ellipsis, topic sentence, paragraph, linking phrase");
+
+  add("Third", L, WRITE, ["LIT 3-23a", "LIT 3-24a"], "Editing, and layout that helps the reader",
+    "We are learning to review and edit our writing, and to choose layout and presentation for our reader.",
+    ["I can review and edit my writing so that it is clear, accurate and meets its purpose.", "I can improve the content and language of my writing.", "I can choose layout and presentation features, including in digital texts, to suit my purpose and audience."],
+    { start: "Read this paragraph once. Was the meaning clear first time? What got in the way?",
+      teach: "Edit in three passes: meaning first (does it make sense, is anything missing?), then language (stronger words, no repetition), then accuracy (spelling, punctuation, grammar). Then plan a layout of the same content for a different reader, with headings, bullet points, text boxes or graphics, and explain each choice.",
+      practise: "The \"Edit and design\" sheet.",
+      check: "Ask: which edit improved it most? Why did you choose that layout for that reader?" },
+    [], "Before sending a message or email, read it once as the person who'll receive it, and edit it.", "review, edit, proofread, clarity, layout, heading, bullet point, text box, graphic, audience");
+
+  add("Third", L, CREATE, ["LIT 3-25a", "LIT 3-26a"], "Using notes and sources in my writing",
+    "We are learning to use notes and sources to create new writing, quoting or using our own words, and acknowledging sources.",
+    ["I can use notes and other sources to generate ideas and support new writing.", "I can decide when to quote from a source and when to put points in my own words.", "I can acknowledge my sources.", "I can select relevant ideas, information and supporting detail, and organise them in a logical order."],
+    { start: "Why does it matter where information came from?",
+      teach: "Show the difference between copying, putting it in your own words and quoting, with a short source. Practise rewording a sentence, and quoting a short phrase in quotation marks. Record each source: title, author or organisation, date and web address. Sort notes into an order for a short report: introduction, two or three points with detail, and a conclusion.",
+      practise: "The \"From notes to writing\" sheet.",
+      check: "Ask: when did you quote and when did you use your own words, and why? Where is your list of sources?" },
+    [], "Write a short fact file for a younger relative from two sources, listing them at the end.", "source, quote, quotation marks, own words, acknowledge, list of sources, plan");
+
+  add("Third", L, CREATE, ["LIT 3-28a", "ENG 3-27a"], "Writing to inform, describe and explain",
+    "We are learning to write clear information and explanations that suit our reader.",
+    ["I can write to convey information, describe events, or explain processes or ideas.", "I can use a style and format that suit my purpose and audience, with features of the genre.", "I can include relevant information and supporting detail in a logical order, with linking words.", "I can use topic sentences to signpost my paragraphs.", "I can engage my reader through my language, style and tone."],
+    { start: "How does a dishwasher get plates clean? Explain it to me in three sentences.",
+      teach: "Read a model explanation and label its features: title, introduction, paragraphs in order with topic sentences, linking words for cause (because, as a result, this means), technical words, and a diagram. Plan an explanation of a process the pupil knows (how bike gears work, how a law is made) and write the first two paragraphs together.",
+      practise: "The \"Explain it\" sheet: plan, then write the explanation.",
+      check: "Ask: who is your reader, and how did you make it clear for them? Point to a topic sentence and a linking word." },
+    [], "Write an explanation of something you can do that someone at home can't.", "inform, explain, process, sequence, topic sentence, linking word, technical vocabulary, format");
+
+  add("Third", L, CREATE, ["LIT 3-29a"], "Writing to persuade and argue",
+    "We are learning to write persuasive and argumentative texts with a clear line of thought and evidence.",
+    ["I can present a point of view with relevant supporting detail or evidence.", "I can organise my ideas in a logical order, with signposts such as topic sentences and linking phrases.", "I can write an introduction that makes my purpose clear and engages the reader, and a conclusion that sums up my line of thought.", "I can use language to persuade, such as word choice, repetition, rhetorical questions and emotive language."],
+    { start: "Should the school day start later? Give your view and your best reason.",
+      teach: "Read a model persuasive article and label its structure: hook, clear view, points with evidence, the other side and an answer to it, and conclusion. Collect evidence: a statistic, an expert, an example. Plan each paragraph as point, evidence, explain. Write the introduction and one paragraph together, using one persuasive technique on purpose.",
+      practise: "The \"Make your case\" sheet: plan, then write the article.",
+      check: "Ask: where is your strongest evidence? How did you answer the other side?" },
+    [], "Write to your local council about something you'd like changed where you live.", "persuade, argue, point of view, evidence, counter-argument, rhetorical question, emotive language, conclusion");
+
+  add("Third", L, CREATE, ["ENG 3-30a"], "Writing about a personal experience",
+    "We are learning to write about a personal experience so the reader shares our feelings and reflections.",
+    ["I can set a clear context and setting for the events.", "I can describe events, making my feelings and reactions clear.", "I can reflect on my experience and feelings.", "I can engage my reader through language, style and tone."],
+    { start: "Think of a time something didn't go as planned. Where were you, and how did you feel?",
+      teach: "Read a short personal piece and find where the writer sets the scene, shows feelings (not just \"I was scared\" but what their body did), and reflects (\"Looking back, I realise…\"). Plan a timeline of the experience, with the feelings at each point. Write the opening together using details from the senses.",
+      practise: "The \"A moment that mattered\" sheet: plan with a feelings timeline, then write.",
+      check: "Ask: where does the reader feel what you felt? Where do you reflect on it?" },
+    [], "Tell someone at home about the experience before you write, and notice which details they ask about.", "personal, reflective, setting, context, feelings, reaction, reflect, sensory detail, tone");
+
+  add("Third", L, CREATE, ["ENG 3-31a"], "Creating texts in a genre: characters and settings",
+    "We are learning to write in a chosen genre, with convincing characters and settings that come to life.",
+    ["I can use the key features of my chosen genre.", "I can create interesting and convincing characters.", "I can create a clear sense of setting with descriptive detail.", "I can engage the reader through the structure of my story, its mood and my language."],
+    { start: "Name a genre: mystery, science fiction, horror or adventure. What do readers expect from it?",
+      teach: "List the features of the chosen genre. Build a character from the inside out: what they want, what they fear, a secret, and how they speak. Describe a setting with three senses and one detail that hints at the mood. Plan the structure: a hook, a problem, rising tension, a turning point, and an ending or cliffhanger.",
+      practise: "The \"Story builder\" sheet: plan the genre, character and setting, then write the opening scene.",
+      check: "Ask: which features of the genre did you use? What makes your character convincing?" },
+    [], "Read the opening of a book in the same genre and compare it with yours.", "genre, convention, character, motive, setting, mood, atmosphere, structure, tension, cliffhanger");
+
   /* ===================== England: lessons for the national curriculum's own requirements ===================== */
   // Grammar by year (English Appendix 2), the statutory spelling words (Appendix 1), joined
   // handwriting, and the Year 1 phonics and Year 4 multiplication tables checks. "level" and "codes"
@@ -1404,6 +1759,45 @@ window.PopLessons = (() => {
   // Checking understanding, not just the right answer: a question to ask at the end of each lesson,
   // and what a pupil who understands will say or do. (Know: the words to use. Do: the success criteria.)
   const UNDERSTAND = {
+    "third-rounding-to-decimal-places-and-estimating": ["Why would you round 2·3 buses up to 3, but £2·346 to £2·35?", "Explains that the context decides: you can't have part of a bus, and money is counted to the penny."],
+    "third-calculating-with-whole-numbers-and-decimals": ["When you work out 4·26 × 7 as 426 × 7, how do you know where the point goes?", "Uses an estimate (about 4 × 7 = 28) or explains that 4·26 is 426 hundredths, so the answer is hundredths too."],
+    "third-negative-numbers-in-calculations": ["Why is 5 − (−3) bigger than 5?", "Explains that taking away a negative is finding the gap from −3 up to 5, or that removing a debt leaves you better off."],
+    "third-common-multiples-common-factors-and-primes": ["Is 1 a prime number? Why or why not?", "Explains that a prime has exactly two different factors, and 1 has only one."],
+    "third-powers-and-indices": ["Why is 3² not the same as 3 × 2?", "Explains that the index says how many times the base is multiplied by itself: 3 × 3 = 9."],
+    "third-fractions-decimals-and-percentages-in-real-life": ["Why is ⅓ off a better deal than 30% off?", "Explains that ⅓ is about 33%, so it takes off more, whatever the price."],
+    "third-adding-and-subtracting-fractions": ["Why can't you add ⅓ and ¼ to get 2/7?", "Explains that the parts are different sizes, so they must be changed into the same size (twelfths) before adding."],
+    "third-proportion-and-ratio": ["If teachers to children is 1 : 10, why aren't teachers 1/10 of the school?", "Explains there are 11 parts altogether, so teachers are 1/11 of everyone."],
+    "third-best-value-budgets-and-money-words": ["Is the cheapest deal always the best value? Why?", "Explains that best value depends on what you need: total cost, length of contract, what's included, and your own situation."],
+    "third-speed-distance-and-time": ["Why can't you write 1 hour 30 minutes as 1·3 hours in a speed calculation?", "Explains that 30 minutes is half an hour, so it's 1·5 hours: minutes are sixtieths, not tenths."],
+    "third-area-and-volume-including-compound-shapes": ["You split the L-shape a different way from me. Will we get the same area? Why?", "Explains that the area of the whole shape doesn't change however you split it, as long as no part is counted twice or missed."],
+    "third-researching-a-mathematician-or-a-maths-topic": ["How do you know your information about this mathematician is accurate?", "Checked more than one source, chose reliable ones, and can say where each fact came from."],
+    "third-sequences-and-their-rules": ["In T = 3n + 1, why is the number in front of n the same as the difference between terms?", "Explains that each time n goes up by 1, 3n goes up by 3, so the terms go up by 3."],
+    "third-simplifying-and-evaluating-expressions": ["Why can't 3x² + 4x be simplified to 7x³?", "Explains that x² and x are unlike terms, as different as apples and bananas, so they can't be collected."],
+    "third-solving-equations-and-using-formulae": ["Why do you take away 5 before dividing by 3 when solving 3x + 5 = 26?", "Explains that you undo the steps in reverse order: the number was multiplied by 3 first, then 5 was added."],
+    "third-drawing-shapes-accurately": ["Why can't you draw a triangle with sides 3 cm, 4 cm and 10 cm?", "Explains that the two shorter sides together must be longer than the longest side, or they can't meet."],
+    "third-angles-in-shapes-and-with-parallel-lines": ["How do you know these two angles are equal? Which fact tells you?", "Names the fact (alternate, corresponding or vertically opposite) and points to the parallel lines it depends on."],
+    "third-bearings-scale-drawings-and-enlargement": ["When a shape is enlarged by scale factor 2, does its area double too?", "Explains, or finds by drawing, that the area is four times as big, because the length and width both double."],
+    "third-coordinates-in-four-quadrants-and-symmetry": ["Why does reflecting a point in the y-axis change the sign of its x-coordinate only?", "Explains that the point moves left or right across the axis to the same distance on the other side, but its height doesn't change."],
+    "third-data-fair-samples-clear-graphs-and-misleading-claims": ["Why might asking 10 people give a less reliable answer than asking 100?", "Explains that a small sample may not represent everyone, so the result could be due to chance."],
+    "third-probability-from-0-to-1": ["The probability of rain is 0·25. Why might you still take a coat?", "Explains that unlikely isn't impossible, and the consequence of getting soaked matters as well as the probability."],
+    "third-choosing-texts-and-explaining-how-well-they-meet-my-needs": ["What would make you stop reading something halfway through?", "Explains with reference to their own needs and expectations, such as purpose, interest or difficulty, with an example."],
+    "third-discussion-contributing-building-on-others-and-respecting-other-views": ["How did someone else's point change your view, even slightly?", "Gives a specific example of adapting or developing their thinking, and acknowledges the other person's right to disagree."],
+    "third-listening-for-purpose-and-main-ideas-and-making-notes": ["Why are notes better in your own words than copied word for word?", "Explains that putting it in your own words shows you understood it and helps you remember it."],
+    "third-commenting-on-spoken-texts-and-recognising-persuasion": ["A speaker uses a statistic. Does that make them right?", "Explains that it depends on where the statistic came from and how it's used, and that statistics can be chosen to persuade."],
+    "third-giving-a-talk-clear-structured-and-engaging": ["Why do talks need signposts more than written texts do?", "Explains that listeners can't flick back, so they need to hear where the talk is going and when a new point starts."],
+    "third-reading-fluently-and-using-reading-strategies": ["When would you skim, and when would you scan?", "Skims for the general idea of a text; scans to find a particular fact or word quickly."],
+    "third-finding-summarising-and-noting-information-from-more-than-one-source": ["Why use two sources and not just one?", "Explains that comparing sources checks accuracy, shows different views and gives a fuller picture."],
+    "third-close-reading-purpose-inference-and-language": ["What is the difference between naming a technique and explaining its effect?", "Explains that naming it says what the writer did; the effect says what it makes the reader think or feel, and why."],
+    "third-persuasion-and-reliable-sources-in-reading": ["Can a source be persuasive and reliable at the same time?", "Explains yes: a source can argue a view and still use accurate evidence, so you judge the evidence as well as the language."],
+    "third-character-setting-theme-and-the-writer-s-style": ["What's the difference between the plot and the theme?", "Explains that the plot is what happens; the theme is the bigger idea about life the story explores."],
+    "third-spelling-specialist-and-tricky-words-accurately": ["Why might a spellchecker miss a mistake in 'Their going to the match'?", "Explains that 'their' is a real word, so the checker doesn't flag it; you need to know which word the meaning needs."],
+    "third-sentences-punctuation-and-paragraphs": ["Why is 'It rained, we went home' not a correct sentence?", "Explains that two complete sentences need a full stop, a semicolon or a conjunction between them, not just a comma."],
+    "third-editing-and-layout-that-helps-the-reader": ["Why edit for meaning before checking spelling?", "Explains that changing the content can remove or add sentences, so the accuracy check should come last."],
+    "third-using-notes-and-sources-in-my-writing": ["When is it better to quote than to use your own words?", "Explains that a quotation is best when the exact words matter, such as a striking phrase or an expert's view; otherwise own words show understanding."],
+    "third-writing-to-inform-describe-and-explain": ["How would your explanation change for a seven-year-old reader?", "Explains changes to vocabulary, sentence length, examples and layout to suit the reader."],
+    "third-writing-to-persuade-and-argue": ["Why mention the other side in a persuasive text?", "Explains that answering the opposing view makes the argument stronger and more convincing to a doubtful reader."],
+    "third-writing-about-a-personal-experience": ["What is the difference between telling the reader you were nervous and showing it?", "Explains that showing uses actions, thoughts or physical details so the reader feels it, not just reads the word."],
+    "third-creating-texts-in-a-genre-characters-and-settings": ["What makes a character convincing, even in science fiction?", "Explains that believable wants, fears and reactions make a character feel real, whatever the setting."],
     "early-estimate-then-count": ["Why is it fine if your guess wasn't exactly right?", "Knows a guess is a sensible estimate, then counting checks it; can say if the count was more or less than the guess."],
     "early-counting-to-20-and-beyond": ["If I count these again starting from a different one, will I get the same number? Why?", "Knows the total doesn't change with the order, and that the last number counted tells how many."],
     "early-before-after-and-in-between": ["How do you know 14 comes after 13 and not before?", "Uses the counting order or a number line: after means one more."],
@@ -1654,7 +2048,7 @@ window.PopLessons = (() => {
     if (v) l.cfe = { title: v[0], level: v[1], codes: v[2], criteria: v[3] };
   });
 
-  const LEVELS = ["Early", "First", "Second"];
+  const LEVELS = ["Early", "First", "Second", "Third"];
   return {
     all: () => lessons.slice(),
     get: id => lessons.find(l => l.id === id) || null,
