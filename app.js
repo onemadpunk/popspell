@@ -962,8 +962,9 @@
 
   /* ---------- Updates: tablets left open pick up a new version by themselves ---------- */
 
-  // The version this page loaded, from app.js?v=…; the test pages have none, so they never check
-  const LOADED_VERSION = (([...document.scripts].find(s => /app\.js\?v=/.test(s.src)) || {}).src || "").split("?v=")[1] || "";
+  // The build this page loaded (written into index.html by tools/build.mjs from every file's
+  // fingerprint, so any change to any file counts); the test pages have none, so they never check
+  const LOADED_VERSION = (document.querySelector('meta[name="popspell-build"]') || {}).content || "";
   let updateReady = false;
   const inTeacherArea = () => /^#\/(teacher|make)/.test(location.hash);
   const busy = () => !!(session && !session.ended);
@@ -985,7 +986,7 @@
     if (!LOADED_VERSION || updateReady || !navigator.onLine) return;
     try {
       const html = await (await fetch(`./?version=${Date.now()}`, { cache: "no-store" })).text();
-      const live = (html.match(/app\.js\?v=([\w.-]+)/) || [])[1];
+      const live = (html.match(/<meta name="popspell-build" content="([\w.-]+)"/) || [])[1];
       if (live && live !== LOADED_VERSION) { updateReady = true; offerUpdate(); }
     } catch { /* offline: try again next time */ }
   }

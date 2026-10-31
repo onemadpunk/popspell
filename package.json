@@ -3,6 +3,7 @@
   "private": true,
   "description": "PopSpell (popspell.com): the scripts that check the site. The site itself needs no install: GitHub Pages serves these files as they are.",
   "scripts": {
+    "build": "node tools/build.mjs",
     "test": "node --test \"tests/*.test.mjs\"",
     "check": "node tools/check.mjs",
     "rules": "cd firebase && npm install --no-audit --no-fund && npx --yes firebase-tools@13.35.1 emulators:exec --only firestore --project demo-popspell \"node rules.test.mjs\""

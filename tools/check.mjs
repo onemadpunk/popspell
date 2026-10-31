@@ -4,12 +4,14 @@
 //   3. Every paper sheet belongs to a lesson, has a unique id and title, and builds.
 //   4. england.js matches tools/build_england.py's output, and that build's own checks pass
 //      (every statement exists, nothing is mapped twice, every key stage 4 statement is taught).
+//   5. Every page's ?v= stamps match its files (tools/build.mjs).
 // The A4 fit of printed pages needs a browser: see tools/fit-sweep.js.
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runInNewContext } from "node:vm";
+import { staleStamps } from "./build.mjs";
 
 const root = new URL("..", import.meta.url);
 const read = f => readFileSync(new URL(f, root), "utf8");
@@ -84,6 +86,10 @@ try {
 } catch (e) {
   fail("England", `tools/build_england.py stopped: ${String(e.stdout || e.message).trim().split("\n").pop()}`);
 } finally { rmSync(dir, { recursive: true, force: true }); }
+
+// 5. Version stamps match the files (npm run build)
+const stale = staleStamps();
+if (stale.length) fail("Build", `stamps out of date in ${stale.join(", ")}: run npm run build`);
 
 const summary = `${lessons.length} lessons, ${Object.keys(P.sheets).length} paper sheets, ${activityIds.size} activities, ${official.size} CfE outcomes`;
 if (problems.length) {
