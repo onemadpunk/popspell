@@ -279,7 +279,11 @@
       player.src = url;
       player.defaultPlaybackRate = player.playbackRate = (settings.rate / DEFAULTS.rate) * speed;
       if (token !== playToken) return finish(null);
-      player.play().catch(() => finish(false));
+      player.play().catch(err => {
+        // Browsers may block an automatic greeting until the first tap. Keep the recorded
+        // voice for that tap instead of unexpectedly switching Pip to the device voice.
+        finish(err && /^(NotAllowedError|AbortError)$/.test(err.name) ? null : false);
+      });
     });
   }
 
@@ -529,18 +533,25 @@
     }
   }
   // The teacher's latest setting for this pupil, saved for next time
-  function refreshLook(name) {
-    if (!REPORTING || !name || !cloud.look) return;
-    cloud.look(CLASS.id, name).then(look => {
-      if (look === null || getPupil() !== name) return;
+  async function syncLook(name, api = cloud) {
+    if (!REPORTING || !name || !api?.look) return false;
+    try {
+      const look = await api.look(CLASS.id, name);
+      if (look === null || getPupil() !== name) return false;
       const all = savedLooks();
-      if ((all[name.toLowerCase()] || "") === look) return;
+      if ((all[name.toLowerCase()] || "") === look) return false;
       if (look) all[name.toLowerCase()] = look; else delete all[name.toLowerCase()];
       try { localStorage.setItem(LOOK_KEY, JSON.stringify(all)); } catch { /* private mode */ }
       applyLook();
+      return true;
+    } catch { return false; }
+  }
+  function refreshLook(name) {
+    syncLook(name).then(changed => {
+      if (!changed) return;
       // Redraw through the router, so work still loading for the old screen doesn't land on the new one
       if (location.hash === "" || location.hash === "#/") route();
-    }).catch(() => {});
+    });
   }
 
   const readAllProgress = () => { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; } };
@@ -881,8 +892,10 @@
         <p>Please check the code with your teacher.</p><a class="btn primary" href="#/">Go to the lists</a></section>`;
       return;
     }
+    cloud = api;
     saveClass(info);
     if (pupil) setPupil(pupil); // their progress and homework load on the home page
+    if (pupil) await syncLook(pupil, api); // use the right look on the first frame after a home link
     justJoined = true;
     if (!onDone) history.replaceState(null, "", then);
     if (reloadForAccent()) return; // the class uses the other accent
@@ -972,6 +985,7 @@
     if (name) {
       box.querySelector(".not-me").onclick = () => {
         setPupil("");
+        applyLook();
         if (onChange) onChange();
         else { mountPupil(box, { onChange, onEnter, lead }); box.querySelector(".pupil-name").focus(); }
       };
@@ -1197,11 +1211,12 @@
     const locked = !!(CLASS && CLASS.assignedOnly) && !teacherUnlocked();
     const name = getPupil();
     app.innerHTML = `
-      <section class="welcome">
-        ${pipHTML("big", "bob", name ? "" : "Hi! I'm Pip. What's your name?")}
+      <section class="welcome${name ? "" : " welcome-first"}">
+        ${name ? pipHTML("big", "bob", "")
+          : `<div class="welcome-first-icon"><img src="assets/brand/teen/play-navy.svg" alt="" width="112" height="112"></div>`}
         <div class="welcome-main">
-          <p class="hero-kicker">${name ? "Sounds become spellings" : esc(SITE.subtitle)}</p>
-          <h1>${name ? `Hi, ${esc(name)}!` : "Let's pop some sounds!"}</h1>
+          <p class="hero-kicker">${name ? "Sounds become spellings" : "Welcome to PopSpell"}</p>
+          <h1>${name ? `Hi, ${esc(name)}!` : "Hear it. Map it. Spell it."}</h1>
           ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
           <div class="pupil" id="homePupil"></div>
           <div class="me-cards" id="meCards"></div>
@@ -1213,14 +1228,7 @@
             </form>` : ""}
         </div>
       </section>
-      ${name ? "" : `
-        <ol class="steps">
-          <li><span class="step-icon" aria-hidden="true">👂</span><span><b>Hear</b> the word</span></li>
-          <li><span class="step-icon" aria-hidden="true">🗣️</span><span><b>Say</b> each sound</span></li>
-          <li><span class="step-icon" aria-hidden="true">🟦</span><span><b>Map</b> sounds to letters</span></li>
-          <li><span class="step-icon" aria-hidden="true">✏️</span><span><b>Spell</b> and check</span></li>
-        </ol>`}
-      ${locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. ${name ? "Looking for today's work…" : "Type your name to see it."}</p>` : `
+      ${!name ? "" : locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. Looking for today's work…</p>` : `
         <section class="home-section journey-section">
           <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
           <p class="hint">${isOlder() ? "Six stages, from short vowels to tricky endings. Choose a stage to see its lists." : "Six stops, from short vowels to tricky endings. Tap a stop to see its lists."}</p>
@@ -1230,7 +1238,7 @@
           <h2>✨ More to explore</h2>
           <div id="explore"></div>
         </section>`}`;
-    if (!locked) { drawJourney(loadBests()); drawExplore(); }
+    if (name && !locked) { drawJourney(loadBests()); drawExplore(); }
 
     const joinForm = $("#joinForm");
     if (joinForm) {
@@ -1248,7 +1256,13 @@
 
     // The pupil's own corner: review words due today and their sound collection
     const box = $("#homePupil");
-    const save = () => { if (takePupilName(box)) showHome(); };
+    const save = async () => {
+      if (!takePupilName(box)) return;
+      const button = $("#saveName");
+      if (button) { button.disabled = true; button.textContent = "Finding your work…"; }
+      await syncLook(getPupil());
+      showHome();
+    };
     mountPupil(box, { lead: "", onChange: showHome, onEnter: save });
     if (!getPupil()) {
       $("#meCards").innerHTML = `<button class="btn primary big" id="saveName">Save my name</button>`;

@@ -8,13 +8,15 @@
   const IDLE_MS = 3 * 60 * 1000;
   const LIVE_HOURS = 6;
   const CLASS_KEY = "popspell-teacher-class";
+  const SCOPE_KEY = "popspell-teacher-class-scope";
 
   let root = null;
   let cloud = null;
   let me = null;
   let classes = [];
   let current = null;   // selected class
-  let tab = "live";
+  let classScope = "mine";
+  let tab = "today";
   let stopLive = null;  // unsubscribes the live board
   let liveTimer = null;
   let liveData = [];
@@ -63,8 +65,11 @@
     if (!me) return showSignIn();
     if (!me.role) return showNotInvited();
     classes = await cloud.classes();
+    const savedScope = (() => { try { return localStorage.getItem(`${SCOPE_KEY}-${me.uid}`); } catch { return null; } })();
+    classScope = canAdmin() && savedScope === "all" ? "all" : "mine";
     const saved = (() => { try { return localStorage.getItem(CLASS_KEY); } catch { return null; } })();
-    current = classes.find(c => c.id === saved) || classes.find(c => c.teacher === me.uid) || classes[0] || null;
+    const visible = visibleClasses();
+    current = visible.find(c => c.id === saved) || visible.find(c => c.teacher === me.uid) || visible[0] || null;
     if (!classes.length && tab !== "teachers") tab = "library";
     draw();
   }
@@ -97,11 +102,12 @@
   /* ---------- The dashboard frame ---------- */
 
   // The help.html section for each tab
-  const HELP_SECTIONS = { library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
+  const HELP_SECTIONS = { today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
     diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
 
   // Line icons for the teacher area's menu (24×24, drawn with the text colour)
   const ICON = {
+    today: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 12"/>',
     live: '<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/>',
     next: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
     programme: '<path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/>',
@@ -119,11 +125,14 @@
     out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>'
   };
   const icon = k => `<svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICON[k]}</svg>`;
+  const visibleClasses = () => classScope === "all" && canAdmin() ? classes : classes.filter(c => c.teacher === me.uid);
 
   function draw() {
     stopWatching();
+    const shownClasses = visibleClasses();
+    if (current && !shownClasses.some(c => c.id === current.id)) current = shownClasses[0] || null;
     // The menu, in groups: teaching day to day, finding work, pupils' records, and running classes
-    const groups = [["Teach", [["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"]]],
+    const groups = [["Teach", [["today", "Today"], ["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"]]],
       ["Resources", [["library", "Library"], ["assign", "Assign"]]],
       ["Records", [["pupils", "Pupils"], ["diary", "Diary"]]],
       ["Manage", [["classes", "Classes"]].concat(canAdmin() ? [["teachers", "Teachers"]] : [])]];
@@ -134,9 +143,13 @@
       <section class="t-wrap t-app">
         <aside class="t-side">
           <a class="t-brand" href="#/teacher"><img src="assets/brand/app-icon-192.png" alt="" width="34" height="34"><span>PopSpell <b>Teacher</b></span></a>
-          ${classes.length ? `
+          ${canAdmin() ? `<label class="t-scope"><span>Show classes</span><select id="classScope">
+            <option value="mine"${classScope === "mine" ? " selected" : ""}>My classes</option>
+            <option value="all"${classScope === "all" ? " selected" : ""}>All classes</option>
+          </select></label>` : ""}
+          ${shownClasses.length ? `
             <label class="t-class"><span>Class</span>
-              <select id="classPick">${classes.map(c => `<option value="${esc(c.id)}"${current && c.id === current.id ? " selected" : ""}>${esc(c.name)}${c.teacher !== me.uid ? ` — ${esc(c.teacherName)}` : ""}</option>`).join("")}</select>
+              <select id="classPick">${shownClasses.map(c => `<option value="${esc(c.id)}"${current && c.id === current.id ? " selected" : ""}>${esc(c.name)}${c.teacher !== me.uid ? ` — ${esc(c.teacherName)}` : ""}</option>`).join("")}</select>
             </label>` : ""}
           <nav class="t-tabs" aria-label="Teacher area">${groups.map(([name, items]) => `<p class="t-navhead">${name}</p>
             ${items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("")}`).join("")}</nav>
@@ -167,6 +180,12 @@
     // On a phone the menu is a row that scrolls sideways: keep the chosen page in view
     const chosen = root.querySelector('.t-tab[aria-current="page"]');
     if (chosen && chosen.parentElement.scrollWidth > chosen.parentElement.clientWidth) chosen.parentElement.scrollLeft = chosen.offsetLeft - 24;
+    const scopePick = $("#classScope");
+    if (scopePick) scopePick.onchange = () => {
+      classScope = scopePick.value;
+      try { localStorage.setItem(`${SCOPE_KEY}-${me.uid}`, classScope); } catch { /* not remembered */ }
+      draw();
+    };
     const pick = $("#classPick");
     if (pick) pick.onchange = () => {
       current = classes.find(c => c.id === pick.value);
@@ -174,12 +193,12 @@
       draw();
     };
     const body = $("#tBody");
-    const needsClass = ["live", "next", "programme", "assign", "plans", "diary", "pupils"].includes(tab);
+    const needsClass = ["today", "live", "next", "programme", "assign", "plans", "diary", "pupils"].includes(tab);
     if (needsClass && !current) {
       body.innerHTML = `<div class="empty">Make a class first, in the <b>Classes</b> tab.</div>`;
       return;
     }
-    ({ library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -1766,6 +1785,95 @@
       marking = { who: row.who, list: plan.list };
       drawMark(body);
     }; });
+  }
+
+  /* ---------- Today: the next seven days in the selected class ---------- */
+
+  async function drawToday(body) {
+    body.innerHTML = `<div class="empty">Loading this week's lessons…</div>`;
+    const classId = current.id;
+    let roster, sessions, assignments, diary;
+    try { [roster, sessions, assignments, diary] = await Promise.all([
+      cloud.pupils(classId), cloud.sessions(classId, 120), cloud.assignments(classId), cloud.diary(classId)
+    ]); } catch (err) { return showError(err); }
+    if (tab !== "today" || !current || current.id !== classId) return;
+    const today = todayKey();
+    const end = new Date(`${today}T12:00:00Z`);
+    end.setUTCDate(end.getUTCDate() + 6);
+    const through = end.toISOString().slice(0, 10);
+    const when = date => new Date(`${date}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" });
+    const length = LESSON_LENGTHS.includes(Number(calendarPrefs().length)) ? Number(calendarPrefs().length) : 60;
+    const rows = roster.filter(r => r.nextLessonDate >= today && r.nextLessonDate <= through)
+      .sort((a, b) => (a.nextLessonDate + (a.lessonTime || "")).localeCompare(b.nextLessonDate + (b.lessonTime || "")) || a.name.localeCompare(b.name))
+      .map(r => {
+        const a = assignments.find(x => sameName(x.who, r.name));
+        const dated = (a?.plans || []).filter(p => p.from <= r.nextLessonDate && r.nextLessonDate <= p.until);
+        const lastLog = (r.programme?.log || []).reduce((ms, l) => Math.max(ms, Number(l.at) || 0), 0);
+        const lastDiary = diary.filter(d => sameName(d.pupil, r.name) && d.lessonDate < today)
+          .reduce((ms, d) => Math.max(ms, Date.parse(`${d.lessonDate}T23:59:59Z`) || 0), 0);
+        const since = Math.max(lastLog, lastDiary);
+        const recent = sessions.filter(s => sameName(s.pupil, r.name) && s.at > (since || Date.parse(`${today}T12:00:00Z`) - 14 * 86400000));
+        const homework = r.homeworkList && recent.some(s => s.listId === r.homeworkList);
+        const hasPlan = !!r.programme || !!dated.length || !!(a?.lists || []).length;
+        const flags = [];
+        if (!hasPlan) flags.push("No work planned for this lesson");
+        if (r.homeworkList && !homework) flags.push("No recent online result for homework");
+        const latest = recent[0];
+        if (latest && firstPct(latest) !== null && firstPct(latest) < 50) flags.push("Review the last recorded result");
+        return { r, dated, recent, since, flags };
+      });
+    const countToday = rows.filter(x => x.r.nextLessonDate === today).length;
+    const needAttention = rows.filter(x => x.flags.length).length;
+    body.innerHTML = `<div class="today-intro">
+        <p class="hint">Lessons from ${esc(when(today))} through ${esc(when(through))} in ${esc(current.name)}. Results shown here are recorded PopSpell work; paper homework may still need checking with the pupil.</p>
+        <div class="summary-bar"><span class="pill">${plural(countToday, "lesson", "lessons")} today</span>
+          <span class="pill">${rows.length} in the next seven days</span>
+          ${needAttention ? `<span class="pill stuck">${needAttention} to check</span>` : ""}</div>
+      </div>
+      ${rows.length ? `<div class="today-cards">${rows.map((x, i) => {
+        const { r, dated, recent, since, flags } = x;
+        const prog = r.programme;
+        const parts = prog ? lessonParts(prog, prog.lesson, length) : [];
+        const planned = prog ? `Lesson ${prog.lesson}: ${lessonTopics(prog)}` : dated.length
+          ? dated.map(p => titleOf(p.list)).join(" · ") : r.homeworkList ? titleOf(r.homeworkList) : "No lesson plan yet";
+        return `<article class="pcard today-card${flags.length ? " attention" : ""}">
+          <div class="today-card-head"><div><p class="t-crumb">${esc(when(r.nextLessonDate))}${r.lessonTime ? ` · ${esc(r.lessonTime)}` : ""}</p>
+            <h2>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}</h2></div>
+            ${r.nextLessonDate === today ? `<span class="pill">Today</span>` : ""}</div>
+          <p><b>Plan:</b> ${esc(planned)}</p>
+          ${parts.length ? `<p><b>In the lesson:</b> ${esc(parts.filter(p => p.key !== "wrap").slice(0, 3).map(p => p.title).join(" · "))}</p>` : ""}
+          <p><b>${since ? "Since the last recorded lesson" : "Recent recorded work"}:</b> ${recent.length
+            ? recent.slice(0, 2).map(s => `${esc(s.list)} (${firstPct(s) === null ? "completed" : `${firstPct(s)}% first time`}, ${esc(day(s.at))})`).join(" · ")
+            : "No results recorded"}</p>
+          ${r.homeworkList ? `<p><b>Homework:</b> ${esc(titleOf(r.homeworkList))}${recent.some(s => s.listId === r.homeworkList) ? " · online result recorded" : ""}</p>` : ""}
+          ${flags.length ? `<ul class="today-flags">${flags.map(f => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
+          <div class="today-actions">
+            <button class="btn small primary" type="button" data-today-plan="${i}">${prog ? "Open plan" : "Plan next steps"}</button>
+            ${prog ? `<button class="btn small" type="button" data-today-pack="${i}">Print lesson pack</button>` : ""}
+            <button class="btn small" type="button" data-today-mark="${i}">${catalogueList(r.homeworkList) ? "Mark spelling sheet" : "Paper tools"}</button>
+          </div>
+        </article>`;
+      }).join("")}</div>` : `<div class="empty">No lessons are dated for the next seven days. Add dates on the <b>Pupils</b> page.</div>`}
+      <div class="row"><button class="btn small" type="button" id="todayPupils">Set lesson dates</button>
+        <button class="btn small" type="button" id="todaySheets">Recently printed sheets</button></div>`;
+    body.querySelectorAll("[data-today-plan]").forEach(b => { b.onclick = () => {
+      const r = rows[Number(b.dataset.todayPlan)].r;
+      if (r.programme) { openProgramme = r.name; tab = "programme"; } else tab = "next";
+      draw();
+    }; });
+    body.querySelectorAll("[data-today-pack]").forEach(b => { b.onclick = () => {
+      const r = rows[Number(b.dataset.todayPack)].r;
+      const x = { r, prog: r.programme };
+      lessonPackDialog(x, lessonParts(x.prog, x.prog.lesson, length), r.nextLessonDate, length);
+    }; });
+    body.querySelectorAll("[data-today-mark]").forEach(b => { b.onclick = () => {
+      const r = rows[Number(b.dataset.todayMark)].r;
+      marking = catalogueList(r.homeworkList) ? { who: r.name, list: r.homeworkList } : null;
+      tab = "plans";
+      draw();
+    }; });
+    $("#todayPupils").onclick = () => { tab = "pupils"; draw(); };
+    $("#todaySheets").onclick = () => { marking = null; tab = "plans"; draw(); };
   }
 
   /* ---------- Next steps: each pupil's next lesson, what's planned, and a suggestion ---------- */
@@ -3725,8 +3833,9 @@
   /* ---------- Classes ---------- */
 
   function drawClasses(body) {
-    const mine = classes.filter(c => c.teacher === me.uid);
-    const others = classes.filter(c => c.teacher !== me.uid);
+    const shownClasses = visibleClasses();
+    const mine = shownClasses.filter(c => c.teacher === me.uid);
+    const others = shownClasses.filter(c => c.teacher !== me.uid);
     const card = c => `
       <article class="pcard t-classcard">
         <h3>${esc(c.name)}</h3>

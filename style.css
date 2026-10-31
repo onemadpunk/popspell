@@ -186,6 +186,9 @@ body {
   padding: 26px clamp(18px, 4vw, 44px); border-radius: 32px; box-shadow: var(--shadow);
   background: radial-gradient(circle at 100% 0, #fff3be 0 120px, transparent 121px), linear-gradient(135deg, #fff 0%, #f2f9ff 70%);
 }
+.welcome-first { border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.welcome-first-icon { display: grid; place-items: center; }
+.welcome-first-icon img { display: block; width: min(112px, 100%); height: auto; }
 .welcome-main { text-align: left; }
 .welcome h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 8px; }
 .welcome .class-name { margin: 0 0 10px; }
@@ -1675,6 +1678,7 @@ body.area-teacher {
   background-image: none; font-family: var(--t-font); font-size: 15.5px;
 }
 body.area-teacher:has(.t-app) .topbar { display: none; }
+body.area-teacher:has(.t-app) .site-footer { display: none; }
 #app:has(> .t-app) { max-width: none; padding: 0; }
 .t-app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; max-width: none; margin: 0; }
 
@@ -1686,8 +1690,8 @@ body.area-teacher:has(.t-app) .topbar { display: none; }
 .t-brand { display: flex; align-items: center; gap: 10px; padding: 2px 6px; color: #fff; text-decoration: none; font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
 .t-brand img { border-radius: 9px; background: #fff; }
 .t-brand b { color: #ffc837; font-weight: 700; }
-.t-side .t-class { display: grid; gap: 4px; margin: 0; font: 600 .7rem var(--t-font); text-transform: uppercase; letter-spacing: .08em; color: #8fa0bf; }
-.t-side .t-class select { width: 100%; background: #132a55; color: #fff; border: 1px solid #27407a; border-radius: 8px; padding: 8px 10px;
+.t-side .t-class, .t-side .t-scope { display: grid; gap: 4px; margin: 0; font: 600 .7rem var(--t-font); text-transform: uppercase; letter-spacing: .08em; color: #8fa0bf; }
+.t-side .t-class select, .t-side .t-scope select { width: 100%; background: #132a55; color: #fff; border: 1px solid #27407a; border-radius: 8px; padding: 8px 10px;
   font: 500 .92rem var(--t-font); text-transform: none; letter-spacing: 0; }
 .t-app .t-tabs { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
 .t-navhead { margin: 8px 10px 2px; font: 600 .68rem var(--t-font); text-transform: uppercase; letter-spacing: .09em; color: #7d8db0; }
@@ -1700,7 +1704,8 @@ body.area-teacher:has(.t-app) .topbar { display: none; }
 .t-app .t-tab > span { font-size: inherit; line-height: 1.3; }
 .t-side { scrollbar-width: thin; scrollbar-color: #27407a transparent; }
 .t-ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.t-side-foot { margin-top: auto; display: grid; gap: 2px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .1); }
+.t-side-foot { position: sticky; bottom: -12px; z-index: 1; margin-top: auto; display: grid; gap: 2px; padding: 10px 0 12px;
+  border-top: 1px solid rgba(255, 255, 255, .1); background: #0e2550; }
 .t-sidelink { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 0; border-radius: 8px; background: none; color: var(--t-side-ink);
   font: 500 .9rem var(--t-font); text-decoration: none; text-align: left; cursor: pointer; }
 .t-sidelink:hover { background: rgba(255, 255, 255, .07); color: #fff; }
@@ -1715,6 +1720,14 @@ body.area-teacher:has(.t-app) .topbar { display: none; }
 
 /* The page */
 .t-main { min-width: 0; padding: 26px clamp(16px, 3vw, 40px) 64px; }
+.today-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 14px; }
+.today-card { min-width: 0; padding: 18px; }
+.today-card.attention { border-left: 4px solid #d97706; }
+.today-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.today-card-head h2 { margin: 2px 0 10px; }
+.today-card p { margin: 8px 0; }
+.today-flags { margin: 12px 0; padding: 10px 12px 10px 30px; border-radius: 8px; background: #fff7ed; color: #9a3412; font-size: .9rem; }
+.today-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .t-pagehead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 20px; }
 .t-crumb { margin: 0; font: 600 .75rem var(--t-font); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 .t-pagehead h1 { margin: 2px 0 0; font: 700 1.8rem/1.2 var(--t-font); color: var(--ink); letter-spacing: -.02em; }
@@ -1759,9 +1772,9 @@ body.area-teacher:has(.t-app) .topbar { display: none; }
 @media (max-width: 900px) {
   .t-app { display: block; }
   .t-side { position: sticky; top: 0; z-index: 6; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 12px; overflow: visible; }
-  .t-side .t-class { flex: 1 1 140px; }
-  .t-side .t-class > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .t-side-foot { order: 2; display: flex; align-items: center; gap: 2px; margin: 0; padding: 0; border: 0; }
+  .t-side .t-class, .t-side .t-scope { flex: 1 1 140px; }
+  .t-side .t-class > span, .t-side .t-scope > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .t-side-foot { position: static; order: 2; display: flex; align-items: center; gap: 2px; margin: 0; padding: 0; border: 0; background: none; }
   .t-sidelink span, .t-me-text { display: none; }
   .t-me { margin: 0; padding: 0 0 0 4px; }
   .t-avatar { width: 30px; height: 30px; }
