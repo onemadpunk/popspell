@@ -14,8 +14,8 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ⬇ The owner's Google email address (lower case). Add more inside the brackets if needed.
-    function owners() { return ['owner@example.com']; }
+    // The current project owner's Google email address (lower case).
+    function owners() { return ['one.mad.punk@gmail.com']; }
 
     function signedIn() { return request.auth != null; }
     function google() {

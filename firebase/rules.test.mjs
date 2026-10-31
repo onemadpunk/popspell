@@ -14,7 +14,7 @@ const env = await initializeTestEnvironment({
 const google = (uid, email, verified = true) => env.authenticatedContext(uid, {
   email, email_verified: verified, firebase: { sign_in_provider: "google.com" }
 }).firestore();
-const owner = google("uid-owner", "owner@example.com");
+const owner = google("uid-owner", "one.mad.punk@gmail.com");
 const admin = google("uid-admin", "admin@example.com");
 const tutor = google("uid-tutor", "tutor@example.com");
 const other = google("uid-other", "other@example.com");
@@ -51,24 +51,24 @@ const session = { pupil: "Ava", pupilKey: "fp-ava", list: "ai", listId: "ai", fi
 const worksheet = { pupil: "Ava", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp(), source: "worksheet", markedBy: "tutor@example.com" };
 
 console.log("Teachers");
-await check("owner creates their own owner record", assertSucceeds(setDoc(doc(owner, "teachers/owner@example.com"), { name: "Sara", role: "owner", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
+await check("owner creates their own owner record", assertSucceeds(setDoc(doc(owner, "teachers/one.mad.punk@gmail.com"), { name: "Sara", role: "owner", invitedBy: "one.mad.punk@gmail.com", invitedAt: serverTimestamp() })));
 await check("a stranger can't make themselves an owner", assertFails(setDoc(doc(stranger, "teachers/stranger@example.com"), { name: "X", role: "owner", invitedBy: "x", invitedAt: serverTimestamp() })));
 await check("a stranger can't make themselves a teacher", assertFails(setDoc(doc(stranger, "teachers/stranger@example.com"), { name: "X", role: "teacher", invitedBy: "x", invitedAt: serverTimestamp() })));
 await check("a teacher can't invite others", assertFails(setDoc(doc(tutor, "teachers/new@example.com"), { name: "N", role: "teacher", invitedBy: "t", invitedAt: serverTimestamp() })));
-await check("owner invites a teacher", assertSucceeds(setDoc(doc(owner, "teachers/new@example.com"), { name: "New", role: "teacher", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
-await check("owner grants site admin", assertSucceeds(setDoc(doc(owner, "teachers/wife@example.com"), { name: "Wife", role: "admin", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
+await check("owner invites a teacher", assertSucceeds(setDoc(doc(owner, "teachers/new@example.com"), { name: "New", role: "teacher", invitedBy: "one.mad.punk@gmail.com", invitedAt: serverTimestamp() })));
+await check("owner grants site admin", assertSucceeds(setDoc(doc(owner, "teachers/wife@example.com"), { name: "Wife", role: "admin", invitedBy: "one.mad.punk@gmail.com", invitedAt: serverTimestamp() })));
 await check("site admin invites a teacher", assertSucceeds(setDoc(doc(admin, "teachers/admin-invite@example.com"), { name: "New", role: "teacher", invitedBy: "admin@example.com", invitedAt: serverTimestamp() })));
 await check("site admin can't grant site admin", assertFails(setDoc(doc(admin, "teachers/rogue@example.com"), { name: "Rogue", role: "admin", invitedBy: "admin@example.com", invitedAt: serverTimestamp() })));
 await check("site admin can't promote a teacher", assertFails(updateDoc(doc(admin, "teachers/tutor@example.com"), { role: "admin" })));
 await check("site admin can't demote another admin", assertFails(updateDoc(doc(admin, "teachers/wife@example.com"), { role: "teacher" })));
-await check("site admin can't remove the owner", assertFails(deleteDoc(doc(admin, "teachers/owner@example.com"))));
+await check("site admin can't remove the owner", assertFails(deleteDoc(doc(admin, "teachers/one.mad.punk@gmail.com"))));
 await check("a teacher reads their own record", assertSucceeds(getDoc(doc(tutor, "teachers/tutor@example.com"))));
 await check("a teacher can't read another teacher's record", assertFails(getDoc(doc(tutor, "teachers/other@example.com"))));
 await check("a teacher can't list teachers", assertFails(getDocs(collection(tutor, "teachers"))));
 await check("owner lists teachers", assertSucceeds(getDocs(collection(owner, "teachers"))));
 await check("site admin lists teachers", assertSucceeds(getDocs(collection(admin, "teachers"))));
 await check("a teacher can't promote themselves to owner", assertFails(updateDoc(doc(tutor, "teachers/tutor@example.com"), { role: "owner" })));
-await check("owner can't remove themselves", assertFails(deleteDoc(doc(owner, "teachers/owner@example.com"))));
+await check("owner can't remove themselves", assertFails(deleteDoc(doc(owner, "teachers/one.mad.punk@gmail.com"))));
 await check("owner removes a teacher", assertSucceeds(deleteDoc(doc(owner, "teachers/new@example.com"))));
 
 console.log("Classes");

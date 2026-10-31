@@ -29,7 +29,7 @@ Afterwards:
 2. **Location: `europe-west2 (London)`**. This can't be changed later, and it keeps pupils' data in the UK.
 3. **Start in production mode** → **Create**.
 4. Open the **Rules** tab. Delete what's there, and paste in the whole of [`firestore.rules`](firestore.rules) from this folder.
-5. On the line `function owners() { return ['owner@example.com']; }`, put the **owner's Google email in lower case** between the quotes, e.g. `['sara.green@gmail.com']`.
+5. The rules file already names the current project owner, `one.mad.punk@gmail.com`. If ownership changes, update that line before publishing.
 6. **Publish**.
 
 ## 4. Connect the website
