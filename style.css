@@ -348,6 +348,12 @@ body {
 .pupil p { margin: 0; }
 .pupil-field { text-align: left; font-size: 1.1rem; }
 .pupil-field input { font-size: 1.4rem; text-align: center; }
+.pupil-login { max-width: 680px; margin: 5vh auto; }
+.pupil-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 12px; margin: 24px auto; }
+.pupil-tile { min-height: 76px; font-size: 1.3rem; }
+.pupil-login form { max-width: 260px; margin: 24px auto; }
+.pupil-login input[name="pin"] { width: 100%; font-size: 2rem; text-align: center; letter-spacing: .25em; }
+.pupil-login form .btn { width: 100%; margin-top: 16px; }
 .linklike { font: inherit; color: var(--primary); background: none; border: 0; padding: 4px; cursor: pointer; text-decoration: underline; }
 .sent { color: var(--good); font-weight: 700; margin: 4px 0 0; }
 .teacher { margin-top: 28px; text-align: left; color: var(--muted); }

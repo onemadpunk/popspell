@@ -20,7 +20,9 @@ const tutor = google("uid-tutor", "tutor@example.com");
 const other = google("uid-other", "other@example.com");
 const stranger = google("uid-x", "stranger@example.com");
 const unverified = google("uid-u", "tutor@example.com", false);
-const pupil = env.authenticatedContext("anon-1", { firebase: { sign_in_provider: "anonymous" } }).firestore();
+const pupil = env.authenticatedContext("uid-ava", { email: "k7q4m9t2bx@pupils.popspell.com", firebase: { sign_in_provider: "password" } }).firestore();
+const anotherPupil = env.authenticatedContext("uid-bob", { email: "b7q4m9t2bx@pupils.popspell.com", firebase: { sign_in_provider: "password" } }).firestore();
+const anonymous = env.authenticatedContext("anon-1", { firebase: { sign_in_provider: "anonymous" } }).firestore();
 const nobody = env.unauthenticatedContext().firestore();
 
 await env.withSecurityRulesDisabled(async ctx => {
@@ -32,6 +34,9 @@ await env.withSecurityRulesDisabled(async ctx => {
   await setDoc(doc(db, "classes/XYZ789"), { name: "Other's class", teacher: "uid-other", teacherName: "Ms Other", teacherEmail: "other@example.com" });
   await setDoc(doc(db, "classes/ABC234/assign/everyone"), { who: "Everyone", lists: ["tricky"] });
   await setDoc(doc(db, "classes/ABC234/live/ava"), { pupil: "Ava", status: "working" });
+  await setDoc(doc(db, "classes/ABC234/pupils/fp-ava"), { name: "Ava", parentEmail: "", reminderOptIn: false,
+    nextLessonDate: "", lessonTime: "", homeworkList: "", updated: serverTimestamp(), loginUid: "uid-ava", loginCode: "K7Q4M9T2BX" });
+  await setDoc(doc(db, "pupilLinks/K7Q4M9T2BX"), { classId: "ABC234", pupilKey: "fp-ava", pupil: "Ava", loginUid: "uid-ava" });
   await addDoc(collection(db, "classes/ABC234/sessions"), { pupil: "Ava", list: "ai", words: [] });
 });
 
@@ -41,9 +46,9 @@ async function check(label, promise) {
   try { await promise; passed++; console.log("  ok   ", label); }
   catch (err) { failed++; console.log("  FAIL ", label, "—", err.message.split("\n")[0]); }
 }
-const live = { pupil: "Ava", list: "ai", status: "working", done: 1, total: 18, right: 1, missedRow: 0, notFirstRow: 0, lastWord: "rain ✓", seen: serverTimestamp() };
-const session = { pupil: "Ava", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp() };
-const worksheet = { ...session, source: "worksheet", markedBy: "tutor@example.com" };
+const live = { pupil: "Ava", pupilKey: "fp-ava", list: "ai", status: "working", done: 1, total: 18, right: 1, missedRow: 0, notFirstRow: 0, lastWord: "rain ✓", seen: serverTimestamp() };
+const session = { pupil: "Ava", pupilKey: "fp-ava", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp() };
+const worksheet = { pupil: "Ava", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp(), source: "worksheet", markedBy: "tutor@example.com" };
 
 console.log("Teachers");
 await check("owner creates their own owner record", assertSucceeds(setDoc(doc(owner, "teachers/owner@example.com"), { name: "Sara", role: "owner", invitedBy: "owner@example.com", invitedAt: serverTimestamp() })));
@@ -94,13 +99,22 @@ await check("a pupil's device can't change the accent", assertFails(updateDoc(do
 await check("another teacher can't change the accent", assertFails(updateDoc(doc(other, "classes/ABC234"), { accent: "english" })));
 await check("a pupil's device sees the class setting", assertSucceeds(getDoc(doc(pupil, "classes/ABC234"))));
 
+console.log("Personal pupil links");
+await check("signed-in pupil resolves their own link", assertSucceeds(getDoc(doc(pupil, "pupilLinks/K7Q4M9T2BX"))));
+await check("another pupil cannot resolve Ava's link", assertFails(getDoc(doc(anotherPupil, "pupilLinks/K7Q4M9T2BX"))));
+await check("class code alone cannot resolve Ava's link", assertFails(getDoc(doc(anonymous, "pupilLinks/K7Q4M9T2BX"))));
+await check("pupils cannot list links", assertFails(getDocs(collection(pupil, "pupilLinks"))));
+await check("class teacher can resolve link", assertSucceeds(getDoc(doc(tutor, "pupilLinks/K7Q4M9T2BX"))));
+
 console.log("Live class");
-await check("a pupil's device updates its live progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/ava"), live, { merge: true })));
-await check("a pupil's device asks for help", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/ava"), { pupil: "Ava", help: true, helpAt: Date.now(), seen: serverTimestamp() }, { merge: true })));
-await check("a pupil's device can't add other fields", assertFails(setDoc(doc(pupil, "classes/ABC234/live/ava"), { pupil: "Ava", hack: true }, { merge: true })));
-await check("a pupil's device can't write to a made-up class", assertFails(setDoc(doc(pupil, "classes/NOPE99/live/ava"), live)));
+await check("a pupil's device updates its live progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/fp-ava"), live, { merge: true })));
+await check("a pupil's device asks for help", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/live/fp-ava"), { pupil: "Ava", pupilKey: "fp-ava", help: true, helpAt: Date.now(), seen: serverTimestamp() }, { merge: true })));
+await check("a pupil's device can't add other fields", assertFails(setDoc(doc(pupil, "classes/ABC234/live/fp-ava"), { pupil: "Ava", hack: true }, { merge: true })));
+await check("another pupil cannot change Ava's work", assertFails(setDoc(doc(anotherPupil, "classes/ABC234/live/fp-ava"), live)));
+await check("a class code and typed name cannot change progress", assertFails(setDoc(doc(anonymous, "classes/ABC234/live/fp-ava"), live)));
+await check("a pupil's device can't write to a made-up class", assertFails(setDoc(doc(pupil, "classes/NOPE99/live/fp-ava"), live)));
 await check("a pupil's device can't read the live class", assertFails(getDocs(collection(pupil, "classes/ABC234/live"))));
-await check("signed-out visitors can't write", assertFails(setDoc(doc(nobody, "classes/ABC234/live/ava"), live)));
+await check("signed-out visitors can't write", assertFails(setDoc(doc(nobody, "classes/ABC234/live/fp-ava"), live)));
 await check("a teacher watches their class", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/live"))));
 await check("a teacher can't watch another's class", assertFails(getDocs(collection(tutor, "classes/XYZ789/live"))));
 await check("a teacher clears a help request", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/live/ava"), { help: false, helpAt: null })));
@@ -108,6 +122,8 @@ await check("owner watches any class", assertSucceeds(getDocs(collection(owner, 
 
 console.log("Results");
 await check("a pupil's device sends a finished list", assertSucceeds(addDoc(collection(pupil, "classes/ABC234/sessions"), session)));
+await check("another pupil cannot send work as Ava", assertFails(addDoc(collection(anotherPupil, "classes/ABC234/sessions"), session)));
+await check("class code and name cannot send work", assertFails(addDoc(collection(anonymous, "classes/ABC234/sessions"), session)));
 await check("a pupil's device can't read results", assertFails(getDocs(collection(pupil, "classes/ABC234/sessions"))));
 await check("a pupil's device can't send a huge result", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), Object.assign({}, session, { words: Array(61).fill({ word: "x" }) }))));
 await check("a teacher reads their class's results", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/sessions"))));
@@ -118,7 +134,7 @@ await check("pupil can't forge teacher worksheet marks", assertFails(addDoc(coll
 await check("other teacher can't mark this class", assertFails(addDoc(collection(other, "classes/ABC234/sessions"), { ...worksheet, markedBy: "other@example.com" })));
 await check("site admin marks any class", assertSucceeds(addDoc(collection(admin, "classes/ABC234/sessions"), { ...worksheet, markedBy: "admin@example.com" })));
 
-const phonics = { ...session, list: "Phonics check practice", listId: "phonics-check", source: "phonics-check", markedBy: "tutor@example.com" };
+const phonics = { ...worksheet, list: "Phonics check practice", listId: "phonics-check", source: "phonics-check" };
 await check("teacher records a phonics check for their class", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/sessions"), phonics)));
 await check("pupil can't forge a phonics check", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), phonics)));
 await check("results can't claim another kind of marking", assertFails(addDoc(collection(tutor, "classes/ABC234/sessions"), { ...phonics, source: "exam" })));
@@ -138,8 +154,10 @@ await check("paper evidence cannot carry private extra fields", assertFails(addD
 
 console.log("Phonics check on the pupil's screen");
 const drive = { kind: "phonics", word: "vot", n: 1, total: 40, alien: true, section: 1, at: serverTimestamp() };
-await check("teacher puts a word on their pupil's screen", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/drive/abc"), drive)));
-await check("the pupil's device reads its own word", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/drive/abc"))));
+await check("teacher puts a word on their pupil's screen", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/drive/fp-ava"), drive)));
+await check("the pupil's device reads its own word", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/drive/fp-ava"))));
+await check("another pupil cannot read Ava's word", assertFails(getDoc(doc(anotherPupil, "classes/ABC234/drive/fp-ava"))));
+await check("a class code cannot read Ava's word", assertFails(getDoc(doc(anonymous, "classes/ABC234/drive/fp-ava"))));
 await check("a pupil's device can't list every pupil's word", assertFails(getDocs(collection(pupil, "classes/ABC234/drive"))));
 await check("a pupil's device can't set the word", assertFails(setDoc(doc(pupil, "classes/ABC234/drive/abc"), drive)));
 await check("another teacher can't set the word", assertFails(setDoc(doc(other, "classes/ABC234/drive/abc"), drive)));
@@ -151,6 +169,7 @@ await check("teacher clears the word at the end", assertSucceeds(deleteDoc(doc(t
 
 console.log("Assignments");
 await check("a pupil's device fetches its lists", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/assign/everyone"))));
+await check("anonymous class-code visitor cannot read Ava's lists", assertFails(getDoc(doc(anonymous, "classes/ABC234/assign/fp-ava"))));
 await check("a pupil's device can't list everyone's assignments", assertFails(getDocs(collection(pupil, "classes/ABC234/assign"))));
 await check("a pupil's device can't set lists", assertFails(setDoc(doc(pupil, "classes/ABC234/assign/everyone"), { who: "Everyone", lists: [] })));
 await check("a teacher sets lists", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/assign/everyone"), { who: "Everyone", lists: ["ai"] })));
@@ -201,6 +220,10 @@ await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "class
 console.log("Pupils' own progress");
 const prog = { pupil: "Ava", words: { rain: { box: 2, right: 1, missed: 0 } }, sounds: { ai: { right: 1, wrong: 0 } }, bests: { weeks: {}, lists: {} }, updated: serverTimestamp() };
 await check("a pupil device saves its progress", assertSucceeds(setDoc(doc(pupil, "classes/ABC234/progress/fp-ava"), prog)));
+await check("another pupil cannot read Ava's progress", assertFails(getDoc(doc(anotherPupil, "classes/ABC234/progress/fp-ava"))));
+await check("another pupil cannot change Ava's progress", assertFails(setDoc(doc(anotherPupil, "classes/ABC234/progress/fp-ava"), prog)));
+await check("a class code and name cannot read Ava's progress", assertFails(getDoc(doc(anonymous, "classes/ABC234/progress/fp-ava"))));
+await check("a class code and name cannot change Ava's progress", assertFails(setDoc(doc(anonymous, "classes/ABC234/progress/fp-ava"), prog)));
 await check("a pupil device loads its progress by name", assertSucceeds(getDoc(doc(pupil, "classes/ABC234/progress/fp-ava"))));
 await check("a pupil device can't list everyone's progress", assertFails(getDocs(collection(pupil, "classes/ABC234/progress"))));
 await check("signed-out visitors can't read progress", assertFails(getDoc(doc(nobody, "classes/ABC234/progress/fp-ava"))));
@@ -237,6 +260,17 @@ await check("another teacher can't delete lesson notes", assertFails(deleteDoc(d
 await check("teacher deletes their pupil's lesson notes", assertSucceeds(deleteDoc(diaryRef)));
 await check("teacher deletes their pupil's live status", assertSucceeds(deleteDoc(doc(tutor, "classes/ABC234/live/ava"))));
 await check("teacher deletes their pupil's roster record", assertSucceeds(deleteDoc(doc(tutor, "classes/ABC234/pupils/ava"))));
+
+console.log("Replacing a pupil login");
+await check("teacher binds the roster to a replacement account", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/fp-ava"),
+  { loginUid: "uid-bob", loginCode: "B7Q4M9T2BX" })));
+await check("old account loses its progress access immediately", assertFails(getDoc(doc(pupil, "classes/ABC234/progress/fp-ava"))));
+await check("old account cannot resolve its link", assertFails(getDoc(doc(pupil, "pupilLinks/K7Q4M9T2BX"))));
+await check("new account can read its assigned pupil record", assertSucceeds(getDoc(doc(anotherPupil, "classes/ABC234/progress/fp-ava"))));
+await check("teacher creates replacement link", assertSucceeds(setDoc(doc(tutor, "pupilLinks/B7Q4M9T2BX"),
+  { classId: "ABC234", pupilKey: "fp-ava", pupil: "Ava", loginUid: "uid-bob", createdAt: serverTimestamp() })));
+await check("replacement account resolves its link", assertSucceeds(getDoc(doc(anotherPupil, "pupilLinks/B7Q4M9T2BX"))));
+await check("teacher removes old link", assertSucceeds(deleteDoc(doc(tutor, "pupilLinks/K7Q4M9T2BX"))));
 
 console.log(`\n${passed} passed, ${failed} failed`);
 await env.cleanup();

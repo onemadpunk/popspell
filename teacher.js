@@ -11,6 +11,7 @@
   const LIVE_HOURS = 6;
   const CLASS_KEY = "popspell-teacher-class";
   const SCOPE_KEY = "popspell-teacher-class-scope";
+  const TABLET_KEY = "popspell-tablet-logins-v1";
 
   let root = null;
   let cloud = null;
@@ -36,8 +37,11 @@
   const shortName = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
   window.PopTeacherShortName = shortName;
   const joinLink = code => `${location.origin}${location.pathname}#/join/${code}`;
-  // Joins the class and signs the device in as the pupil (app.js), for use at home
-  const homeLink = name => `${joinLink(current.id)}?pupil=${encodeURIComponent(String(name).trim())}`;
+  // A pupil's short, random link; it opens the PIN screen rather than signing in by name.
+  const homeLink = name => {
+    const code = cloud?.pupilLoginCode(current?.id, name);
+    return code ? `${location.origin}${location.pathname}#/p/${code}` : "";
+  };
   const canAdmin = () => me && ["owner", "admin"].includes(me.role);
   const roleLabel = role => role === "owner" ? "Owner" : role === "admin" ? "Site admin" : "Teacher";
 
@@ -137,7 +141,7 @@
       <p>Sign in with the Google account your invitation was sent to.</p>
       <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
       <p class="hint" id="signHint"></p>
-      <p class="hint">Pupils don't need to sign in — they just type their first name.</p>`);
+      <p class="hint">Pupils tap their name on a prepared tablet, or open a personal link, then enter their PIN.</p>`);
     $("#signIn").onclick = async () => {
       $("#signHint").textContent = "Opening Google…";
       try { await cloud.signIn(); show(root); }
@@ -2831,6 +2835,48 @@
   const PAPER_STATUS = { secure: "Secure in this lesson", developing: "Developing, with support", support: "Needs more teaching or practice" };
   const paperWorkTitle = r => r.sheetTitle ? `${r.lessonTitle}: ${r.sheetTitle}` : r.lessonTitle;
   const paperDetail = r => [r.criteria?.length ? `Seen: ${r.criteria.join("; ")}` : "", r.note || ""].filter(Boolean).join(". ") || "—";
+
+  function pupilLoginDialog(pupil, refresh) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>${pupil.loginCode ? "Replace" : "Issue"} ${esc(pupil.name)}'s login</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <p>${esc(pupil.name)} will tap their name on a prepared tablet or open their personal link at home, then enter this four-digit PIN.</p>
+      ${pupil.loginCode ? "<p class=\"hint\">Replacing this login stops the old link and PIN opening pupil records.</p>" : ""}
+      <form id="issuePupilLogin"><label>Choose a four-digit PIN with the pupil <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required></label>
+        <div class="row end"><button class="btn primary" type="submit">${pupil.loginCode ? "Replace login" : "Issue login"}</button></div></form>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("#issuePupilLogin").onsubmit = async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const pin = form.elements.pin.value;
+      const button = form.querySelector('[type="submit"]');
+      button.disabled = true;
+      try {
+        const { code } = await cloud.issuePupilLogin(current.id, pupil.name, pin);
+        try {
+          const saved = JSON.parse(localStorage.getItem(TABLET_KEY) || "{}");
+          if (Array.isArray(saved[current.id])) {
+            const tile = saved[current.id].find(t => sameName(t.name, pupil.name));
+            if (tile) tile.code = code; else saved[current.id].push({ name: pupil.name, code });
+            localStorage.setItem(TABLET_KEY, JSON.stringify(saved));
+          }
+        } catch { /* this device has not been set up as a pupil tablet */ }
+        const link = `${location.origin}${location.pathname}#/p/${code}`;
+        form.remove();
+        dialog.insertAdjacentHTML("beforeend", `<p><b>Login ready.</b> ${esc(pupil.name)} can use this PIN now. Tell them the four digits; PopSpell does not store or show the PIN again.</p>
+          <label>Personal link for home <input type="text" readonly class="t-link" value="${esc(link)}"></label>
+          <button class="btn small" type="button" data-copy-login>Copy link</button>`);
+        dialog.querySelector("[data-copy-login]").onclick = async () => {
+          await navigator.clipboard.writeText(link);
+          dialog.querySelector("[data-copy-login]").textContent = "Copied";
+        };
+        refresh();
+      } catch (err) { button.disabled = false; showError(err); }
+    };
+    dialog.showModal();
+  }
   function printReport(pupilName, sessions, en = false, paperEvidence = []) {
     const rows = cfeRows(sessions, pupilName, en);
     const paper = paperEvidence.filter(r => sameName(r.pupil, pupilName)).slice(0, 8);
@@ -2872,7 +2918,7 @@
   const lookFor = (choice, yearGroup) => (choice === "older" || (choice !== "younger" && OLDER_FROM.has(yearGroup)) ? "older" : "");
   const NEED_CHIPS = ["Dyslexia (or suspected)", "English as an additional language", "ADHD", "Speech and language", "Hearing", "Sight", "Anxious about learning", "Needs short tasks"];
   // The quest's link: joins the class, signs the device in as the child, and opens the quest
-  const assessLink = name => `${homeLink(name)}&then=assess`;
+  const assessLink = name => homeLink(name) ? `${homeLink(name)}?then=assess` : "";
   const stageOf = listId => P().STAGES.findIndex(st => st.lists.some(l => l.id === listId));
   const levelOfStage = i => (i <= 1 ? "Early" : i <= 4 ? "First" : "Second"); // as the lists' CfE labels
 
@@ -3023,7 +3069,7 @@
     const words = phonicsCheckWords();
     const marks = [];   // { correct, missed: [graphemes] } per word
     let i = -1, onMyScreen = false, saved = false;
-    const link = `${homeLink(r.name)}&then=phonics`;
+    const link = homeLink(r.name) ? `${homeLink(r.name)}?then=phonics` : "";
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog phonics-dialog";
     document.body.append(dialog);
@@ -3440,7 +3486,7 @@
     function drawAbout() {
       frame(`<p class="hint">A few details help PopSpell (and you) plan for this child. Only teachers can see them.</p>
         <form class="t-diary-form" id="flowAbout">
-          <label>First name, as the child will type it ${r ? `<input type="text" value="${esc(r.name)}" disabled>` : `<input type="text" id="flowName" maxlength="40" required>`}</label>
+          <label>Pupil name, shown on their tablet tile ${r ? `<input type="text" value="${esc(r.name)}" disabled>` : `<input type="text" id="flowName" maxlength="40" required>`}</label>
           <label>Year group <select id="flowYear"><option value="">Choose…</option>${yearOptions(r && r.yearGroup)}</select></label>
           <label>Parent email (optional) <input type="email" id="flowEmail" value="${esc(r ? r.parentEmail || "" : "")}" placeholder="parent@example.com"></label>
           <label>Things to bear in mind <textarea id="flowNeeds" rows="2" maxlength="500" placeholder="e.g. diagnosed dyslexia, gets tired quickly" aria-describedby="flowNeedsHint">${esc(r ? r.needs || "" : "")}</textarea></label>
@@ -3470,10 +3516,26 @@
       try { sessions = await cloud.sessions(current.id, 365); } catch (err) { return fail(err); }
       const found = questSessions(r.name, sessions);
       const link = assessLink(r.name);
+      if (!link) {
+        frame(`<h3>Set up ${esc(r.name)}'s login</h3><p>Choose a four-digit PIN together. ${esc(r.name)} can then open the assessment on a shared tablet or through a personal link.</p>
+          <form id="flowLogin"><label>Four-digit PIN <input name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required></label>
+          <button class="btn primary" type="submit">Issue login and continue</button></form>`);
+        dialog.querySelector("#flowLogin").onsubmit = async e => {
+          e.preventDefault();
+          const button = e.currentTarget.querySelector('button[type="submit"]');
+          button.disabled = true;
+          try {
+            const issued = await cloud.issuePupilLogin(current.id, r.name, e.currentTarget.elements.pin.value);
+            r.loginCode = issued.code;
+            drawQuest();
+          } catch (err) { button.disabled = false; fail(err); }
+        };
+        return;
+      }
       frame(`<div class="flow-quest">
           <img src="assets/brand/pip-hop-small.webp" alt="" width="80" height="80">
           <div><p><b>Pip's Sound Quest</b> is a 15–25 minute assessment that ${esc(r.name)} plays as a game: five short islands for listening, reading, a story, spelling and numbers. There are no marks on screen, and each island stops by itself when it gets too hard. Islands can be done across more than one lesson.</p>
-          <p>Open this link on the device ${esc(r.name)} will use. It joins your class, signs in as ${esc(r.name)}, and opens Pip's map.</p></div></div>
+          <p>Open this link on ${esc(r.name)}'s device. They enter their PIN, and PopSpell opens Pip's map.</p></div></div>
         <div class="add-row"><input type="text" readonly class="t-link" value="${esc(link)}" aria-label="Assessment link">
           <button class="btn small" type="button" data-copy-assess>📋 Copy</button>
           <a class="btn small primary" href="${esc(link)}" target="_blank" rel="noopener">▶ Open the quest</a></div>
@@ -3502,7 +3564,7 @@
         <div class="row">
           <button class="btn primary" type="button" data-report ${keys.length ? "" : "disabled"}>📄 View the assessment report</button>
           <button class="btn" type="button" data-plan>🧭 Plan the first lessons</button>
-          <button class="btn" type="button" data-email>✉️ Email the home login</button>
+          <button class="btn" type="button" data-email ${homeLink(r.name) ? "" : "disabled"}>✉️ Email the home login</button>
         </div>
         <p class="hint">Next steps already suggests where to start from the spelling and number islands.</p>`);
       dialog.querySelector("[data-report]").onclick = () => previewReport(r, sessions);
@@ -3554,15 +3616,15 @@
       title: `${name}'s PopSpell login for home`,
       paragraphs: [
         "Hello,",
-        `Here is ${name}'s own PopSpell link for practising at home. Please open it <b>once</b> on the device ${name} will use at home (a tablet, laptop or phone).`,
-        `PopSpell will then remember ${name} on that device. ${name}'s homework, stars and review words will be there, carrying on from our lessons, and work done at home comes back to me too.`
+        `Here is ${name}'s own PopSpell link for practising at home. Open it on a tablet, laptop or phone.`,
+        `${name} enters the four-digit PIN chosen with their teacher. The link alone does not open progress. Homework, stars and review words will carry on from our lessons, and work done at home comes back to me too.`
       ],
       button: { href: link, text: `▶ Open PopSpell as ${name}` },
       boxes,
       sign: esc(shortName(me.name))
     });
     const text = `Hello,\n\nHere is ${pupil.name}'s PopSpell link for practising at home:\n${link}\n\n`
-      + `Please open it once on the device ${pupil.name} will use at home. PopSpell will then remember ${pupil.name}, and their homework, stars and review words will be there.\n\n`
+      + `${pupil.name} enters the four-digit PIN chosen with their teacher. The link alone does not open progress. Their homework, stars and review words will be there.\n\n`
       + (pupil.homeworkList ? `This week's homework: ${listTitle(pupil.homeworkList)}.\n\n` : "")
       + (pupil.parentLink ? `${pupil.name}'s progress: ${parentURL(pupil.parentLink)}\n\n` : "")
       + `Please keep these links private to your family.\n\nBest wishes,\n${shortName(me.name)}`;
@@ -3728,11 +3790,12 @@
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
     body.innerHTML = `
       <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><div class="row">
+        <button class="btn" id="setUpTablet">Set up pupil tablet</button>
         <button class="btn" id="calAll">🗓️ Lessons to my calendar</button>
         <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
         ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
-      <p class="hint">Add a pupil using the same name or code they type on their device. Parent contact details stay in the teacher area. Prepare reminders the day before a lesson; save a sound-map PDF and attach it to the email draft before sending.</p>
+      <p class="hint">Add each pupil, then issue their personal link and four-digit PIN. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" aria-label="Pupil's name or code" placeholder="Pupil's name or code" required>
         <input type="email" id="rosterParent" aria-label="Parent email (optional)" placeholder="Parent email (optional)">
@@ -3740,12 +3803,13 @@
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
           <div class="row"><button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
+            <button class="btn small primary" data-issue-login="${esc(r.key)}">${r.loginCode ? "Replace PIN" : "Issue pupil login"}</button>
             <button class="btn small" data-report="${esc(r.name)}">📄 Progress report</button>
             <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button>
             <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button>
             ${pupils.some(p => sameName(p.pupil, r.name)) ? `<button class="btn small" data-results="${esc(r.name)}">📊 Results</button>` : ""}</div></div>
         <details class="roster-more" data-key="${esc(r.key)}"${openRoster.has(r.key) ? " open" : ""}>
-          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}Year group, lesson date, homework, home login and parent page</summary>
+          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}Year group, lesson date, homework, pupil login and parent page</summary>
           <div class="roster-more-body">
         <div class="add-row"><label>Year group <select data-year><option value="">Not set</option>${yearOptions(r.yearGroup)}</select></label>
           <label>${esc(r.name)}'s screens <select data-look>${LOOK_CHOICES.map(([v, t]) => `<option value="${v}"${lookRow(r).lookChoice === v ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
@@ -3758,10 +3822,10 @@
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
         <div class="parent-box">
           <p><b>🏠 Home login</b></p>
-          <p class="hint">Opening this link once on ${esc(r.name)}'s own device signs it in as ${esc(r.name)} in this class, so homework, stars and review words carry on at home.</p>
-          <div class="add-row"><input type="text" readonly class="t-link" value="${esc(homeLink(r.name))}" aria-label="Home login link">
+          <p class="hint">A parent opens ${esc(r.name)}'s personal link; ${esc(r.name)} enters the PIN. The link alone cannot change progress.</p>
+          ${r.loginCode ? `<div class="add-row"><input type="text" readonly class="t-link" value="${esc(homeLink(r.name))}" aria-label="Home login link">
             <button class="btn small" data-home-copy="${esc(r.key)}">📋 Copy</button>
-            <button class="btn small primary" data-home-email="${esc(r.key)}">✉️ Email home login</button></div>
+            <button class="btn small primary" data-home-email="${esc(r.key)}">✉️ Email home login</button></div>` : `<p class="hint">Issue this pupil's login to make their home link.</p>`}
         </div>
         <div class="parent-box">
           <p><b>👪 Parent page</b>${r.parentLink ? ` <span class="meta">· updated ${r.parentAt ? esc(day(r.parentAt)) : "—"}</span>` : ""}</p>
@@ -3843,6 +3907,29 @@
       if (card) { card.scrollIntoView({ block: "start" }); card.focus({ preventScroll: true }); card.classList.add("t-flash"); setTimeout(() => card.classList.remove("t-flash"), 1600); }
     }; });
     $("#newPupil").onclick = () => newPupilFlow(null, roster, () => drawPupils(body));
+    $("#setUpTablet").onclick = async () => {
+      const ready = (await cloud.pupils(current.id)).filter(r => r.loginCode).map(r => ({ name: r.name, code: r.loginCode }));
+      if (!ready.length) return showError(new Error("Issue at least one pupil login first."));
+      const link = `${location.origin}${location.pathname}#/tablet/${encodeURIComponent(JSON.stringify({ classId: current.id, tiles: ready }))}`;
+      const dialog = document.createElement("dialog");
+      dialog.className = "worksheet-preview cal-dialog";
+      dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Set up a pupil tablet</h2><button class="btn small" type="button" data-close>Close</button></div>
+        <p>Open this link once on the shared tablet. Pupils will then tap their name and enter their PIN. Keep the setup link private because it contains the class's pupil names and login codes.</p>
+        <label>Tablet setup link <input class="t-link" type="text" readonly value="${esc(link)}"></label>
+        <div class="row"><button class="btn primary" type="button" data-copy>Copy setup link</button><a class="btn" href="${esc(link)}">Set up this device</a></div>`;
+      document.body.append(dialog);
+      dialog.addEventListener("close", () => dialog.remove(), { once: true });
+      dialog.querySelector("[data-close]").onclick = () => dialog.close();
+      dialog.querySelector("[data-copy]").onclick = async () => {
+        await navigator.clipboard.writeText(link);
+        dialog.querySelector("[data-copy]").textContent = "Copied";
+      };
+      dialog.showModal();
+    };
+    body.querySelectorAll("[data-issue-login]").forEach(b => { b.onclick = () => {
+      const pupil = roster.find(r => r.key === b.dataset.issueLogin);
+      pupilLoginDialog(pupil, () => drawPupils(body));
+    }; });
     if ($("#newYear")) $("#newYear").onclick = () => newSchoolYear(roster, lookRow, () => drawPupils(body));
     // Roster pupils, plus anyone with results who isn't on the roster yet
     const reportPupil = name => roster.find(r => sameName(r.name, name)) || { name };
@@ -4031,7 +4118,7 @@
         <h3>${esc(c.name)}</h3>
         ${c.teacher !== me.uid ? `<p class="meta">${esc(c.teacherName)}</p>` : ""}
         <p class="t-code" aria-label="Class code">${esc(c.id)}</p>
-        <p class="hint">Open this link once on each pupil's device (or type the code on the home page):</p>
+        <p class="hint">This link chooses the class. Set up pupil logins and shared tablets from the Pupils page; a class code alone cannot open pupil work.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link" aria-label="Join link for ${esc(c.name)}">
           <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button></div>
         ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" aria-label="Class name" data-rename-input="${esc(c.id)}">

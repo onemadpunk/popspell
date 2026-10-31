@@ -5,9 +5,8 @@ rules_version = '2';
 //  • The owner (listed below) grants site admin access.
 //  • Site admins can manage every class and invite teachers.
 //  • Invited teachers sign in with Google and see only their own classes.
-//  • Pupils' devices sign in anonymously. Knowing a class code lets a device add results,
-//    live progress and help requests to that class, and look up its own assigned lists.
-//    Pupils can never read other pupils' results or the class list.
+//  • Pupils sign in with an individual link code and PIN. Firebase Authentication checks
+//    the credential; these rules bind that account to exactly one pupil's class records.
 //  • A parent link opens one pupil's progress summary, which the teacher writes. Nothing else.
 //
 // Paste this whole file into Firebase console → Firestore Database → Rules, and publish.
@@ -36,6 +35,13 @@ service cloud.firestore {
     function teaches(c) { return isTeacher() && classDoc(c).data.teacher == request.auth.uid; }
     function canSee(c) { return isAdmin() || teaches(c); }
     function shortText(v, n) { return v is string && v.size() <= n; }
+    function rosterDoc(c, p) { return /databases/$(database)/documents/classes/$(c)/pupils/$(p); }
+    function pupilOwn(c, p) {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && exists(rosterDoc(c, p))
+        && get(rosterDoc(c, p)).data.get('loginUid', '') == request.auth.uid;
+    }
 
     // Invited teachers, keyed by their Google email in lower case
     match /teachers/{em} {
@@ -57,6 +63,23 @@ service cloud.firestore {
         && (resource.data.role != 'admin' || isOwner());
     }
 
+    // A short random link code only resolves after that pupil has signed in with their PIN.
+    // The code and PIN together form a Firebase Authentication password; the PIN is never in Firestore.
+    match /pupilLinks/{code} {
+      allow get: if canSee(resource.data.classId) || (signedIn()
+        && resource.data.loginUid == request.auth.uid
+        && pupilOwn(resource.data.classId, resource.data.pupilKey));
+      allow list: if false;
+      allow create: if canSee(request.resource.data.classId)
+        && code.size() == 10
+        && request.resource.data.keys().hasOnly(['classId', 'pupilKey', 'pupil', 'loginUid', 'createdAt'])
+        && shortText(request.resource.data.pupilKey, 64)
+        && shortText(request.resource.data.pupil, 40)
+        && shortText(request.resource.data.loginUid, 128)
+        && request.resource.data.createdAt == request.time;
+      allow delete: if canSee(resource.data.classId);
+    }
+
     // A class; its id is the join code pupils type
     match /classes/{c} {
       allow get: if signedIn();
@@ -75,19 +98,21 @@ service cloud.firestore {
       // Where each pupil is up to right now (one document per pupil)
       match /live/{p} {
         allow read, delete: if canSee(c);
-        allow create, update: if canSee(c) || (signedIn() && exists(/databases/$(database)/documents/classes/$(c))
-          && request.resource.data.keys().hasOnly(['pupil', 'list', 'status', 'done', 'total', 'right',
+        allow create, update: if canSee(c) || (pupilOwn(c, p)
+          && request.resource.data.keys().hasOnly(['pupil', 'pupilKey', 'list', 'status', 'done', 'total', 'right',
                'missedRow', 'notFirstRow', 'lastWord', 'help', 'helpAt', 'seen'])
-          && shortText(request.resource.data.pupil, 40));
+          && request.resource.data.pupilKey == p
+          && request.resource.data.pupil == get(rosterDoc(c, p)).data.name);
       }
 
       // One document per finished (or stopped) list
       match /sessions/{s} {
         allow read, delete: if canSee(c);
-        allow create: if signedIn() && exists(/databases/$(database)/documents/classes/$(c))
-          && shortText(request.resource.data.pupil, 40)
+        allow create: if shortText(request.resource.data.pupil, 40)
           && request.resource.data.words is list && request.resource.data.words.size() <= 60
-          && (request.resource.data.keys().hasOnly(['pupil', 'list', 'listId', 'finished', 'words', 'at'])
+          && ((pupilOwn(c, request.resource.data.get('pupilKey', ''))
+              && request.resource.data.keys().hasOnly(['pupil', 'pupilKey', 'list', 'listId', 'finished', 'words', 'at'])
+              && request.resource.data.pupil == get(rosterDoc(c, request.resource.data.pupilKey)).data.name)
             || (canSee(c) && request.resource.data.keys().hasOnly([
                 'pupil', 'list', 'listId', 'finished', 'words', 'at', 'source', 'markedBy'])
               && request.resource.data.source in ['worksheet', 'phonics-check']
@@ -115,7 +140,7 @@ service cloud.firestore {
       // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
       // pupil's device (which only knows its own key, as with assign) reads it. Nothing else is in it.
       match /drive/{p} {
-        allow get: if signedIn();
+        allow get: if canSee(c) || pupilOwn(c, p);
         allow delete: if canSee(c);
         allow create, update: if canSee(c)
           && request.resource.data.keys().hasOnly(['kind', 'word', 'n', 'total', 'alien', 'section', 'at'])
@@ -130,16 +155,17 @@ service cloud.firestore {
       // Lists set for each pupil, keyed by a fingerprint of their name (or "everyone").
       // A pupil's device can only fetch the one it knows the key for.
       match /assign/{a} {
-        allow get: if signedIn();
+        allow get: if canSee(c) || (a == 'everyone' && signedIn()) || pupilOwn(c, a);
         allow list, write: if canSee(c);
       }
 
       // Each pupil's own progress (sound stars, review words, personal bests), so it follows them
       // from a school tablet to a home device. Keyed by a fingerprint of their name, like assign.
       match /progress/{p} {
-        allow get: if signedIn();
+        allow get: if canSee(c) || pupilOwn(c, p);
         allow list, delete: if canSee(c);
-        allow create, update: if signedIn() && exists(/databases/$(database)/documents/classes/$(c))
+        allow create, update: if (canSee(c) || (pupilOwn(c, p)
+          && request.resource.data.pupil == get(rosterDoc(c, p)).data.name))
           && request.resource.data.keys().hasOnly(['pupil', 'words', 'sounds', 'bests', 'updated'])
           && shortText(request.resource.data.pupil, 40)
           && request.resource.data.words is map
@@ -170,7 +196,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasOnly([
             'name', 'parentEmail', 'reminderOptIn', 'nextLessonDate',
             'lessonTime', 'homeworkList', 'updated', 'parentLink', 'parentAt', 'parentNote',
-            'yearGroup', 'needs', 'likes', 'reports', 'programme'])
+            'yearGroup', 'needs', 'likes', 'reports', 'programme', 'loginUid', 'loginCode'])
           && shortText(request.resource.data.name, 40)
           && shortText(request.resource.data.parentEmail, 254)
           && request.resource.data.reminderOptIn is bool
@@ -184,6 +210,8 @@ service cloud.firestore {
           && (!('needs' in request.resource.data) || shortText(request.resource.data.needs, 500))
           && (!('likes' in request.resource.data) || shortText(request.resource.data.likes, 300))
           && (!('reports' in request.resource.data) || (request.resource.data.reports is list && request.resource.data.reports.size() <= 12))
+          && (!('loginUid' in request.resource.data) || shortText(request.resource.data.loginUid, 128))
+          && (!('loginCode' in request.resource.data) || (request.resource.data.loginCode is string && request.resource.data.loginCode.size() == 10))
           && (!('programme' in request.resource.data) || request.resource.data.programme == null || validProgramme(request.resource.data.programme));
         }
         // The pupil's place in their lesson programme, and the last few lessons

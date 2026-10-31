@@ -16,14 +16,15 @@ if (!config || !config.apiKey) {
 
 async function start() {
   const base = `https://www.gstatic.com/firebasejs/${VERSION}`;
-  const [{ initializeApp }, authLib, db] = await Promise.all([
+  const [{ initializeApp, deleteApp }, authLib, db] = await Promise.all([
     import(`${base}/firebase-app.js`),
     import(`${base}/firebase-auth.js`),
     import(`${base}/firebase-firestore.js`)
   ]);
   const {
     getAuth, onAuthStateChanged, signInAnonymously, signInWithPopup, signInWithRedirect,
-    GoogleAuthProvider, signOut, connectAuthEmulator
+    GoogleAuthProvider, signOut, connectAuthEmulator, setPersistence, browserSessionPersistence,
+    inMemoryPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword
   } = authLib;
   const {
     initializeFirestore, persistentLocalCache, connectFirestoreEmulator, doc, getDoc, getDocFromServer, setDoc,
@@ -53,10 +54,17 @@ async function start() {
   // Join codes avoid letters that look alike (0/O, 1/I/L)
   const CODE_LETTERS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
   const newCode = () => Array.from(crypto.getRandomValues(new Uint8Array(6)), b => CODE_LETTERS[b % CODE_LETTERS.length]).join("");
+  const newPupilCode = () => Array.from(crypto.getRandomValues(new Uint8Array(10)), b => CODE_LETTERS[b % CODE_LETTERS.length]).join("");
+  const pupilEmail = code => `${code.toLowerCase()}@pupils.popspell.com`;
+  const pupilPassword = (code, pin) => `${code}:${pin}`;
+  const classView = snap => ({ id: snap.id, name: snap.data().name, teacherName: snap.data().teacherName || "",
+    assignedOnly: !!snap.data().assignedOnly,
+    accent: ["scottish", "english"].includes(snap.data().accent) ? snap.data().accent : "" });
 
   let profile = null; // { email, name, role } once a teacher is signed in
   let profileReady = null; // the invitation check for whoever signed in last
   const listeners = new Set();
+  const pupilCodes = new Map();
   const authReady = new Promise(resolve => {
     onAuthStateChanged(auth, u => {
       const check = loadProfile(u);
@@ -100,26 +108,54 @@ async function start() {
   const api = {
     /* ---------- Pupils' devices ---------- */
 
+    // The short code is a random account identifier, not a password. A child only enters
+    // their four-digit PIN; Firebase Authentication checks code + PIN on its server.
+    async pupilLogin(code, pin) {
+      code = String(code || "").trim().toUpperCase();
+      if (!/^[A-Z2-9]{10}$/.test(code) || !/^\d{4}$/.test(String(pin))) throw new Error("Check the pupil link and four-digit PIN.");
+      await setPersistence(auth, browserSessionPersistence);
+      await signInWithEmailAndPassword(auth, pupilEmail(code), pupilPassword(code, pin));
+      try {
+        const link = await getDocFromServer(doc(store, "pupilLinks", code));
+        if (!link.exists() || link.data().loginUid !== auth.currentUser?.uid) throw new Error("This pupil link has been replaced. Ask your teacher for the new one.");
+        const info = await getDocFromServer(doc(store, "classes", link.data().classId));
+        if (!info.exists()) throw new Error("This class is no longer available.");
+        return { code, pupil: link.data().pupil, pupilKey: link.data().pupilKey, classInfo: classView(info) };
+      } catch (err) { await signOut(auth); throw err; }
+    },
+    async restorePupil(code) {
+      await authReady;
+      code = String(code || "").trim().toUpperCase();
+      if (!/^[A-Z2-9]{10}$/.test(code) || auth.currentUser?.providerData?.[0]?.providerId !== "password") return null;
+      try {
+        const link = await getDocFromServer(doc(store, "pupilLinks", code));
+        if (!link.exists() || link.data().loginUid !== auth.currentUser.uid) return null;
+        const info = await getDocFromServer(doc(store, "classes", link.data().classId));
+        return info.exists() ? { code, pupil: link.data().pupil, pupilKey: link.data().pupilKey,
+          classInfo: classView(info) } : null;
+      } catch { return null; }
+    },
+
     async classInfo(code) {
       await pupilAuth();
       const id = String(code || "").trim().toUpperCase();
       if (!/^[A-Z0-9]{4,12}$/.test(id)) return null;
       const snap = await getDoc(doc(store, "classes", id));
-      return snap.exists() ? { id, name: snap.data().name, teacherName: snap.data().teacherName || "",
-        assignedOnly: !!snap.data().assignedOnly,
-        accent: ["scottish", "english"].includes(snap.data().accent) ? snap.data().accent : "" } : null;
+      return snap.exists() ? classView(snap) : null;
     },
 
     async live(classId, pupil, fields) {
       await pupilAuth();
-      await setDoc(doc(store, "classes", classId, "live", pupilKey(pupil)),
-        Object.assign({}, fields, { pupil: String(pupil).slice(0, 40), seen: serverTimestamp() }), { merge: true });
+      const key = await fingerprint(pupil);
+      await setDoc(doc(store, "classes", classId, "live", key),
+        Object.assign({}, fields, { pupil: String(pupil).slice(0, 40), pupilKey: key, seen: serverTimestamp() }), { merge: true });
     },
 
     // Resolves once the server has it. Until then it's kept on the device and retried.
     async session(classId, payload) {
       await pupilAuth();
-      await addDoc(collection(store, "classes", classId, "sessions"), Object.assign({}, payload, { at: serverTimestamp() }));
+      await addDoc(collection(store, "classes", classId, "sessions"), Object.assign({}, payload,
+        { pupilKey: await fingerprint(payload.pupil), at: serverTimestamp() }));
     },
 
     // The look the teacher has set for this pupil's screens ("older" or "")
@@ -225,6 +261,41 @@ async function start() {
       const snap = await getDocs(["owner", "admin"].includes(p.role) ? ref : query(ref, where("teacher", "==", p.uid)));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
         .sort((a, b) => (a.teacherName || "").localeCompare(b.teacherName || "") || a.name.localeCompare(b.name));
+    },
+
+    // Issuing a new link and PIN replaces the old pupil account's access to records.
+    // The PIN is never saved in Firestore. This uses Firebase Auth on the no-cost Spark plan.
+    async issuePupilLogin(classId, pupil, pin) {
+      const teacher = await api.me();
+      if (!teacher?.role) throw new Error("Sign in as a teacher first.");
+      pin = String(pin || "");
+      if (!/^\d{4}$/.test(pin) || /^(\d)\1{3}$/.test(pin) || ["1234", "4321", "0123", "9876"].includes(pin))
+        throw new Error("Choose four different or mixed digits, avoiding simple runs such as 1234.");
+      const pupilKey = await fingerprint(pupil);
+      const rosterRef = doc(store, "classes", classId, "pupils", pupilKey);
+      const roster = await getDocFromServer(rosterRef);
+      if (!roster.exists() || lower(roster.data().name) !== lower(pupil)) throw new Error("Add this pupil to the class first.");
+      const code = newPupilCode();
+      const provisionApp = initializeApp(config, `pupil-provision-${crypto.randomUUID()}`);
+      const provisionAuth = getAuth(provisionApp);
+      if (emulator) connectAuthEmulator(provisionAuth, `http://${location.hostname}:9099`, { disableWarnings: true });
+      let user;
+      try {
+        await setPersistence(provisionAuth, inMemoryPersistence);
+        user = (await createUserWithEmailAndPassword(provisionAuth, pupilEmail(code), pupilPassword(code, pin))).user;
+        const batch = writeBatch(store);
+        batch.update(rosterRef, { loginUid: user.uid, loginCode: code });
+        batch.set(doc(store, "pupilLinks", code), { classId, pupilKey, pupil: roster.data().name,
+          loginUid: user.uid, createdAt: serverTimestamp() });
+        if (roster.data().loginCode) batch.delete(doc(store, "pupilLinks", roster.data().loginCode));
+        await batch.commit();
+        if (!pupilCodes.has(classId)) pupilCodes.set(classId, new Map());
+        pupilCodes.get(classId).set(lower(roster.data().name), code);
+        return { code, pupil: roster.data().name };
+      } finally {
+        await signOut(provisionAuth).catch(() => {});
+        await deleteApp(provisionApp).catch(() => {});
+      }
     },
 
     async createClass(name) {
@@ -370,9 +441,12 @@ async function start() {
 
     async pupils(classId) {
       const snap = await getDocs(collection(store, "classes", classId, "pupils"));
-      return snap.docs.map(d => ({ key: d.id, ...d.data() }))
+      const rows = snap.docs.map(d => ({ key: d.id, ...d.data() }))
         .sort((a, b) => a.name.localeCompare(b.name));
+      pupilCodes.set(classId, new Map(rows.filter(r => r.loginCode).map(r => [lower(r.name), r.loginCode])));
+      return rows;
     },
+    pupilLoginCode: (classId, name) => pupilCodes.get(classId)?.get(lower(name)) || "",
     async savePupil(classId, pupil) {
       const cleanProgramme = p => (!p ? null : {
         spelling: String(p.spelling || "").slice(0, 60), maths: String(p.maths || "").slice(0, 60),
@@ -428,13 +502,16 @@ async function start() {
         getDocs(collection(store, "classes", classId, "diary")),
         getDocs(collection(store, "classes", classId, "paperEvidence")),
         fingerprint(name)]);
+      const roster = await getDoc(doc(store, "classes", classId, "pupils", key));
       // The parent page goes first, on its own: it may already have been turned off
       if (parentLink) await deleteDoc(doc(store, "parents", parentLink)).catch(() => {});
       const refs = [
         ...sessions.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
         ...diary.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
         ...paperEvidence.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
+        ...(roster.data()?.loginCode ? [doc(store, "pupilLinks", roster.data().loginCode)] : []),
         ...["progress", "assign", "pupils", "drive"].map(c => doc(store, "classes", classId, c, key)),
+        doc(store, "classes", classId, "live", await fingerprint(name)),
         doc(store, "classes", classId, "live", pupilKey(name))
       ];
       // Firestore takes up to 500 changes at once

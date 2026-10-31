@@ -385,8 +385,17 @@
   const CLOUD_CONFIGURED = !!(SITE.firebase && SITE.firebase.apiKey);
   const CLASS_KEY = "popspell-class-v1";
   const PUPIL_KEY = "spelling-pupil-v1";
-  const getPupil = () => { try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; } };
-  const setPupil = name => { try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ } };
+  const TABLET_KEY = "popspell-tablet-logins-v1";
+  const SESSION_PUPIL_KEY = "popspell-active-pupil-v1";
+  const SESSION_ACTIVITY_KEY = "popspell-pupil-last-activity-v1";
+  let pupilIdentity = null;
+  let previewPupilName = "";
+  const getPupil = () => {
+    if (CLASS) return previewMode && teacherUnlocked() ? previewPupilName : pupilIdentity?.classInfo.id === CLASS.id ? pupilIdentity.pupil : "";
+    try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; }
+  };
+  const setPupil = name => { if (CLASS) { if (previewMode && teacherUnlocked()) previewPupilName = name; return; }
+    try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ } };
   const cleanName = s => String(s).replace(/[^\p{L}\p{N}' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
 
   let cloud = null;    // window.PopCloud once connected
@@ -395,7 +404,7 @@
   let REPORTING = false;
   let previewMode = false;
   const previewBanner = () => previewMode ? `<p class="preview-banner">👀 Teacher preview · Nothing here is saved to a pupil. Close this tab to return to planning.</p>` : "";
-  const updateReporting = () => { REPORTING = !!(cloud && CLASS); };
+  const updateReporting = () => { REPORTING = !!(cloud && CLASS && pupilIdentity?.classInfo.id === CLASS.id); };
   function saveClass(c) {
     CLASS = c;
     try { if (c) localStorage.setItem(CLASS_KEY, JSON.stringify(c)); else localStorage.removeItem(CLASS_KEY); } catch { /* not remembered */ }
@@ -508,7 +517,7 @@
 
   const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   const addDays = (key, n) => { const [y, m, d] = key.split("-").map(Number); return dayKey(new Date(y, m - 1, d + n)); };
-  const pupilKey = () => (getPupil() || "this device").toLowerCase();
+  const pupilKey = () => CLASS && pupilIdentity ? `${CLASS.id}:${pupilIdentity.pupilKey}` : (getPupil() || "this device").toLowerCase();
 
   /* ---------- How the screens look ---------- */
   // "older" (set by the teacher, usually from S1 and Year 7): no mascot or stickers, calmer colours, the
@@ -539,8 +548,9 @@
       const look = await api.look(CLASS.id, name);
       if (look === null || getPupil() !== name) return false;
       const all = savedLooks();
-      if ((all[name.toLowerCase()] || "") === look) return false;
-      if (look) all[name.toLowerCase()] = look; else delete all[name.toLowerCase()];
+      const key = pupilKey();
+      if ((all[key] || "") === look) return false;
+      if (look) all[key] = look; else delete all[key];
       try { localStorage.setItem(LOOK_KEY, JSON.stringify(all)); } catch { /* private mode */ }
       applyLook();
       return true;
@@ -835,6 +845,113 @@
 
   /* ---------- Router ---------- */
 
+  const PUPIL_IDLE_MS = 15 * 60 * 1000;
+  let lastPupilActivity = Date.now();
+  let pupilRestoreDone = !CLASS;
+  let pupilLocking = false;
+  function lockPupil() {
+    if (!pupilIdentity || pupilLocking) return;
+    pupilLocking = true;
+    leaveSession(session);
+    pupilIdentity = null;
+    updateReporting();
+    try { sessionStorage.removeItem(SESSION_PUPIL_KEY); sessionStorage.removeItem(SESSION_ACTIVITY_KEY); } catch { /* private mode */ }
+    cloud?.signOut().catch(() => location.reload());
+  }
+  for (const event of ["pointerdown", "keydown"]) window.addEventListener(event, e => {
+    if (!pupilIdentity || /^#\/(teacher|make)/.test(location.hash)) return;
+    if (Date.now() - lastPupilActivity > PUPIL_IDLE_MS) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      lockPupil();
+    } else {
+      lastPupilActivity = Date.now();
+      try { sessionStorage.setItem(SESSION_ACTIVITY_KEY, String(lastPupilActivity)); } catch { /* private mode */ }
+    }
+  }, true);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && pupilIdentity && Date.now() - lastPupilActivity > PUPIL_IDLE_MS) lockPupil();
+  });
+
+  function showPupilGate() {
+    document.title = `Pupil sign in · ${SITE.title}`;
+    let tiles = [];
+    try { tiles = JSON.parse(localStorage.getItem(TABLET_KEY) || "{}")[CLASS?.id] || []; } catch { /* private mode */ }
+    app.innerHTML = `<section class="panel start pupil-login"><h1>Who's practising?</h1>
+      ${!pupilRestoreDone ? `<p role="status">Getting your tablet ready…</p>` : tiles.length
+        ? `<p>Tap your name, then enter your four-digit PIN.</p><div class="pupil-tiles">${tiles.map(t =>
+          `<a class="btn pupil-tile" href="#/p/${encodeURIComponent(t.code)}">${esc(t.name)}</a>`).join("")}</div>`
+        : `<p>Ask your teacher to set up this tablet, or open your personal link at home.</p>`}
+      <p class="hint">Finished? Use “Switch pupil” so the next person starts locked.</p></section>`;
+  }
+
+  async function showPupilLogin(code, then) {
+    code = String(code || "").toUpperCase();
+    if (!/^[A-Z2-9]{10}$/.test(code)) { showPupilGate(); return; }
+    if (pupilIdentity?.code === code) {
+      history.replaceState(null, "", then);
+      route();
+      return;
+    }
+    document.title = `Enter your PIN · ${SITE.title}`;
+    app.innerHTML = `<section class="panel start pupil-login"><h1>Enter your four-digit PIN</h1>
+      <p>Tap the PIN you chose with your teacher.</p>
+      <form id="pupilPinForm"><label class="field">Four-digit PIN
+        <input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required autofocus></label>
+        <button class="btn primary" type="submit">Open my work</button><p class="hint" id="pupilPinHint" role="status"></p></form>
+      <a class="btn small" href="#/">Choose another name</a></section>`;
+    const form = $("#pupilPinForm");
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const button = form.querySelector('button[type="submit"]');
+      button.disabled = true;
+      $("#pupilPinHint").textContent = "Checking…";
+      try {
+        const api = await window.PopCloudReady;
+        if (!api) throw new Error("PopSpell needs the internet to sign in. Try again when connected.");
+        const identity = await api.pupilLogin(code, form.elements.pin.value);
+        cloud = api;
+        pupilIdentity = identity;
+        lastPupilActivity = Date.now();
+        try { sessionStorage.setItem(SESSION_PUPIL_KEY, code); sessionStorage.setItem(SESSION_ACTIVITY_KEY, String(lastPupilActivity)); } catch { /* private mode */ }
+        saveClass(identity.classInfo);
+        await syncLook(identity.pupil, api);
+        history.replaceState(null, "", then);
+        if (!reloadForAccent()) route();
+      } catch (err) {
+        if (!form.isConnected) return;
+        form.elements.pin.value = "";
+        $("#pupilPinHint").textContent = err.message?.includes("internet") ? err.message : "That PIN didn't work. Try again or ask your teacher to reset it.";
+        button.disabled = false;
+        form.elements.pin.focus();
+      }
+    };
+    form.elements.pin.focus();
+  }
+
+  async function installPupilTablet(encoded) {
+    app.innerHTML = `<section class="panel start"><h1>Setting up this tablet…</h1></section>`;
+    try {
+      const setup = JSON.parse(decodeURIComponent(encoded));
+      if (!/^[A-Z0-9]{4,12}$/.test(setup.classId) || !Array.isArray(setup.tiles) || setup.tiles.length > 100
+        || !setup.tiles.length || !setup.tiles.every(t => typeof t.name === "string" && t.name.length <= 40 && /^[A-Z2-9]{10}$/.test(t.code)))
+        throw new Error("That setup link is incomplete. Ask your teacher for a fresh one.");
+      const api = await window.PopCloudReady;
+      const info = await api?.classInfo(setup.classId);
+      if (!info) throw new Error("This tablet needs the internet for its first setup. Try again when connected.");
+      const saved = JSON.parse(localStorage.getItem(TABLET_KEY) || "{}");
+      saved[info.id] = setup.tiles.map(t => ({ name: t.name, code: t.code }));
+      localStorage.setItem(TABLET_KEY, JSON.stringify(saved));
+      pupilIdentity = null;
+      saveClass(info);
+      pupilRestoreDone = true;
+      history.replaceState(null, "", "#/");
+      if (!reloadForAccent()) showPupilGate();
+    } catch (err) {
+      app.innerHTML = `<section class="panel start"><h1>Tablet setup didn't work</h1><p>${esc(err.message || "Try a new link from your teacher.")}</p><a class="btn" href="#/">Home</a></section>`;
+    }
+  }
+
   function route() {
     // A newer PopSpell is out and nothing is part-way through: load it instead of the next page.
     // (If a list was left part-way, its results are saved first and the update waits for the next move.)
@@ -849,6 +966,13 @@
     previewMode = params.get("preview") === "1";
     applyLook();
 
+    const then = { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/";
+    if (parts[0] === "p") { showPupilLogin(decodeURIComponent(parts[1] || ""), then); return; }
+    if (parts[0] === "tablet") { installPupilTablet(parts[1] || ""); return; }
+    if (CLASS && !pupilIdentity && !(previewMode && teacherUnlocked()) && !["join", "teacher", "make"].includes(parts[0])) {
+      showPupilGate(); return;
+    }
+
     const activity = parts[0] === "activity" && window.PopActivities ? window.PopActivities.get(decodeURIComponent(parts[1] || "")) : null;
     if (parts[0] === "list" && LISTS[parts[1]]) showStart(LISTS[parts[1]]);
     else if (activity) showActivityStart(activity);
@@ -858,11 +982,8 @@
         words: parseWords(params.get("words"))
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
-    // A home login link (#/join/CODE?pupil=Ava) also signs this device in as that pupil
-    // then=assess (the teacher's New pupil link) goes straight on to Pip's Sound Quest, and
-    // then=phonics (the phonics check link) to the screen that shows the teacher's word
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""),
-      { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/");
+    // A class link chooses the class; personal links use #/p/CODE and the pupil's PIN.
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
     else if (parts[0] === "teacher") showTeacherArea(decodeURIComponent(parts[1] || ""));
@@ -880,7 +1001,7 @@
   }
 
   // A class link (#/join/K7P2QX) or a typed code puts this device in that teacher's class
-  async function joinClass(code, onDone, pupil = "", then = "#/") {
+  async function joinClass(code, onDone) {
     const my = phase;
     if (!onDone) app.innerHTML = `<section class="panel start"><h1>Joining the class…</h1></section>`;
     const api = await window.PopCloudReady;
@@ -894,13 +1015,13 @@
     }
     cloud = api;
     saveClass(info);
-    if (pupil) setPupil(pupil); // their progress and homework load on the home page
-    if (pupil) await syncLook(pupil, api); // use the right look on the first frame after a home link
+    pupilIdentity = null;
+    updateReporting();
     justJoined = true;
-    if (!onDone) history.replaceState(null, "", then);
+    if (!onDone) history.replaceState(null, "", "#/");
     if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    if (then === "#/assess") showQuest(); else if (then === "#/phonics") showPhonicsLive(); else showHome();
+    showPupilGate();
   }
 
   /* ---------- Phonics check practice, marked live: the word the teacher has put on screen ---------- */
@@ -971,6 +1092,13 @@
   // "What's your name?" or "Spelling as Ava · Not Ava?" — the name is remembered on this device
   function mountPupil(box, { onChange, onEnter, lead = "Spelling as" } = {}) {
     const name = getPupil();
+    if (CLASS && !previewMode) {
+      box.innerHTML = name ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Switch pupil</button></p>
+        <p class="hint watched">Your teacher sees your name and how you get on.</p>`
+        : `<p>Sign in to save your work.</p><a class="btn" href="#/">Choose my name</a>`;
+      if (name) box.querySelector(".not-me").onclick = lockPupil;
+      return;
+    }
     // lead "" (the home page, which already greets them by name) leaves just "Not Ava?"
     // Said plainly to the child, where they type their name: who will see it (the Children's Code asks for this)
     const who = REPORTING ? "Your teacher sees your name and how you get on." : "Your name stays on this device.";
@@ -997,6 +1125,7 @@
   // Saves the typed name; false (with a nudge) if there isn't one yet
   function takePupilName(box) {
     if (getPupil()) return true;
+    if (CLASS && !previewMode) { showPupilGate(); return false; }
     const input = box.querySelector(".pupil-name");
     const name = cleanName(input.value);
     if (!name) {
@@ -1207,6 +1336,7 @@
 
   function showHome() {
     document.title = SITE.title;
+    if (CLASS && !pupilIdentity) { showPupilGate(); return; }
     // A class can be set so its pupils see only the work set for them (teachers still see everything)
     const locked = !!(CLASS && CLASS.assignedOnly) && !teacherUnlocked();
     const name = getPupil();
@@ -1264,7 +1394,7 @@
       showHome();
     };
     mountPupil(box, { lead: "", onChange: showHome, onEnter: save });
-    if (!getPupil()) {
+    if (!getPupil() && !CLASS) {
       $("#meCards").innerHTML = `<button class="btn primary big" id="saveName">Save my name</button>`;
       $("#saveName").onclick = save;
       return;
@@ -3453,10 +3583,31 @@
   };
 
   // Firebase connects in the background; the lists work straight away without it
-  (window.PopCloudReady || Promise.resolve(null)).then(api => {
+  (window.PopCloudReady || Promise.resolve(null)).then(async api => {
     cloud = api;
     updateReporting();
-    if (!api) return;
+    if (!api) { pupilRestoreDone = true; if (CLASS && (location.hash === "" || location.hash === "#/")) route(); return; }
+    let savedCode = "";
+    try {
+      savedCode = sessionStorage.getItem(SESSION_PUPIL_KEY) || "";
+      lastPupilActivity = Number(sessionStorage.getItem(SESSION_ACTIVITY_KEY)) || 0;
+    } catch { /* private mode */ }
+    if (savedCode && Date.now() - lastPupilActivity > PUPIL_IDLE_MS) {
+      try { sessionStorage.removeItem(SESSION_PUPIL_KEY); sessionStorage.removeItem(SESSION_ACTIVITY_KEY); } catch { /* private mode */ }
+      await api.signOut();
+      return;
+    }
+    if (savedCode) {
+      pupilIdentity = await api.restorePupil(savedCode);
+      if (pupilIdentity) {
+        saveClass(pupilIdentity.classInfo);
+        await syncLook(pupilIdentity.pupil, api);
+      } else {
+        try { sessionStorage.removeItem(SESSION_PUPIL_KEY); } catch { /* private mode */ }
+      }
+    }
+    pupilRestoreDone = true;
+    updateReporting();
     // The class's settings may have changed since this device joined (e.g. "assigned work only")
     if (CLASS) api.classInfo(CLASS.id).then(info => {
       if (!info) return;
@@ -3472,7 +3623,7 @@
       // show the right tools (a game's start page has a teacher-only accent choice)
       if (!session && (h === "" || h === "#/" || h === "#/make" || h.startsWith("#/teacher") || h.startsWith("#/activity/g-"))) route();
     });
-    if (!session && (location.hash === "" || location.hash === "#/")) route();
+    if (!session && !/^#\/(teacher|make)/.test(location.hash)) route();
   });
   route();
 })();

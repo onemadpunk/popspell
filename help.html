@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=102351e9">
+  <link rel="stylesheet" href="style.css?v=28c5e34e">
   <style>
     .help { max-width: 1180px; margin: 0 auto; padding: 8px 16px 48px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 28px; align-items: start; }
     .help-toc { position: sticky; top: 104px; background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; max-height: calc(100vh - 130px); overflow: auto; }
@@ -103,7 +103,7 @@
           <li>Press <span class="ui">Sign in with Google</span> and choose the Google account your invitation was sent to.</li>
           <li>Pick your class in the <span class="ui">Class</span> box at the top right. Everything below it is for that class.</li>
         </ol>
-        <p>On a shared tablet, the teacher area signs out after an hour without teacher activity. Sign out yourself when you finish. Pupils currently join with their class code and first name.</p>
+        <p>The teacher area signs out after an hour without teacher activity. Sign out yourself when you finish. Pupils use individual logins: they tap their name on a prepared tablet or open their personal link, then enter a four-digit PIN.</p>
         <table class="help-table">
           <tr><th>Tab</th><th>What it's for</th></tr>
           <tr><td>📚 Library</td><td>Find any work by level, subject and strand, then test, assign or print it.</td></tr>
@@ -280,7 +280,7 @@
         <h2>4. Set up a class</h2>
         <ol class="help-steps">
           <li>Open <span class="ui">🏫 Classes</span>, type a name (for example <i>Tuesday 4pm group</i>) and press <span class="ui">＋ Make class</span>.</li>
-          <li>Each class has a <b>class code</b> and a <b>class link</b>. Open the link once on each pupil's device, or have the pupil type the code on PopSpell's home page. The device stays in the class after that.</li>
+          <li>Each class has a <b>class code</b> and a <b>class link</b> to choose the class. The code alone cannot open pupil work. Issue individual logins and use <b>Set up pupil tablet</b> on the Pupils page for a shared device.</li>
           <li>Choose the <b>accent for sounds</b>. <b>Scottish</b> (the default) treats the r as its own sound, so <i>car</i> is c·a·r. <b>English</b> treats ar, er, ir, or and ur as one sound, so <i>car</i> is c·ar. Pupils can't change it.</li>
           <li>Tick <b>Pupils only see the work I set</b> if you'd like the class's devices to show only the work you assign, not the whole library.</li>
         </ol>
@@ -293,7 +293,8 @@
         <h2>5. Add pupils</h2>
         <ol class="help-steps">
           <li>Open <span class="ui">👧 Pupils</span>.</li>
-          <li>Type the pupil's name <b>exactly as they'll type it on their device</b> (first name and an initial, such as <i>Ava M</i>, works well). Add a parent's email if you have one, then press <span class="ui">Add pupil</span>.</li>
+          <li>Enter the name or label that will appear on their tablet tile (first name and an initial, such as <i>Ava M</i>, works well). Add a parent's email if you have one, then press <span class="ui">Add pupil</span>.</li>
+          <li>Press <b>Issue pupil login</b> on the pupil's card and choose a four-digit PIN together. Press <b>Set up pupil tablet</b> to copy a setup link; open it once on the shared tablet to add the name tiles. Keep the setup link private. Pupils tap their name and enter their PIN. Use <b>Replace PIN</b> if a pupil forgets it.</li>
           <li>For a brand-new pupil, press <span class="ui">🌟 New pupil: profile and assessment</span> instead: it adds them and starts their assessment (see <a href="#assessment">Starting assessment</a>).</li>
         </ol>
         <figure class="help-shot"><a href="assets/help/pupils-top.webp"><img src="assets/help/pupils-top.webp" alt="The top of the Pupils tab with buttons for calendar, parents' night reports and new pupils, and the add pupil form" loading="lazy"></a>
@@ -305,7 +306,7 @@
           <li>The <b>older look</b> uses the 12–17 brand: the PopSpell logo and line icons, calmer colours, and no mascot, speech bubbles, stickers or Pip's Forest. It changes only how the screens look: their work still follows the level they're working at.</li>
           <li>You can choose either look for any pupil: a P7 who'd prefer the older look, or an S1 pupil who likes Pip.</li>
         </ul>
-        <p>The first name screen is shared by all ages. Once the pupil enters their name, or opens their home link, the device checks the look you've chosen and shows the matching home screen. It remembers the look for offline use.</p>
+        <p>The neutral name chooser is shared by all ages. After the pupil enters their PIN, the device checks the look you've chosen and shows the matching home screen. It remembers the look on the device.</p>
         <h3>New school year</h3>
         <p>Each August, press <span class="ui">🎓 New school year</span> on the Pupils tab. It lists every pupil moving up a year group (P7 to S1, Year 6 to Year 7, and so on). Untick anyone staying in the same year, then press <span class="ui">Move up a year</span>. Only the year group changes: levels, programmes, results and progress stay exactly as they are, so a pupil keeps working at their own level while what's expected for their age moves on. Pupils in S6 or Year 11 aren't moved.</p>
         <h3>The teacher area's look</h3>
@@ -329,7 +330,7 @@
         <ol class="help-steps">
           <li>Press <span class="ui">🌟 New pupil: profile and assessment</span> (or <span class="ui">🌟 Assessment and report</span> on an existing pupil's card).</li>
           <li><b>About the child:</b> name, year group (P1 to S6 for Scotland, or Reception to Year 11 for England: this also sets which curriculum PopSpell follows for them, see <a href="#england">England</a>), parent email, anything to bear in mind (for example dyslexia or tiring quickly) and what they enjoy. Only teachers can see this.</li>
-          <li><b>Pip's Sound Quest:</b> open the link on the device the child will use. It joins your class, signs in as the child and opens Pip's map. Islands can be done across more than one lesson; press <span class="ui">↻ Check again</span> to see which are finished.</li>
+          <li><b>Pip's Sound Quest:</b> choose a pupil PIN if prompted, then open the assessment link on the child's device. The child enters their PIN and PopSpell opens Pip's map. Islands can be done across more than one lesson; press <span class="ui">↻ Check again</span> to see which are finished.</li>
           <li><b>Report and first lessons:</b> read the findings, press <span class="ui">📄 View the assessment report</span> to print it or save a PDF, and <span class="ui">🧭 Plan the first lessons</span> to put the starting lists on the child's schedule.</li>
         </ol>
         <figure class="help-shot"><a href="assets/help/quest-step.webp"><img src="assets/help/quest-step.webp" alt="Step 2 of the new pupil window, with the quest link and island progress" loading="lazy"></a>
@@ -508,7 +509,7 @@
       <section class="help-sec" id="home">
         <h2>14. Home learning and parents</h2>
         <h3>Home login</h3>
-        <p>Each pupil's card has a <b>🏠 Home login</b> link. Opening it once on the child's own device signs it in as that child in your class, so homework, stars and review words carry on at home.</p>
+        <p>Each pupil's card has a <b>🏠 Home login</b> link after you issue their login. A parent opens the link on the home device; the child enters their four-digit PIN. Homework, stars and review words carry on at home. The link alone cannot change progress.</p>
         <ol class="help-steps">
           <li>Press <span class="ui">✉️ Email home login</span> on the pupil's card.</li>
           <li>A ready-made PopSpell email appears. Press <span class="ui">📋 Copy email</span>, then <span class="ui">✉️ Open email app</span>: the parent's address and subject are filled in. Paste the email in and send it.</li>
@@ -605,9 +606,9 @@
         <h2>20. Questions and fixes</h2>
         <dl class="help-faq">
           <dt>A pupil's results aren't showing.</dt>
-          <dd>Check their name on the device matches the roster exactly, and that the device has joined your class (the home page says "this device has joined ✓"). Opening their <b>home login</b> link on the device fixes both.</dd>
+          <dd>Check that their login has been issued and they entered their PIN. On a shared tablet, use <b>Set up pupil tablet</b> again if its name tiles are out of date.</dd>
           <dt>A pupil's stars and progress are missing at home.</dt>
-          <dd>Send the <b>home login</b> email and open the link once on the home device. Progress then follows the child between devices.</dd>
+          <dd>Send the <b>home login</b> email and open the link on the home device. The child enters their PIN. Progress then follows them between devices.</dd>
           <dt>"You haven't been invited yet."</dt>
           <dd>You're signed in with a different Google account from the one invited. Sign out and choose the invited account, or ask a site admin to invite this one in <b>Teachers</b>.</dd>
           <dt>I changed something and can't see it.</dt>

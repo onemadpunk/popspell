@@ -6,8 +6,8 @@ Afterwards:
 
 - the **owner** signs in on popspell.com (👩‍🏫 **Teacher**) with Google and can invite a **site admin**;
 - the **site admin** can manage every class, invite teachers, add pupils, schedule work, keep a lesson diary and review results;
-- **teachers** sign in the same way, manage their classes, and give pupils a class code;
-- **pupils** never need accounts. Their device joins a class once, and they type their first name.
+- **teachers** sign in the same way, manage their classes, and issue each pupil a personal login;
+- **pupils** tap their name on a prepared tablet or open a personal link, then enter a four-digit PIN. No child email address is needed.
 
 ## 1. Create the project
 
@@ -19,7 +19,8 @@ Afterwards:
 1. In the left menu, **Build → Authentication → Get started**.
 2. **Sign-in method** tab:
    - **Google** → **Enable** → choose the support email → **Save**.
-   - **Anonymous** → **Enable** → **Save**. Pupils' devices use this, so they can send results without accounts.
+   - **Anonymous** → **Enable** → **Save**. It allows a device to look up a class before a pupil signs in.
+   - **Email/Password** → **Enable** → **Save**. PopSpell creates a random, internal login identifier for each pupil; pupils never type an email address.
 3. **Settings** tab → **Authorized domains** → **Add domain** → `popspell.com`, then add `www.popspell.com` too.
 
 ## 3. Create the database
@@ -58,12 +59,14 @@ These values are meant to be public. They only say *which* database to use. Who 
 
 | Who | What they do |
 |---|---|
-| **Teacher** | 👩‍🏫 Teacher → **Classes**: copy the class link (e.g. `https://popspell.com/#/join/K7P2QX`) and open it once on each pupil device, or the pupil types the code on the home page. |
-| **Pupil** | Types their first name, picks a list (or one of *"📌 Your lists today"*), and presses 🙋 **Help** if stuck. |
+| **Teacher** | Add pupils in **Pupils**, issue each login and agree a four-digit PIN with the pupil. Press **Set up pupil tablet**, then open its setup link once on the shared tablet. Keep that setup link private. |
+| **Pupil** | Taps their name on the tablet and enters their PIN, then chooses their work. Presses **Switch pupil** when finished. At home, opens their personal link and enters the same PIN. |
 | **Teacher** | **Live class** shows every pupil instantly. **Assignments** sets lists. **Pupils** shows results for the last week, month, term or year, with a **spreadsheet download** for records. |
 | **Owner** | Everything a teacher sees, for every class, plus the **Teachers** tab to invite and remove tutors. |
 | **Site admin** | Manages all classes, teachers, pupils, plans, worksheets, diary notes and results. Cannot grant another site admin role. |
 | **Teacher** | Adds pupils to their classes, sets online assignments and dated plans, and marks paper worksheets so their results appear with online work. |
+
+Only test pupil accounts existed before this login change, so their old saved progress is not migrated. The class code still chooses a class but cannot open or change an individual pupil's records. A teacher can replace a forgotten PIN from the pupil's card; this issues a new link and stops the old login accessing records. Pupil sign-in needs an internet connection; once signed in, practice already loaded on the page can continue during an interruption.
 
 ## Sound-mapping worksheets and lesson diary
 
