@@ -1600,6 +1600,51 @@ window.PopActivities = (() => {
 
   /* ---------- The catalogue ---------- */
 
+  // Short, auto-marked practice for older pupils. These are a first step alongside the
+  // teacher-led work and paper explanations in the Third/Fourth level lessons.
+  const secondary = [
+    { id: "sec-linear-equations", title: "Solve linear equations", level: "Third", organiser: "Numeracy · Expressions and equations",
+      blurb: "Undo two steps in an equation, then check the answer by substitution.",
+      make: () => distinct(10, () => {
+        const x = rand(21) - 8, a = rand(5) + 2, b = rand(19) - 9, total = a * x + b;
+        const signed = b < 0 ? `− ${-b}` : `+ ${b}`;
+        return typed(`Solve ${a}x ${signed} = ${total}. What is x?`, x, {
+          label: `${a}x${b < 0 ? b : `+${b}`}=${total}`, skill: "solving two-step linear equations",
+          explain: `${b < 0 ? `Add ${-b}` : `Subtract ${b}`} on both sides, then divide by ${a}. x = ${x}; check: ${a} × ${x} ${signed} = ${total}.`
+        });
+      }) },
+    { id: "sec-proportion", title: "Direct and inverse proportion", level: "Fourth", organiser: "Numeracy · Fractions, decimal fractions and percentages",
+      blurb: "Find the constant, then use it to solve direct and inverse proportion problems.",
+      make: () => shuffle([
+        ...distinct(5, () => { const k = rand(8) + 2, x = rand(8) + 2, next = rand(8) + 9;
+          return typed(`y is directly proportional to x. When x = ${x}, y = ${k * x}. What is y when x = ${next}?`, k * next,
+            { label: `direct ${k * x}/${x} to ${next}`, skill: "direct proportion", explain: `y ÷ x = ${k}, so y = ${k}x. When x = ${next}, y = ${k * next}.` }); }),
+        ...distinct(5, () => { const first = rand(5) + 2, next = rand(5) + 7, k = first * next * (rand(3) + 2);
+          return typed(`y is inversely proportional to x. When x = ${first}, y = ${k / first}. What is y when x = ${next}?`, k / next,
+            { label: `inverse ${k}/${first} to ${next}`, skill: "inverse proportion", explain: `x × y stays at ${k}, so y = ${k} ÷ x. When x = ${next}, y = ${k / next}.` }); })
+      ]) },
+    { id: "sec-evidence-bias", title: "Evidence, inference and bias", level: "Fourth", organiser: "Literacy · Reading · Understanding",
+      blurb: "Read short claims closely, spot what the evidence supports, and question bias.",
+      make: () => shuffle([
+        choice("A shop surveyed 12 customers on a Saturday. Ten liked its new opening hours. Which claim is justified?", "Most of the 12 people surveyed liked the hours.",
+          ["Most people in the town liked the hours.", "The new hours increased sales."], { label: "shop survey", skill: "limits of evidence", explain: "The survey only tells us what those 12 customers said; it cannot prove what the town thinks or what happened to sales." }),
+        choice("‘After the lights were installed, reports of accidents fell from 18 to 7.’ What else would you need before saying the lights caused the fall?", "Whether other things changed at the same time.",
+          ["The colour of the lights.", "The councillor’s opinion of the lights."], { label: "lights and accidents", skill: "cause and correlation", explain: "A change after the lights were installed does not by itself prove the lights caused it." }),
+        choice("‘Everyone knows our rival’s plan is a disaster.’ What is the main warning sign?", "The claim uses a sweeping assertion without evidence.",
+          ["The writer uses a contraction.", "The plan is described briefly."], { label: "everyone knows", skill: "unsupported claims", explain: "‘Everyone knows’ suggests agreement without giving a source or evidence." }),
+        choice("A writer calls one group ‘hard-working locals’ and another ‘troublemakers’, without describing what either did. What may this show?", "Biased word choice.",
+          ["A reliable comparison of actions.", "A neutral account of both groups."], { label: "locals and troublemakers", skill: "biased language", explain: "The labels invite us to favour one group before any evidence is given." }),
+        choice("‘The station was empty when Amira arrived, though the departure board said the train left in two minutes.’ Which inference has the best support?", "Amira may have missed an announcement or change.",
+          ["The train was definitely cancelled.", "Amira had never travelled by train before."], { label: "empty station", skill: "supported inference", explain: "The empty station creates uncertainty. Neither a cancellation nor Amira’s history is established." }),
+        choice("‘One pupil improved after using the app, so the app will improve every pupil’s marks.’ What is the weakness?", "One pupil’s result cannot establish what will happen for everyone.",
+          ["The claim contains a number.", "The pupil improved rather than stayed the same."], { label: "one pupil", skill: "generalising from a small sample", explain: "A single example is too small to support a claim about all pupils." }),
+        choice("A report quotes only people who support a proposal and says no one opposed it. What should a careful reader ask?", "Were opponents asked or left out?",
+          ["Were the quotes short enough?", "Did everyone use the same words?"], { label: "one-sided quotes", skill: "missing viewpoints", explain: "The selection of sources may hide disagreement." }),
+        choice("‘The door was still locked. Leon checked his watch for the third time and shifted his bag to the other shoulder.’ What is best supported?", "Leon is waiting and growing impatient.",
+          ["Leon has lost his keys.", "Leon is going on holiday."], { label: "locked door", skill: "inference from detail", explain: "Checking the time repeatedly and shifting his bag suggest a wait; the passage does not explain why." })
+      ]) }
+  ];
+
   const AREAS = [
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames) },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
@@ -1609,6 +1654,7 @@ window.PopActivities = (() => {
     // More of England's curriculum, beyond what the CfE activities reach: set by the teacher, like the grammar
     { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
+    { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary, assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
@@ -1665,7 +1711,8 @@ window.PopActivities = (() => {
   ];
   const EO_FOR_ID = {
     "n-negative": ["MNU 2-04a"], "n-durations": ["MNU 1-10c"], "n-area": ["MNU 2-11c"], "n-units": ["MNU 2-11b"],
-    "n-decimals": ["MNU 2-02a", "MNU 2-03b"], "n-percent": ["MNU 2-07a", "MNU 2-07b"], "n-equivalent": ["MTH 2-07c", "MNU 2-07b"]
+    "n-decimals": ["MNU 2-02a", "MNU 2-03b"], "n-percent": ["MNU 2-07a", "MNU 2-07b"], "n-equivalent": ["MTH 2-07c", "MNU 2-07b"],
+    "sec-linear-equations": ["MTH 3-15a", "MTH 3-15b"], "sec-proportion": ["MNU 4-08a"], "sec-evidence-bias": ["LIT 4-16a", "ENG 4-17a", "LIT 4-18a"]
   };
   function eo(organiser, level, id) {
     if (EO_FOR_ID[id]) return EO_FOR_ID[id].slice();

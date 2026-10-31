@@ -123,6 +123,19 @@ await check("teacher records a phonics check for their class", assertSucceeds(ad
 await check("pupil can't forge a phonics check", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), phonics)));
 await check("results can't claim another kind of marking", assertFails(addDoc(collection(tutor, "classes/ABC234/sessions"), { ...phonics, source: "exam" })));
 
+console.log("Teacher-marked paper lessons");
+const paperEvidence = { pupil: "Ava", lessonId: "lesson-first-example", lessonTitle: "Example lesson", sheetId: "sheet-example", sheetTitle: "Example sheet",
+  status: "developing", criteria: ["I can explain my answer."], note: "Used a number line.",
+  by: "tutor@example.com", at: serverTimestamp() };
+await check("teacher records paper evidence", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/paperEvidence"), paperEvidence)));
+await check("teacher reads their class's paper evidence", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/paperEvidence"))));
+await check("pupil cannot read paper evidence", assertFails(getDocs(collection(pupil, "classes/ABC234/paperEvidence"))));
+await check("pupil cannot forge paper evidence", assertFails(addDoc(collection(pupil, "classes/ABC234/paperEvidence"), paperEvidence)));
+await check("other teacher cannot add paper evidence", assertFails(addDoc(collection(other, "classes/ABC234/paperEvidence"), { ...paperEvidence, by: "other@example.com" })));
+await check("teacher cannot mark paper as another teacher", assertFails(addDoc(collection(tutor, "classes/ABC234/paperEvidence"), { ...paperEvidence, by: "other@example.com" })));
+await check("paper judgement must be one of the three choices", assertFails(addDoc(collection(tutor, "classes/ABC234/paperEvidence"), { ...paperEvidence, status: "passed" })));
+await check("paper evidence cannot carry private extra fields", assertFails(addDoc(collection(tutor, "classes/ABC234/paperEvidence"), { ...paperEvidence, parentEmail: "x@example.com" })));
+
 console.log("Phonics check on the pupil's screen");
 const drive = { kind: "phonics", word: "vot", n: 1, total: 40, alien: true, section: 1, at: serverTimestamp() };
 await check("teacher puts a word on their pupil's screen", assertSucceeds(setDoc(doc(tutor, "classes/ABC234/drive/abc"), drive)));

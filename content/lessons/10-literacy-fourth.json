@@ -254,10 +254,10 @@
       "steps": {
         "start": "Two headlines about the same event: \"Council slashes park budget\" and \"Council saves £2m for schools\". What's going on?",
         "teach": "Compare two articles on the same story from sources with different viewpoints. Mark bias: loaded words, what each chooses to include or leave out, whose voices are quoted, and how statistics are framed. Evaluate credibility with a checklist (author, purpose, evidence, date, corroboration). Write an informed view that recognises bias in both.",
-        "practise": "The \"Spot the slant\" sheet.",
+        "practise": "Evidence, inference and bias on PopSpell, then the \"Spot the slant\" sheet.",
         "check": "Ask: what is each article's bias, and how do you know? Which is more credible on the facts, and why?"
       },
-      "use": [],
+      "use": ["sec-evidence-bias"],
       "home": "Compare how two different news sites report the same story.",
       "vocab": "bias, slant, loaded language, framing, credibility, corroborate, persuasion, hyperbole",
       "understand": "Can an article be biased without saying anything false?",

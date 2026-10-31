@@ -168,10 +168,11 @@
       "steps": {
         "start": "4 painters take 6 days to paint a school. How long would 8 painters take? And how much paint would they use?",
         "teach": "Direct proportion: both go up together at the same rate (twice the time, twice the cost); use the unitary method. Inverse proportion: one goes up as the other goes down (twice the workers, half the time); multiply to find the total amount of work first. Sort real situations into direct, inverse or neither (age and height).",
-        "practise": "Ratio and proportion, then the \"Proportion problems\" sheet.",
+        "practise": "Direct and inverse proportion on PopSpell, then the \"Proportion problems\" sheet.",
         "check": "6 litres of fuel take a car 84 km. How far on 10 litres? A journey takes 3 hours at 60 km/h. How long at 45 km/h?"
       },
       "use": [
+        "sec-proportion",
         "en-ratio"
       ],
       "home": "Spot direct and inverse proportion at home: cooking times, sharing costs, how long chores take with more helpers.",

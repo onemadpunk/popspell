@@ -6,6 +6,8 @@
   const STUCK_MISSES = 2;      // words missed in a row
   const STUCK_NOT_FIRST = 3;   // words not right first time in a row
   const IDLE_MS = 3 * 60 * 1000;
+  const TEACHER_IDLE_MS = 60 * 60 * 1000;
+  const TEACHER_ACTIVITY_KEY = "popspell-teacher-last-activity";
   const LIVE_HOURS = 6;
   const CLASS_KEY = "popspell-teacher-class";
   const SCOPE_KEY = "popspell-teacher-class-scope";
@@ -21,6 +23,8 @@
   let liveTimer = null;
   let liveData = [];
   let marking = null;
+  let teacherIdleTimer = null;
+  let teacherActivityListener = null;
 
   const P = () => window.PopSpell;
   const esc = s => P().esc(s == null ? "" : s);
@@ -42,6 +46,55 @@
     clearInterval(liveTimer);
     liveTimer = null;
   }
+  function stopTeacherIdle(clear = false) {
+    if (teacherIdleTimer) clearInterval(teacherIdleTimer);
+    teacherIdleTimer = null;
+    if (teacherActivityListener) {
+      window.removeEventListener("pointerdown", teacherActivityListener, true);
+      window.removeEventListener("keydown", teacherActivityListener, true);
+      window.removeEventListener("focus", teacherActivityListener, true);
+      document.removeEventListener("visibilitychange", teacherActivityListener);
+    }
+    teacherActivityListener = null;
+    if (clear && me?.uid) {
+      try { localStorage.removeItem(`${TEACHER_ACTIVITY_KEY}-${me.uid}`); } catch { /* storage unavailable */ }
+    }
+  }
+  function startTeacherIdle() {
+    stopTeacherIdle();
+    const key = `${TEACHER_ACTIVITY_KEY}-${me.uid}`;
+    let last = Date.now();
+    try { last = Number(localStorage.getItem(key)) || last; } catch { /* storage unavailable */ }
+    const expired = () => Date.now() - last >= TEACHER_IDLE_MS;
+    const lock = () => {
+      stopTeacherIdle(true);
+      message("<h1>Teacher session locked</h1><p>Sign in again to open pupil records.</p>");
+      cloud.signOut().catch(showError);
+    };
+    if (expired()) { lock(); return false; }
+    try { localStorage.setItem(key, String(last)); } catch { /* storage unavailable */ }
+    teacherActivityListener = event => {
+      if (!location.hash.startsWith("#/teacher")) return;
+      if (expired()) {
+        if (event.cancelable) event.preventDefault();
+        event.stopImmediatePropagation?.();
+        lock();
+        return;
+      }
+      if (event.type === "pointerdown" || event.type === "keydown") {
+        last = Date.now();
+        try { localStorage.setItem(key, String(last)); } catch { /* storage unavailable */ }
+      }
+    };
+    window.addEventListener("pointerdown", teacherActivityListener, true);
+    window.addEventListener("keydown", teacherActivityListener, true);
+    window.addEventListener("focus", teacherActivityListener, true);
+    document.addEventListener("visibilitychange", teacherActivityListener);
+    teacherIdleTimer = setInterval(() => {
+      if (location.hash.startsWith("#/teacher") && expired()) lock();
+    }, 30 * 1000);
+    return true;
+  }
   window.addEventListener("hashchange", () => { if (!location.hash.startsWith("#/teacher")) stopWatching(); });
 
   function message(html) {
@@ -51,6 +104,7 @@
   async function show(container) {
     root = container;
     stopWatching();
+    stopTeacherIdle();
     document.title = "Teacher · PopSpell";
     message(`<h1>Teacher</h1><p class="meta">Connecting…</p>`);
     cloud = await window.PopCloudReady;
@@ -64,6 +118,7 @@
     me = await cloud.me();
     if (!me) return showSignIn();
     if (!me.role) return showNotInvited();
+    if (!startTeacherIdle()) return;
     classes = await cloud.classes();
     const savedScope = (() => { try { return localStorage.getItem(`${SCOPE_KEY}-${me.uid}`); } catch { return null; } })();
     classScope = canAdmin() && savedScope === "all" ? "all" : "mine";
@@ -96,7 +151,7 @@
       <p>You're signed in as <b>${esc(me.email)}</b>, but this account hasn't been invited as a PopSpell teacher.</p>
       <p>Ask the owner to invite this email address, then sign in again.</p>
       <div class="row center"><button class="btn" id="signOut">Sign out</button><a class="btn" href="#/">Back to the lists</a></div>`);
-    $("#signOut").onclick = async () => { await cloud.signOut(); show(root); };
+    $("#signOut").onclick = async () => { stopTeacherIdle(true); await cloud.signOut(); show(root); };
   }
 
   /* ---------- The dashboard frame ---------- */
@@ -174,7 +229,7 @@
           <div id="tBody" class="t-body"></div>
         </div>
       </section>`;
-    $("#signOut").onclick = async () => { stopWatching(); await cloud.signOut(); location.hash = "#/"; };
+    $("#signOut").onclick = async () => { stopWatching(); stopTeacherIdle(true); await cloud.signOut(); location.hash = "#/"; };
     $("#tSettings").onclick = () => { const b = document.getElementById("settingsBtn"); if (b) b.click(); };
     root.querySelectorAll(".t-tab").forEach(b => { b.onclick = () => { tab = b.dataset.tab; draw(); }; });
     // On a phone the menu is a row that scrolls sideways: keep the chosen page in view
@@ -634,14 +689,69 @@
       <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">England</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
       <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the pupil's worksheet</button>
+        <button class="btn small" type="button" data-paper>Record paper result</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
+    dialog.querySelector("[data-paper]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
     const assign = dialog.querySelector("[data-assign]");
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.showModal();
+  }
+  async function paperEvidenceDialog(lesson, suggestedName = "") {
+    if (!current) return showError(new Error("Choose a class first."));
+    const classId = current.id;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog lesson-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Record paper work</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <p>Loading pupils…</p>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.showModal();
+    let roster;
+    try { roster = await cloud.pupils(classId); }
+    catch (err) { dialog.close(); return showError(err); }
+    if (!dialog.open || !current || current.id !== classId) return;
+    const printable = id => {
+      if (isPaper(id)) return false;
+      if (catalogueList(id)) return true;
+      const act = window.PopActivities?.get(id);
+      return !!act && act.area !== "games";
+    };
+    const paperIds = [...new Set([...lessonPapers(lesson), ...lesson.use.filter(printable)])];
+    const sheets = paperIds.map(id => ({ id, title: isPaper(id) ? PAPER[id].title : workTitle(id) }));
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Record paper work</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <p><b>${esc(lesson.title)}</b></p><p class="hint">Record your judgement from the pupil's sheet and discussion. This appears alongside their progress, separately from online right-first-time scores.</p>
+      <form id="paperEvidenceForm" class="paper-evidence-form">
+        <label>Pupil <select name="pupil" required><option value="">Choose…</option>${roster.map(r => `<option value="${esc(r.name)}"${sameName(r.name, suggestedName) ? " selected" : ""}>${esc(r.name)}</option>`).join("")}</select></label>
+        ${sheets.length ? `<label>Work marked <select name="sheet"><option value="">Lesson overall</option>${sheets.map(s => `<option value="${esc(s.id)}">${esc(s.title)}</option>`).join("")}</select></label>` : ""}
+        <label>Overall judgement <select name="status" required><option value="">Choose…</option>
+          <option value="secure">Secure in this lesson</option><option value="developing">Developing, with support</option>
+          <option value="support">Needs more teaching or practice</option></select></label>
+        <fieldset><legend>Success criteria seen in the work (optional)</legend>${lesson.criteria.slice(0, 12).map((criterion, i) => `<label class="check"><input type="checkbox" name="criterion" value="${i}"> ${esc(criterion)}</label>`).join("")}</fieldset>
+        <label>What you saw and the next step (optional) <textarea name="note" rows="3" maxlength="1000"></textarea></label>
+        <div class="row end"><button class="btn primary" type="submit">Save paper result</button></div></form>`;
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("#paperEvidenceForm").onsubmit = async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const pupil = form.elements.pupil.value;
+      const status = form.elements.status.value;
+      const sheet = sheets.find(s => s.id === form.elements.sheet?.value) || null;
+      if (!pupil || !status) return;
+      const criteria = [...form.querySelectorAll('[name="criterion"]:checked')].map(el => lesson.criteria[Number(el.value)]).filter(Boolean);
+      const button = form.querySelector('[type="submit"]');
+      button.disabled = true;
+      try {
+        await cloud.recordPaperEvidence(classId, pupil, lesson, sheet, status, criteria, form.elements.note.value);
+        dialog.close();
+        notice(`Saved ${pupil}'s paper result for ${lesson.title}.`);
+        if (tab === "today" || tab === "pupils") draw();
+      } catch (err) { button.disabled = false; showError(err); }
+    };
   }
   // "I am learning to…" and the first "I can…", under a sheet's header, for the pupil to tick
   const pupilVoice = t => t.replace(/^We are learning/, "I am learning").replace(/\bour\b/g, "my").replace(/\bwe\b/g, "I").replace(/\bus\b/g, "me");
@@ -1832,9 +1942,9 @@
   async function drawToday(body) {
     body.innerHTML = `<div class="empty">Loading this week's lessons…</div>`;
     const classId = current.id;
-    let roster, sessions, assignments, diary;
-    try { [roster, sessions, assignments, diary] = await Promise.all([
-      cloud.pupils(classId), cloud.sessions(classId, 120), cloud.assignments(classId), cloud.diary(classId)
+    let roster, sessions, assignments, diary, paperEvidence;
+    try { [roster, sessions, assignments, diary, paperEvidence] = await Promise.all([
+      cloud.pupils(classId), cloud.sessions(classId, 120), cloud.assignments(classId), cloud.diary(classId), cloud.paperEvidence(classId, 120)
     ]); } catch (err) { return showError(err); }
     if (tab !== "today" || !current || current.id !== classId) return;
     const today = todayKey();
@@ -1853,6 +1963,7 @@
           .reduce((ms, d) => Math.max(ms, Date.parse(`${d.lessonDate}T23:59:59Z`) || 0), 0);
         const since = Math.max(lastLog, lastDiary);
         const recent = sessions.filter(s => sameName(s.pupil, r.name) && s.at > (since || Date.parse(`${today}T12:00:00Z`) - 14 * 86400000));
+        const paper = paperEvidence.filter(e => sameName(e.pupil, r.name) && e.at > (since || Date.parse(`${today}T12:00:00Z`) - 14 * 86400000));
         const homework = r.homeworkList && recent.some(s => s.listId === r.homeworkList);
         const hasPlan = !!r.programme || !!dated.length || !!(a?.lists || []).length;
         const flags = [];
@@ -1860,7 +1971,8 @@
         if (r.homeworkList && !homework) flags.push("No recent online result for homework");
         const latest = recent[0];
         if (latest && firstPct(latest) !== null && firstPct(latest) < 50) flags.push("Review the last recorded result");
-        return { r, dated, recent, since, flags };
+        if (paper[0] && paper[0].status === "support") flags.push("Paper work needs more teaching or practice");
+        return { r, dated, recent, paper, since, flags };
       });
     const countToday = rows.filter(x => x.r.nextLessonDate === today).length;
     const needAttention = rows.filter(x => x.flags.length).length;
@@ -1873,7 +1985,7 @@
           ${needDate.length ? `<span class="pill">${needDate.length} without an upcoming date</span>` : ""}</div>
       </div>
       ${rows.length ? `<div class="today-cards">${rows.map((x, i) => {
-        const { r, dated, recent, since, flags } = x;
+        const { r, dated, recent, paper, since, flags } = x;
         const prog = r.programme;
         const parts = prog ? lessonParts(prog, prog.lesson, length) : [];
         const planned = prog ? `Lesson ${prog.lesson}: ${lessonTopics(prog)}` : dated.length
@@ -1887,6 +1999,7 @@
           <p><b>${since ? "Since the last recorded lesson" : "Recent recorded work"}:</b> ${recent.length
             ? recent.slice(0, 2).map(s => `${esc(s.list)} (${firstPct(s) === null ? "completed" : `${firstPct(s)}% first time`}, ${esc(day(s.at))})`).join(" · ")
             : "No results recorded"}</p>
+          ${paper.length ? `<p><b>Paper work:</b> ${paper.slice(0, 2).map(e => `${esc(paperWorkTitle(e))} (${esc(PAPER_STATUS[e.status] || e.status)}, ${esc(day(e.at))})`).join(" · ")}</p>` : ""}
           ${r.homeworkList ? `<p><b>Homework:</b> ${esc(titleOf(r.homeworkList))}${recent.some(s => s.listId === r.homeworkList) ? " · online result recorded" : ""}</p>` : ""}
           ${flags.length ? `<ul class="today-flags">${flags.map(f => `<li>${esc(f)}</li>`).join("")}</ul>` : ""}
           <div class="today-actions">
@@ -2333,7 +2446,8 @@
       return `<details class="prog-more prog-ready" open><summary>📚 Ready lessons for ${esc(x.r.name)}</summary>
         ${list.length ? `<ul>${list.map(l => `<li><b>${esc(c.england ? l.title : asCfe(l).title)}</b> <span class="hint">${esc(c.england ? where(l) : asCfe(l).level)} · ${esc(l.subject)}</span>
           <button class="linklike" type="button" data-open-lesson="${esc(l.id)}">Open</button> ·
-          <button class="linklike" type="button" data-print-lesson="${esc(l.id)}">Print</button></li>`).join("")}</ul>` : ""}
+          <button class="linklike" type="button" data-print-lesson="${esc(l.id)}">Print</button> ·
+          <button class="linklike" type="button" data-paper-lesson="${esc(l.id)}">Record paper result</button></li>`).join("")}</ul>` : ""}
         <p>${browse.join(" · ")}</p></details>`;
     };
     const card = (x, i) => {
@@ -2382,6 +2496,9 @@
     body.querySelectorAll("[data-open-lesson]").forEach(b => { b.onclick = () => lessonDialog(window.PopLessons.get(b.dataset.openLesson), curOf(b)); });
     body.querySelectorAll("[data-print-lesson]").forEach(b => { b.onclick = () => {
       lessonPrintDialog(window.PopLessons.get(b.dataset.printLesson), b.closest(".prog-card").dataset.name, curOf(b));
+    }; });
+    body.querySelectorAll("[data-paper-lesson]").forEach(b => { b.onclick = () => {
+      paperEvidenceDialog(viewOf(window.PopLessons.get(b.dataset.paperLesson), curOf(b)), b.closest(".prog-card").dataset.name);
     }; });
     // Opens the library for this pupil at their working level and everything below it.
     body.querySelectorAll("[data-browse]").forEach(b => { b.onclick = () => {
@@ -2711,8 +2828,12 @@
       || (en ? E_().STRAND_ORDER.indexOf(a.organiser) - E_().STRAND_ORDER.indexOf(b.organiser) : 0) || a.organiser.localeCompare(b.organiser));
   }
 
-  function printReport(pupilName, sessions, en = false) {
+  const PAPER_STATUS = { secure: "Secure in this lesson", developing: "Developing, with support", support: "Needs more teaching or practice" };
+  const paperWorkTitle = r => r.sheetTitle ? `${r.lessonTitle}: ${r.sheetTitle}` : r.lessonTitle;
+  const paperDetail = r => [r.criteria?.length ? `Seen: ${r.criteria.join("; ")}` : "", r.note || ""].filter(Boolean).join(". ") || "—";
+  function printReport(pupilName, sessions, en = false, paperEvidence = []) {
     const rows = cfeRows(sessions, pupilName, en);
+    const paper = paperEvidence.filter(r => sameName(r.pupil, pupilName)).slice(0, 8);
     const period = (PERIODS.find(([d]) => d === days) || [0, ""])[1];
     printSheet("ws-report", `${brandHead("Progress report")}
       <p><b>Pupil:</b> ${esc(pupilName)} &nbsp; <b>Class:</b> ${esc(current.name)} &nbsp; <b>Period:</b> ${esc(period)} &nbsp; <b>Printed:</b> ${esc(new Date().toLocaleDateString("en-GB"))}</p>
@@ -2722,6 +2843,9 @@
       <tbody>${rows.map(r => `<tr><td>${esc(r.organiser)}</td><td>${esc(r.levelText)}</td><td>${esc([...r.work].slice(0, 6).join(", "))}${r.work.size > 6 ? "…" : ""}</td>
         <td>${esc(evidence(r))}</td><td>${r.pct}%</td><td><b>${esc(r.status.text)}</b></td><td>${esc(r.topSkills.join(", ") || "—")}</td></tr>`).join("")
         || `<tr><td colspan="7">No work recorded in this period.</td></tr>`}</tbody></table>
+      ${paper.length ? `<h2>Teacher-marked paper lessons</h2><p>These are the teacher's judgements from paper work. They are kept separate from online scores.</p>
+        <table><thead><tr><th>Date</th><th>Lesson</th><th>Judgement</th><th>Evidence and next step</th></tr></thead><tbody>
+        ${paper.map(r => `<tr><td>${esc(day(r.at))}</td><td>${esc(paperWorkTitle(r))}</td><td>${esc(PAPER_STATUS[r.status] || r.status)}</td><td>${esc(paperDetail(r))}</td></tr>`).join("")}</tbody></table>` : ""}
       <p><b>The teacher's own evidence</b> (what you've seen in lessons, how the pupil explains their thinking, work in new contexts):</p><p class="ws-comment"></p>
       <p><b>Teacher's comment:</b></p><p class="ws-comment"></p>`);
   }
@@ -3590,8 +3714,9 @@
 
   async function drawPupils(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
-    let sessions, roster, assigns;
-    try { [sessions, roster, assigns] = await Promise.all([cloud.sessions(current.id, days), cloud.pupils(current.id), cloud.assignments(current.id)]); }
+    let sessions, roster, assigns, paperEvidence;
+    try { [sessions, roster, assigns, paperEvidence] = await Promise.all([
+      cloud.sessions(current.id, days), cloud.pupils(current.id), cloud.assignments(current.id), cloud.paperEvidence(current.id, days)]); }
     catch (err) { return showError(err); }
     if (tab !== "pupils") return;
     const pupils = summarise(sessions);
@@ -3615,6 +3740,7 @@
       ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
           <div class="row"><button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
+            <button class="btn small" data-report="${esc(r.name)}">📄 Progress report</button>
             <button class="btn small" data-pn="${esc(r.name)}">📅 Parents' night report</button>
             <button class="btn small" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button>
             ${pupils.some(p => sameName(p.pupil, r.name)) ? `<button class="btn small" data-results="${esc(r.name)}">📊 Results</button>` : ""}</div></div>
@@ -3679,6 +3805,10 @@
                ${(w.methods || []).length ? `<br><span class="meta">Firefly groups: ${esc(w.methods.join(" and "))}</span>` : ""}
                ${(w.wrong || []).length ? `<br><span class="meta">Tried: ${esc(w.wrong.join(", "))}</span>` : ""}</li>`).join("")}</ul></details>` : ""}
         </article>`).join("")}</div>` : `<div class="empty">No results yet. Each pupil appears here after finishing (or stopping) a list.</div>`}
+      ${paperEvidence.length ? `<h2 class="t-h2">Teacher-marked paper lessons</h2><p class="hint">Paper judgements support your assessment and appear on progress reports. They do not change online right-first-time percentages.</p>
+        <div class="t-scroll"><table class="t-table"><thead><tr><th>Marked</th><th>Pupil</th><th>Lesson</th><th>Judgement</th><th>Evidence and next step</th></tr></thead><tbody>
+        ${paperEvidence.map(r => `<tr><td>${esc(day(r.at))}</td><td>${esc(r.pupil)}</td><td>${esc(paperWorkTitle(r))}</td><td>${esc(PAPER_STATUS[r.status] || r.status)}</td><td>${esc(paperDetail(r))}</td></tr>`).join("")}
+        </tbody></table></div>` : ""}
       ${pupils.length ? (() => {
         // Scottish pupils by CfE organiser, English pupils by national curriculum strand
         const isEn = p => inEngland(roster.find(r => sameName(r.name, p.pupil)));
@@ -3703,7 +3833,8 @@
       <button class="btn" id="checkOld">Check for records over 12 months old</button>
       <div id="oldRecords"></div>`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
-    body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions, inEngland(roster.find(r => sameName(r.name, b.dataset.report)))); });
+    body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions,
+      inEngland(roster.find(r => sameName(r.name, b.dataset.report))), paperEvidence); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
     // Each pupil's details fold away; the open ones stay open when the tab redraws
     body.querySelectorAll(".roster-more").forEach(d => d.addEventListener("toggle", () => { if (d.open) openRoster.add(d.dataset.key); else openRoster.delete(d.dataset.key); }));

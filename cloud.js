@@ -293,6 +293,25 @@ async function start() {
       });
     },
 
+    // A teacher's judgement from a ready lesson's paper work. Kept apart from auto-marked
+    // answers so it can appear in reports without changing right-first-time percentages.
+    async recordPaperEvidence(classId, pupil, lesson, sheet, status, criteria, note) {
+      const teacher = await api.me();
+      if (!teacher || !teacher.role) throw new Error("Sign in as a teacher first.");
+      await addDoc(collection(store, "classes", classId, "paperEvidence"), {
+        pupil: String(pupil).trim().slice(0, 40), lessonId: String(lesson.id).slice(0, 100),
+        lessonTitle: String(lesson.title).slice(0, 120),
+        sheetId: String(sheet?.id || "").slice(0, 100), sheetTitle: String(sheet?.title || "").slice(0, 120),
+        status, criteria: criteria.slice(0, 12),
+        note: String(note || "").trim().slice(0, 1000), by: teacher.email, at: serverTimestamp()
+      });
+    },
+    async paperEvidence(classId, days = 365) {
+      const since = Timestamp.fromMillis(Date.now() - days * 86400000);
+      const snap = await getDocs(query(collection(store, "classes", classId, "paperEvidence"), where("at", ">=", since), orderBy("at", "desc")));
+      return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
+    },
+
     // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
     // pupil's device (which only knows its own key, as with assigned work) shows it
     async setDrive(classId, pupil, state) {
@@ -404,15 +423,17 @@ async function start() {
     // notes, phonics check screen, parent page and roster record. Results are matched however the name was typed.
     async deletePupilRecords(classId, name, parentLink) {
       const same = v => lower(v) === lower(name);
-      const [sessions, diary, key] = await Promise.all([
+      const [sessions, diary, paperEvidence, key] = await Promise.all([
         getDocs(collection(store, "classes", classId, "sessions")),
         getDocs(collection(store, "classes", classId, "diary")),
+        getDocs(collection(store, "classes", classId, "paperEvidence")),
         fingerprint(name)]);
       // The parent page goes first, on its own: it may already have been turned off
       if (parentLink) await deleteDoc(doc(store, "parents", parentLink)).catch(() => {});
       const refs = [
         ...sessions.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
         ...diary.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
+        ...paperEvidence.docs.filter(d => same(d.data().pupil)).map(d => d.ref),
         ...["progress", "assign", "pupils", "drive"].map(c => doc(store, "classes", classId, c, key)),
         doc(store, "classes", classId, "live", pupilKey(name))
       ];

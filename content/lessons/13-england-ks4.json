@@ -336,10 +336,10 @@
       "steps": {
         "start": "4 painters take 6 days to paint a house. How long would 8 painters take? What are you assuming?",
         "teach": "Direct proportion: y = kx, so doubling x doubles y. Inverse proportion: y = k/x, so doubling x halves y. Higher: if y ∝ x² and y = 50 when x = 5, then k = 2 and y = 2x². Convert 72 km/h to metres per second: 72 000 m ÷ 3600 s = 20 m/s. Density = mass ÷ volume and pressure = force ÷ area. Fractions in ratio: if boys : girls = 3 : 5, then the boys are ⅜ of the class; if ⅖ of the beads are red, then red : not red = 2 : 3.",
-        "practise": "The \"Proportion and units\" sheet.",
+        "practise": "Direct and inverse proportion on PopSpell, then the \"Proportion and units\" sheet.",
         "check": "y is inversely proportional to x, and y = 6 when x = 4. Find y when x = 3. Convert 15 m/s to km/h."
       },
-      "use": [],
+      "use": ["sec-proportion"],
       "home": "Scale a recipe up or down, and talk about what would be in inverse proportion if more people shared the cooking.",
       "vocab": "direct proportion, inverse proportion, constant of proportionality, compound unit, density, pressure, ratio",
       "understand": "If y is inversely proportional to x, what happens to y when x is multiplied by 3? Why?",
@@ -730,10 +730,10 @@
       "steps": {
         "start": "\"Everyone knows that…\" Why might a writer start a sentence like that?",
         "teach": "Read the opinion piece on the sheet. Highlight claims in two colours: supported by evidence, or not. Look at how evidence is used: is the sample big and fair, does it prove what the writer says it proves? Find bias: one-sided language, attacks on people rather than their arguments, missing views. Make an inference about the writer and justify it with a quotation. Then argue the opposite reading: why might another reader find the piece convincing?",
-        "practise": "The \"Weighing the evidence\" sheet.",
+        "practise": "Evidence, inference and bias on PopSpell, then the \"Weighing the evidence\" sheet.",
         "check": "Ask for one claim with no evidence, one way evidence is misused, and an inference about the writer backed by a quotation."
       },
-      "use": [],
+      "use": ["sec-evidence-bias"],
       "home": "Find an advert or opinion piece and check one of its claims: what evidence is there?",
       "vocab": "claim, evidence, inference, bias, sample, generalisation, fact, opinion, counter-argument",
       "understand": "The writer gives a statistic. Does that make the argument reliable?",

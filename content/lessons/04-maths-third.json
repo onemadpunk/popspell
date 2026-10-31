@@ -442,10 +442,11 @@
       "steps": {
         "start": "I think of a number, multiply it by 3 and add 5. I get 26. What was my number?",
         "teach": "Use a balance: whatever you do to one side, do to the other. Solve 3x + 5 = 26, then 4x − 7 = −15. Turn a word problem into an equation: a rectangle's perimeter is 30 cm and its length is twice its width. Write a formula for a taxi fare of £3 plus £1·20 a mile, then use it.",
-        "practise": "Missing numbers and signs, then the \"Equations and formulae\" sheet.",
+        "practise": "Solve linear equations on PopSpell, then the \"Equations and formulae\" sheet.",
         "check": "Solve 5y − 9 = 16. Write a formula for the number of legs on c chairs (4 legs) and t stools (3 legs)."
       },
       "use": [
+        "sec-linear-equations",
         "m-equations",
         "en-area-formulae"
       ],

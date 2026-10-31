@@ -1733,6 +1733,10 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .today-date-row > span { flex: 1 1 180px; }
 .today-date-row small { display: block; color: var(--muted); }
 .today-date-row label { display: grid; gap: 2px; font-size: .82rem; color: var(--muted); }
+.paper-evidence-form { display: grid; gap: 12px; }
+.paper-evidence-form > label { display: grid; gap: 4px; font-weight: 600; }
+.paper-evidence-form fieldset { display: grid; gap: 6px; margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; }
+.paper-evidence-form legend { padding: 0 4px; font-weight: 600; }
 .t-pagehead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 20px; }
 .t-crumb { margin: 0; font: 600 .75rem var(--t-font); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
 .t-pagehead h1 { margin: 2px 0 0; font: 700 1.8rem/1.2 var(--t-font); color: var(--ink); letter-spacing: -.02em; }

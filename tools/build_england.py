@@ -91,6 +91,8 @@ MAP = {
   "n-table": "ma 5 st 2; ma 3 st 1; ma 4 st 2", "n-chance": "ma 7-9 prob 1; ma 7-9 prob 2",
   "m-shapes-2d": "ma 1 gs 2; ma 2 gs 1", "m-shapes-3d": "ma 1 gs 3; ma 2 gs 2; ma 2 gs 3", "m-angles": "ma 3 gs 3; ma 3 gs 2; ma 4 gs 2; ma 5 gs 2",
   "m-patterns": "ma 2 npv 1; ma 1 npv 2; ma 3 npv 1; ma 6 al 2", "m-equations": "ma 2 as 11; ma 1 as 4; ma 3 as 7; ma 6 al 3; ma 2 npv 4",
+  "sec-linear-equations": "ma 7-9 al 17; ma 7-9 al 15", "sec-proportion": "ma 10-11 rpr 3; ma 7-9 rpr 9",
+  "sec-evidence-bias": "en 10-11 read 11; en 10-11 read 10",
   # Literacy: games and activities
   "g-hopper-short": "en R wread 1; en 1 wr 2", "g-hopper-digraphs": "en R wread 1; en 1 wr 2",
   "g-hopper-long-a": "en 1 wr 2; en 1 sp 2", "g-hopper-r": "en 1 wr 2; en 1 sp 2",

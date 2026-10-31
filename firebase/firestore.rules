@@ -94,6 +94,24 @@ service cloud.firestore {
               && request.resource.data.markedBy == email()));
       }
 
+      // Teacher-marked evidence from a ready lesson's paper work. It is recorded separately
+      // from online scores so a qualitative judgement never becomes a percentage by accident.
+      match /paperEvidence/{entry} {
+        allow read, delete: if canSee(c);
+        allow create: if canSee(c)
+          && request.resource.data.keys().hasOnly(['pupil', 'lessonId', 'lessonTitle', 'sheetId', 'sheetTitle', 'status', 'criteria', 'note', 'by', 'at'])
+          && shortText(request.resource.data.pupil, 40)
+          && shortText(request.resource.data.lessonId, 100)
+          && shortText(request.resource.data.lessonTitle, 120)
+          && shortText(request.resource.data.sheetId, 100)
+          && shortText(request.resource.data.sheetTitle, 120)
+          && request.resource.data.status in ['secure', 'developing', 'support']
+          && request.resource.data.criteria is list && request.resource.data.criteria.size() <= 12
+          && shortText(request.resource.data.note, 1000)
+          && request.resource.data.by == email()
+          && request.resource.data.at == request.time;
+      }
+
       // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
       // pupil's device (which only knows its own key, as with assign) reads it. Nothing else is in it.
       match /drive/{p} {
