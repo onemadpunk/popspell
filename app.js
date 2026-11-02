@@ -336,6 +336,30 @@
       return [`audio/phrases/alphabet-order.mp3`, 130,
         ...alpha.slice(1).flatMap((w, i) => (i ? [160, wordClip(w)] : [wordClip(w)]))];
     }
+    // Random listening questions need far more combinations than any fixed
+    // batch of whole-line recordings can cover. Use Eponine's existing words
+    // plus a handful of reusable phrases for every possible answer.
+    const answer = /^The answer is ([a-z]+)\.\s+([a-z]+) rhymes with words ending in -([a-z]+)\.$/i.exec(text);
+    const first = /^The answer is ([a-z]+)\.\s+([a-z]+) starts with "([a-z]+)"\.$/i.exec(text);
+    const count = /^The answer is (\d+)\.\s+([a-z]+): .+ — (\d+) sounds\.$/i.exec(text);
+    if (RECORDED.letters && recPhrases.has("answer-is")) {
+      const prefix = "audio/phrases/answer-is.mp3";
+      if (answer && ["rhyme-ending"].every(k => recPhrases.has(k))
+        && recWords.has(answer[1].toLowerCase()) && recWords.has(answer[2].toLowerCase())) {
+        return [prefix, 100, wordClip(answer[1]), 150, wordClip(answer[2]), 100,
+          "audio/phrases/rhyme-ending.mp3", 120, ...letterSteps(answer[3])];
+      }
+      if (first && recPhrases.has("starts-with")
+        && recWords.has(first[1].toLowerCase()) && recWords.has(first[2].toLowerCase())) {
+        return [prefix, 100, wordClip(first[1]), 150, wordClip(first[2]), 100,
+          "audio/phrases/starts-with.mp3", 120, ...letterSteps(first[3])];
+      }
+      if (count && count[1] === count[3] && recPhrases.has("has") && recPhrases.has("sounds")
+        && recNumbers.has(count[1]) && recWords.has(count[2].toLowerCase())) {
+        return [prefix, 100, `audio/numbers/${count[1]}.mp3`, 150, wordClip(count[2]), 100,
+          "audio/phrases/has.mp3", 100, `audio/numbers/${count[1]}.mp3`, 100, "audio/phrases/sounds.mp3"];
+      }
+    }
     const parts = window.PopSpeech.pieces(text);
     if (!parts || !parts.length) return null;
     const steps = [];
