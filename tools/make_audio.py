@@ -74,6 +74,12 @@ PHRASES = {
     "q-count": "How many sounds can you hear in this word? Listen.",
     "alphabet-order": "Which word comes first in alphabetical order?",
     "roman-equals": "equals",
+    # Reusable Eponine phrases for answers that vary with each question.
+    "answer-is": "The answer is",
+    "rhyme-ending": "rhymes with words ending in",
+    "starts-with": "starts with",
+    "has": "has",
+    "sounds": "sounds",
     # Pip's games use the same Eponine recording as the rest of PopSpell.
     "switch-swap": "Change one sound. Listen to the first word.",
     "switch-add": "Add one sound. Listen to the first word.",
