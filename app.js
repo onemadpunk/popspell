@@ -189,7 +189,7 @@
 
   /* ---------- Settings (kept in this browser only) ---------- */
 
-  const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: true, spellOut: true, sounds: true,
+  const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: false, spellOut: true, sounds: true,
     sentences: true, checks: true, timeLimit: "normal" };
   const STORE_KEY = "spelling-settings-v2";
   const settings = (() => {
@@ -1757,7 +1757,7 @@
   function startPractice(list, items, checks = []) {
     session = {
       list, i: 0, results: [], pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode,
-      items: (settings.shuffle ? shuffle(items) : items.slice()).concat(checks),
+      items: (settings.shuffle && !list.ordered ? shuffle(items) : items.slice()).concat(checks),
       secureBefore: secureSounds(loadProgress()),
       // Practising just the tricky words doesn't count towards the list's best score
       bestsBefore: bestsSnapshot(list, items.length === (list.items || []).length)

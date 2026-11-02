@@ -110,6 +110,19 @@ window.SENTENCES = {
   hum: "Can you hum a song?",
   dug: "The dog dug a hole.",
 
+  // y at the start (yes already appears with short e; yellow and yawn appear elsewhere)
+  yam: "A yam is a kind of root vegetable.",
+  yak: "A yak has thick fur.",
+  yap: "The little dog began to yap.",
+  yet: "We are not ready yet.",
+  yum: "Yum, this soup tastes good!",
+  yell: "Please do not yell in the library.",
+  yard: "We played in the yard.",
+  yarn: "Gran used blue yarn to knit a scarf.",
+  yoga: "We tried yoga in the hall.",
+  yip: "The puppy gave a little yip.",
+  yuck: "Yuck, that milk smells sour!",
+
   // Starting blends: bl cl fl gl pl sl
   black: "My new shoes are black.",
   clap: "Clap your hands to the music.",
@@ -835,6 +848,8 @@ window.SENTENCES = {
   lunches: "We pack our lunches.",
 
   // y at the end
+  baby: "The baby waved at us.",
+  copy: "I will copy the word carefully.",
   happy: "I am happy today.",
   funny: "That joke is funny.",
   sunny: "It is a sunny day.",
@@ -850,6 +865,8 @@ window.SENTENCES = {
   penny: "I found a penny.",
   hobby: "Drawing is my hobby.",
   teddy: "I sleep with my teddy.",
+  angry: "The loud noise made him angry.",
+  hungry: "I am hungry after the walk.",
   jolly: "Santa is jolly.",
   sandy: "The beach is sandy.",
   foggy: "It was foggy this morning.",

@@ -23,7 +23,7 @@ For the purpose, audience and principles that guide new work, see [PopSpell's pr
 
 For class work, pupils tap their name on a prepared shared tablet, or open their personal home link, then enter a four-digit PIN. Review words, stars and bests are kept under that pupil's login on the device and with the class. They follow the pupil to another device, such as a school tablet and a laptop at home. Both copies are merged, keeping the newest of everything. Results also go to their teacher. A device outside a class can still use a local name for standalone practice.
 
-Ready-made phonics lists are grouped into stages: short vowels → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, silent letters and tricky words.
+Ready-made phonics lists are grouped into stages: short vowels and initial **y** → blends and digraphs → split digraphs → vowel teams → r-controlled vowels → endings, including final **y** sounding /ee/, silent letters and tricky words. New devices practise words in the listed order by default. The two **y** lists always move from simpler words to harder ones, even if a device has the optional word-mixing setting on.
 
 ## Beyond spelling: writing, reading, listening and numeracy
 

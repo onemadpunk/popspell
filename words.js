@@ -74,7 +74,10 @@ window.SPELLING_LISTS = [
         check: ["fog", "cod", "lot"] },
       { id: "short-u", title: "Short u", tip: "Listen for the short 'u' sound in the middle, like in umbrella.",
         words: ["bun", "bus", "cup", "cut", "fun", "gum", "hug", "jug", "mud", "nut", "rug", "sun", "tub", "bug", "hut"],
-        check: ["pup", "hum", "dug"] }
+        check: ["pup", "hum", "dug"] },
+      { id: "initial-y", title: "y at the start (as in yes)", tip: "At the start, y says the first sound in yes, yell, you, yoga and yo-yo. Start with the short words.", focus: ["y"], ordered: true,
+        words: ["yam", "yak", "yap", "yes", "yet", "yum", "yell", "yawn", "yard", "yarn", "yellow", "yoga"],
+        check: ["yip", "yuck"] }
     ]
   },
   {
@@ -216,8 +219,8 @@ window.SPELLING_LISTS = [
       { id: "s-es", title: "Plurals: -s and -es", tip: "Add es after s, x, sh and ch. Add s to everything else.",
         words: ["cats", "dogs", "hats", "beds", "boxes", "foxes", "dishes", "wishes", "buses", "brushes", "churches", "benches", "glasses", "watches", "kisses"],
         check: ["cups", "buzzes", "lunches"] },
-      { id: "y-ee", title: "y at the end (as in happy)", tip: "At the end of a longer word, y often makes the 'ee' sound.",
-        words: ["happy", "funny", "sunny", "puppy", "bunny", "jelly", "silly", "windy", "party", "lucky", "messy", "muddy", "penny", "hobby", "teddy"],
+      { id: "y-ee", title: "y at the end (as in happy)", tip: "At the end of a longer word, y often makes the 'ee' sound, as in happy, baby, silly, angry and copy.", ordered: true,
+        words: ["baby", "copy", "happy", "silly", "funny", "sunny", "jelly", "puppy", "bunny", "lucky", "penny", "teddy", "windy", "angry", "hungry"],
         check: ["jolly", "sandy", "foggy"] },
       { id: "le", title: "-le endings", tip: "Lots of words end with le.",
         words: ["table", "apple", "bottle", "little", "middle", "puddle", "candle", "j-u-n-g-le", "purple", "simple", "giggle", "bubble", "pebble", "handle", "tickle"],
