@@ -31,9 +31,14 @@ for (const act of A.all()) {
     try { questions = act.make(); } catch (error) { throw new Error(`Cannot generate Eponine lines for ${act.id}: ${error.message}`); }
     for (const q of questions) {
       if (q.kind && !["choice", "type", "dictation"].includes(q.kind)) continue; // games have their own recordings
-      if (!q.say || (!q.say.clip && !q.say.word)) lines.add(q.say ? q.say.text : S.speakable(q.prompt));
+      if ((!q.say || (!q.say.clip && !q.say.word)) && !(act.id === "en-alphabet" && /^Which word comes first in alphabetical order:/.test(q.prompt)))
+        lines.add(q.say ? q.say.text : S.speakable(q.prompt));
       if (hearable(q)) q.options.forEach(o => { if (/\s/.test(o) || !recordedWords.has(o.toLowerCase())) lines.add(S.speakable(o)); });
-      lines.add(S.answerLine(q));
+      // These explanations depend on a random word or question combination.
+      // app.js assembles them from Eponine word and phrase clips, so recording
+      // random complete answers would create thousands of needless MP3 files.
+      if (!["l-rhyme", "l-first-sound", "l-count-sounds", "w-capitals"].includes(act.id))
+        lines.add(S.answerLine(q));
     }
   }
 }
