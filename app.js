@@ -187,6 +187,13 @@
     LISTS[list.id] = prepare(list, { stage: stage.stage, accent: stage.colour });
   }));
 
+  // The recording build uses the very same sound maps as a pupil's lesson.
+  // Stop before browser setup when running in the Node audio scanner.
+  if (window.__popspell_audio_scan === true) {
+    window.PopSpell = { LISTS, analyse };
+    return;
+  }
+
   /* ---------- Settings (kept in this browser only) ---------- */
 
   const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: false, spellOut: true, sounds: true,
