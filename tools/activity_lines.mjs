@@ -8,8 +8,17 @@ import { runInNewContext } from "node:vm";
 const root = new URL("../", import.meta.url);
 const page = {};
 page.window = page;
-for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js", "audio/index.js"])
+for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "speech-text.js", "audio/index.js"])
   runInNewContext(readFileSync(new URL(file, root), "utf8"), page);
+// Use the site's actual analyser and prepared lists rather than guessing phonemes.
+// Previously this scanner had no PopSpell.LISTS, so early listening games couldn't
+// generate their questions and their recordings were silently omitted.
+page.__popspell_audio_scan = true;
+page.localStorage = { getItem: () => null };
+page.document = { getElementById: () => ({}) };
+runInNewContext(readFileSync(new URL("app.js", root), "utf8"), page);
+delete page.__popspell_audio_scan;
+runInNewContext(readFileSync(new URL("activities.js", root), "utf8"), page);
 const { PopActivities: A, PopSpeech: S } = page;
 const recordedWords = new Set((page.POPSPELL_AUDIO || {}).words || []);
 
@@ -19,7 +28,7 @@ const hearable = q => q.kind === "choice" && q.sayOptions !== false && (q.sayOpt
 for (const act of A.all()) {
   for (let run = 0; run < 300; run++) {
     let questions;
-    try { questions = act.make(); } catch { break; }
+    try { questions = act.make(); } catch (error) { throw new Error(`Cannot generate Eponine lines for ${act.id}: ${error.message}`); }
     for (const q of questions) {
       if (q.kind && !["choice", "type", "dictation"].includes(q.kind)) continue; // games have their own recordings
       if (!q.say || (!q.say.clip && !q.say.word)) lines.add(q.say ? q.say.text : S.speakable(q.prompt));
@@ -37,5 +46,9 @@ for (const line of lines) {
   parts.filter(p => p.text).forEach(p => { pieces[p.key] = pieces[p.key] || p.text; });
 }
 const out = new URL("tools/lines.json", root);
+// Keep previous recordings as reusable speech pieces. A randomised activity must
+// never delete a previously recorded line just because it was not drawn today.
+const previous = JSON.parse(readFileSync(out, "utf8"));
+for (const [key, text] of Object.entries(previous)) pieces[key] ||= text;
 writeFileSync(out, JSON.stringify(Object.fromEntries(Object.entries(pieces).sort()), null, 0) + "\n");
 console.log(`${lines.size} lines → ${Object.keys(pieces).length} recorded pieces (+ number words)${tooBig ? `; ${tooBig} have numbers too big to build` : ""}`);
