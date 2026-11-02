@@ -391,11 +391,15 @@
   let pupilIdentity = null;
   let previewPupilName = "";
   const getPupil = () => {
-    if (CLASS) return previewMode && teacherUnlocked() ? previewPupilName : pupilIdentity?.classInfo.id === CLASS.id ? pupilIdentity.pupil : "";
+    if (CLASS && previewMode && teacherUnlocked()) return previewPupilName;
+    if (CLASS && pupilIdentity?.classInfo.id === CLASS.id) return pupilIdentity.pupil;
     try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; }
   };
-  const setPupil = name => { if (CLASS) { if (previewMode && teacherUnlocked()) previewPupilName = name; return; }
-    try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ } };
+  const setPupil = name => {
+    if (CLASS && previewMode && teacherUnlocked()) { previewPupilName = name; return; }
+    try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ }
+    updateReporting();
+  };
   const cleanName = s => String(s).replace(/[^\p{L}\p{N}' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 30);
 
   let cloud = null;    // window.PopCloud once connected
@@ -404,7 +408,7 @@
   let REPORTING = false;
   let previewMode = false;
   const previewBanner = () => previewMode ? `<p class="preview-banner">👀 Teacher preview · Nothing here is saved to a pupil. Close this tab to return to planning.</p>` : "";
-  const updateReporting = () => { REPORTING = !!(cloud && CLASS && pupilIdentity?.classInfo.id === CLASS.id); };
+  const updateReporting = () => { REPORTING = !!(cloud && CLASS && getPupil()); };
   function saveClass(c) {
     CLASS = c;
     try { if (c) localStorage.setItem(CLASS_KEY, JSON.stringify(c)); else localStorage.removeItem(CLASS_KEY); } catch { /* not remembered */ }
@@ -849,14 +853,34 @@
   let lastPupilActivity = Date.now();
   let pupilRestoreDone = !CLASS;
   let pupilLocking = false;
+  let allowNameEntry = false;
+  const tabletTiles = () => {
+    try { return JSON.parse(localStorage.getItem(TABLET_KEY) || "{}")[CLASS?.id] || []; } catch { return []; }
+  };
+  const tabletGateActive = () => !!(CLASS && !pupilIdentity && !getPupil() && !allowNameEntry && tabletTiles().length);
   function lockPupil() {
-    if (!pupilIdentity || pupilLocking) return;
+    if (pupilLocking) return;
+    const wasPin = !!pupilIdentity;
     pupilLocking = true;
     leaveSession(session);
     pupilIdentity = null;
+    syncedFor = null;
+    setPupil("");
     updateReporting();
     try { sessionStorage.removeItem(SESSION_PUPIL_KEY); sessionStorage.removeItem(SESSION_ACTIVITY_KEY); } catch { /* private mode */ }
-    cloud?.signOut().catch(() => location.reload());
+    pupilLocking = false;
+    applyLook();
+    if (wasPin) {
+      cloud?.signOut().catch(() => location.reload());
+      return;
+    }
+    if (tabletTiles().length) {
+      allowNameEntry = false;
+      showPupilGate();
+    } else {
+      history.replaceState(null, "", "#/");
+      showHome();
+    }
   }
   for (const event of ["pointerdown", "keydown"]) window.addEventListener(event, e => {
     if (!pupilIdentity || /^#\/(teacher|make)/.test(location.hash)) return;
@@ -875,19 +899,29 @@
 
   function showPupilGate() {
     document.title = `Pupil sign in · ${SITE.title}`;
-    let tiles = [];
-    try { tiles = JSON.parse(localStorage.getItem(TABLET_KEY) || "{}")[CLASS?.id] || []; } catch { /* private mode */ }
+    const tiles = tabletTiles();
     app.innerHTML = `<section class="panel start pupil-login"><h1>Who's practising?</h1>
+      ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}</p>` : ""}
       ${!pupilRestoreDone ? `<p role="status">Getting your tablet ready…</p>` : tiles.length
         ? `<p>Tap your name, then enter your four-digit PIN.</p><div class="pupil-tiles">${tiles.map(t =>
           `<a class="btn pupil-tile" href="#/p/${encodeURIComponent(t.code)}">${esc(t.name)}</a>`).join("")}</div>`
-        : `<p>Ask your teacher to set up this tablet, or open your personal link at home.</p>`}
-      <p class="hint">Finished? Use “Switch pupil” so the next person starts locked.</p></section>`;
+        : `<p>Type your first name on the home screen to see your work.</p>`}
+      <div class="row center" style="margin-top:1rem">
+        <button type="button" class="btn small" id="gateTypeName">Type my name instead</button>
+        ${CLASS ? `<button type="button" class="btn small" id="gateLeaveClass">Leave this class</button>` : ""}
+      </div></section>`;
+    if ($("#gateTypeName")) $("#gateTypeName").onclick = () => { allowNameEntry = true; showHome(); };
+    if ($("#gateLeaveClass")) $("#gateLeaveClass").onclick = () => {
+      allowNameEntry = false;
+      pupilIdentity = null;
+      saveClass(null);
+      if (!reloadForAccent()) showHome();
+    };
   }
 
   async function showPupilLogin(code, then) {
     code = String(code || "").toUpperCase();
-    if (!/^[A-Z2-9]{10}$/.test(code)) { showPupilGate(); return; }
+    if (!/^[A-Z2-9]{10}$/.test(code)) { showHome(); return; }
     if (pupilIdentity?.code === code) {
       history.replaceState(null, "", then);
       route();
@@ -943,6 +977,8 @@
       saved[info.id] = setup.tiles.map(t => ({ name: t.name, code: t.code }));
       localStorage.setItem(TABLET_KEY, JSON.stringify(saved));
       pupilIdentity = null;
+      setPupil("");
+      allowNameEntry = false;
       saveClass(info);
       pupilRestoreDone = true;
       history.replaceState(null, "", "#/");
@@ -969,7 +1005,7 @@
     const then = { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/";
     if (parts[0] === "p") { showPupilLogin(decodeURIComponent(parts[1] || ""), then); return; }
     if (parts[0] === "tablet") { installPupilTablet(parts[1] || ""); return; }
-    if (CLASS && !pupilIdentity && !(previewMode && teacherUnlocked()) && !["join", "teacher", "make"].includes(parts[0])) {
+    if (tabletGateActive() && !(previewMode && teacherUnlocked()) && !["join", "teacher", "make"].includes(parts[0])) {
       showPupilGate(); return;
     }
 
@@ -982,8 +1018,8 @@
         words: parseWords(params.get("words"))
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
-    // A class link chooses the class; personal links use #/p/CODE and the pupil's PIN.
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""));
+    // A class link (#/join/CODE or #/join/CODE?pupil=Ava) puts this device in the class; personal links use #/p/CODE.
+    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), then);
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
     else if (parts[0] === "teacher") showTeacherArea(decodeURIComponent(parts[1] || ""));
@@ -1001,7 +1037,7 @@
   }
 
   // A class link (#/join/K7P2QX) or a typed code puts this device in that teacher's class
-  async function joinClass(code, onDone) {
+  async function joinClass(code, onDone, pupil = "", then = "#/") {
     const my = phase;
     if (!onDone) app.innerHTML = `<section class="panel start"><h1>Joining the class…</h1></section>`;
     const api = await window.PopCloudReady;
@@ -1014,14 +1050,16 @@
       return;
     }
     cloud = api;
-    saveClass(info);
     pupilIdentity = null;
+    saveClass(info);
+    if (pupil) setPupil(pupil);
     updateReporting();
+    if (getPupil()) await syncLook(getPupil(), api);
     justJoined = true;
-    if (!onDone) history.replaceState(null, "", "#/");
+    if (!onDone) history.replaceState(null, "", then);
     if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    showPupilGate();
+    if (then === "#/assess") showQuest(); else if (then === "#/phonics") showPhonicsLive(); else showHome();
   }
 
   /* ---------- Phonics check practice, marked live: the word the teacher has put on screen ---------- */
@@ -1089,22 +1127,15 @@
     return seen;
   })();
 
-  // "What's your name?" or "Spelling as Ava · Not Ava?" — the name is remembered on this device
+  // "What's your name?" or "Spelling as Ava · Switch pupil" — the name is remembered on this device
   function mountPupil(box, { onChange, onEnter, lead = "Spelling as" } = {}) {
     const name = getPupil();
-    if (CLASS && !previewMode) {
-      box.innerHTML = name ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Switch pupil</button></p>
-        <p class="hint watched">Your teacher sees your name and how you get on.</p>`
-        : `<p>Sign in to save your work.</p><a class="btn" href="#/">Choose my name</a>`;
-      if (name) box.querySelector(".not-me").onclick = lockPupil;
-      return;
-    }
-    // lead "" (the home page, which already greets them by name) leaves just "Not Ava?"
+    // lead "" (the home page, which already greets them by name) leaves just "Switch pupil" or "Not Ava?"
     // Said plainly to the child, where they type their name: who will see it (the Children's Code asks for this)
-    const who = REPORTING ? "Your teacher sees your name and how you get on." : "Your name stays on this device.";
+    const who = REPORTING || CLASS ? "Your teacher sees your name and how you get on." : "Your name stays on this device.";
     box.innerHTML = name
-      ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">Not ${esc(name)}?</button></p>
-         ${REPORTING ? `<p class="hint watched"><span aria-hidden="true">👀</span> ${who}</p>` : ""}`
+      ? `<p>${lead ? `${esc(lead)} <b>${esc(name)}</b> · ` : ""}<button type="button" class="linklike not-me">${CLASS ? "Switch pupil" : `Not ${esc(name)}?`}</button></p>
+         ${REPORTING || CLASS ? `<p class="hint watched"><span aria-hidden="true">👀</span> ${who}</p>` : ""}`
       : `<label class="field pupil-field">What's your name?
            <input class="pupil-name" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="First name">
          </label>
@@ -1112,10 +1143,12 @@
          <p class="hint pupil-hint"></p>`;
     if (name) {
       box.querySelector(".not-me").onclick = () => {
+        if (pupilIdentity) { lockPupil(); return; }
+        syncedFor = null;
         setPupil("");
         applyLook();
         if (onChange) onChange();
-        else { mountPupil(box, { onChange, onEnter, lead }); box.querySelector(".pupil-name").focus(); }
+        else { mountPupil(box, { onChange, onEnter, lead }); box.querySelector(".pupil-name")?.focus(); }
       };
     } else {
       box.querySelector(".pupil-name").onkeydown = e => { if (e.key === "Enter" && onEnter) onEnter(); };
@@ -1125,11 +1158,11 @@
   // Saves the typed name; false (with a nudge) if there isn't one yet
   function takePupilName(box) {
     if (getPupil()) return true;
-    if (CLASS && !previewMode) { showPupilGate(); return false; }
     const input = box.querySelector(".pupil-name");
+    if (!input) { if (tabletGateActive()) showPupilGate(); return false; }
     const name = cleanName(input.value);
     if (!name) {
-      box.querySelector(".pupil-hint").textContent = REPORTING
+      box.querySelector(".pupil-hint").textContent = REPORTING || CLASS
         ? "Type your name first, so your teacher can see how you did."
         : "Type your name first, so your stars and sounds are saved.";
       input.focus();
@@ -1336,7 +1369,7 @@
 
   function showHome() {
     document.title = SITE.title;
-    if (CLASS && !pupilIdentity) { showPupilGate(); return; }
+    if (tabletGateActive()) { showPupilGate(); return; }
     // A class can be set so its pupils see only the work set for them (teachers still see everything)
     const locked = !!(CLASS && CLASS.assignedOnly) && !teacherUnlocked();
     const name = getPupil();
@@ -1347,7 +1380,7 @@
         <div class="welcome-main">
           <p class="hero-kicker">${name ? "Sounds become spellings" : "Welcome to PopSpell"}</p>
           <h1>${name ? `Hi, ${esc(name)}!` : "Hear it. Map it. Spell it."}</h1>
-          ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""}</p>` : ""}
+          ${CLASS ? `<p class="class-name">${esc(CLASS.name)}${CLASS.teacherName ? ` · ${esc(CLASS.teacherName)}` : ""}${justJoined ? " — this device has joined ✓" : ""} · <button type="button" class="linklike" id="leaveClassHome">Leave class</button></p>` : ""}
           <div class="pupil" id="homePupil"></div>
           <div class="me-cards" id="meCards"></div>
           ${CLOUD_CONFIGURED && !CLASS ? `
@@ -1369,6 +1402,15 @@
           <div id="explore"></div>
         </section>`}`;
     if (name && !locked) { drawJourney(loadBests()); drawExplore(); }
+    if ($("#leaveClassHome")) {
+      $("#leaveClassHome").onclick = () => {
+        allowNameEntry = false;
+        pupilIdentity = null;
+        justJoined = false;
+        saveClass(null);
+        if (!reloadForAccent()) showHome();
+      };
+    }
 
     const joinForm = $("#joinForm");
     if (joinForm) {
@@ -1376,11 +1418,13 @@
         e.preventDefault();
         const code = $("#joinCode").value.trim();
         if (!code) return $("#joinCode").focus();
+        const typedName = cleanName(app.querySelector(".pupil-name")?.value || "");
+        if (typedName) setPupil(typedName);
         $("#joinHint").textContent = "Checking…";
         joinClass(code, ok => {
           if (ok) showHome();
           else if ($("#joinHint")) $("#joinHint").textContent = "That code didn't work — check it with your teacher.";
-        });
+        }, typedName);
       };
     }
 
@@ -1394,7 +1438,7 @@
       showHome();
     };
     mountPupil(box, { lead: "", onChange: showHome, onEnter: save });
-    if (!getPupil() && !CLASS) {
+    if (!getPupil()) {
       $("#meCards").innerHTML = `<button class="btn primary big" id="saveName">Save my name</button>`;
       $("#saveName").onclick = save;
       return;

@@ -136,10 +136,14 @@
   /* ---------- Signing in ---------- */
 
   function showSignIn() {
+    const isPreview = !/^(?:www\.)?popspell\.com$/i.test(location.hostname);
     message(`
       <h1>👩‍🏫 Teacher sign in</h1>
       <p>Sign in with the Google account your invitation was sent to.</p>
-      <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
+      <div class="row center">
+        <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
+        ${isPreview && cloud.signInPreview ? `<button class="btn big" id="signInPreview" type="button">▶ Continue in Preview Mode</button>` : ""}
+      </div>
       <p class="hint" id="signHint"></p>
       <p class="hint">Pupils tap their name on a prepared tablet, or open a personal link, then enter their PIN.</p>`);
     $("#signIn").onclick = async () => {
@@ -147,6 +151,12 @@
       try { await cloud.signIn(); show(root); }
       catch (err) { $("#signHint").textContent = /popup-closed|cancelled/.test(err.code || "") ? "" : `Couldn't sign in: ${err.message}`; }
     };
+    if ($("#signInPreview")) {
+      $("#signInPreview").onclick = async () => {
+        await cloud.signInPreview();
+        show(root);
+      };
+    }
   }
 
   function showNotInvited() {
@@ -1090,9 +1100,13 @@
 
   async function drawAssign(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
-    let rows;
-    try { rows = await cloud.assignments(current.id); } catch (err) { return showError(err); }
+    let rows, roster;
+    try { [rows, roster] = await Promise.all([cloud.assignments(current.id), cloud.pupils(current.id)]); } catch (err) { return showError(err); }
     if (tab !== "assign") return;
+    roster.forEach(r => {
+      if (!rows.some(a => sameName(a.who, r.name))) rows.push({ key: r.key, who: r.name, lists: [], plans: [] });
+    });
+    rows.sort((a, b) => (a.key === "everyone" ? -1 : b.key === "everyone" ? 1 : a.who.localeCompare(b.who)));
     const options = catalogueOptions();
     body.innerHTML = `
       <p class="hint">Choose work for each pupil in <b>${esc(current.name)}</b>. Use <b>Test online</b> before assigning it; previews do not save results. A row called <b>Everyone</b> is shown to every pupil in the class. Type names exactly as pupils type them.</p>
@@ -4118,9 +4132,10 @@
         <h3>${esc(c.name)}</h3>
         ${c.teacher !== me.uid ? `<p class="meta">${esc(c.teacherName)}</p>` : ""}
         <p class="t-code" aria-label="Class code">${esc(c.id)}</p>
-        <p class="hint">This link chooses the class. Set up pupil logins and shared tablets from the Pupils page; a class code alone cannot open pupil work.</p>
+        <p class="hint">Pupils can open this link (or enter the class code) and type their first name to see their assigned work.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link" aria-label="Join link for ${esc(c.name)}">
-          <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button></div>
+          <button class="btn" data-copy="${esc(c.id)}">📋 Copy</button>
+          <a class="btn primary" href="#/join/${esc(c.id)}">▶ Open class</a></div>
         ${c.teacher === me.uid || canAdmin() ? `<div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" aria-label="Class name" data-rename-input="${esc(c.id)}">
           <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>
           <label class="check"><input type="checkbox" data-assigned-only="${esc(c.id)}"${c.assignedOnly ? " checked" : ""}>
