@@ -40,7 +40,7 @@ NUMBER_WORDS = dict(enumerate(["zero", "one", "two", "three", "four", "five", "s
                                "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]))
 NUMBER_WORDS.update({(i + 2) * 10: w for i, w in enumerate(["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"])})
 NUMBER_WORDS = {str(k): v for k, v in NUMBER_WORDS.items()}
-NUMBER_WORDS.update({"hundred": "hundred", "thousand": "thousand", "and": "and", "point": "point"})
+NUMBER_WORDS.update({"hundred": "hundred", "thousand": "thousand", "million": "million", "and": "and", "point": "point"})
 
 # Keep in step with PHRASES in app.js
 PHRASES = {
@@ -72,6 +72,8 @@ PHRASES = {
     "q-rhyme": "Which word rhymes with this word? Listen.",
     "q-first": "Which word starts with the same sound as this word? Listen.",
     "q-count": "How many sounds can you hear in this word? Listen.",
+    "alphabet-order": "Which word comes first in alphabetical order?",
+    "roman-equals": "equals",
     # Pip's games use the same Eponine recording as the rest of PopSpell.
     "switch-swap": "Change one sound. Listen to the first word.",
     "switch-add": "Add one sound. Listen to the first word.",
@@ -185,7 +187,11 @@ def said(text):
 def plan():
     """Every recording the site needs: {"words/cake": text}."""
     jobs = {}
-    for w in list_words(ROOT / "words.js"):
+    # Alphabet choices are randomised at lesson time. Record the individual
+    # words once, then build each question from these and a fixed introduction.
+    alphabet_choices = {"apple", "bed", "cat", "dog", "egg", "fish", "goat", "hat",
+                        "jam", "kite", "leg", "mop", "nut", "pig", "sun", "van"}
+    for w in sorted(set(list_words(ROOT / "words.js")) | alphabet_choices):
         jobs[f"words/{w}"] = WORD_FIXES.get(w, WORD_TEXT.format(Word=w.capitalize(), word=w))
     for w, sentence in list_sentences(ROOT / "sentences.js").items():
         jobs[f"sentences/{w}"] = sentence
