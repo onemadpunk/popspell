@@ -87,8 +87,12 @@ window.PopWorksheets = (() => {
       "Ask your adult to say these new words. Spell each one, then mark the spelling pattern you used.",
       table(selected.map((_,i) => ['<b>' + (i+1) + '.</b> Adult says the word', blank])));
   };
-  function cloze(items, support, answer, label = "Use it in a sentence") {
-    const samples = complete(items);
+  function cloze(items, support, answer, label = "Use it in a sentence", listId = "") {
+    const known = new Set(items.map(x => wordText(x).toLowerCase()));
+    const originalContexts = ((window.PopWorksheetContexts || {})[listId] || [])
+      .map(([word, text]) => ({ word, text }))
+      .filter(x => known.has(x.word.toLowerCase()) && gapSentence(x.text, x.word));
+    const samples = (originalContexts.length >= 2 ? originalContexts : complete(items)).slice(0,3);
     if (samples.length < 2) {
       const ws = items.slice(0,2).map(wordText);
       answer.push(sectionAnswers(label,"Open responses. Check that " + ws.map(e).join(" and ") +
@@ -254,8 +258,8 @@ window.PopWorksheets = (() => {
         bank(words.slice(0,8)) + line(2)));
       answers.push(sectionAnswers("Investigation","Open responses. Look for a sensible explanation, or a sentence using the word with the intended meaning."));
     }
-    const context = cloze(items.slice(3),support,answers,
-      fam === "word-study" ? "Words in context" : "Use it in a sentence");
+    const context = cloze(fam === "word-study" || fam === "exception" ? items : items.slice(3),
+      support, answers, fam === "word-study" ? "Words in context" : "Use it in a sentence", list.id);
     pupil.push(context);
     pupil.push(check(checks,support,answers));
     if (stretch) pupil.push(task(6,"Explain and transfer",
