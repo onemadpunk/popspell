@@ -252,11 +252,18 @@ window.PopWorksheets = (() => {
         "Each word has lost one letter. Write the complete word and check every letter.",
         '<div class="ws-wb-grid">'+selected.map(w=>'<p>'+removeLetter(w)+'</p>').join("")+'</div>'));
       answers.push(sectionAnswers("Missing letters",selected.map(e).join(", ")));
-      pupil.push(task(3,older ? "Word investigation" : "Use your word bank",
-        older ? "Choose two words. Look for their smaller meaningful parts, syllables or spelling patterns. Explain what you discover."
-          : "Choose two words from the bank and say a sentence about something real.",
-        bank(words.slice(0,8)) + line(2)));
-      answers.push(sectionAnswers("Investigation","Open responses. Look for a sensible explanation, or a sentence using the word with the intended meaning."));
+      const investigation = older && (window.PopWorksheetInvestigations || {})[list.id];
+      if (investigation) {
+        pupil.push(task(3, "Word investigation", investigation.prompt,
+          bank(investigation.words) + line(2)));
+        answers.push(sectionAnswers("Word investigation", e(investigation.expect)));
+      } else {
+        pupil.push(task(3,older ? "Word investigation" : "Use your word bank",
+          older ? "Choose two words. Look for their smaller meaningful parts, syllables or spelling patterns. Explain what you discover."
+            : "Choose two words from the bank and say a sentence about something real.",
+          bank(words.slice(0,8)) + line(2)));
+        answers.push(sectionAnswers("Investigation","Open responses. Look for a sensible explanation, or a sentence using the word with the intended meaning."));
+      }
     }
     const context = cloze(fam === "word-study" || fam === "exception" ? items : items.slice(3),
       support, answers, fam === "word-study" ? "Words in context" : "Use it in a sentence", list.id);
