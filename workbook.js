@@ -20,7 +20,7 @@ window.PopWorksheets = (() => {
     const left = at === 0 || !/[a-z]/i.test(full[at - 1]);
     const right = at + word.length >= full.length || !/[a-z]/i.test(full[at + word.length]);
     if (!left || !right) return "";
-    return full.slice(0, at) + '<span class="ws-wb-gap">____________</span>' + e(full.slice(at + word.length));
+    return e(full.slice(0, at)) + '<span class="ws-wb-gap">____________</span>' + e(full.slice(at + word.length));
   };
   const complete = items => items
     .map(item => ({word:wordText(item), text:sentence(wordText(item))}))
@@ -55,6 +55,7 @@ window.PopWorksheets = (() => {
   const familyOf = list => {
     const id = list.id || "";
     if (/^(wl-y34|wl-y56)/.test(id)) return "word-study";
+    if (id === "initial-y") return "teams";
     if (/^(cew-|y1-days)/.test(id) || id === "tricky") return "exception";
     if (/^[aeiou]-e$/.test(id)) return "split-e";
     if (["ing","s-es","y-ee","le","soft-c-g","kn-wr","ph"].includes(id)) return "endings";
@@ -136,7 +137,8 @@ window.PopWorksheets = (() => {
       pupil.push(task(3,"Change one sound",
         "Use the first word to make the second. What sound and letters changed?",
         contrast.length ? contrast.map(([a,b])=>'<p class="ws-wb-pair"><b>'+e(a)+'</b> → '+blank+
-          ' <span class="ws-wb-hint">Change one sound to make '+e(b)+'.</span></p>').join("")
+          ' <span class="ws-wb-hint">Replace letter '+e(String([...a].findIndex((ch,i) => ch !== b[i])+1))+
+          ' with '+e(b[[...a].findIndex((ch,i) => ch !== b[i])])+'.</span></p>').join("")
           : '<p>Choose two words above. Say which sound is different.</p>'+line()));
       answers.push(sectionAnswers("Change one sound",contrast.length ?
         contrast.map(([a,b])=>e(a)+" → "+e(b)).join("; ") : "Accept a correctly identified change in one sound."));
