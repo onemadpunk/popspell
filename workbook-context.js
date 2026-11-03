@@ -123,3 +123,53 @@ window.PopWorksheetContexts = {
     ["yacht","A small yacht crossed the bay before sunset."]
   ]
 };
+
+/* Targeted comparisons for older pupils. Each prompt is anchored in words
+   actually taught by its list, with a checkable teaching point. */
+window.PopWorksheetInvestigations = {
+  "wl-y34-1": { words:["breath","breathe"],
+    prompt:"Read both words aloud. What changes in the written word, the vowel sound and the final consonant sound?",
+    expect:"Breath becomes breathe with a final e; the middle vowel changes and th is pronounced differently." },
+  "wl-y34-2": { words:["centre","century"],
+    prompt:"Compare the opening letters. Where do the words stop being the same, and how does the pronunciation change?",
+    expect:"Both begin cent; their endings and pronunciation differ. Do not assume similar starts mean the same meaning." },
+  "wl-y34-3": { words:["eight","eighth"],
+    prompt:"Look for the extra letter. Why do you have to pay attention when spelling the ordinal word?",
+    expect:"Eighth adds h after the final t of eight. Reading both aloud also reveals a sound change." },
+  "wl-y34-4": { words:["heard","heart"],
+    prompt:"Underline ear in both words. Does it make the same sound? How can the context help?",
+    expect:"The ear letters have different pronunciations; the words also have different meanings." },
+  "wl-y34-5": { words:["occasion","occasionally"],
+    prompt:"Compare the endings. Which extra letters are needed to turn occasion into occasionally?",
+    expect:"Occasionally adds ally to occasion; pupils must retain the double c and s of the base." },
+  "wl-y34-6": { words:["possess","possession"],
+    prompt:"Where does the spelling stay the same? What ending makes the second word a noun?",
+    expect:"Possess retains its ss and takes ion in possession. Discuss their grammatical roles." },
+  "wl-y34-7": { words:["straight","strange"],
+    prompt:"Both words begin str. How are the following vowel letters different? Read both aloud.",
+    expect:"Straight has aigh, while strange has a vowel followed by nge; both start str." },
+  "wl-y34-8": { words:["though","thought","through"],
+    prompt:"Circle ough in each word. Can you read all three with the same vowel sound? Explain.",
+    expect:"The sequence ough has different pronunciations in though, thought and through." },
+  "wl-y56-1": { words:["accommodate","aggressive"],
+    prompt:"Which consonants are doubled in each word? Explain how you can check your spelling.",
+    expect:"Accommodate has double c and double m; aggressive has double g and double s." },
+  "wl-y56-2": { words:["conscience","conscious"],
+    prompt:"What letters are shared? How do the meanings differ, and how can you remember the endings?",
+    expect:"Conscience relates to moral judgement; conscious means aware or awake. Their endings differ." },
+  "wl-y56-3": { words:["equip","equipped","equipment"],
+    prompt:"Compare the base word with both related forms. When is the final consonant doubled?",
+    expect:"Equipped has double p; equipment keeps a single p. Explain how the endings are formed." },
+  "wl-y56-4": { words:["immediate","immediately"],
+    prompt:"What ending has been added? Which letters from immediate stay in immediately?",
+    expect:"Immediately adds ly to immediate without dropping the final e." },
+  "wl-y56-5": { words:["necessary","nuisance"],
+    prompt:"Identify the consonant or vowel sequence that makes each word difficult. Suggest a reliable way to check it.",
+    expect:"Necessary has one c and two s letters; nuisance uses the unusual ui sequence. Avoid invented spelling rules." },
+  "wl-y56-6": { words:["rhyme","rhythm"],
+    prompt:"Both begin rhy. Read them aloud and compare what those first letters represent in each word.",
+    expect:"Rhyme and rhythm start with rhy but their vowel sounds differ. Rhythm also has an unusual final spelling." },
+  "wl-y56-7": { words:["sincerely","soldier"],
+    prompt:"One word ends in ly and one does not. What spelling detail will you check in each?",
+    expect:"Sincerely ends in ely, from sincere + ly; soldier contains unusual dier at the end." }
+};
