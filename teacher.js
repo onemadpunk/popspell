@@ -644,7 +644,7 @@
   // stories and dictation get a paper version of their questions
   function printEntry(entry, cur = "") {
     if (entry.type === "lesson") return lessonPrintDialog(entry.lesson, "", cur);
-    if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "mapping");
+    if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "workshop");
     previewActivitySheet(entry.id, cur === "england" ? (entry.en ? entry.en.label : "") : entry.level);
   }
 
@@ -791,8 +791,8 @@
     l.use.forEach(id => {
       if (isPaper(id)) return;
       if (catalogueList(id)) {
-        adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
-        return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, goal), checked: true });
+        adult.push({ label: `Teacher notes: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "workshop").answers, checked: true, adult: true });
+        return pupil.push({ label: `Practice worksheet: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey() }, "workshop").html, goal), checked: true });
       }
       const act = A && A.get(id);
       if (!act || act.area === "games") return;
@@ -1694,6 +1694,11 @@
     if (isPaper(plan.list)) return { className: "ws-literacy", html: PAPER[plan.list].html(who) };
     const list = catalogueList(plan.list);
     if (!list) return null;
+    if (mode.startsWith("workshop")) {
+      const level = mode === "workshop-support" ? "support" : mode === "workshop-stretch" ? "stretch" : "core";
+      return window.PopWorksheets && window.PopWorksheets.build(list,
+        { who, date: plan.from, level, brandHead });
+    }
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
     if (mode === "sentences") return { className: "ws-literacy", html: sentencesHTML(who, list) };
     const fresh = mode === "key" || mode === "dictation" || mode === "mapping" ? (list.checks || []) : [];
@@ -1719,7 +1724,8 @@
     return { className: "", html };
   }
   // The pupil can't do these without someone reading the words out, so the words come too, on their own page
-  const needsWords = (plan, mode) => !isPaper(plan.list) && (mode === "mapping" || mode === "dictation");
+  const needsWords = (plan, mode) => !isPaper(plan.list) &&
+    (mode.startsWith("workshop") || mode === "mapping" || mode === "dictation");
   // cache keeps a paper sheet the same while its preview is open, so what prints is what was seen
   const withWords = (who, plan, mode, words = needsWords(plan, mode), cache = null) => {
     if (isPaper(plan.list)) {
@@ -1729,11 +1735,14 @@
       return { className: "ws-literacy", html: `<div class="ws-page">${b.pupil}</div>${adult ? `<div class="ws-page ws-adult">${b.answers}</div>` : ""}` };
     }
     const sheet = worksheetSpec(who, plan, mode);
-    return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words ? `<div class="ws-page ws-adult">${worksheetSpec(who, plan, "key").html}</div>` : ""}` };
+    const adultPage = mode.startsWith("workshop") ? sheet.answers : worksheetSpec(who, plan, "key").html;
+    return { className: sheet.className, html: `<div class="ws-page${mode === "key" ? " ws-adult" : ""}">${sheet.html}</div>${words && adultPage ? `<div class="ws-page ws-adult">${adultPage}</div>` : ""}` };
   };
 
   // What Recently printed calls a spelling or paper sheet, and every page that goes with it
-  const SHEET_MODES = { mapping: "Sound map", dictation: "Dictation", handwriting: "Handwriting", sentences: "Sentences", key: "Words to say" };
+  const SHEET_MODES = { workshop: "Practice worksheet", "workshop-support": "Supported worksheet",
+    "workshop-stretch": "Extension worksheet", mapping: "Sound map", dictation: "Dictation",
+    handwriting: "Handwriting", sentences: "Sentences", key: "Words to say" };
   const keepWorksheet = (who, plan, mode, cache) => ({ who, title: isPaper(plan.list) ? PAPER[plan.list].title : `${SHEET_MODES[mode]}: ${listTitle(plan.list)}`,
     pages: withWords(who, plan, mode, isPaper(plan.list) || needsWords(plan, mode), cache).html });
 
@@ -1749,10 +1758,10 @@
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
-      ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+      ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="workshop">Practice worksheet</option><option value="workshop-support">Supported practice</option><option value="workshop-stretch">Extension</option><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
         <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
       <label class="check" data-words-box><input type="checkbox" data-words${isPaper(plan.list) && !PAPER[plan.list].needsAdult ? "" : " checked"}${isPaper(plan.list) && PAPER[plan.list].needsAdult ? " disabled" : ""}> ${isPaper(plan.list)
-        ? (PAPER[plan.list].needsAdult ? "A page for you to mark from (needed)" : "Also print the answers, on a separate page for you") : "The words to say, on a separate page for you"}</label>
+        ? (PAPER[plan.list].needsAdult ? "A page for you to mark from (needed)" : "Also print the answers, on a separate page for you") : "Teacher notes or words to say, on a separate page"}</label>
       <button class="btn small" type="button" data-close>Close</button>
       <button class="btn small primary" type="button" data-print>Print / Save PDF</button></div>
       <section class="sheet-preview-page"></section>`;
@@ -1837,7 +1846,7 @@
         <div class="add-row" id="paperTools">
           <input type="text" id="paperWho" aria-label="Pupil's name" placeholder="Pupil's name" maxlength="40">
           <select id="paperList" aria-label="Spelling list"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
-          <label>Sheet type <select id="paperMode"><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+          <label>Sheet type <select id="paperMode"><option value="workshop">Practice worksheet</option><option value="workshop-support">Supported practice</option><option value="workshop-stretch">Extension</option><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
             <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>
           <button class="btn small" id="paperPreview" type="button" disabled>👀 Preview sheet</button>
           <button class="btn small" id="paperPrint" type="button" disabled>🖨️ Print / Save PDF</button>
@@ -1865,7 +1874,8 @@
             <button class="btn small" data-save-plan="${rowIndex}-${planIndex}">Save dates</button></div>
           <div class="row"><a class="btn small" href="${esc(previewHref(plan.list))}" target="_blank" rel="noopener">▶ Test online</a>
             ${catalogueList(plan.list) ? `<button class="btn small" data-preview-plan="${rowIndex}-${planIndex}">👀 Preview worksheet</button>
-            <button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
+            <button class="btn small" data-print-workshop="${rowIndex}-${planIndex}">Print practice worksheet / Save PDF</button>
+            <button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map</button>
             <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
             <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print words to say</button>
             <button class="btn small" data-print-handwriting="${rowIndex}-${planIndex}">Print handwriting</button>
@@ -1942,9 +1952,9 @@
     wirePrinted(body);
     body.querySelectorAll("[data-preview-plan]").forEach(b => { b.onclick = () => {
       const { row, plan } = ref(b.dataset.previewPlan);
-      previewWorksheet(row.who, plan, "mapping");
+      previewWorksheet(row.who, plan, "workshop");
     }; });
-    ["mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
+    ["workshop", "mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
       b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
         printWorksheet(row.who, plan, mode); };
     }));
@@ -2649,7 +2659,7 @@
     const sheetLevel = s => (inEngland(x.r) ? (enWork(s.id) || {}).label || "" : s.id.startsWith("dictate:") ? levelOfStage(stageOf(s.id.slice(8))) : s.act.level);
     const made = {};
     const pagesOf = (s, i) => (made[i] = made[i] || activityPages(s.act, s.qs, sheetLevel(s), x.r.name));
-    const sheetHTML = (s, i) => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date }, "mapping").html : pagesOf(s, i).pupil);
+    const sheetHTML = (s, i) => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date }, "workshop").html : pagesOf(s, i).pupil);
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
@@ -2668,7 +2678,7 @@
       const chosen = key => all || dialog.querySelector(`[data-sheet="${key}"]`).checked;
       const pupil = sheets.map((s, i) => (chosen(i) ? sheetHTML(s, i) : ""));
       const adult = [chosen("plan") ? lessonPlanHTML(x, parts, date, length) : ""]
-        .concat(sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "key").html)));
+        .concat(sheets.map((s, i) => (!chosen(`a${i}`) ? "" : s.act ? pagesOf(s, i).answers : worksheetSpec(x.r.name, { list: s.id, from: date }, "workshop").answers)));
       return pupil.filter(Boolean).map(h => `<div class="ws-page">${h}</div>`).join("")
         + adult.filter(Boolean).map(h => `<div class="ws-page ws-adult">${h}</div>`).join("");
     };
@@ -4095,7 +4105,7 @@
     }; });
     body.querySelectorAll("[data-print-homework]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.printHomework);
-      printWorksheet(pupil.name, { list: pupil.homeworkList, from: pupil.nextLessonDate || todayKey() }, "mapping");
+      printWorksheet(pupil.name, { list: pupil.homeworkList, from: pupil.nextLessonDate || todayKey() }, "workshop");
     }; });
     body.querySelectorAll("[data-email-pupil]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.emailPupil);
