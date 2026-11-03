@@ -1,0 +1,49 @@
+/* Original Pop Spell classroom worksheets. Readable without colour or a font download.
+   A4 print and screen preview share the same measurements. */
+.ws-workbook-sheet, .sheet-preview-page.ws-workbook-sheet { color:#20232c; }
+.ws-workbook { font-family:var(--reading-font, Arial, sans-serif); font-size:11pt; line-height:1.34; }
+.ws-workbook .ws-wb-lead { margin:2px 0 5px; font-size:11pt; font-weight:700; color:#173c70; }
+.ws-workbook .ws-wb-focus { border-left:3px solid #2c748e; padding:5px 10px; background:#f4f9fc; }
+.ws-workbook .ws-wb-focus b { font-size:9pt; text-transform:uppercase; letter-spacing:.06em; }
+.ws-workbook .ws-wb-focus p { margin:2px 0 0; font-size:10.5pt; }
+.ws-workbook .ws-wb-instructions { font-size:9.7pt; margin:5px 0 9px; color:#4a5366; }
+.ws-workbook .ws-wb-task { border-top:1px solid #c5d0dd; padding-top:7px; margin:7px 0 10px; break-inside:avoid; page-break-inside:avoid; }
+.ws-workbook .ws-wb-task h2 { display:flex; align-items:center; gap:8px; color:#173c70; font:700 12pt var(--font,Arial,sans-serif); margin:0 0 5px; }
+.ws-workbook .ws-wb-task h2 span { display:inline-flex; flex:none; align-items:center; justify-content:center; border:1.5px solid #234a79; border-radius:50%; width:24px; height:24px; color:#234a79; font-size:10pt; }
+.ws-workbook .ws-wb-task > p { margin:3px 0 6px; font-size:10.2pt; }
+.ws-workbook .ws-wb-words { display:flex; flex-wrap:wrap; gap:9px 17px; margin:6px 0 8px; }
+.ws-workbook .ws-wb-word { display:inline-block; padding:3px 7px; border-bottom:1.5px solid #607b9a; font-size:13pt; font-weight:700; }
+.ws-workbook .ws-wb-lines { display:grid; gap:6px; margin:8px 0; }
+.ws-workbook .ws-wb-lines > span { display:block; height:25px; border-bottom:1px solid #758399; }
+.ws-workbook .ws-wb-bank { border:1px solid #a5b5c6; background:#f8fafc; padding:7px 9px; font-size:10.5pt; margin:5px 0 9px; }
+.ws-workbook .ws-wb-bank b { color:#173c70; }
+.ws-workbook .ws-wb-table { display:grid; gap:0; border:1px solid #9ca9b8; margin:6px 0; }
+.ws-workbook .ws-wb-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.ws-workbook .ws-wb-row > div { padding:6px 9px; border-right:1px solid #b8c4d0; border-bottom:1px solid #b8c4d0; min-height:38px; }
+.ws-workbook .ws-wb-row > div:last-child { border-right:0; }
+.ws-workbook .ws-wb-row:last-child > div { border-bottom:0; }
+.ws-workbook .ws-wb-answer { display:inline-block; min-width:12em; border-bottom:1px solid #333; }
+.ws-workbook .ws-wb-sounds { display:flex; width:100%; gap:5px; }
+.ws-workbook .ws-wb-sounds span { display:block; flex:1; min-width:16px; height:29px; border:1.7px solid #253349; }
+.ws-workbook .ws-wb-compare { display:flex; gap:14px; align-items:center; font-size:16pt; padding:9px; margin:4px 0; border:1px solid #b4c6d9; }
+.ws-workbook .ws-wb-compare span { font-size:11pt; }
+.ws-workbook .ws-wb-pair { display:flex; flex-wrap:wrap; align-items:center; gap:12px; margin:8px 0; }
+.ws-workbook .ws-wb-hint { font-size:9pt; }
+.ws-workbook .ws-wb-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:5px 0; }
+.ws-workbook .ws-wb-grid p { border:1px solid #c2cdd8; font-size:14pt; font-weight:700; padding:7px 12px; margin:0; }
+.ws-workbook .ws-wb-cloze { margin:6px 0 11px; line-height:1.7; }
+.ws-workbook .ws-wb-gap { display:inline-block; min-width:8em; border-bottom:1.5px solid #111; }
+.ws-workbook .ws-wb-self { margin:12px 0 0; padding:7px 0; border-top:2px solid #244a76; font-size:9.5pt; }
+.ws-workbook.ws-wb-teacher { font-family:Arial,sans-serif; font-size:10pt; }
+.ws-workbook.ws-wb-teacher h2 { font-size:12pt; margin:9px 0 3px; color:#173c70; }
+.ws-workbook.ws-wb-teacher p { margin:5px 0 7px; }
+.ws-workbook.ws-wb-teacher ol { padding-left:1.6em; }
+.ws-workbook.ws-wb-teacher li { margin:6px 0; break-inside:avoid; }
+@media print {
+  .worksheet-print.ws-workbook-sheet .ws-workbook, .worksheet-print .ws-workbook { font-size:11pt; }
+  .worksheet-print .ws-workbook p { margin:3px 0 5px; }
+  .worksheet-print .ws-workbook .ws-wb-task { page-break-inside:avoid; }
+  .ws-workbook .ws-wb-focus, .ws-workbook .ws-wb-bank { background:#fff; border-color:#777; }
+  .ws-workbook .ws-wb-task h2, .ws-workbook .ws-wb-lead { color:#111; }
+  .ws-workbook .ws-wb-task h2 span { border-color:#333; color:#111; }
+}
