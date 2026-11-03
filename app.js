@@ -187,6 +187,13 @@
     LISTS[list.id] = prepare(list, { stage: stage.stage, accent: stage.colour });
   }));
 
+  // The recording build uses the very same sound maps as a pupil's lesson.
+  // Stop before browser setup when running in the Node audio scanner.
+  if (window.__popspell_audio_scan === true) {
+    window.PopSpell = { LISTS, analyse };
+    return;
+  }
+
   /* ---------- Settings (kept in this browser only) ---------- */
 
   const DEFAULTS = { rate: 0.85, voice: "", accent: "scottish", tries: 3, shuffle: false, spellOut: true, sounds: true,
@@ -250,6 +257,12 @@
   const recLines = new Set(RECORDED.lines);
   const recNumbers = new Set(RECORDED.numbers);
   const recSentences = new Set(RECORDED.sentences);
+  // A whole recorded sentence can also be reused in feedback. Randomised
+  // activities must not need a separate recording for every possible answer.
+  const recSentenceByText = new Map(Object.entries(SENTENCES)
+    .filter(([word]) => recSentences.has(word))
+    .map(([word, sentence]) => [window.PopSpeech.said(sentence), `audio/sentences/${encodeURIComponent(word)}.mp3`]));
+
   const RECORDED_ID = "alba"; // the saved setting's name from before; kept so devices keep their choice
   const useRecorded = () => recWords.size > 0;
 
@@ -300,7 +313,12 @@
     }
     return token === playToken ? true : null;
   }
-  const orSpeak = (steps, text, rate, speed = 1) => playSteps(steps, speed).then(ok => (ok === false ? speak(text, rate) : ok));
+  const deviceFallback = (text, reason, rate) => {
+    console.warn("[PopSpell audio] Using device voice:", reason, text);
+    return speak(text, rate);
+  };
+  const orSpeak = (steps, text, rate, speed = 1) => playSteps(steps, speed)
+    .then(ok => (ok === false ? deviceFallback(text, "recording failed to load", rate) : ok));
 
   const wordClip = w => `audio/words/${encodeURIComponent(w.toLowerCase())}.mp3`;
   const hasWordClip = w => useRecorded() && recWords.has(w.toLowerCase());
@@ -310,27 +328,78 @@
   // Any line in Eponine's voice, joined from its recorded pieces (see speech-text.js): the
   // device voice only says it if a piece hasn't been recorded (a child's name, a teacher's own word)
   function lineSteps(text) {
+    // Alphabet options are randomly ordered, so thousands of complete
+    // sentences would be wasteful. Compose them from one recorded introduction
+    // and the sixteen existing word recordings instead.
+    const alpha = /^Which word comes first in alphabetical order:\s*([a-z]+),\s*([a-z]+),\s*([a-z]+)\?$/i.exec(text);
+    if (alpha && recPhrases.has("alphabet-order") && alpha.slice(1).every(w => recWords.has(w.toLowerCase()))) {
+      return [`audio/phrases/alphabet-order.mp3`, 130,
+        ...alpha.slice(1).flatMap((w, i) => (i ? [160, wordClip(w)] : [wordClip(w)]))];
+    }
+    // Random listening questions need far more combinations than any fixed
+    // batch of whole-line recordings can cover. Use Eponine's existing words
+    // plus a handful of reusable phrases for every possible answer.
+    const answer = /^The answer is ([a-z]+)\.\s+([a-z]+) rhymes with words ending in -([a-z]+)\.$/i.exec(text);
+    const first = /^The answer is ([a-z]+)\.\s+([a-z]+) starts with "([a-z]+)"\.$/i.exec(text);
+    const count = /^The answer is (\d+)\.\s+([a-z]+): .+ — (\d+) sounds\.$/i.exec(text);
+    if (RECORDED.letters && recPhrases.has("answer-is")) {
+      const prefix = "audio/phrases/answer-is.mp3";
+      if (answer && ["rhyme-ending"].every(k => recPhrases.has(k))
+        && recWords.has(answer[1].toLowerCase()) && recWords.has(answer[2].toLowerCase())) {
+        return [prefix, 100, wordClip(answer[1]), 150, wordClip(answer[2]), 100,
+          "audio/phrases/rhyme-ending.mp3", 120, ...letterSteps(answer[3])];
+      }
+      if (first && recPhrases.has("starts-with")
+        && recWords.has(first[1].toLowerCase()) && recWords.has(first[2].toLowerCase())) {
+        return [prefix, 100, wordClip(first[1]), 150, wordClip(first[2]), 100,
+          "audio/phrases/starts-with.mp3", 120, ...letterSteps(first[3])];
+      }
+      if (count && count[1] === count[3] && recPhrases.has("has") && recPhrases.has("sounds")
+        && recNumbers.has(count[1]) && recWords.has(count[2].toLowerCase())) {
+        return [prefix, 100, `audio/numbers/${count[1]}.mp3`, 150, wordClip(count[2]), 100,
+          "audio/phrases/has.mp3", 100, `audio/numbers/${count[1]}.mp3`, 100, "audio/phrases/sounds.mp3"];
+      }
+    }
     const parts = window.PopSpeech.pieces(text);
     if (!parts || !parts.length) return null;
     const steps = [];
     for (const part of parts) {
       if (steps.length) steps.push(120);
       if (part.text) {
-        // Its own recording, or an older one that says the same words
-        const clip = recLines.has(part.key) ? `lines/${part.key}` : RECORDED.aliases[part.key];
-        if (!clip) return null;
-        steps.push(`audio/${clip}.mp3`);
-      } else {
-        for (const [i, n] of part.number.entries()) {
-          if (!recNumbers.has(n)) return null;
-          if (i) steps.push(30);
-          steps.push(`audio/numbers/${n}.mp3`);
+        // Its own recording, an alias, or a sentence already recorded for a word list.
+        const clip = recLines.has(part.key) ? `audio/lines/${part.key}.mp3`
+          : RECORDED.aliases[part.key] ? `audio/${RECORDED.aliases[part.key]}.mp3`
+          : recSentenceByText.get(window.PopSpeech.said(part.text));
+        if (clip) { steps.push(clip); continue; }
+        // Roman numerals are unpredictable combinations of the seven recorded
+        // letters. Spell the numeral with Eponine rather than a different voice.
+        const raw = part.text.trim().replace(/[.!?]$/, "");
+        const roman = /^(?:[IVXLCDM]{2,}|[VXLCDM])$/.test(raw);
+        const equals = /^equals ([IVXLCDM]+)$/i.exec(raw);
+        const numeralEquals = /^([IVXLCDM]+) equals$/i.exec(raw);
+        if (RECORDED.letters && roman) {
+          steps.push(...letterSteps(raw)); continue;
         }
+        if (RECORDED.letters && recPhrases.has("roman-equals") && equals) {
+          steps.push("audio/phrases/roman-equals.mp3", 90, ...letterSteps(equals[1])); continue;
+        }
+        if (RECORDED.letters && recPhrases.has("roman-equals") && numeralEquals) {
+          steps.push(...letterSteps(numeralEquals[1]), 90, "audio/phrases/roman-equals.mp3"); continue;
+        }
+        return null;
+      }
+      for (const [i, n] of part.number.entries()) {
+        if (!recNumbers.has(n)) return null;
+        if (i) steps.push(30);
+        steps.push(`audio/numbers/${n}.mp3`);
       }
     }
     return steps;
   }
-  const sayLine = text => { const steps = useRecorded() && lineSteps(text); return steps ? orSpeak(steps, text) : speak(text); };
+  const sayLine = text => {
+    const steps = useRecorded() && lineSteps(text);
+    return steps ? orSpeak(steps, text) : deviceFallback(text, "missing Eponine speech pieces");
+  };
   const sayWord = w => (hasWordClip(w) ? orSpeak([wordClip(w)], w) : sayLine(w));
   const sayLetters = text => (hasLetterClips(text) ? orSpeak(letterSteps(text), letterNames(text)) : speak(letterNames(text)));
   const sayPhrase = ([key, text]) => (useRecorded() && recPhrases.has(key) ? orSpeak([`audio/phrases/${key}.mp3`], text) : speak(text));

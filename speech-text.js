@@ -39,12 +39,14 @@
 
   // A number as recorded number words: 4755 → 4 thousand 7 hundred and 50 5; 0.25 → 0 point 2 5
   function numberParts(str) {
-    if (str.includes(".")) {
-      const [whole, decimals] = str.split(".");
-      return numberParts(whole).concat("point", decimals.split(""));
+    const digits = String(str).replace(/[\s\u00a0]/g, "");
+    if (digits.includes(".")) {
+      const [whole, decimals] = digits.split(".");
+      const leading = numberParts(whole);
+      return leading && leading.concat("point", decimals.split(""));
     }
-    let n = Number(str);
-    if (!Number.isInteger(n) || n > 999999) return null;
+    let n = Number(digits);
+    if (!Number.isInteger(n) || n < 0 || n > 999999999) return null;
     const upTo999 = m => {
       const p = [];
       if (m >= 100) { p.push(String(Math.floor(m / 100)), "hundred"); m %= 100; if (m) p.push("and"); }
@@ -53,6 +55,12 @@
       return p;
     };
     const out = [];
+    if (n >= 1000000) {
+      out.push(...upTo999(Math.floor(n / 1000000)), "million");
+      n %= 1000000;
+      if (!n) return out;
+      if (n < 100) out.push("and");
+    }
     if (n >= 1000) {
       out.push(...upTo999(Math.floor(n / 1000)), "thousand");
       n %= 1000;
@@ -65,7 +73,7 @@
     Object.fromEntries(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
       "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"].map((w, i) => [String(i), w])),
     Object.fromEntries(["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"].map((w, i) => [String((i + 2) * 10), w])),
-    { hundred: "hundred", thousand: "thousand", and: "and", point: "point" });
+    { hundred: "hundred", thousand: "thousand", million: "million", and: "and", point: "point" });
 
   // The pieces of a line, in order: { text, key } for words, { number: [parts] } for numbers.
   // Each sentence is its own piece (so an explanation is recorded once, not after every answer),
@@ -84,7 +92,7 @@
   function numberedPieces(text) {
     const out = [];
     let last = 0;
-    for (const m of text.matchAll(/\d+(?:\.\d+)?/g)) {
+    for (const m of text.matchAll(/(?:\d{1,3}(?:[ \u00a0]\d{3})+|\d+)(?:\.\d+)?/g)) {
       const before = text.slice(last, m.index).trim();
       if (/[a-z]/i.test(before)) out.push({ text: before, key: keyOf(said(before)) });
       const parts = numberParts(m[0]);
