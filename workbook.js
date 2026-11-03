@@ -77,14 +77,15 @@ window.PopWorksheets = (() => {
   const table = rows => '<div class="ws-wb-table">' + rows.map(r =>
     '<div class="ws-wb-row">' + r.map(cell => '<div>' + cell + '</div>').join("") + '</div>').join("") + '</div>';
   const blank = '<span class="ws-wb-answer">__________________</span>';
-  const check = (items, support, answer) => {
-    const selected = items.slice(0,2).map(wordText);
-    if (!selected.length) return task(5,"Show what you know",
-      "Choose one of today's words. Say it, cover it, write it and check.", line(2));
+  const check = (items, support, answer, taughtWords) => {
+    const fresh = items.length > 0;
+    const selected = fresh ? items.slice(0,2).map(wordText) : taughtWords.slice(-2);
     answer.push(sectionAnswers("Independent check", selected.map(e).join(", ") +
-      ". Look for the taught pattern rather than just a memorised letter sequence."));
-    return task(5, "Try an unfamiliar word",
-      "Ask your adult to say these new words. Spell each one, then mark the spelling pattern you used.",
+      (fresh ? ". These were not modelled on the page; check transfer of the taught spelling." :
+        ". Read these words aloud without showing the list. Assess retrieval and the pupil's corrections.")));
+    return task(5, fresh ? "Try an unfamiliar word" : "Independent retrieval",
+      fresh ? "Ask your adult to say these new words. Spell each one, then mark the spelling pattern you used." :
+        "Cover the word list. Ask your adult to read two words. Write them, check every letter and explain one choice.",
       table(selected.map((_,i) => ['<b>' + (i+1) + '.</b> Adult says the word', blank])));
   };
   function cloze(items, support, answer, label = "Use it in a sentence", listId = "") {
@@ -268,7 +269,7 @@ window.PopWorksheets = (() => {
     const context = cloze(fam === "word-study" || fam === "exception" ? items : items.slice(3),
       support, answers, fam === "word-study" ? "Words in context" : "Use it in a sentence", list.id);
     pupil.push(context);
-    pupil.push(check(checks,support,answers));
+    pupil.push(check(checks,support,answers,words));
     if (stretch) pupil.push(task(6,"Explain and transfer",
       "Explain one spelling decision you made. Write a new sentence using a word from this lesson.",
       line(3)));
