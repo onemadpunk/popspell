@@ -29,6 +29,9 @@ Please inspect printed copies at early, first, second and upper-primary level fo
 5. **Age respect**: task content, vocabulary, space to write and visual style suit the pupil, including older pupils needing literacy support.
 6. **Classroom usability**: printable in monochrome, no clipped text or split questions, teacher prompts and answers match the pupils' page, and the tasks can be delivered without unnecessary equipment.
 
+## Print review sweep
+After the branch is available in a browser preview, open the teacher Library and run `tools/fit-sweep.js` using the steps described at the top of that file. `__sweepWorkbooks()` checks the supported, independent and extension variants of the visible spelling lists against A4 printable height. An over-height result is a defect to fix, not a reason to shrink pupil handwriting to illegibility. Manual A4 PDF checks are still necessary because a height check cannot detect poor writing space or confusing typography.
+
 ## What still needs review
 - **Real browser/PDF A4 print proof** for representative packs. Automated tests verify the content, not line wraps or print dimensions.
 - **Specialist approval of linguistic content**, including any differences caused by Scottish versus English phonics pronunciation.
