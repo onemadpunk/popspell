@@ -3,15 +3,18 @@
      1. Open _test.html?as=owner#/teacher and the 📚 Library tab.
      2. In the console: await fetch("tools/fit-sweep.js").then(r => r.text()).then(eval)
      3. __sweep("paper") (or "lesson", "spelling", "activity") lists anything over a page.
-   Each page is measured as a % of an A4 page. Letter formation is two pages on purpose (about 178%). */
+   Each page is measured as a % of an A4 page. Letter formation is two pages on purpose (about 178%).
+   __sweepWorkbooks() checks supported, independent and extension versions of spelling sheets. */
 (() => {
   const W = 186 * 96 / 25.4, H = 273 * 96 / 25.4;
   // Opens one entry's print preview (with its answers), measures each page, then closes it
-  window.__over = id => {
+  window.__over = (id, mode = "") => {
     const b = [...document.querySelectorAll(`[data-print="${CSS.escape(id)}"]`)].find(x => !x.closest("dialog"));
     if (!b) return { id, out: [], err: "missing" };
     b.click();
     const d = document.querySelector("dialog.worksheet-preview[open]");
+    const picker = d && d.querySelector("[data-mode]");
+    if (picker && mode) { picker.value = mode; picker.dispatchEvent(new Event("change", { bubbles:true })); }
     const tick = d && d.querySelector("[data-answers]:not(:disabled), [data-words]:not(:disabled)");
     if (tick && !tick.checked && tick.closest("label").style.display !== "none") { tick.checked = true; tick.dispatchEvent(new Event("change")); }
     const page = d.querySelector(".sheet-preview-page");
@@ -49,6 +52,21 @@
       } catch (e) { bad.push({ id, err: String(e) }); }
     }
     return { type, checked: ids.length, bad };
+  };
+  // Each spelling list now produces three genuinely different original worksheets.
+  // Check every mode in the library rather than just the default independent sheet.
+  window.__sweepWorkbooks = () => {
+    const ids = __ids("spelling");
+    const bad = [];
+    let checked = 0;
+    for (const id of ids) for (const mode of ["workshop-support","workshop","workshop-stretch"]) {
+      try {
+        const x = __over(id, mode);
+        checked++;
+        if (x.err || !x.out.length || x.out.some(h => h > 100)) bad.push({ ...x, mode });
+      } catch (err) { bad.push({ id, mode, err: String(err) }); }
+    }
+    return { type:"spelling-workbooks", lists:ids.length, checked, bad };
   };
   return "fit sweep ready: __sweep(\"paper\")";
 })();
