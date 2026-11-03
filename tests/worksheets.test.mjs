@@ -78,6 +78,22 @@ test("the 72 original statutory contexts match the correct taught words", () => 
   assert.equal(count,72);
 });
 
+test("older pupils investigate real spelling contrasts rather than generic copying", () => {
+  let checked = 0;
+  for (const list of raw.filter(l=>/^wl-y(?:34|56)/.test(l.id))) {
+    const investigation = window.PopWorksheetInvestigations[list.id];
+    assert.ok(investigation,list.id);
+    const words = new Set(list.items.map(item=>item.spelling.toLowerCase()));
+    for (const word of investigation.words)
+      assert.ok(words.has(word.toLowerCase()),"investigation uses an untaught word: "+word);
+    const pack = W.build(list,{level:"core"});
+    assert.ok(pack.html.includes(investigation.prompt),list.id);
+    assert.ok(pack.answers.includes(investigation.expect),list.id);
+    checked++;
+  }
+  assert.equal(checked,15);
+});
+
 test("sentences are contextual and keys do not expose pupil answers in the practice page", () => {
   const result = W.build(raw.find(l=>l.id==="short-a"),{level:"support"});
   assert.match(result.html,/ws-wb-cloze/);
@@ -86,5 +102,5 @@ test("sentences are contextual and keys do not expose pupil answers in the pract
   assert.match(result.answers,/Independent check/);
   const older = W.build(raw.find(l=>l.id==="wl-y56-1"),{level:"stretch"});
   assert.match(older.html,/Word investigation/);
-  assert.match(older.answers,/Open responses/);
+  assert.match(older.answers,/double c and double m/);
 });
