@@ -7,7 +7,7 @@ const root = new URL("../", import.meta.url);
 const read = name => readFileSync(new URL(name, root), "utf8");
 const window = {};
 const context = { window };
-for (const file of ["words.js", "sentences.js", "workbook.js"])
+for (const file of ["words.js", "sentences.js", "workbook-context.js", "workbook.js"])
   runInNewContext(read(file), context, { filename: file });
 
 const { PopWorksheets: W, SPELLING_LISTS, ENGLAND_LISTS } = window;
@@ -49,7 +49,7 @@ test("early spelling is sounds-based, split-e contrasts word pairs and older wor
   const build = (id,level="core") => W.build(raw.find(l=>l.id===id),{level});
   assert.match(build("short-a").html,/Build it from sounds/);
   assert.match(build("initial-y").html,/Pattern detective/);
-  assert.match(build("e-e").html,/Two e's working together/);
+  assert.match(build("e-e").html,/Two e&#39;s working together/);
   assert.match(build("a-e").html,/cap/);
   assert.match(build("oi-oy").html,/Sort by spelling/);
   assert.match(build("er-ir-ur").html,/Scottish speech/);
@@ -59,12 +59,31 @@ test("early spelling is sounds-based, split-e contrasts word pairs and older wor
   assert.match(build("cew-y1-1","support").html,/Look, say, cover, write, check/);
 });
 
+test("the 72 original statutory contexts match the correct taught words", () => {
+  let count = 0;
+  for (const list of raw.filter(l=>/^(cew-|y1-days|wl-)/.test(l.id))) {
+    const contexts = window.PopWorksheetContexts[list.id];
+    assert.equal(contexts.length,3,list.id);
+    const words = new Set(list.items.map(it=>it.spelling.toLowerCase()));
+    for (const [word,sentence] of contexts) {
+      assert.ok(words.has(word.toLowerCase()),list.id + ": untaught "+word);
+      assert.ok(sentence.toLowerCase().includes(word.toLowerCase()),word);
+      count++;
+    }
+    const result = W.build(list,{level:"core"});
+    assert.ok(result.html.includes("ws-wb-cloze"),"context in worksheet: "+list.id);
+    for (const [word,sentence] of contexts)
+      assert.ok(result.answers.includes(sentence),"answer sentence "+word);
+  }
+  assert.equal(count,72);
+});
+
 test("sentences are contextual and keys do not expose pupil answers in the practice page", () => {
   const result = W.build(raw.find(l=>l.id==="short-a"),{level:"support"});
   assert.match(result.html,/ws-wb-cloze/);
   assert.match(result.html,/Word bank/);
-  assert.match(result.answers,/The cat sat on my lap/);
-  assert.match(result.answers,/Try an unfamiliar word/);
+  assert.match(result.answers,/I wear a hat when it is cold/);
+  assert.match(result.answers,/Independent check/);
   const older = W.build(raw.find(l=>l.id==="wl-y56-1"),{level:"stretch"});
   assert.match(older.html,/Word investigation/);
   assert.match(older.answers,/Open responses/);
