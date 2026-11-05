@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=28c5e34e">
+  <link rel="stylesheet" href="style.css?v=563fd88e">
   <style>
     .policy { max-width: 760px; margin: 0 auto; padding: 8px 16px 40px; line-height: 1.6; }
     .policy h1 { margin: 12px 0 4px; }
@@ -36,7 +36,7 @@
       <p><b>The short version.</b></p>
       <ul>
         <li>PopSpell is free. There are no adverts, no tracking and no selling of anyone's information.</li>
-        <li>A teacher issues each pupil a personal login. On a shared tablet, the child taps their name and enters a four-digit PIN. No child email address is needed.</li>
+        <li>A pupil types their class code and first name, or their teacher opens their work for them. A teacher can also issue a personal login with a four-digit PIN. No child email address is needed.</li>
         <li>Practice results are stored so the child's teacher can see progress and plan lessons. Only that teacher (and
           PopSpell's site administrators) can see them.</li>
         <li>Results and pupil records are stored in London by Google Firebase, which works for us under a data processing
@@ -49,7 +49,7 @@
 
     <h2 id="children-short">For children</h2>
     <ul>
-      <li>On your class tablet, tap your name and enter the four-digit PIN you chose with your teacher. At home, open your personal link and enter the same PIN.</li>
+      <li>Type your class code and your first name, and you'll see the work your teacher set for you. If your teacher gave you a PIN, tap your name and enter it instead.</li>
       <li>When you finish, press <b>Switch pupil</b> so the next person cannot change your work.</li>
       <li>If you've joined a class, your teacher can see what you practise and how you get on, even while you're doing it.
         PopSpell tells you this under your name with a 👀.</li>
@@ -82,7 +82,7 @@
       <tr><td>What the child is doing right now, while they practise (the list, how far through, and whether they've asked
         for help)</td><td>So the teacher can help during a lesson.</td></tr>
     </table></div>
-    <p>PopSpell creates an individual Firebase Authentication account using a random internal identifier, not a child's email address. The pupil enters only a PIN. A class code and name alone cannot open or change pupil progress. Children cannot see other children's results or the class roster.</p>
+    <p>PopSpell creates an individual Firebase Authentication account using a random internal identifier, not a child's email address. The pupil enters only a PIN, or their class code and first name. A class code and first name can fetch only the work the teacher set for that pupil and send their results; they cannot read back the pupil's progress or results. Children cannot see other children's results or the class roster.</p>
 
     <h3>What teachers record about their pupils</h3>
     <p>In the teacher area, a teacher can record about each pupil: a parent's email address and whether they asked for lesson
@@ -162,6 +162,10 @@
     <p>Results and pupil records are kept while the child has lessons, and deleted within 12 months of their last
       lesson, or sooner if a parent asks. Parent pages are kept until the teacher turns them off, and are deleted with
       the rest of the child's records.</p>
+    <p>A quick trial, when a child tries some work on a teacher's own device, keeps the child's name, the work, the
+      date and the result under that teacher's account, apart from class records. Until the teacher signs in again it
+      waits in that device's browser. The teacher deletes trial records by hand, and within 12 months, or sooner if a
+      parent asks.</p>
 
     <h2>Your rights</h2>
     <p>Parents, on their child's behalf, and teachers can ask to see the information we hold, to have it corrected or
