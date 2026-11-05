@@ -22,6 +22,7 @@ const stranger = google("uid-x", "stranger@example.com");
 const unverified = google("uid-u", "tutor@example.com", false);
 const pupil = env.authenticatedContext("uid-ava", { email: "k7q4m9t2bx@pupils.popspell.com", firebase: { sign_in_provider: "password" } }).firestore();
 const anotherPupil = env.authenticatedContext("uid-bob", { email: "b7q4m9t2bx@pupils.popspell.com", firebase: { sign_in_provider: "password" } }).firestore();
+const nameLogin = env.authenticatedContext("uid-ben-name", { email: "c.abc234.fpben@pupils.popspell.com", firebase: { sign_in_provider: "password" } }).firestore();
 const anonymous = env.authenticatedContext("anon-1", { firebase: { sign_in_provider: "anonymous" } }).firestore();
 const nobody = env.unauthenticatedContext().firestore();
 
@@ -36,6 +37,10 @@ await env.withSecurityRulesDisabled(async ctx => {
   await setDoc(doc(db, "classes/ABC234/live/ava"), { pupil: "Ava", status: "working" });
   await setDoc(doc(db, "classes/ABC234/pupils/fp-ava"), { name: "Ava", parentEmail: "", reminderOptIn: false,
     nextLessonDate: "", lessonTime: "", homeworkList: "", updated: serverTimestamp(), loginUid: "uid-ava", loginCode: "K7Q4M9T2BX" });
+  await setDoc(doc(db, "classes/ABC234/pupils/fp-ben"), { name: "Ben", parentEmail: "", reminderOptIn: false,
+    nextLessonDate: "", lessonTime: "", homeworkList: "", updated: serverTimestamp(), nameUid: "uid-ben-name" });
+  await setDoc(doc(db, "classes/ABC234/assign/fp-ben"), { who: "Ben", lists: ["ai"] });
+  await setDoc(doc(db, "classes/ABC234/progress/fp-ben"), { pupil: "Ben", words: {}, sounds: {}, bests: {} });
   await setDoc(doc(db, "pupilLinks/K7Q4M9T2BX"), { classId: "ABC234", pupilKey: "fp-ava", pupil: "Ava", loginUid: "uid-ava" });
   await addDoc(collection(db, "classes/ABC234/sessions"), { pupil: "Ava", list: "ai", words: [] });
 });
@@ -124,6 +129,15 @@ console.log("Results");
 await check("a pupil's device sends a finished list", assertSucceeds(addDoc(collection(pupil, "classes/ABC234/sessions"), session)));
 await check("another pupil cannot send work as Ava", assertFails(addDoc(collection(anotherPupil, "classes/ABC234/sessions"), session)));
 await check("class code and name cannot send work", assertFails(addDoc(collection(anonymous, "classes/ABC234/sessions"), session)));
+const benSession = { pupil: "ben", pupilKey: "fp-ben", list: "ai", listId: "ai", finished: true, words: [{ word: "rain" }], at: serverTimestamp() };
+await check("a name login (class code and name) sends its own work, any capitals", assertSucceeds(addDoc(collection(nameLogin, "classes/ABC234/sessions"), benSession)));
+await check("a name login can't send work as another pupil", assertFails(addDoc(collection(nameLogin, "classes/ABC234/sessions"), session)));
+await check("a name login fetches its assigned work", assertSucceeds(getDoc(doc(nameLogin, "classes/ABC234/assign/fp-ben"))));
+await check("a name login can't read back its records", assertFails(getDoc(doc(nameLogin, "classes/ABC234/progress/fp-ben"))));
+await check("a name login can't read another pupil's work", assertFails(getDoc(doc(nameLogin, "classes/ABC234/assign/fp-ava"))));
+await check("a child in a tab the teacher opened saves their work", assertSucceeds(addDoc(collection(tutor, "classes/ABC234/sessions"), benSession)));
+await check("another teacher can't save work into this class", assertFails(addDoc(collection(other, "classes/ABC234/sessions"), benSession)));
+await check("teacher-tab results can't carry extra fields", assertFails(addDoc(collection(tutor, "classes/ABC234/sessions"), { ...benSession, hack: true })));
 await check("a pupil's device can't read results", assertFails(getDocs(collection(pupil, "classes/ABC234/sessions"))));
 await check("a pupil's device can't send a huge result", assertFails(addDoc(collection(pupil, "classes/ABC234/sessions"), Object.assign({}, session, { words: Array(61).fill({ word: "x" }) }))));
 await check("a teacher reads their class's results", assertSucceeds(getDocs(collection(tutor, "classes/ABC234/sessions"))));

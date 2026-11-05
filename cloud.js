@@ -423,12 +423,16 @@ async function start() {
         const rosterRef = doc(store, "classes", classId, "pupils", key);
         const snap = await getDoc(rosterRef);
         const existing = snap.exists() ? snap.data() : null;
-        if (existing && existing.loginUid) {
+        // The name login (class code plus first name) is kept in nameUid, apart from the PIN login
+        // (loginUid), so issuing a PIN never stops the name login working. Older rosters kept the
+        // name login in loginUid (no loginCode); it's copied across.
+        const legacy = existing && existing.loginUid && !existing.loginCode ? existing.loginUid : "";
+        if (existing && existing.nameUid) {
           pupilCodes.set(`ensured:${cacheKey}`, true);
           return;
         }
-        let loginUid = existing?.loginUid || "";
-        if (!loginUid) {
+        let nameUid = legacy;
+        if (!nameUid) {
           const provisionApp = initializeApp(config, `pupil-auto-${crypto.randomUUID()}`);
           const provisionAuth = getAuth(provisionApp);
           if (emulator) connectAuthEmulator(provisionAuth, `http://${location.hostname}:9099`, { disableWarnings: true });
@@ -442,7 +446,7 @@ async function start() {
             } catch {
               cred = await signInWithEmailAndPassword(provisionAuth, email, pass);
             }
-            loginUid = cred?.user?.uid || "";
+            nameUid = cred?.user?.uid || "";
           } finally {
             await signOut(provisionAuth).catch(() => {});
             await deleteApp(provisionApp).catch(() => {});
@@ -452,11 +456,11 @@ async function start() {
           await setDoc(rosterRef, {
             name: clean, parentEmail: "", reminderOptIn: false,
             nextLessonDate: "", lessonTime: "", homeworkList: "",
-            ...(loginUid ? { loginUid } : {}),
+            ...(nameUid ? { nameUid } : {}),
             updated: serverTimestamp()
           });
-        } else if (loginUid && !existing.loginUid) {
-          await updateDoc(rosterRef, { loginUid, updated: serverTimestamp() });
+        } else if (nameUid) {
+          await updateDoc(rosterRef, { nameUid, updated: serverTimestamp() });
         }
         pupilCodes.set(`ensured:${cacheKey}`, true);
       } catch (err) {
@@ -599,7 +603,7 @@ async function start() {
       }
       rows.sort((a, b) => a.name.localeCompare(b.name));
       pupilCodes.set(classId, new Map(rows.filter(r => r.loginCode).map(r => [lower(r.name), r.loginCode])));
-      Promise.all(rows.filter(r => !r.loginUid).map(r => api.ensureRosterPupil(classId, r.name))).catch(() => {});
+      Promise.all(rows.filter(r => !r.nameUid).map(r => api.ensureRosterPupil(classId, r.name))).catch(() => {});
       return rows;
     },
     pupilLoginCode: (classId, name) => pupilCodes.get(classId)?.get(lower(name)) || "",
