@@ -966,8 +966,8 @@
     l.use.forEach(id => {
       if (isPaper(id)) return;
       if (catalogueList(id)) {
-        adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: true, adult: true });
-        return pupil.push({ label: `Sound map: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey() }, "mapping").html, goal), checked: true });
+        adult.push({ label: `Words to say: ${workTitle(id)}`, html: () => worksheetSpec(who, { list: id, from: todayKey() }, "key").html, checked: false, adult: true });
+        return pupil.push({ label: `Practice sheet: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey(), band: bandForLevel(l.level) }, "practice").html, goal), checked: true });
       }
       const act = A && A.get(id);
       if (!act || act.area === "games") return;
@@ -2100,6 +2100,8 @@
       ["arcade", "🎮", "Level up", "#6a2fb8"], ["lab", "🧪", "Word lab", "#0f7a8a"]],
     older: [["plain", "", "Spelling workout", "#0b2e6b"]]
   };
+  // The CfE level a ready lesson is written for, as a sheet's age look
+  const bandForLevel = level => (/Third|Fourth|Senior/i.test(level || "") ? "older" : /Second/i.test(level || "") ? "middle" : "young");
   const bandFor = yearGroup => {
     const y = String(yearGroup || "");
     if (/^S\d|^Y(7|8|9|1[01])$|Year (7|8|9|1[01])/i.test(y)) return "older";
@@ -2536,7 +2538,7 @@
             <button class="btn small" data-save-plan="${rowIndex}-${planIndex}">Save dates</button></div>
           <div class="row"><a class="btn small" href="${esc(previewHref(plan.list))}" target="_blank" rel="noopener">▶ Test online</a>
             ${catalogueList(plan.list) ? `<button class="btn small" data-preview-plan="${rowIndex}-${planIndex}">👀 Preview worksheet</button>
-            <button class="btn small" data-print-mapping="${rowIndex}-${planIndex}">Print sound map / Save PDF</button>
+            <button class="btn small" data-print-practice="${rowIndex}-${planIndex}">Print practice sheet / Save PDF</button>
             <button class="btn small" data-print-dictation="${rowIndex}-${planIndex}">Print dictation / Save PDF</button>
             <button class="btn small" data-print-key="${rowIndex}-${planIndex}">Print words to say</button>
             <button class="btn small" data-print-handwriting="${rowIndex}-${planIndex}">Print handwriting</button>
@@ -2615,7 +2617,7 @@
       const { row, plan } = ref(b.dataset.previewPlan);
       previewWorksheet(row.who, plan, "practice");
     }; });
-    ["mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
+    ["practice", "mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
       b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
         printWorksheet(row.who, plan, mode); };
     }));
@@ -3001,7 +3003,7 @@
     if (list) {
       const words = list.items.slice(0, 4).map(it => it.spelling).join(", ");
       parts.push({ key: "sounds", icon: "👩‍🏫", where: "you", weight: 2, title: `Teach: ${list.title}`, id: list.id, sheet: { kind: "mapping", id: list.id },
-        how: `${list.tip || "Introduce the sound."} Say ${words}… Tap out each sound, then map the letters on the sound map sheet.`,
+        how: `${list.tip || "Introduce the sound."} Say ${words}… Tap out each sound together, then practise on the practice sheet.`,
         intention: `We are learning to read and spell words with ${list.title.replace(/ \(.*\)$/, "")}.`,
         criteria: ["I can hear each sound in a word.", "I can write the letters for each sound."], codes: codesOf(list.id) });
       parts.push({ key: "spell", icon: "💻", where: "device", weight: 1, title: `Spell: ${list.title}`, id: list.id,
@@ -3320,7 +3322,7 @@
     const sheetLevel = s => (inEngland(x.r) ? (enWork(s.id) || {}).label || "" : s.id.startsWith("dictate:") ? levelOfStage(stageOf(s.id.slice(8))) : s.act.level);
     const made = {};
     const pagesOf = (s, i) => (made[i] = made[i] || activityPages(s.act, s.qs, sheetLevel(s), x.r.name));
-    const sheetHTML = (s, i) => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date }, "mapping").html : pagesOf(s, i).pupil);
+    const sheetHTML = (s, i) => (s.kind === "mapping" ? worksheetSpec(x.r.name, { list: s.id, from: date, band: bandFor(x.r.yearGroup) }, "practice").html : pagesOf(s, i).pupil);
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Lesson ${x.prog.lesson} pack</h2>
@@ -4773,7 +4775,7 @@
     }; });
     body.querySelectorAll("[data-print-homework]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.printHomework);
-      printWorksheet(pupil.name, { list: pupil.homeworkList, from: pupil.nextLessonDate || todayKey() }, "mapping");
+      printWorksheet(pupil.name, { list: pupil.homeworkList, from: pupil.nextLessonDate || todayKey(), band: bandFor(pupil.yearGroup) }, "practice");
     }; });
     body.querySelectorAll("[data-email-pupil]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.emailPupil);
