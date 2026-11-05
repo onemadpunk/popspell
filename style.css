@@ -1974,3 +1974,15 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-older .pp-box { border: 1.5px solid #0b2e6b; border-radius: 0; }
 .ws-age-older .ws-passage { font-family: Georgia, "Times New Roman", serif; border: 0; border-left: 3px solid #0b2e6b; border-radius: 0; background: #f6f8fb; }
 .ws-age-older .ws-goal { border-radius: 0; }
+
+/* Picture-panel story strips and matching, for the youngest pupils' sheets */
+.pp-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 6px 0 10px; break-inside: avoid; }
+.pp-panel { border: 2.5px solid #ffc837; border-radius: 14px; padding: 6px 8px; text-align: center; background: #fffaf0; }
+.pp-panel p { margin: 4px 0 0; font: 13pt/1.35 var(--reading-font); }
+.pp-emoji { display: block; font-size: 30pt; line-height: 1.1; }
+.pp-pick3 { display: flex; flex-wrap: wrap; gap: 8px 26px; align-items: center; margin: 4px 0 8px; font: 14pt var(--reading-font); }
+.pp-goat { font-style: normal; display: inline-block; vertical-align: middle; }
+.pp-goat-s { font-size: 16pt; } .pp-goat-m { font-size: 24pt; } .pp-goat-l { font-size: 34pt; }
+.pp-match { display: grid; grid-template-columns: 3fr 2fr; gap: 0 60px; margin: 4px 0 8px; font: 14pt var(--reading-font); }
+.pp-match p { margin: 8px 0; padding: 4px 10px; border: 1.5px solid #8aa0c4; border-radius: 10px; }
+.pp-pick3 { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 4px 22px; }

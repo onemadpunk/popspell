@@ -676,17 +676,24 @@ window.PopPaper = (() => {
   });
 
   const GOATS = "Once upon a time, three billy goats lived on a hillside: a little goat, a middle-sized goat and a great big goat. Across the river the grass was green and sweet, but under the bridge lived a grumpy troll. Trip, trap went the little goat over the bridge. \"Who's that trip-trapping over my bridge?\" roared the troll. \"I'm going to gobble you up!\" \"Please don't eat me,\" said the little goat. \"Wait for my brother. He's much bigger.\" So the troll let him go. Next came the middle-sized goat, and the same thing happened. Then the great big goat came over the bridge. \"Who's that trip-trapping over my bridge?\" roared the troll. \"It's me!\" said the great big goat, and he tossed the troll into the river. The three goats ate the sweet green grass, and they lived happily ever after.";
-  add("paper-traditional-tale", "lesson-england-traditional-tales-retelling-and-story-language-years-1-and-2", "Three Billy Goats Gruff", "Read a retelling of a traditional tale, order the events, find its story language and retell it.", (who, h) => ({
-    pupil: `${h.sheetHead("The Three Billy Goats Gruff", who)}<p class="pp-passage">${GOATS}</p>
-      <p><b>1.</b> Number the events 1 to 5 in the order they happen.</p>
-      ${shuffle(["The troll lets the little goat go.", "The goats eat the sweet green grass.", "The great big goat tosses the troll into the river.", "The little goat trip-traps over the bridge.", "The middle-sized goat crosses the bridge."]).map(e => `<p>☐ ${e}</p>`).join("")}
-      <p><b>2.</b> Copy the line the troll says more than once.</p>${ruled(h, 1)}
-      <p><b>3.</b> Tick what makes this a traditional tale: ${tick(["Once upon a time", "things in threes", "a baddie", "talking animals", "a happy ending"])}</p>
-      <p><b>4.</b> Why does the troll let the first two goats go?</p>${ruled(h, 1)}
-      <p><b>5.</b> Tell the story to your adult. Use <b>first</b>, <b>next</b>, <b>then</b> and <b>in the end</b>.</p>`,
-    answers: answersPage(h, "Three Billy Goats Gruff", ["1. Little goat crosses (1), troll lets it go (2), middle-sized goat crosses (3), big goat tosses the troll (4), goats eat the grass (5)",
-      "2. \"Who's that trip-trapping over my bridge?\"", "3. All five", "4. Each goat says a bigger brother is coming, so the troll waits for a bigger meal", "5. A retelling in order, with the repeated line and time words"],
-      "Ask how the events link: each goat's promise leads to the next goat, and the biggest goat brings the ending.")
+  // The story in short picture panels a five- or six-year-old can read with an adult, rather than one long paragraph
+  const GOAT_PANELS = [["🐐", "Three goats want the sweet green grass over the river."], ["🌉 👹", "A grumpy troll lives under the bridge."],
+    ["🐐 👹", "\"Who's that trip-trapping over my bridge?\" roars the troll."], ["🐐🐐🐐", "The great big goat tosses the troll into the river!"]];
+  add("paper-traditional-tale", "lesson-england-traditional-tales-retelling-and-story-language-years-1-and-2", "Three Billy Goats Gruff", "Read the tale in picture panels, order the goats, match who said what, draw the troll and retell the story.", (who, h) => ({
+    pupil: `${h.sheetHead("The Three Billy Goats Gruff", who)}
+      <p>Read the story with your adult. Point to each word as you read.</p>
+      <div class="pp-strip">${GOAT_PANELS.map(([pic, text]) => `<div class="pp-panel"><span class="pp-emoji" aria-hidden="true">${pic}</span><p>${text}</p></div>`).join("")}</div>
+      <p><b>1.</b> Who comes over the bridge first, next and last? Write <b>1</b>, <b>2</b> and <b>3</b>.</p>
+      <div class="pp-pick3"><span><i class="pp-goat pp-goat-l">🐐</i> great big goat ${blank(2)}</span><span><i class="pp-goat pp-goat-s">🐐</i> little goat ${blank(2)}</span><span><i class="pp-goat pp-goat-m">🐐</i> middle-sized goat ${blank(2)}</span></div>
+      <p><b>2.</b> Who says it? Draw a line.</p>
+      <div class="pp-match"><div><p>"Who's that trip-trapping over my bridge?"</p><p>"Wait for my brother. He's much bigger."</p></div><div><p>👹 the troll</p><p>🐐 the little goat</p></div></div>
+      <p><b>3.</b> Draw the troll. Write a word that tells us what he is like.</p>
+      <div class="pp-draw pp-short"></div><p>The troll is ${blank(8)}.</p>
+      <p><b>4.</b> Tell the whole story to your adult. Use <b>first</b>, <b>next</b>, <b>then</b> and <b>in the end</b>.</p>`,
+    answers: answersPage(h, "Three Billy Goats Gruff", ["1. Little goat 1, middle-sized goat 2, great big goat 3",
+      "2. The troll: \"Who's that trip-trapping over my bridge?\" The little goat: \"Wait for my brother. He's much bigger.\"",
+      "3. Any describing word that fits: grumpy, mean, hungry, big, scary", "4. A retelling in order, with the repeated line and time words"],
+      `Read the fuller version to the child first if you like: ${GOATS} Ask why the troll lets the first two goats go (each says a bigger brother is coming).`)
   }));
 
   const COLOSSAL = "The giant was colossal: his head brushed the clouds, and his boots were the size of houses. A timid mouse peeped out from a crack in the wall, too frightened to move. The giant's gleaming sword flashed in the sunlight. When he sneezed, the mouse scurried away as fast as its legs could carry it, and hid. By the evening, the giant was exhausted. He lay down and fell asleep before the sun had even set.";
