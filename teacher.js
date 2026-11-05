@@ -2213,7 +2213,8 @@
     // build first (it teaches the words), then the others in an order of the list's own
     const pool = Object.keys(SHEET_ACTIVITIES).filter(k => k !== "build" && SHEET_ACTIVITIES[k].bands.includes(band));
     const order = seededShuffle(pool, seedOf("mix"));
-    const name = esc(!who || who === "Everyone" ? "____________________" : who);
+    // Always blank, so every printed copy matches the ones kept in the teacher's folder
+    const name = "____________________";
     const head = band === "older" ? brandHead(list.title, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)
       : brandHead(`${theme[1]} ${theme[2]}: ${list.title}`, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`);
     const sheet = parts => {
