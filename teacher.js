@@ -19,7 +19,7 @@
   let classes = [];
   let current = null;   // selected class
   let classScope = "mine";
-  let tab = "today";
+  let tab = "class";
   let stopLive = null;  // unsubscribes the live board
   let liveTimer = null;
   let liveData = [];
@@ -143,7 +143,7 @@
       <p>Sign in with the Google account your invitation was sent to.</p>
       <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
       <p class="hint" id="signHint"></p>
-      <p class="hint">Pupils tap their name on a prepared tablet, or open a personal link, then enter their PIN.</p>`);
+      <p class="hint">Pupils don't sign in here: they type the class code and their first name on the PopSpell home page.</p>`);
     $("#signIn").onclick = async () => {
       $("#signHint").textContent = "Opening Google…";
       try { await cloud.signIn(); show(root); }
@@ -163,11 +163,12 @@
   /* ---------- The dashboard frame ---------- */
 
   // The help.html section for each tab
-  const HELP_SECTIONS = { trials: "trials", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
+  const HELP_SECTIONS = { class: "class", trials: "trials", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
     diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
 
   // Line icons for the teacher area's menu (24×24, drawn with the text colour)
   const ICON = {
+    class: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5.5 16.5a3.5 3.5 0 0 1 7 0M14 9h4M14 13h4"/>',
     trials: '<path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7 15h10"/>',
     today: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 12"/>',
     live: '<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/>',
@@ -193,13 +194,18 @@
     stopWatching();
     const shownClasses = visibleClasses();
     if (current && !shownClasses.some(c => c.id === current.id)) current = shownClasses[0] || null;
-    // The menu, in groups: teaching day to day, finding work, pupils' records, and running classes
-    const groups = [["Teach", [["trials", "Quick trial"], ["today", "Today"], ["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"]]],
-      ["Resources", [["library", "Library"], ["assign", "Assign"]]],
-      ["Records", [["pupils", "Pupils"], ["diary", "Diary"]]],
+    // The menu: the class page and quick trials first; the planning and record pages fold under More
+    const MORE = "More tools";
+    const groups = [["Teach", [["class", "Class"], ["trials", "Quick trial"], ["library", "Library"]]],
+      [MORE, [["today", "Today"], ["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"],
+        ["assign", "Assign"], ["pupils", "Pupils"], ["diary", "Diary"]]],
       ["Manage", [["classes", "Classes"]].concat(canAdmin() ? [["teachers", "Teachers"]] : [])]];
     const tabs = groups.flatMap(([, items]) => items);
     const [, tabName] = tabs.find(([k]) => k === tab) || tabs[0];
+    const tabButtons = items => items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("");
+    let moreOpen = false;
+    try { moreOpen = localStorage.getItem("popspell-teacher-more") === "1"; } catch { /* closed */ }
+    if (groups[1][1].some(([k]) => k === tab)) moreOpen = true;
     const initial = (shortName(me.name) || "?").slice(0, 1).toUpperCase();
     root.innerHTML = `
       <section class="t-wrap t-app">
@@ -213,8 +219,9 @@
             <label class="t-class"><span>Class</span>
               <select id="classPick">${shownClasses.map(c => `<option value="${esc(c.id)}"${current && c.id === current.id ? " selected" : ""}>${esc(c.name)}${c.teacher !== me.uid ? ` — ${esc(c.teacherName)}` : ""}</option>`).join("")}</select>
             </label>` : ""}
-          <nav class="t-tabs" aria-label="Teacher area">${groups.map(([name, items]) => `<p class="t-navhead">${name}</p>
-            ${items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("")}`).join("")}</nav>
+          <nav class="t-tabs" aria-label="Teacher area">${groups.map(([name, items]) => name === MORE
+            ? `<details class="t-more" id="tMore"${moreOpen ? " open" : ""}><summary class="t-navhead">${name}</summary>${tabButtons(items)}</details>`
+            : `<p class="t-navhead">${name}</p>${tabButtons(items)}`).join("")}</nav>
           <div class="t-side-foot">
             <a class="t-sidelink" href="#/make">${icon("make")}<span>Make a list</span></a>
             <button class="t-sidelink" type="button" id="tSettings">${icon("settings")}<span>Settings</span></button>
@@ -239,6 +246,7 @@
     $("#signOut").onclick = async () => { stopWatching(); stopTeacherIdle(true); await cloud.signOut(); location.hash = "#/"; };
     $("#tSettings").onclick = () => { const b = document.getElementById("settingsBtn"); if (b) b.click(); };
     root.querySelectorAll(".t-tab").forEach(b => { b.onclick = () => { tab = b.dataset.tab; draw(); }; });
+    $("#tMore").addEventListener("toggle", e => { try { localStorage.setItem("popspell-teacher-more", e.target.open ? "1" : "0"); } catch { /* not remembered */ } });
     // On a phone the menu is a row that scrolls sideways: keep the chosen page in view
     const chosen = root.querySelector('.t-tab[aria-current="page"]');
     if (chosen && chosen.parentElement.scrollWidth > chosen.parentElement.clientWidth) chosen.parentElement.scrollLeft = chosen.offsetLeft - 24;
@@ -255,7 +263,7 @@
       draw();
     };
     const body = $("#tBody");
-    const needsClass = ["today", "live", "next", "programme", "assign", "plans", "diary", "pupils"].includes(tab);
+    const needsClass = ["class", "today", "live", "next", "programme", "assign", "plans", "diary", "pupils"].includes(tab);
     if (needsClass && !current) {
       body.innerHTML = `<div class="empty"><p>This page is for a class. Make one in <b>Classes</b> first.</p>
         <p>Just want a child to try something on this device? Use <b>Quick trial</b>: no class or PIN needed.</p>
@@ -263,7 +271,7 @@
       body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
       return;
     }
-    ({ trials: drawTrials, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ class: drawClass, trials: drawTrials, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -1370,6 +1378,153 @@
         catch (err) { b.disabled = false; showError(err); }
       };
     });
+  }
+
+  /* ---------- Class: one page with each pupil, their work and what they did ---------- */
+
+  // Each pupil's card: the work set, a button to open it for them in a new tab on this device,
+  // and their recent results, each opening to show every word.
+  async function drawClass(body) {
+    body.innerHTML = `<div class="empty">Loading…</div>`;
+    const classId = current.id;
+    let rows, roster, sessions;
+    try { [rows, roster, sessions] = await Promise.all([cloud.assignments(classId), cloud.pupils(classId), cloud.sessions(classId, 90)]); }
+    catch (err) { return showError(err); }
+    if (tab !== "class" || !current || current.id !== classId || !body.isConnected) return;
+    const today = todayKey();
+    const workOf = name => {
+      const row = rows.find(a => a.key !== "everyone" && sameName(a.who, name));
+      const dated = (row?.plans || []).filter(p => p.from <= today && today <= p.until).map(p => p.list);
+      return { row, lists: row ? row.lists : [], dated: dated.filter(l => !(row?.lists || []).includes(l)) };
+    };
+    const everyone = rows.find(a => a.key === "everyone");
+    // Pupils on the roster, plus anyone who has sent work or been set work under another spelling
+    const names = roster.map(r => r.name);
+    rows.filter(a => a.key !== "everyone").forEach(a => { if (!names.some(n => sameName(n, a.who))) names.push(a.who); });
+    sessions.forEach(s => { if (s.pupil && !names.some(n => sameName(n, s.pupil))) names.push(String(s.pupil).trim()); });
+    names.sort((a, b) => a.localeCompare(b));
+    const resultsOf = name => sessions.filter(s => sameName(s.pupil, name)).sort((a, b) => b.at - a.at);
+    const openHref = name => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}`;
+    const when = ms => new Date(ms).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    const score = s => {
+      const ws = s.words || [];
+      const right = ws.filter(w => w.correct).length, first = ws.filter(w => w.correct && w.triesUsed === 1).length;
+      return `${right}/${ws.length} right · ${first} first time${s.finished === false ? " · stopped early" : ""}`;
+    };
+    const wordLine = w => {
+      const how = !w.correct ? `<span class="res-miss">✗ not got</span>` : w.triesUsed === 1 ? `<span class="res-ok">✓ first go</span>` : `<span class="res-help">✓ after ${w.triesUsed || 2} tries</span>`;
+      const tried = (w.wrong || []).filter(Boolean);
+      return `<tr><td><b>${esc(w.word || "")}</b>${w.sounds ? `<br><span class="meta">${esc(w.sounds)}</span>` : ""}</td><td>${how}</td>
+        <td>${tried.length ? esc(tried.join(", ")) : "—"}</td><td>${(w.missed || []).length ? esc(w.missed.join(", ")) : "—"}</td></tr>`;
+    };
+    const chip = (name, l, removable) => `<span class="t-chip">${esc(listTitle(l))}${removable ? `<button type="button" title="Remove" aria-label="Remove ${esc(listTitle(l))} from ${esc(name)}" data-unset="${esc(name)}" data-list="${esc(l)}">×</button>` : ""}</span>`;
+    body.innerHTML = `
+      <section class="pcard class-intro">
+        <p><b>How pupils get their work:</b> on this computer, press <b>▶ Open for</b> a pupil and a new tab opens with their work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
+        <div class="add-row"><input type="text" readonly value="${esc(joinLink(classId))}" class="t-link" aria-label="Class link">
+          <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button></div>
+      </section>
+      ${everyone && (everyone.lists || []).length ? `<p class="hint">Set for <b>everyone</b> in the class: ${everyone.lists.map(l => chip("Everyone", l, true)).join(" ")}</p>` : ""}
+      <form class="add-row" id="classAddPupil"><input type="text" id="classNewName" maxlength="40" aria-label="New pupil's first name" placeholder="Add a pupil: first name (and initial)" required>
+        <button class="btn" type="submit">Add pupil</button></form>
+      ${names.length ? `<div class="class-cards">${names.map(name => {
+        const w = workOf(name), done = resultsOf(name), onRoster = roster.some(r => sameName(r.name, name));
+        return `<article class="pcard class-card">
+          <div class="class-card-head"><h2>${esc(name)}</h2>
+            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener">▶ Open for ${esc(name)}</a></div>
+          <h3 class="class-sub">Work set</h3>
+          <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
+            ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
+          <div class="row"><button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button></div>
+          <h3 class="class-sub">What they did</h3>
+          ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
+              <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
+              <div class="t-scroll"><table class="t-table res-table"><thead><tr><th>Word</th><th>How it went</th><th>What they tried</th><th>Sounds missed</th></tr></thead>
+                <tbody>${(s.words || []).map(wordLine).join("")}</tbody></table></div>
+            </details>`).join("")}</div>
+            ${done.length > 6 ? `<p class="hint">${done.length - 6} older result${done.length === 7 ? "" : "s"} from the last 90 days are on the <button type="button" class="linklike" data-go-tab="pupils">Pupils</button> page.</p>` : ""}`
+          : `<p class="hint">No work saved yet in the last 90 days.</p>`}
+          ${onRoster ? "" : `<p class="hint">Not on the class list yet. <button type="button" class="linklike" data-roster-add="${esc(name)}">Add ${esc(name)}</button></p>`}
+        </article>`;
+      }).join("")}</div>` : `<div class="empty">No pupils yet. Add the first one above.</div>`}`;
+
+    $("#copyClassLink").onclick = async e => {
+      try { await navigator.clipboard.writeText(joinLink(classId)); e.target.textContent = "✓ Copied"; } catch { body.querySelector(".t-link").select(); }
+    };
+    const addPupil = async name => {
+      name = String(name || "").replace(/[^\p{L}\p{N}' .-]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40);
+      if (!name) return;
+      if (roster.some(r => sameName(r.name, name))) return notice(`${name} is already in ${current.name}.`);
+      await cloud.savePupil(classId, { name, parentEmail: "" });
+    };
+    $("#classAddPupil").onsubmit = async e => {
+      e.preventDefault();
+      const button = e.currentTarget.querySelector("button");
+      button.disabled = true;
+      try { await addPupil($("#classNewName").value); drawClass(body); } catch (err) { button.disabled = false; showError(err); }
+    };
+    body.querySelectorAll("[data-roster-add]").forEach(b => { b.onclick = async () => {
+      b.disabled = true;
+      try { await addPupil(b.dataset.rosterAdd); drawClass(body); } catch (err) { b.disabled = false; showError(err); }
+    }; });
+    body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
+    body.querySelectorAll("[data-unset]").forEach(b => { b.onclick = async () => {
+      const name = b.dataset.unset;
+      const row = sameName(name, "Everyone") ? everyone : workOf(name).row;
+      if (!row) return;
+      b.disabled = true;
+      try { await cloud.saveAssignment(classId, sameName(name, "Everyone") ? "Everyone" : row.who, row.lists.filter(l => l !== b.dataset.list)); drawClass(body); }
+      catch (err) { b.disabled = false; showError(err); }
+    }; });
+    body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
+  }
+
+  // Search the work, choose it, set it: for one pupil, from their card on the Class page
+  function addWorkDialog(name, row, done) {
+    const items = catalogueItems();
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview cal-dialog";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Add work for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="add-work-body"><input type="search" data-search class="add-work-search" aria-label="Search for work" placeholder="Search, e.g. ay, y at the end, short vowels, fractions">
+      <select data-pick aria-label="Work to set" size="10" class="add-work-list">${catalogueOptions(items, "")}</select>
+      <p class="hint" data-count aria-live="polite"></p>
+      <div class="row"><button class="btn primary" type="button" data-set disabled>Set this work</button>
+        <a class="btn" data-try target="_blank" rel="noopener" hidden>▶ Try it first (nothing is saved)</a></div></div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    const search = dialog.querySelector("[data-search]"), pick = dialog.querySelector("[data-pick]"), set = dialog.querySelector("[data-set]"), tryIt = dialog.querySelector("[data-try]");
+    const update = () => {
+      set.disabled = !pick.value;
+      const href = pick.value ? previewHref(pick.value) : "";
+      tryIt.hidden = !href;
+      if (href) tryIt.href = href;
+      set.textContent = pick.value ? `Set ${listTitle(pick.value)}` : "Set this work";
+    };
+    search.oninput = () => {
+      const found = workMatches(search.value, items);
+      pick.innerHTML = catalogueOptions(found, "");
+      if (found.length && search.value.trim()) pick.value = found[0].id;
+      dialog.querySelector("[data-count]").textContent = search.value.trim() ? (found.length ? plural(found.length, "match", "matches") : "Nothing matches that search") : "";
+      update();
+    };
+    pick.onchange = update;
+    pick.ondblclick = () => { if (pick.value) set.click(); };
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    set.onclick = async () => {
+      const work = pick.value;
+      const lists = row ? row.lists : [];
+      if (!work) return;
+      set.disabled = true;
+      try {
+        if (!lists.includes(work)) await cloud.saveAssignment(current.id, row ? row.who : name, lists.concat(work));
+        dialog.close();
+        done();
+        notice(`✓ ${name} will see ${listTitle(work)} next time they open PopSpell.`, "ok");
+      } catch (err) { set.disabled = false; dialogError(dialog, err); }
+    };
+    update();
+    dialog.showModal();
+    search.focus();
   }
 
   /* ---------- Dated plans, printable worksheets and teacher marking ---------- */
@@ -4341,11 +4496,10 @@
         <h3>${esc(c.name)}</h3>
         ${c.teacher !== me.uid ? `<p class="meta">${esc(c.teacherName)}</p>` : ""}
         <p class="t-code" aria-label="Class code">${esc(c.id)}</p>
-        <p class="hint">Open this link on a pupil's device to put it in the class. For a shared tablet or home, give each pupil a login on the <b>Pupils</b> page.</p>
+        <p class="hint">Pupils type this class code and their first name at popspell.com, or open this link.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(c.id))}" class="t-link" aria-label="Join link for ${esc(c.name)}">
           <button class="btn" data-copy="${esc(c.id)}">📋 Copy link</button></div>
-        <div class="row"><button class="btn small primary" type="button" data-class-go="${esc(c.id)}" data-tab-go="pupils">Pupils</button>
-          <button class="btn small" type="button" data-class-go="${esc(c.id)}" data-tab-go="assign">Set work</button></div>
+        <div class="row"><button class="btn small primary" type="button" data-class-go="${esc(c.id)}" data-tab-go="class">Open class</button></div>
         ${c.teacher === me.uid || canAdmin() ? `<details class="t-class-settings"><summary>Class settings</summary>
           <div class="add-row"><input type="text" maxlength="60" value="${esc(c.name)}" aria-label="Class name" data-rename-input="${esc(c.id)}">
           <button class="btn" data-rename="${esc(c.id)}">Rename</button></div>
@@ -4375,7 +4529,7 @@
         classes = await cloud.classes();
         current = classes.find(c => c.id === id);
         try { localStorage.setItem(CLASS_KEY, id); } catch { /* not remembered */ }
-        tab = "pupils";
+        tab = "class";
         draw();
         notice(`✓ ${name} is ready. Next, add the pupils in it.`, "ok");
       } catch (err) { showError(err); }

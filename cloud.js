@@ -219,10 +219,12 @@ async function start() {
           if (key !== "everyone" && data.who) canonicalNames.set(`${classId}:${key}`, data.who);
           return fromRow(data);
         }
-        catch { return []; }
+        catch (err) { return Object.assign([], { failed: err?.code || "error" }); }
       };
       const [mine, everyone] = await Promise.all([read(await fingerprint(pupil)), read("everyone")]);
-      return [...new Set(mine.concat(everyone))];
+      // failed: this pupil's own work couldn't be fetched (not on the class list yet, or offline),
+      // so the pupil's screen can say so rather than look as if nothing was set
+      return Object.assign([...new Set(mine.concat(everyone))], mine.failed ? { failed: mine.failed } : {});
     },
 
     // A pupil's own progress (stars, review words, bests), so it follows them between devices

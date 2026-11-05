@@ -1502,6 +1502,20 @@
     fetchAssigned(getPupil()).then(entries => {
       const lists = entries.map(resolveAssigned).filter(Boolean);
       if (my !== phase || !$("#homePupil")) return;
+      // Their own work couldn't be fetched: say so, rather than look as if nothing was set
+      if (entries.failed) {
+        const note = document.createElement("section");
+        note.className = "assigned home-section";
+        note.setAttribute("role", "status");
+        note.innerHTML = entries.failed === "permission-denied"
+          ? `<h2>📌 Your work</h2><p>PopSpell couldn't find <b>${esc(getPupil())}</b> in ${esc(CLASS.name)}. Check the name is spelled the way your teacher wrote it, or ask your teacher to add you to the class.</p>
+             <p><button type="button" class="btn" id="fixName">Change my name</button></p>`
+          : `<h2>📌 Your work</h2><p>PopSpell couldn't fetch your work just now.</p><p><button type="button" class="btn" id="retryWork">Try again</button></p>`;
+        app.querySelector(".welcome").after(note);
+        if ($("#retryWork")) $("#retryWork").onclick = () => showHome();
+        if ($("#fixName")) $("#fixName").onclick = () => { syncedFor = null; setPupil(""); applyLook(); showHome(); };
+        if (!lists.length) return;
+      }
       if ($("#lockedNote")) {
         $("#lockedNote").textContent = lists.length
           ? "Your teacher chooses your work — it's all above."
