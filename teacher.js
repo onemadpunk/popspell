@@ -345,8 +345,9 @@
     }
     writePending(left);
   }
-  // Work a child can do in one go on their own: spelling lists, activities, games and dictation
-  const trialItems = () => catalogueItems().filter(it => it.id !== "assess" && !it.group.includes("Starting checks"));
+  // Offer only work this one-piece trial route can actually open and record.
+  const trialItems = () => catalogueItems().filter(it => it.id !== "assess"
+    && !it.group.includes("Starting checks") && Boolean(P().resolveAssigned(it.id)));
   const when = ms => new Date(ms).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   async function drawTrials(body) {
