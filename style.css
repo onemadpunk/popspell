@@ -1936,3 +1936,12 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ps-speed td { border: 1.5px solid #8aa0c4; padding: 6px; text-align: center; font: 700 15pt var(--reading-font); }
 .ps-draw { height: 120px; border: 2px dashed var(--ps-accent); border-radius: 14px; margin: 4px 0 8px; }
 .ps-scramble, .ps-code, .ps-count, .ps-sort, .ps-speed, .ps-key { break-inside: avoid; }
+/* One A4 page: tighter spacing for the practice sheet */
+.ps-step { margin: 9px 0 3px; }
+.ps-lscwc th, .ps-lscwc td { height: 29px; padding: 2px 8px; }
+.ps-draw { height: 90px; }
+.ps-lines { gap: 18px; margin: 12px 0 4px; }
+.ps-tip { margin: 0 0 4px; padding: 4px 10px; }
+.ps-self { margin: 8px 0 0; }
+.ps-young { padding: 6px 12px; }
+.ps-draw { height: 70px; }

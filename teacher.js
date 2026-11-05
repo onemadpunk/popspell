@@ -2113,7 +2113,7 @@
     build: { bands: ["young", "middle", "older"], build: c => `${c.step(c.band === "older" ? "Look, say, cover, write, check" : "Read it, build it, write it")}
       <p class="ps-how">${c.band === "older" ? "Notice the coloured parts. Cover the word, write it from memory, then check." : "Read each word. Build it with your letters, then cover it, write it and check it."}</p>
       <table class="ps-lscwc"><thead><tr><th>Word</th>${c.band === "young" ? "<th>Built it</th>" : ""}<th>Write it</th><th>Write it again</th><th>✓</th></tr></thead>
-        <tbody>${c.shuffle(c.words, "lscwc").slice(0, c.band === "young" ? 6 : 8).map(w => `<tr><td class="ps-word">${colourWord(w)}</td>${c.band === "young" ? '<td class="ps-box">☐</td>' : ""}<td></td><td></td><td class="ps-box">☐</td></tr>`).join("")}</tbody></table>` },
+        <tbody>${c.shuffle(c.words, "lscwc").slice(0, c.band === "young" ? 4 : 5).map(w => `<tr><td class="ps-word">${colourWord(w)}</td>${c.band === "young" ? '<td class="ps-box">☐</td>' : ""}<td></td><td></td><td class="ps-box">☐</td></tr>`).join("")}</tbody></table>` },
     gaps: { bands: ["young", "middle"], build: c => {
       const items = c.shuffle(c.items, "gaps").filter(it => it.tokens.includes(c.focus)).slice(0, 6);
       if (items.length < 3) return "";
@@ -2189,8 +2189,8 @@
   const SHEET_FINISH = {
     young: c => `${c.step("Draw and write")}<p class="ps-how">Pick a word from the sheet. Draw it in the box, then write a sentence about it.</p>
       <div class="ps-draw"></div><div class="ps-lines"><span></span></div>`,
-    middle: c => `${c.step("Your sentences")}<p class="ps-how">Write two sentences, each using a word from this sheet. Use a capital letter and a full stop.</p><div class="ps-lines"><span></span><span></span><span></span></div>`,
-    older: c => `${c.step("Use the words")}<p class="ps-how">Write a short paragraph (three or four sentences) using at least three words from this sheet. Underline the spelling pattern in each.</p><div class="ps-lines"><span></span><span></span><span></span><span></span></div>`
+    middle: c => `${c.step("Your sentences")}<p class="ps-how">Write two sentences, each using a word from this sheet. Use a capital letter and a full stop.</p><div class="ps-lines"><span></span><span></span></div>`,
+    older: c => `${c.step("Use the words")}<p class="ps-how">Write a short paragraph (three or four sentences) using at least three words from this sheet. Underline the spelling pattern in each.</p><div class="ps-lines"><span></span><span></span><span></span></div>`
   };
 
   // A lesson's practice sheet for a spelling list: the same for every child of that age, so a teacher
@@ -2205,30 +2205,45 @@
     // Another list whose sound is spelled differently, for sorting (ee and ea, ai and ay…)
     const alts = SOUND_ALTS.find(set => set.includes(focus)) || [];
     const contrast = Object.values(P().LISTS).find(l => l.id !== list.id && l.items && l.items.length >= 5 && alts.includes(listFocus(l)) && listFocus(l) !== focus && listFocus(l).length > 1) || null;
-    let n = 0;
     const ctx = { list, band, focus, contrast, items: list.items, words: list.items.map(it => it.spelling),
       shuffle: (arr, key) => seededShuffle(arr, seedOf(key)),
       sentenceFor: it => { const s = sentences[it.spelling.toLowerCase()]; return s && new RegExp(`\\b${it.spelling}\\b`, "i").test(s) ? s : ""; },
-      step: title => `<h2 class="ps-step"><span>${++n}</span>${title}</h2>` };
-    // build first (it teaches the words), then four or five others in an order of the list's own
+      // numbered once the sheet's activities are chosen
+      step: title => `<h2 class="ps-step"><span>§</span>${title}</h2>` };
+    // build first (it teaches the words), then the others in an order of the list's own
     const pool = Object.keys(SHEET_ACTIVITIES).filter(k => k !== "build" && SHEET_ACTIVITIES[k].bands.includes(band));
-    const order = ["build"].concat(seededShuffle(pool, seedOf("mix")));
-    const want = band === "young" ? 4 : 5;
-    const parts = [];
-    for (const key of order) {
-      if (parts.length >= want) break;
-      const before = n;
-      const html = SHEET_ACTIVITIES[key].build(ctx);
-      if (html) parts.push(html); else n = before;
-    }
+    const order = seededShuffle(pool, seedOf("mix"));
     const name = esc(!who || who === "Everyone" ? "____________________" : who);
     const head = band === "older" ? brandHead(list.title, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)
       : brandHead(`${theme[1]} ${theme[2]}: ${list.title}`, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`);
-    return `${head}<div class="ps-sheet ps-${band} ps-theme-${theme[0]}" style="--ps-accent:${theme[3]}">
+    const sheet = parts => {
+      let n = 0;
+      return `${head}<div class="ps-sheet ps-${band} ps-theme-${theme[0]}" style="--ps-accent:${theme[3]}">
       ${list.tip ? `<p class="ps-tip"><b>${band === "older" ? "Spelling pattern" : band === "middle" ? "The pattern" : "Today's sound"}:</b> ${esc(list.tip)}</p>` : ""}
       ${parts.join("")}${SHEET_FINISH[band](ctx)}
       <p class="ps-self">${band === "older" ? "Words I still find tricky: ______________________________" : band === "middle" ? "Rate your work: ☆ ☆ ☆ ☆ ☆" : "How did I do? &nbsp; 😀 &nbsp; 🙂 &nbsp; 😐 &nbsp; (circle one)"}</p>
-      </div>`;
+      </div>`.replace(/<span>§<\/span>/g, () => `<span>${++n}</span>`);
+    };
+    // One A4 page: activities are added while the sheet still fits, measured as it will print
+    const parts = [SHEET_ACTIVITIES.build.build(ctx)];
+    for (const key of order) {
+      if (parts.length >= 4) break;
+      const html = SHEET_ACTIVITIES[key].build(ctx);
+      if (html && sheetHeight(sheet(parts.concat(html))) <= PAGE_H * 0.97) parts.push(html);
+    }
+    return sheet(parts);
+  }
+  // How tall a sheet prints, laid out at the printed page's width
+  let sheetMeasure = null;
+  function sheetHeight(html) {
+    if (!sheetMeasure) {
+      sheetMeasure = document.createElement("section");
+      sheetMeasure.className = "sheet-preview-page ws-measure ws-literacy";
+      Object.assign(sheetMeasure.style, { position: "absolute", left: "-10000px", top: "0", width: `${PAGE_W}px`, padding: "0", margin: "0", minHeight: "0", boxShadow: "none", visibility: "hidden" });
+    }
+    if (!sheetMeasure.isConnected) document.body.append(sheetMeasure);
+    sheetMeasure.innerHTML = html + FOOT;
+    return sheetMeasure.scrollHeight;
   }
   // Letters that start with the same movement are practised together, so each movement is learned once
   const LETTER_FAMILIES = [
