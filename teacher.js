@@ -1236,7 +1236,7 @@
   // Both, as print pages. The answers match the questions the pupil's sheet keeps once it's fitted to the page.
   function activityPages(act, qs, level, who = "", extras = sheetExtras(act)) {
     const code = extras.code = extras.code || sheetCode();
-    const pupil = withCode(withGoal(activitySheetHTML(act, qs, level, who, extras.pupil), extras.goal), code);
+    const pupil = ageLook(withCode(withGoal(activitySheetHTML(act, qs, level, who, extras.pupil), extras.goal), code), bandForLevel(level || act.level));
     const kept = keptQuestions(pupil);
     return { pupil, answers: withCode(answersSheetHTML(act, qs.slice(0, kept || qs.length), level, who, extras.answers), code) };
   }
@@ -2101,7 +2101,15 @@
     older: [["plain", "", "Spelling workout", "#0b2e6b"]]
   };
   // The CfE level a ready lesson is written for, as a sheet's age look
-  const bandForLevel = level => (/Third|Fourth|Senior/i.test(level || "") ? "older" : /Second/i.test(level || "") ? "middle" : "young");
+  const bandForLevel = level => {
+    const l = String(level || "");
+    if (/Third|Fourth|Senior|Year (7|8|9|1[01])|Key stage [34]/i.test(l)) return "older";
+    if (/Second|Year [56]/i.test(l)) return "middle";
+    return "young";
+  };
+  // Any printed sheet in its age look: bigger and friendlier for younger pupils, plainer for older
+  // ones (no mascot). The sheet's content is unchanged.
+  const ageLook = (html, band) => (!html ? html : `<div class="ws-age ws-age-${band}">${band === "older" ? html.replace(/<img class="ws-pip"[^>]*>/g, "") : html}</div>`);
   const bandFor = yearGroup => {
     const y = String(yearGroup || "");
     if (/^S\d|^Y(7|8|9|1[01])$|Year (7|8|9|1[01])/i.test(y)) return "older";
@@ -2340,8 +2348,8 @@
     PAPER[sh.id] = { title: sh.title, detail: sh.detail, lesson: sh.lesson, needsAdult: !!sh.needsAdult,
       level: l ? l.level : "", subject: l ? l.subject : "Literacy", strand: l ? l.strand : "Writing: creating texts", england: !!(l && l.england && !l.cfe),
       build: who => { const b = sh.build(who, kit), code = sheetCode();
-        return Object.assign({}, b, { pupil: withCode(b.pupil, code), answers: b.answers ? withCode(b.answers + afterMarkingHTML(l), code) : b.answers }); },
-      html: who => sh.build(who, kit).pupil };
+        return Object.assign({}, b, { pupil: ageLook(withCode(b.pupil, code), bandForLevel(l && l.level)), answers: b.answers ? withCode(b.answers + afterMarkingHTML(l), code) : b.answers }); },
+      html: who => ageLook(sh.build(who, kit).pupil, bandForLevel(l && l.level)) };
   });
   const isPaper = id => Boolean(PAPER[id]);
   // The paper sheets a lesson hands out: any in its own work, and any made for it
