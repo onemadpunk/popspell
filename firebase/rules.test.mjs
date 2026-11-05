@@ -4,7 +4,7 @@
 // (run from a folder holding this file, firestore.rules and a firebase.json naming them)
 import { readFileSync } from "node:fs";
 import { initializeTestEnvironment, assertSucceeds, assertFails } from "@firebase/rules-unit-testing";
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, collection, getDocs, query, where, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, collection, getDocs, query, where, serverTimestamp, Timestamp } from "firebase/firestore";
 
 const env = await initializeTestEnvironment({
   projectId: "demo-popspell",
@@ -271,6 +271,20 @@ await check("teacher creates replacement link", assertSucceeds(setDoc(doc(tutor,
   { classId: "ABC234", pupilKey: "fp-ava", pupil: "Ava", loginUid: "uid-bob", createdAt: serverTimestamp() })));
 await check("replacement account resolves its link", assertSucceeds(getDoc(doc(anotherPupil, "pupilLinks/B7Q4M9T2BX"))));
 await check("teacher removes old link", assertSucceeds(deleteDoc(doc(tutor, "pupilLinks/K7Q4M9T2BX"))));
+
+// Quick trials: each teacher's own records, apart from classes
+const trial = (extra = {}) => Object.assign({ name: "Mia", workId: "y-ee", workTitle: "y at the end", right: 15, total: 18, firstTry: 14,
+  missed: ["jolly"], completedAt: Timestamp.fromMillis(Date.now()), savedAt: serverTimestamp() }, extra);
+await check("teacher saves their own trial result", assertSucceeds(setDoc(doc(tutor, "trialRecords/uid-tutor/entries/t1"), trial())));
+await check("teacher reads their own trial results", assertSucceeds(getDocs(collection(tutor, "trialRecords/uid-tutor/entries"))));
+await check("another teacher can't read someone's trials", assertFails(getDocs(collection(other, "trialRecords/uid-tutor/entries"))));
+await check("another teacher can't write someone's trials", assertFails(setDoc(doc(other, "trialRecords/uid-tutor/entries/t2"), trial())));
+await check("a pupil can't read trials", assertFails(getDoc(doc(pupil, "trialRecords/uid-tutor/entries/t1"))));
+await check("a stranger can't save a trial", assertFails(setDoc(doc(stranger, "trialRecords/uid-x/entries/t3"), trial())));
+await check("a trial can't score more than its total", assertFails(setDoc(doc(tutor, "trialRecords/uid-tutor/entries/t4"), trial({ right: 19 }))));
+await check("a trial can't carry extra fields", assertFails(setDoc(doc(tutor, "trialRecords/uid-tutor/entries/t5"), trial({ classId: "ABC234" }))));
+await check("a trial result can't be changed", assertFails(updateDoc(doc(tutor, "trialRecords/uid-tutor/entries/t1"), { right: 18 })));
+await check("teacher deletes their own trial result", assertSucceeds(deleteDoc(doc(tutor, "trialRecords/uid-tutor/entries/t1"))));
 
 console.log(`\n${passed} passed, ${failed} failed`);
 await env.cleanup();

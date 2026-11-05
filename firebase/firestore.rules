@@ -80,6 +80,27 @@ service cloud.firestore {
       allow delete: if canSee(resource.data.classId);
     }
 
+    // Quick trials: a child tries some work on the teacher's own device. Each record belongs to
+    // the signed-in teacher, outside class rosters and progress; the teacher reviews and deletes them.
+    match /trialRecords/{uid}/entries/{entry} {
+      allow read, delete: if isTeacher() && request.auth.uid == uid;
+      allow create: if isTeacher() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'name', 'workId', 'workTitle', 'right', 'total', 'firstTry', 'missed', 'completedAt', 'savedAt'])
+        && shortText(request.resource.data.name, 40) && request.resource.data.name.size() > 0
+        && shortText(request.resource.data.workId, 100)
+        && shortText(request.resource.data.workTitle, 120)
+        && request.resource.data.total is int && request.resource.data.total >= 0 && request.resource.data.total <= 60
+        && request.resource.data.right is int && request.resource.data.right >= 0
+        && request.resource.data.right <= request.resource.data.total
+        && request.resource.data.firstTry is int && request.resource.data.firstTry >= 0
+        && request.resource.data.firstTry <= request.resource.data.right
+        && request.resource.data.missed is list && request.resource.data.missed.size() <= 60
+        && request.resource.data.completedAt is timestamp
+        && request.resource.data.savedAt == request.time;
+      allow update: if false;
+    }
+
     // A class; its id is the join code pupils type
     match /classes/{c} {
       allow get: if signedIn();

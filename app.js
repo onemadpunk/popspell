@@ -388,14 +388,21 @@
   const TABLET_KEY = "popspell-tablet-logins-v1";
   const SESSION_PUPIL_KEY = "popspell-active-pupil-v1";
   const SESSION_ACTIVITY_KEY = "popspell-pupil-last-activity-v1";
+  const TRIAL_KEY = "popspell-current-trial-v1";
+  const TRIAL_PENDING_KEY = "popspell-pending-trials-v1";
+  const TRIAL_MODE = new URLSearchParams(location.search).get("trial") === "1";
+  const trial = (() => { try { return TRIAL_MODE ? JSON.parse(sessionStorage.getItem(TRIAL_KEY)) : null; } catch { return null; } })();
+  if (TRIAL_MODE) document.documentElement.classList.add("trial-mode"); // no menu: the child stays on the work
   let pupilIdentity = null;
   let previewPupilName = "";
   const getPupil = () => {
+    if (TRIAL_MODE) return trial?.name || "";
     if (CLASS && previewMode && teacherUnlocked()) return previewPupilName;
     if (CLASS && pupilIdentity?.classInfo.id === CLASS.id) return pupilIdentity.pupil;
     try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; }
   };
   const setPupil = name => {
+    if (TRIAL_MODE) return;
     if (CLASS && previewMode && teacherUnlocked()) { previewPupilName = name; return; }
     try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ }
     updateReporting();
@@ -404,11 +411,12 @@
 
   let cloud = null;    // window.PopCloud once connected
   let TEACHER = null;  // the signed-in teacher on this device, if any
-  let CLASS = (() => { try { return JSON.parse(localStorage.getItem(CLASS_KEY)) || null; } catch { return null; } })();
+  let CLASS = (() => { if (TRIAL_MODE) return null; try { return JSON.parse(localStorage.getItem(CLASS_KEY)) || null; } catch { return null; } })();
   let REPORTING = false;
   let previewMode = false;
-  const previewBanner = () => previewMode ? `<p class="preview-banner">👀 Teacher preview · Nothing here is saved to a pupil. Close this tab to return to planning.</p>` : "";
-  const updateReporting = () => { REPORTING = !!(cloud && CLASS && getPupil()); };
+  const previewBanner = () => TRIAL_MODE ? `<p class="preview-banner">Trial for ${esc(trial?.name || "this child")} · ${esc(trial?.teacher || "Your teacher")}'s teacher account is signed out. When you've finished, hand the device back.</p>`
+    : previewMode ? `<p class="preview-banner">👀 Teacher preview · Nothing here is saved to a pupil. Close this tab to return to planning.</p>` : "";
+  const updateReporting = () => { REPORTING = !TRIAL_MODE && !!(cloud && CLASS && getPupil()); };
   function saveClass(c) {
     CLASS = c;
     try { if (c) localStorage.setItem(CLASS_KEY, JSON.stringify(c)); else localStorage.removeItem(CLASS_KEY); } catch { /* not remembered */ }
@@ -569,8 +577,9 @@
   }
 
   const readAllProgress = () => { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; } catch { return {}; } };
-  const loadProgress = () => Object.assign({ words: {}, sounds: {} }, readAllProgress()[pupilKey()]);
+  const loadProgress = () => TRIAL_MODE ? { words: {}, sounds: {} } : Object.assign({ words: {}, sounds: {} }, readAllProgress()[pupilKey()]);
   function saveProgress(prog) {
+    if (TRIAL_MODE) return; // a trial leaves nothing of the child's on the teacher's device but the result
     const all = readAllProgress();
     all[pupilKey()] = prog;
     try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(all)); } catch { /* full or private mode */ }
@@ -999,8 +1008,22 @@
     const [path, query = ""] = hash.split("?");
     const parts = path.split("/").filter(Boolean);
     const params = new URLSearchParams(query);
-    previewMode = params.get("preview") === "1";
+    previewMode = TRIAL_MODE || params.get("preview") === "1";
     applyLook();
+
+    // A quick trial stays on the one piece of work the teacher chose, and ends when it's finished
+    if (TRIAL_MODE) {
+      if (!trial || !trial.name || !trial.ownerUid || !/^#\//.test(trial.href || "")) {
+        app.innerHTML = `<section class="panel start"><h1>This trial has finished</h1><p>Please hand the device back to your teacher.</p>
+          <a class="btn primary" href="${esc(location.pathname)}#/teacher/trials">Teacher: sign in to see the result</a></section>`;
+        return;
+      }
+      const plain = h => { try { return decodeURIComponent(h); } catch { return h; } };
+      if (plain(`#${hash}`) !== plain(trial.href)) {
+        history.replaceState(null, "", trial.href);
+        if (plain(location.hash) !== plain(`#${hash}`)) { route(); return; }
+      }
+    }
 
     const then = { assess: "#/assess", phonics: "#/phonics" }[params.get("then")] || "#/";
     if (parts[0] === "p") { showPupilLogin(decodeURIComponent(parts[1] || ""), then); return; }
@@ -1525,7 +1548,7 @@
     ];
     app.innerHTML = `
       <section class="panel sounds-page">
-        <a class="back" href="#/">← All lists</a>
+        ${TRIAL_MODE ? "" : `<a class="back" href="#/">← All lists</a>`}
         <div class="page-head">${pipHTML("small", "hop", "", "think")}<h1>${name ? `${esc(name)}'s sounds` : "My sounds"}</h1></div>
         <p class="meta">⭐ ${count("secure")} secure · 🌱 ${count("learning")} learning · 🔶 ${count("tricky")} to practise</p>
         <p class="hint">Spell a sound right first time on two different days to win its star. Tap a sound to hear it and practise it.</p>
@@ -1763,8 +1786,8 @@
         ${forTeacher() ? `${list.tip ? `<p class="tip">💡 ${esc(list.tip)}</p>` : ""}
           <p class="meta">${plural(list.items.length, "word", "words")}${checksFor(list).length ? ` + ${plural(checksFor(list).length, "new-word challenge", "new-word challenges")}` : ""} · ${plural(settings.tries, "try", "tries")} for each word</p>` : ""}
         ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
-        <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
-        ${LISTS[list.id] && list.items.some(it => it.sentence) && window.PopActivities
+        <button class="btn big primary" id="go">${TRIAL_MODE ? "▶ Start trial" : previewMode ? "▶ Test this work" : "▶ Start"}</button>
+        ${!TRIAL_MODE && LISTS[list.id] && list.items.some(it => it.sentence) && window.PopActivities
           ? `<p><a class="btn" href="#/activity/${encodeURIComponent(`dictate:${list.id}`)}${previewMode ? "?preview=1" : ""}">✍️ Sentence dictation with these words</a></p>` : ""}
         ${synth ? "" : `<p class="warn">This browser can't read words aloud. Please try Chrome, Edge or Safari.</p>`}
         <details class="teacher">
@@ -1787,7 +1810,7 @@
   }
 
   // Curriculum labels, tips and word counts are for teachers; pupils get Pip and one big button
-  const forTeacher = () => previewMode || teacherUnlocked();
+  const forTeacher = () => !TRIAL_MODE && (previewMode || teacherUnlocked());
   // Number sets run from easy to hard, so a starting check takes questions from the middle:
   // typical of the level, not just its easiest
   const typical = (qs, n) => { const from = Math.max(0, Math.floor((qs.length - n) / 2)); return qs.slice(from, from + n); };
@@ -1800,7 +1823,7 @@
   // New-word challenges always come last, after the practised words
   function startPractice(list, items, checks = []) {
     session = {
-      list, i: 0, results: [], pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode,
+      list, i: 0, results: [], pupil: TRIAL_MODE ? getPupil() : previewMode ? "" : getPupil(), sent: false, preview: previewMode,
       items: (settings.shuffle && !list.ordered ? shuffle(items) : items.slice()).concat(checks),
       secureBefore: secureSounds(loadProgress()),
       // Practising just the tricky words doesn't count towards the list's best score
@@ -2032,6 +2055,30 @@
 
   /* ---------- Summary ---------- */
 
+  function saveTrialResult(s) {
+    if (!TRIAL_MODE || !trial || s.trialRecorded) return "";
+    const results = s.results || [];
+    const record = {
+      id: crypto.randomUUID(), ownerUid: trial.ownerUid, name: trial.name,
+      workId: trial.workId || s.list.id || "", workTitle: s.list.title || trial.title || "",
+      right: results.filter(r => r.correct).length, total: results.length,
+      firstTry: results.filter(r => r.correct && !r.wrong.length).length,
+      missed: results.filter(r => !r.correct || r.wrong.length).map(r => r.item.spelling || r.item.label || "Question").slice(0, 60),
+      completedAt: Date.now()
+    };
+    try {
+      const pending = JSON.parse(localStorage.getItem(TRIAL_PENDING_KEY) || "[]");
+      pending.push(record);
+      localStorage.setItem(TRIAL_PENDING_KEY, JSON.stringify(pending));
+      s.trialRecorded = true;
+      return `Result saved. ${trial.teacher || "Your teacher"} will see it after signing in again.`;
+    } catch { return "This browser could not save the trial. Please show or print these results before leaving."; }
+  }
+  function finishTrial() {
+    try { sessionStorage.removeItem(TRIAL_KEY); } catch { /* private mode */ }
+    location.replace(`${location.origin}${location.pathname}#/teacher/trials`);
+  }
+
   function showSummary() {
     newScreen();
     const all = session.results;
@@ -2053,6 +2100,7 @@
     const bySound = {};
     all.forEach(x => x.missed.forEach(tok => { (bySound[tok] = bySound[tok] || []).push(x.item.spelling); }));
     const soundRows = Object.entries(bySound).sort((a, b) => b[1].length - a[1].length);
+    const trialNote = saveTrialResult(session);
 
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
@@ -2060,6 +2108,7 @@
         ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${esc(headline)}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        ${TRIAL_MODE ? `<p class="hint" role="status">${esc(trialNote)}</p>` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${newStars.length ? `
           <div class="new-stars pop">
@@ -2090,14 +2139,16 @@
           </tbody>
         </table>
         <div class="row center no-print">
+          ${TRIAL_MODE ? `<button class="btn primary" id="trialFinish" type="button">Finished: hand back to ${esc(trial?.teacher || "your teacher")}</button>` : `
           ${tricky.length ? `<button class="btn primary" id="again-tricky">Practise the ${plural(tricky.length, "tricky word", "tricky words")}</button>` : ""}
           <button class="btn" id="again-all">Do this list again</button>
-          <a class="btn" href="#/">Choose another list</a>
+          <a class="btn" href="#/">Choose another list</a>`}
           <button class="btn" id="print">🖨️ Print</button>
         </div>
       </section>`;
 
     sayPhrase(right === r.length ? PHRASES.allRight : PHRASES.finished);
+    if (TRIAL_MODE) $("#trialFinish").onclick = finishTrial;
     livePing(session, "end");
     session.ended = true;
     const my = phase;
@@ -2108,8 +2159,8 @@
       note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
     });
     const list = session.list;
-    if (tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
-    $("#again-all").onclick = () => startPractice(list, list.items, checksFor(list));
+    if (!TRIAL_MODE && tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
+    if (!TRIAL_MODE) $("#again-all").onclick = () => startPractice(list, list.items, checksFor(list));
     $("#print").onclick = () => window.print();
   }
 
@@ -2125,7 +2176,7 @@
     const timed = act.timed;
     app.innerHTML = `
       <section class="panel start" style="--accent:${esc(act.colour)}">
-        <a class="back" href="#/">← All activities</a>
+        ${TRIAL_MODE ? "" : `<a class="back" href="#/">← All activities</a>`}
         ${previewBanner()}
         <div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>
         ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>` : ""}
@@ -2147,7 +2198,7 @@
             `<label class="check"><input type="radio" name="timeLimit" value="${v}"${settings.timeLimit === v ? " checked" : ""}> ${t}</label>`).join("")}
           </fieldset>` : ""}
         ${previewMode ? "" : `<div class="pupil" id="pupilBox"></div>`}
-        <button class="btn big primary" id="go">${previewMode ? "▶ Test this work" : "▶ Start"}</button>
+        <button class="btn big primary" id="go">${TRIAL_MODE ? "▶ Start trial" : previewMode ? "▶ Test this work" : "▶ Start"}</button>
       </section>`;
     app.querySelectorAll("[name=timeLimit]").forEach(r => { r.onchange = () => { settings.timeLimit = r.value; saveSettings(); }; });
     const go = $("#go");
@@ -2168,7 +2219,7 @@
     if (!questions.length) { app.innerHTML = `<section class="panel start"><h1>Nothing to practise here yet</h1><a class="btn primary" href="#/">Back</a></section>`; return; }
     session = {
       list: { id: act.id, title: act.title, accent: act.colour }, activity: act, i: 0, results: [],
-      pupil: previewMode ? "" : getPupil(), sent: false, preview: previewMode, secureBefore: new Set(),
+      pupil: TRIAL_MODE ? getPupil() : previewMode ? "" : getPupil(), sent: false, preview: previewMode, secureBefore: new Set(),
       bestsBefore: bestsSnapshot({ id: act.id }, true),
       items: questions.map(q => Object.assign({ spelling: q.label, tokens: [] }, q))
     };
@@ -3013,6 +3064,7 @@
     const skills = {};
     r.forEach(x => x.missed.forEach(s => { skills[s] = (skills[s] || 0) + 1; }));
     const act = session.activity;
+    const trialNote = saveTrialResult(session);
     const canopy = String(act.id || "").startsWith("g-canopy-");
     const glowEarned = canopy ? r.length : 0;
     const bestNotes = personalBests(session, firstGo, r.length);
@@ -3022,6 +3074,7 @@
         ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        ${TRIAL_MODE ? `<p class="hint" role="status">${esc(trialNote)}</p>` : ""}
         ${canopy ? `<div class="canopy-victory" role="status">
           <span aria-hidden="true">✨ 🦉 ✨</span><h2>Forest Explorer!</h2>
           <p>Pip reached the owl and opened ${r.length} forest clearings. The whole path is glowing!</p>
@@ -3039,8 +3092,8 @@
             <td class="tries-cell">${x.wrong.length ? x.wrong.map(w => `<s>${esc(w)}</s>`).join(" ") : "—"}</td></tr>`).join("")}</tbody>
         </table>
         <div class="row center no-print">
-          <button class="btn primary" id="againAct">Have another go</button>
-          <a class="btn" href="#/">Choose something else</a>
+          ${TRIAL_MODE ? `<button class="btn primary" id="trialFinish" type="button">Finished: hand back to ${esc(trial?.teacher || "your teacher")}</button>`
+            : `<button class="btn primary" id="againAct">Have another go</button><a class="btn" href="#/">Choose something else</a>`}
         </div>
       </section>`;
     if (canopy) renderForestCollection($("#forestCollection"), session.preview);
@@ -3054,7 +3107,8 @@
       if (!note || my !== phase || sent === null) return;
       note.textContent = sent ? "✓ Sent to your teacher" : "Saved — it will reach your teacher when the internet is back.";
     });
-    $("#againAct").onclick = () => startActivity(act);
+    if (TRIAL_MODE) $("#trialFinish").onclick = finishTrial;
+    else $("#againAct").onclick = () => startActivity(act);
   }
 
   /* ---------- Starting checks: where each pupil starts in the teaching order ---------- */
@@ -3549,7 +3603,7 @@
     const open = teacherUnlocked();
     document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
     const link = $("#teacherLink");
-    link.hidden = !CLOUD_CONFIGURED;
+    link.hidden = TRIAL_MODE || !CLOUD_CONFIGURED;
     // "Sara Green" → "Sara", but "Mr Smith" stays "Mr Smith" (as teacher.js shows it)
     const short = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
     link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${short(TEACHER.name)}` : "👩‍🏫 Teacher";

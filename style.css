@@ -1,3 +1,6 @@
+/* An element with the hidden attribute stays hidden, whatever display its classes give it */
+[hidden] { display: none !important; }
+
 :root {
   --bg: #eaf3ff;
   --surface: #ffffff;
@@ -1802,3 +1805,26 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
   .t-pagehead h1 { font-size: 1.45rem; }
 }
 @media print { .t-side, .t-pagehead { display: none; } }
+
+/* Teacher area: good-news notices, the Assign tab's two steps, and quick trials */
+.t-error.t-ok, .area-teacher .t-error.t-ok { background: var(--good-soft); color: var(--good); border-color: #a7e3da; }
+.t-dialog-error { margin: 0 0 12px; }
+.assign-panel { display: grid; gap: 14px; max-width: 760px; }
+.assign-panel .t-h2 { margin: 0; }
+.assign-step { display: grid; gap: 8px; }
+.assign-step select, .assign-step input[type="search"], .assign-step input[type="text"] { width: 100%; max-width: 100%; }
+.assign-num { margin: 0; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.assign-num b { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); font-size: .9rem; }
+.assign-own summary { cursor: pointer; color: var(--muted); font-size: .95rem; }
+.assign-own input { margin-top: 8px; }
+.assign-panel .assign-names { max-height: 240px; }
+.assign-table td.who { white-space: nowrap; }
+.trial-panel { display: grid; gap: 14px; max-width: 760px; }
+.trial-panel .t-h2 { margin: 0; }
+.trial-table td { vertical-align: top; }
+.trial-missed { color: var(--muted); font-size: .9rem; }
+.trial-mode .topnav, .trial-mode #pupilBox { display: none !important; }
+.trial-mode .brand { pointer-events: none; }
+.trial-mode .back { display: none !important; }
+.trial-mode details.teacher { display: none !important; }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; box-shadow: none; transform: none; }

@@ -393,16 +393,65 @@ async function start() {
     },
     // The device's copy of the classes goes too, so the next person on a shared computer can't find
     // pupils' records in the browser's storage. Anything not yet saved gets a few seconds to send first.
-    async signOut() {
+    // destination: where the page goes next (a quick trial opens the child's work), instead of the home page
+    async signOut(destination = "") {
       try { localStorage.removeItem(PREVIEW_TEACHER_KEY); } catch { /* ignore */ }
       profile = null;
       sessionStorage.removeItem("popspell-calendar-token");
       await Promise.race([waitForPendingWrites(store), new Promise(r => setTimeout(r, 5000))]).catch(() => {});
       await signOut(auth).catch(() => {});
       await terminate(store).then(() => clearIndexedDbPersistence(store)).catch(() => {});
+      if (destination) { location.replace(destination); return new Promise(() => {}); }
       history.replaceState(null, "", "#/");
       location.reload();
       return new Promise(() => {}); // the page is reloading
+    },
+
+    /* ---------- Quick trials: a child tries some work on the teacher's own device ---------- */
+
+    // Kept under the teacher's own account, apart from classes, rosters and progress.
+    // The teacher reviews and deletes them by hand.
+    async trialRecords() {
+      const p = await api.me();
+      if (!p?.role) throw new Error("Sign in as a teacher first.");
+      if (isPreviewTeacher()) return (loadPreviewDb().trials || []).slice().sort((a, b) => b.completedAt - a.completedAt);
+      const snap = await getDocs(query(collection(store, "trialRecords", p.uid, "entries"), orderBy("savedAt", "desc"), limit(200)));
+      return snap.docs.map(d => ({ id: d.id, ...d.data(),
+        completedAt: d.data().completedAt?.toMillis ? d.data().completedAt.toMillis() : Date.now() }))
+        .sort((a, b) => b.completedAt - a.completedAt);
+    },
+    async saveTrial(entry) {
+      const p = await api.me();
+      if (!p?.role) throw new Error("Sign in as a teacher first.");
+      const count = v => Math.max(0, Math.min(60, Math.round(Number(v) || 0)));
+      const total = count(entry.total), right = Math.min(count(entry.right), total);
+      const clean = {
+        name: String(entry.name || "").trim().slice(0, 40) || "Child",
+        workId: String(entry.workId || "").slice(0, 100),
+        workTitle: String(entry.workTitle || "").slice(0, 120),
+        right, total, firstTry: Math.min(count(entry.firstTry), right),
+        missed: (entry.missed || []).slice(0, 60).map(x => String(x).slice(0, 80)),
+        completedAt: Number(entry.completedAt) || Date.now()
+      };
+      if (isPreviewTeacher()) {
+        const dbObj = loadPreviewDb();
+        dbObj.trials = (dbObj.trials || []).concat(Object.assign({ id: crypto.randomUUID() }, clean));
+        savePreviewDb(dbObj);
+        return;
+      }
+      await addDoc(collection(store, "trialRecords", p.uid, "entries"),
+        Object.assign({}, clean, { completedAt: Timestamp.fromMillis(clean.completedAt), savedAt: serverTimestamp() }));
+    },
+    async deleteTrial(id) {
+      const p = await api.me();
+      if (!p?.role) throw new Error("Sign in as a teacher first.");
+      if (isPreviewTeacher()) {
+        const dbObj = loadPreviewDb();
+        dbObj.trials = (dbObj.trials || []).filter(t => t.id !== id);
+        savePreviewDb(dbObj);
+        return;
+      }
+      await deleteDoc(doc(store, "trialRecords", p.uid, "entries", id));
     },
 
     // Asked for only when a teacher syncs lessons, never at sign-in, so signing in is unchanged.
@@ -911,8 +960,12 @@ async function start() {
         return;
       }
       const key = await fingerprint(name);
+      // The roster keeps the name as it was first written ("ava" and "Ava" are the same pupil), and
+      // the rules don't let a name change, so a different capital letter mustn't make saving fail
+      const before = await getDoc(doc(store, "classes", classId, "pupils", key)).catch(() => null);
+      const kept = before?.exists() && before.data().name ? before.data().name : name;
       await setDoc(doc(store, "classes", classId, "pupils", key), {
-        name, parentEmail: lower(pupil.parentEmail).slice(0, 254),
+        name: kept, parentEmail: lower(pupil.parentEmail).slice(0, 254),
         reminderOptIn: !!pupil.reminderOptIn,
         nextLessonDate: String(pupil.nextLessonDate || "").slice(0, 10),
         lessonTime: String(pupil.lessonTime || "").slice(0, 5),
