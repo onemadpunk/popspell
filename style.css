@@ -1986,3 +1986,15 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-match { display: grid; grid-template-columns: 3fr 2fr; gap: 0 60px; margin: 4px 0 8px; font: 14pt var(--reading-font); }
 .pp-match p { margin: 8px 0; padding: 4px 10px; border: 1.5px solid #8aa0c4; border-radius: 10px; }
 .pp-pick3 { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 4px 22px; }
+.pp-panel { display: flex; flex-direction: column; justify-content: center; }
+.pp-cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 4px 0 8px; break-inside: avoid; }
+.pp-cards3 > div { display: grid; justify-items: center; align-content: end; gap: 2px; padding: 6px; border: 2px solid #8aa0c4; border-radius: 14px; }
+.pp-cards3 p { margin: 0; font: 13pt var(--reading-font); }
+.pp-numbox { display: block; width: 42px; height: 42px; border: 2.5px solid #333; border-radius: 8px; }
+.pp-match { grid-template-columns: 3fr 2fr; gap: 0 90px; align-items: center; }
+.pp-match > div { display: grid; gap: 10px; }
+.pp-match p { position: relative; margin: 0; }
+.pp-dot-end, .pp-dot-start { position: absolute; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: #333; }
+.pp-dot-end { right: -20px; } .pp-dot-start { left: -20px; }
+.pp-draw.pp-troll { height: 190px; }
+.pp-draw.pp-troll { height: 135px; }
