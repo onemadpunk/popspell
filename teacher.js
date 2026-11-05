@@ -819,7 +819,7 @@
   // stories and dictation get a paper version of their questions
   function printEntry(entry, cur = "") {
     if (entry.type === "lesson") return lessonPrintDialog(entry.lesson, "", cur);
-    if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "mapping");
+    if (entry.type === "spelling" || entry.type === "paper") return previewWorksheet("", { list: entry.id, from: todayKey() }, "practice");
     previewActivitySheet(entry.id, cur === "england" ? (entry.en ? entry.en.label : "") : entry.level);
   }
 
@@ -1436,7 +1436,8 @@
           <h3 class="class-sub">Work set</h3>
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
-          <div class="row"><button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button></div>
+          <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}">🧭 Plan next lesson</button>
+            <button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button></div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
               <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
@@ -1478,6 +1479,83 @@
       catch (err) { b.disabled = false; showError(err); }
     }; });
     body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
+    body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
+      const name = b.dataset.planLesson;
+      planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body));
+    }; });
+  }
+
+  // What a child got wrong or needed several tries for, from their recent results (newest first)
+  function missedFrom(results, days = 14) {
+    const since = Date.now() - days * 86400000;
+    const out = [];
+    results.filter(s => s.at >= since && !s.source).forEach(s => (s.words || []).forEach(w => {
+      if (!w.word || (w.correct && w.triesUsed === 1) || out.some(m => sameName(m.word, w.word))) return;
+      out.push({ word: w.word, tried: (w.wrong || []).filter(Boolean).slice(0, 3), sounds: w.missed || [], list: s.listId });
+    }));
+    return out;
+  }
+
+  // The next lesson for one child: what last time showed, the online work and a practice sheet on
+  // the same focus, so one child can work online while the other does the sheet, then swap
+  function planLessonDialog(name, row, results, done) {
+    const spelling = results.filter(s => catalogueList(s.listId) && !s.source);
+    const latest = spelling[0] || null;
+    const suggestion = suggestFor(latest, null);
+    const missed = missedFrom(results);
+    const older = row?.look === "older";
+    const items = catalogueItems().filter(it => catalogueList(it.id));
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview plan-lesson";
+    const lastLine = latest ? `${esc(latest.list || listTitle(latest.listId))} on ${esc(day(latest.at))}: ${firstPct(latest)}% right first time` : "Nothing recorded yet";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🧭 Next lesson for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="plan-body">
+        <p><b>Last time:</b> ${lastLine}</p>
+        ${missed.length ? `<p><b>To review:</b> ${missed.slice(0, 8).map(m => `<span class="t-chip">${esc(m.word)}</span>`).join(" ")}
+          ${missed.flatMap(m => m.sounds).length ? `<br><span class="meta">Sounds missed most: ${esc([...new Set(missed.flatMap(m => m.sounds))].slice(0, 5).join(", "))}</span>` : ""}</p>` : ""}
+        <p class="plan-suggest">💡 ${esc(suggestion.text)}</p>
+        <label>Spelling focus for this lesson <select data-list>${catalogueOptions(items, "")}</select></label>
+        <p class="hint">The online work and the practice sheet both use this focus. The sheet is the same one in the Library, so you can also print copies for a folder. Swap halfway: one child online, the other on the sheet.</p>
+        <div class="row"><button class="btn primary" type="button" data-both>Set online work and print the sheet</button>
+          <button class="btn" type="button" data-set>Set online work only</button>
+          <button class="btn" type="button" data-print>Print the sheet only</button></div>
+        <h3 class="t-h2">The practice sheet</h3>
+        <section class="sheet-preview-page ws-literacy" data-preview></section>
+      </div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    const pick = dialog.querySelector("[data-list]");
+    pick.value = catalogueList(suggestion.list) ? suggestion.list : (items[0] && items[0].id);
+    const pages = () => {
+      const list = catalogueList(pick.value);
+      // Only last time's words from this list or any list, as review at the top
+      return `<div class="ws-page">${practiceSheetHTML(name, list, { older })}</div>`;
+    };
+    const render = () => {
+      const page = dialog.querySelector("[data-preview]");
+      page.innerHTML = pages();
+      fitPages(page, "ws-literacy");
+    };
+    pick.onchange = render;
+    const setWork = async () => {
+      const lists = row ? row.lists : [];
+      if (!lists.includes(pick.value)) await cloud.saveAssignment(current.id, row ? row.who : name, lists.concat(pick.value));
+    };
+    const print = () => printSheet("ws-literacy", pages(), { who: name, title: `Practice sheet: ${listTitle(pick.value)}`, pages: pages() });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.querySelector("[data-set]").onclick = async e => {
+      e.target.disabled = true;
+      try { await setWork(); dialog.close(); done(); notice(`✓ ${name} will see ${listTitle(pick.value)} online.`, "ok"); }
+      catch (err) { e.target.disabled = false; dialogError(dialog, err); }
+    };
+    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); print(); };
+    dialog.querySelector("[data-both]").onclick = async e => {
+      e.target.disabled = true;
+      try { await setWork(); dialog.close(); done(); print(); }
+      catch (err) { e.target.disabled = false; dialogError(dialog, err); }
+    };
+    render();
+    dialog.showModal();
   }
 
   // Search the work, choose it, set it: for one pupil, from their card on the Class page
@@ -1945,6 +2023,121 @@
       <div class="ws-sentence"><p><b>Your turn:</b> write a sentence of your own using one of the words.</p>${handwritingRow("", ["blank"])}</div>`;
   }
 
+  /* ---------- Practice sheet: one child's paper half of a lesson ---------- */
+
+  // A word in the phoneme colours teachers use with magnetic letters: single vowel letters red,
+  // consonants blue, and sounds written with two or more letters (including a_e) green
+  function colourWord(spelling) {
+    const a = P().analyse(spelling);
+    const tokens = [...new Set(a.chunks.map(ch => ch.g))].map(g => a.chunks.filter(ch => ch.g === g));
+    const kind = parts => {
+      const text = parts.map(p => p.text).join("");
+      if (parts.length > 1 || text.length > 1) return "ps-multi";
+      const ch = text.toLowerCase(), first = parts[0] === a.chunks[0];
+      return "aeiou".includes(ch) || (ch === "y" && !first) ? "ps-vowel" : "ps-cons";
+    };
+    const cls = new Map(tokens.map(parts => [parts[0].g, kind(parts)]));
+    return a.chunks.map(ch => `<span class="${cls.get(ch.g)}">${esc(ch.text)}</span>`).join("");
+  }
+  // The same order every time for the same child and list, so the preview is what prints
+  function seededShuffle(items, seedText) {
+    let seed = [...seedText].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
+    const rand = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 4294967296);
+    const out = items.slice();
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+    return Object.assign(out, { rand });
+  }
+  // The sound the list is about: the grapheme found in the most of its words (a longer one wins a tie)
+  function listFocus(list) {
+    const count = new Map();
+    list.items.forEach(it => new Set(it.tokens).forEach(t => count.set(t, (count.get(t) || 0) + 1)));
+    return [...count.entries()].sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)[0]?.[0] || "";
+  }
+  // Other ways to write the same sound, for "circle the right spelling"
+  const SOUND_ALTS = [["ee", "ea", "y", "ey", "e_e", "ie", "e"], ["ai", "ay", "a_e", "a", "ei", "eigh"], ["igh", "ie", "y", "i_e", "i"],
+    ["oa", "ow", "o_e", "oe", "o"], ["oo", "ew", "ue", "u_e", "ou"], ["ou", "ow"], ["oi", "oy"], ["ar", "a"], ["or", "aw", "au", "ore", "al"],
+    ["er", "ir", "ur", "or", "ear"], ["air", "are", "ear"], ["ck", "k", "c"], ["ch", "tch"], ["ge", "dge", "j"], ["s", "ss", "c", "ce", "se"],
+    ["f", "ff", "ph"], ["l", "ll", "le", "el"], ["sh", "ch", "ti", "ci"], ["n", "kn", "gn"], ["r", "wr"]];
+  function wrongSpellings(item, focus) {
+    const a = P().analyse(item.spelling);
+    const out = new Set();
+    item.tokens.forEach((t, g) => {
+      if (focus && t !== focus) return;
+      const set = SOUND_ALTS.find(s => s.includes(t));
+      (set || []).filter(alt => alt !== t).forEach(alt => {
+        const parts = a.chunks.map(ch => (ch.g !== g ? ch.text : ch.split === "end" ? (alt.includes("_") ? "e" : "") : alt.replace(/_e$/, "")));
+        const w = parts.join("");
+        if (w && w !== item.spelling) out.add(w);
+      });
+    });
+    return [...out];
+  }
+  // A small word search: words across and down only, so it stays readable for young children
+  function wordSearch(words, rand, size = 9) {
+    const grid = Array.from({ length: size }, () => Array(size).fill(""));
+    const placed = [];
+    for (const w of words.map(x => x.toLowerCase()).filter(x => x.length <= size)) {
+      for (let tries = 0; tries < 60; tries++) {
+        const down = rand() < 0.5, r = Math.floor(rand() * (down ? size - w.length + 1 : size)), c = Math.floor(rand() * (down ? size : size - w.length + 1));
+        const cells = [...w].map((ch, k) => [down ? r + k : r, down ? c : c + k, ch]);
+        if (cells.every(([y, x, ch]) => !grid[y][x] || grid[y][x] === ch)) { cells.forEach(([y, x, ch]) => { grid[y][x] = ch; }); placed.push(w); break; }
+      }
+      if (placed.length >= 6) break;
+    }
+    const fill = "abcdefghijklmnoprstuwy";
+    grid.forEach(row => row.forEach((v, x) => { if (!v) row[x] = fill[Math.floor(rand() * fill.length)]; }));
+    return { placed, html: `<table class="ps-search">${grid.map(row => `<tr>${row.map(ch => `<td>${ch}</td>`).join("")}</tr>`).join("")}</table>` };
+  }
+
+  // A lesson's practice sheet for a spelling list: the same for every child, so a teacher can keep
+  // copies in a folder. older: the 12–17 look.
+  function practiceSheetHTML(who, list, { older = false } = {}) {
+    const focus = listFocus(list);
+    const sentences = window.SENTENCES || {};
+    const seed = list.id;
+    const fromList = list.items.map(it => it.spelling);
+    const lscwc = seededShuffle(fromList, seed).slice(0, 8);
+    const items = seededShuffle(list.items, `${seed}|x`);
+    const blankWord = item => {
+      const a = P().analyse(item.spelling);
+      const g = item.tokens.indexOf(focus);
+      return a.chunks.map(ch => (ch.g === g ? `<span class="ps-gap">${"_".repeat(ch.text.length)}</span>` : `<span>${esc(ch.text)}</span>`)).join("");
+    };
+    const gaps = items.filter(it => it.tokens.includes(focus)).slice(0, 6);
+    // Circle the right spelling: the same sound written another way
+    const choices = items.map(it => {
+      const wrong = wrongSpellings(it, focus).slice(0, older ? 2 : 1);
+      return wrong.length ? { word: it.spelling, options: seededShuffle([it.spelling, ...wrong], `${seed}|${it.spelling}`) } : null;
+    }).filter(Boolean).slice(0, older ? 6 : 5);
+    const withSentence = items.filter(it => sentences[it.spelling.toLowerCase()] && new RegExp(`\\b${it.spelling}\\b`, "i").test(sentences[it.spelling.toLowerCase()])).slice(0, 4);
+    const search = older ? null : wordSearch(seededShuffle(fromList, `${seed}|s`).slice(0, 8), seededShuffle([], `${seed}|g`).rand);
+    let n = 0;
+    const step = title => `<h2 class="ps-step"><span>${++n}</span>${title}</h2>`;
+    return `${brandHead(`${list.title}${older ? "" : " · practice"}`, `<b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)}
+      <div class="ps-sheet${older ? " ps-older" : ""}">
+      ${list.tip ? `<p class="ps-tip"><b>${older ? "Spelling pattern" : "Today's sound"}:</b> ${esc(list.tip)}</p>` : ""}
+      ${step(older ? "Look, say, cover, write, check" : "Read it, build it, write it")}
+      <p class="ps-how">${older ? "Read the word and notice the coloured parts. Cover it, write it from memory, then uncover and check."
+        : "Read each word. Build it with your letters, then cover it, write it and check it."}</p>
+      <table class="ps-lscwc"><thead><tr><th>Word</th>${older ? "" : "<th>Built it</th>"}<th>Write it</th><th>Write it again</th><th>✓</th></tr></thead>
+        <tbody>${lscwc.map(w => `<tr><td class="ps-word">${colourWord(w)}</td>${older ? "" : '<td class="ps-box">☐</td>'}<td></td><td></td><td class="ps-box">☐</td></tr>`).join("")}</tbody></table>
+      ${gaps.length ? `${step("Fill in the missing sound")}
+        <p class="ps-how">Each word is missing the <b class="ps-multi">${esc(focus.replace("_", "…"))}</b> sound. Say the word, then write the missing letters.</p>
+        <div class="ps-gaps">${gaps.map((it, i) => `<p><b>${i + 1}.</b> ${blankWord(it)}</p>`).join("")}</div>` : ""}
+      ${choices.length ? `${step("Circle the right spelling")}
+        <div class="ps-choices">${choices.map((c, i) => `<p><b>${i + 1}.</b> ${c.options.map(o => `<span>${esc(o)}</span>`).join("")}</p>`).join("")}</div>` : ""}
+      ${withSentence.length ? `${step("Finish the sentence")}
+        <p class="ps-bank">${seededShuffle(withSentence.map(it => it.spelling), `${seed}|b`).map(w => `<span>${esc(w)}</span>`).join("")}</p>
+        ${withSentence.map((it, i) => `<p class="ps-sentence"><b>${i + 1}.</b> ${esc(sentences[it.spelling.toLowerCase()]).replace(new RegExp(`\\b${it.spelling}\\b`, "i"), '<span class="ws-blank"></span>')}</p>`).join("")}` : ""}
+      ${search && search.placed.length >= 4 ? `${step("Word hunt")}
+        <div class="ps-hunt">${search.html}<div><p class="ps-how">Find these words. They go across → or down ↓.</p>
+          <ul class="ps-find">${search.placed.map(w => `<li>☐ ${esc(w)}</li>`).join("")}</ul></div></div>` : ""}
+      ${step(older ? "Use the words" : "Your turn")}
+      <p class="ps-how">${older ? "Write two sentences, each using a word from this sheet. Underline the spelling pattern." : "Write a sentence with one of the words in it. Remember a capital letter and a full stop."}</p>
+      <div class="ps-lines"><span></span><span></span>${older ? "<span></span><span></span>" : ""}</div>
+      <p class="ps-self">${older ? "Words I still find tricky: ______________________________" : "How did I do? &nbsp; 😀 &nbsp; 🙂 &nbsp; 😐 &nbsp;&nbsp; (circle one)"}</p>
+      </div>`;
+  }
   // Letters that start with the same movement are practised together, so each movement is learned once
   const LETTER_FAMILIES = [
     ["curly", "Curly letters", "Most start like c, at the top, curling back round anticlockwise (e starts with a line across).", "cadgoqesf"],
@@ -2052,6 +2245,7 @@
     if (isPaper(plan.list)) return { className: "ws-literacy", html: PAPER[plan.list].html(who) };
     const list = catalogueList(plan.list);
     if (!list) return null;
+    if (mode === "practice") return { className: "ws-literacy", html: practiceSheetHTML(who, list) };
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
     if (mode === "sentences") return { className: "ws-literacy", html: sentencesHTML(who, list) };
     const fresh = mode === "key" || mode === "dictation" || mode === "mapping" ? (list.checks || []) : [];
@@ -2091,7 +2285,7 @@
   };
 
   // What Recently printed calls a spelling or paper sheet, and every page that goes with it
-  const SHEET_MODES = { mapping: "Sound map", dictation: "Dictation", handwriting: "Handwriting", sentences: "Sentences", key: "Words to say" };
+  const SHEET_MODES = { practice: "Practice sheet", mapping: "Sound map", dictation: "Dictation", handwriting: "Handwriting", sentences: "Sentences", key: "Words to say" };
   const keepWorksheet = (who, plan, mode, cache) => ({ who, title: isPaper(plan.list) ? PAPER[plan.list].title : `${SHEET_MODES[mode]}: ${listTitle(plan.list)}`,
     pages: withWords(who, plan, mode, isPaper(plan.list) || needsWords(plan, mode), cache).html });
 
@@ -2107,7 +2301,7 @@
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
-      ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+      ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="practice">Practice sheet</option><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
         <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
       <label class="check" data-words-box><input type="checkbox" data-words${isPaper(plan.list) && !PAPER[plan.list].needsAdult ? "" : " checked"}${isPaper(plan.list) && PAPER[plan.list].needsAdult ? " disabled" : ""}> ${isPaper(plan.list)
         ? (PAPER[plan.list].needsAdult ? "A page for you to mark from (needed)" : "Also print the answers, on a separate page for you") : "The words to say, on a separate page for you"}</label>
@@ -2195,7 +2389,7 @@
         <div class="add-row" id="paperTools">
           <input type="text" id="paperWho" aria-label="Pupil's name" placeholder="Pupil's name" maxlength="40">
           <select id="paperList" aria-label="Spelling list"><option value="">Choose a spelling list…</option>${spellingOptions}</select>
-          <label>Sheet type <select id="paperMode"><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
+          <label>Sheet type <select id="paperMode"><option value="practice">Practice sheet</option><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
             <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>
           <button class="btn small" id="paperPreview" type="button" disabled>👀 Preview sheet</button>
           <button class="btn small" id="paperPrint" type="button" disabled>🖨️ Print / Save PDF</button>
@@ -2300,7 +2494,7 @@
     wirePrinted(body);
     body.querySelectorAll("[data-preview-plan]").forEach(b => { b.onclick = () => {
       const { row, plan } = ref(b.dataset.previewPlan);
-      previewWorksheet(row.who, plan, "mapping");
+      previewWorksheet(row.who, plan, "practice");
     }; });
     ["mapping", "dictation", "key", "handwriting", "sentences"].forEach(mode => body.querySelectorAll(`[data-print-${mode}]`).forEach(b => {
       b.onclick = () => { const { row, plan } = ref(b.dataset[`print${mode[0].toUpperCase() + mode.slice(1)}`]);
