@@ -64,66 +64,13 @@ async function start() {
     assignedOnly: !!snap.data().assignedOnly,
     accent: ["scottish", "english"].includes(snap.data().accent) ? snap.data().accent : "" });
 
-  const PREVIEW_TEACHER_KEY = "popspell-preview-teacher-v1";
-  const PREVIEW_DB_KEY = "popspell-preview-db-v1";
-  const isPreviewHost = () => !/^(?:www\.)?popspell\.com$/i.test(location.hostname);
-  function loadPreviewDb() {
-    try {
-      const raw = JSON.parse(localStorage.getItem(PREVIEW_DB_KEY) || "null");
-      if (raw && raw.classes) return raw;
-    } catch { /* use default */ }
-    const seed = {
-      classes: {
-        HTCEBJ: { id: "HTCEBJ", name: "tuesday", teacher: "preview-owner", teacherName: "Steven Green", teacherEmail: "one.mad.punk@gmail.com", assignedOnly: false, accent: "scottish" }
-      },
-      assign: {
-        HTCEBJ: {
-          bob: { who: "bob", lists: ["e-e"], plans: [], look: "", lookChoice: "auto" },
-          jimmy: { who: "jimmy", lists: ["o-e"], plans: [], look: "", lookChoice: "auto" }
-        }
-      },
-      pupils: {
-        HTCEBJ: {
-          bob: { name: "bob", parentEmail: "", reminderOptIn: false, nextLessonDate: "", lessonTime: "", homeworkList: "" },
-          jimmy: { name: "jimmy", parentEmail: "", reminderOptIn: false, nextLessonDate: "", lessonTime: "", homeworkList: "" }
-        }
-      },
-      sessions: {},
-      diary: {},
-      paperEvidence: {},
-      progress: {},
-      live: {}
-    };
-    try { localStorage.setItem(PREVIEW_DB_KEY, JSON.stringify(seed)); } catch { /* ignore */ }
-    return seed;
-  }
-  function savePreviewDb(dbObj) {
-    try { localStorage.setItem(PREVIEW_DB_KEY, JSON.stringify(dbObj)); } catch { /* ignore */ }
-  }
-  function isPreviewTeacher() {
-    if (!isPreviewHost()) return false;
-    try { return localStorage.getItem(PREVIEW_TEACHER_KEY) !== "0"; } catch { return true; }
-  }
-  const previewProfile = { email: "one.mad.punk@gmail.com", name: "Steven Green", role: "owner", uid: "preview-owner", preview: true };
 
-  let profile = isPreviewTeacher() ? previewProfile : null; // { email, name, role } once a teacher is signed in
+  let profile = null; // { email, name, role } once a teacher is signed in
   let profileReady = null; // the invitation check for whoever signed in last
   const listeners = new Set();
-  const liveListeners = new Map();
-  const notifyLive = classId => {
-    const dbObj = loadPreviewDb();
-    const list = Object.entries(dbObj.live?.[classId] || {}).map(([key, v]) => Object.assign({ key }, v));
-    (liveListeners.get(classId) || []).forEach(fn => fn(list));
-  };
   const pupilCodes = new Map();
   const authReady = new Promise(resolve => {
     onAuthStateChanged(auth, u => {
-      if (isPreviewTeacher()) {
-        profile = previewProfile;
-        listeners.forEach(fn => fn(profile));
-        resolve();
-        return;
-      }
       const check = loadProfile(u);
       profileReady = check;
       check.then(p => {
@@ -183,11 +130,6 @@ async function start() {
     const key = await fingerprint(pupil);
     const cacheKey = `${classId}:${key}`;
     if (canonicalNames.has(cacheKey)) return canonicalNames.get(cacheKey);
-    if (isPreviewHost()) {
-      const dbObj = loadPreviewDb();
-      const row = dbObj.assign?.[classId]?.[lower(pupil)] || dbObj.pupils?.[classId]?.[lower(pupil)];
-      if (row && (row.who || row.name)) return row.who || row.name;
-    }
     try {
       const snap = await getDoc(doc(store, "classes", classId, "assign", key));
       if (snap.exists() && snap.data().who) {
@@ -232,11 +174,6 @@ async function start() {
     async classInfo(code) {
       const id = String(code || "").trim().toUpperCase();
       if (!/^[A-Z0-9]{4,12}$/.test(id)) return null;
-      if (isPreviewHost()) {
-        const local = loadPreviewDb().classes?.[id];
-        if (local) return { id: local.id, name: local.name, teacherName: local.teacherName || "",
-          assignedOnly: !!local.assignedOnly, accent: ["scottish", "english"].includes(local.accent) ? local.accent : "" };
-      }
       await pupilAuth();
       const snap = await getDoc(doc(store, "classes", id));
       return snap.exists() ? classView(snap) : null;
@@ -245,16 +182,6 @@ async function start() {
     async live(classId, pupil, fields) {
       const key = await fingerprint(pupil);
       const name = await resolvePupilName(classId, pupil);
-      if (isPreviewHost()) {
-        const dbObj = loadPreviewDb();
-        dbObj.live = dbObj.live || {};
-        dbObj.live[classId] = dbObj.live[classId] || {};
-        dbObj.live[classId][key] = Object.assign({}, dbObj.live[classId][key] || {}, fields,
-          { pupil: String(name).slice(0, 40), pupilKey: key, seen: Date.now() });
-        savePreviewDb(dbObj);
-        notifyLive(classId);
-        if (isPreviewTeacher()) return;
-      }
       await pupilAuth(classId, pupil);
       await setDoc(doc(store, "classes", classId, "live", key),
         Object.assign({}, fields, { pupil: String(name).slice(0, 40), pupilKey: key, seen: serverTimestamp() }), { merge: true });
@@ -264,15 +191,6 @@ async function start() {
     async session(classId, payload) {
       const name = await resolvePupilName(classId, payload.pupil);
       const key = await fingerprint(payload.pupil);
-      if (isPreviewHost()) {
-        const dbObj = loadPreviewDb();
-        dbObj.sessions = dbObj.sessions || {};
-        dbObj.sessions[classId] = dbObj.sessions[classId] || [];
-        dbObj.sessions[classId].unshift(Object.assign({ id: crypto.randomUUID() }, payload,
-          { pupil: String(name).slice(0, 40), pupilKey: key, at: Date.now() }));
-        savePreviewDb(dbObj);
-        if (isPreviewTeacher()) return;
-      }
       await pupilAuth(classId, payload.pupil);
       await addDoc(collection(store, "classes", classId, "sessions"), Object.assign({}, payload,
         { pupil: String(name).slice(0, 40), pupilKey: key, at: serverTimestamp() }));
@@ -280,10 +198,6 @@ async function start() {
 
     // The look the teacher has set for this pupil's screens ("older" or "")
     async look(classId, pupil) {
-      if (isPreviewHost()) {
-        const local = loadPreviewDb().assign?.[classId]?.[lower(pupil)];
-        if (local) return local.look === "older" ? "older" : "";
-      }
       await pupilAuth(classId, pupil);
       try {
         const key = await fingerprint(pupil);
@@ -296,15 +210,6 @@ async function start() {
       const today = todayKey();
       const fromRow = data => (data.lists || []).concat((data.plans || [])
         .filter(p => p.from <= today && today <= p.until).map(p => p.list));
-      let localLists = [];
-      if (isPreviewHost()) {
-        const clsAssign = loadPreviewDb().assign?.[classId] || {};
-        const mineLocal = clsAssign[lower(pupil)];
-        const allLocal = clsAssign.everyone;
-        if (mineLocal) localLists = localLists.concat(fromRow(mineLocal));
-        if (allLocal) localLists = localLists.concat(fromRow(allLocal));
-        if (isPreviewTeacher() || localLists.length) return [...new Set(localLists)];
-      }
       await pupilAuth(classId, pupil);
       const read = async key => {
         try {
@@ -317,33 +222,17 @@ async function start() {
         catch { return []; }
       };
       const [mine, everyone] = await Promise.all([read(await fingerprint(pupil)), read("everyone")]);
-      return [...new Set(localLists.concat(mine, everyone))];
+      return [...new Set(mine.concat(everyone))];
     },
 
     // A pupil's own progress (stars, review words, bests), so it follows them between devices
     async progress(classId, pupil) {
-      if (isPreviewHost()) {
-        const local = loadPreviewDb().progress?.[classId]?.[lower(pupil)];
-        if (local) return local;
-        if (isPreviewTeacher()) return null;
-      }
       await pupilAuth(classId, pupil);
       const snap = await getDoc(doc(store, "classes", classId, "progress", await fingerprint(pupil)));
       return snap.exists() ? snap.data() : null;
     },
     async saveProgress(classId, pupil, prog) {
       const name = await resolvePupilName(classId, pupil);
-      if (isPreviewHost()) {
-        const dbObj = loadPreviewDb();
-        dbObj.progress = dbObj.progress || {};
-        dbObj.progress[classId] = dbObj.progress[classId] || {};
-        dbObj.progress[classId][lower(pupil)] = {
-          pupil: String(name).trim().slice(0, 40), words: prog.words || {}, sounds: prog.sounds || {},
-          bests: prog.bests || { weeks: {}, lists: {} }, updated: Date.now()
-        };
-        savePreviewDb(dbObj);
-        if (isPreviewTeacher()) return;
-      }
       await pupilAuth(classId, pupil);
       await setDoc(doc(store, "classes", classId, "progress", await fingerprint(pupil)), {
         pupil: String(name).trim().slice(0, 40), words: prog.words || {}, sounds: prog.sounds || {},
@@ -355,10 +244,6 @@ async function start() {
 
     // Waits until the invitation check has caught up with whoever is signed in right now
     async me() {
-      if (isPreviewTeacher()) {
-        profile = previewProfile;
-        return profile;
-      }
       await authReady;
       for (let waited = 0; waited < 8000; waited += 100) {
         await profileReady;
@@ -371,22 +256,11 @@ async function start() {
     },
     onTeacher(fn) { listeners.add(fn); authReady.then(() => fn(profile)); return () => listeners.delete(fn); },
 
-    async signInPreview() {
-      try { localStorage.setItem(PREVIEW_TEACHER_KEY, "1"); } catch { /* ignore */ }
-      loadPreviewDb();
-      profile = previewProfile;
-      listeners.forEach(fn => fn(profile));
-      return profile;
-    },
-
     async signIn() {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: "select_account" });
       try { await signInWithPopup(auth, provider); await api.me(); }
       catch (err) {
-        if (err?.code === "auth/unauthorized-domain" && isPreviewHost()) {
-          return api.signInPreview();
-        }
         if (/popup-blocked|operation-not-supported/.test(err.code || "")) return signInWithRedirect(auth, provider);
         throw err;
       }
@@ -395,7 +269,6 @@ async function start() {
     // pupils' records in the browser's storage. Anything not yet saved gets a few seconds to send first.
     // destination: where the page goes next (a quick trial opens the child's work), instead of the home page
     async signOut(destination = "") {
-      try { localStorage.removeItem(PREVIEW_TEACHER_KEY); } catch { /* ignore */ }
       profile = null;
       sessionStorage.removeItem("popspell-calendar-token");
       await Promise.race([waitForPendingWrites(store), new Promise(r => setTimeout(r, 5000))]).catch(() => {});
@@ -414,7 +287,6 @@ async function start() {
     async trialRecords() {
       const p = await api.me();
       if (!p?.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) return (loadPreviewDb().trials || []).slice().sort((a, b) => b.completedAt - a.completedAt);
       const snap = await getDocs(query(collection(store, "trialRecords", p.uid, "entries"), orderBy("savedAt", "desc"), limit(200)));
       return snap.docs.map(d => ({ id: d.id, ...d.data(),
         completedAt: d.data().completedAt?.toMillis ? d.data().completedAt.toMillis() : Date.now() }))
@@ -433,24 +305,12 @@ async function start() {
         missed: (entry.missed || []).slice(0, 60).map(x => String(x).slice(0, 80)),
         completedAt: Number(entry.completedAt) || Date.now()
       };
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.trials = (dbObj.trials || []).concat(Object.assign({ id: crypto.randomUUID() }, clean));
-        savePreviewDb(dbObj);
-        return;
-      }
       await addDoc(collection(store, "trialRecords", p.uid, "entries"),
         Object.assign({}, clean, { completedAt: Timestamp.fromMillis(clean.completedAt), savedAt: serverTimestamp() }));
     },
     async deleteTrial(id) {
       const p = await api.me();
       if (!p?.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.trials = (dbObj.trials || []).filter(t => t.id !== id);
-        savePreviewDb(dbObj);
-        return;
-      }
       await deleteDoc(doc(store, "trialRecords", p.uid, "entries", id));
     },
 
@@ -477,11 +337,6 @@ async function start() {
     async classes() {
       const p = await api.me();
       if (!p || !p.role) return [];
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        return Object.values(dbObj.classes || {})
-          .sort((a, b) => (a.teacherName || "").localeCompare(b.teacherName || "") || a.name.localeCompare(b.name));
-      }
       const ref = collection(store, "classes");
       const snap = await getDocs(["owner", "admin"].includes(p.role) ? ref : query(ref, where("teacher", "==", p.uid)));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
@@ -496,17 +351,6 @@ async function start() {
       pin = String(pin || "");
       if (!/^\d{4}$/.test(pin) || /^(\d)\1{3}$/.test(pin) || ["1234", "4321", "0123", "9876"].includes(pin))
         throw new Error("Choose four different or mixed digits, avoiding simple runs such as 1234.");
-      if (isPreviewTeacher()) {
-        const code = newPupilCode();
-        const dbObj = loadPreviewDb();
-        dbObj.pupils[classId] = dbObj.pupils[classId] || {};
-        const k = lower(pupil);
-        dbObj.pupils[classId][k] = Object.assign({ name: pupil }, dbObj.pupils[classId][k] || {}, { loginCode: code });
-        savePreviewDb(dbObj);
-        if (!pupilCodes.has(classId)) pupilCodes.set(classId, new Map());
-        pupilCodes.get(classId).set(k, code);
-        return { code, pupil };
-      }
       const pupilKey = await fingerprint(pupil);
       const rosterRef = doc(store, "classes", classId, "pupils", pupilKey);
       const roster = await getDocFromServer(rosterRef);
@@ -536,13 +380,6 @@ async function start() {
 
     async createClass(name) {
       const p = await api.me();
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        const id = newCode();
-        dbObj.classes[id] = { id, name: String(name).trim().slice(0, 60), teacher: p.uid, teacherName: p.name, teacherEmail: p.email, assignedOnly: false, accent: "scottish" };
-        savePreviewDb(dbObj);
-        return id;
-      }
       for (let tries = 0; tries < 5; tries++) {
         const id = newCode();
         const ref = doc(store, "classes", id);
@@ -553,42 +390,18 @@ async function start() {
       throw new Error("Couldn't make a class code — please try again.");
     },
     renameClass: async (id, name) => {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        if (dbObj.classes[id]) { dbObj.classes[id].name = String(name).trim().slice(0, 60); savePreviewDb(dbObj); }
-        return;
-      }
       return updateDoc(doc(store, "classes", id), { name: String(name).trim().slice(0, 60) });
     },
     // On: pupils in this class see only the work set for them, not the whole library
     setAssignedOnly: async (id, on) => {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        if (dbObj.classes[id]) { dbObj.classes[id].assignedOnly = !!on; savePreviewDb(dbObj); }
-        return;
-      }
       return updateDoc(doc(store, "classes", id), { assignedOnly: !!on });
     },
     // Scottish (the r is sounded: c·a·r) or English (c·ar), for every pupil device in the class
     setAccent: async (id, accent) => {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        if (dbObj.classes[id]) { dbObj.classes[id].accent = accent === "english" ? "english" : "scottish"; savePreviewDb(dbObj); }
-        return;
-      }
       return updateDoc(doc(store, "classes", id), { accent: accent === "english" ? "english" : "scottish" });
     },
 
     watchLive(classId, fn) {
-      if (isPreviewTeacher()) {
-        const arr = liveListeners.get(classId) || [];
-        arr.push(fn);
-        liveListeners.set(classId, arr);
-        notifyLive(classId);
-        return () => {
-          liveListeners.set(classId, (liveListeners.get(classId) || []).filter(f => f !== fn));
-        };
-      }
       return onSnapshot(collection(store, "classes", classId, "live"),
         snap => fn(snap.docs.map(d => {
           const v = d.data();
@@ -597,33 +410,12 @@ async function start() {
         err => fn(null, err));
     },
     clearHelp: async (classId, key) => {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        if (dbObj.live?.[classId]?.[key]) {
-          dbObj.live[classId][key].help = false;
-          dbObj.live[classId][key].helpAt = null;
-          savePreviewDb(dbObj);
-          notifyLive(classId);
-        }
-        return;
-      }
       return updateDoc(doc(store, "classes", classId, "live", key), { help: false, helpAt: null });
     },
 
     async ensureRosterPupil(classId, who) {
       const clean = String(who || "").trim().slice(0, 40);
       if (!clean || lower(clean) === "everyone") return;
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.pupils = dbObj.pupils || {};
-        dbObj.pupils[classId] = dbObj.pupils[classId] || {};
-        const k = lower(clean);
-        if (!dbObj.pupils[classId][k]) {
-          dbObj.pupils[classId][k] = { name: clean, parentEmail: "", reminderOptIn: false, nextLessonDate: "", lessonTime: "", homeworkList: "" };
-          savePreviewDb(dbObj);
-        }
-        return;
-      }
       const key = await fingerprint(clean);
       const cacheKey = `${classId}:${key}`;
       if (pupilCodes.get(`ensured:${cacheKey}`)) return;
@@ -673,17 +465,6 @@ async function start() {
     },
 
     async assignments(classId) {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        const clsAssign = dbObj.assign?.[classId] || {};
-        const rows = [];
-        for (const [k, v] of Object.entries(clsAssign)) {
-          const key = k === "everyone" ? "everyone" : await fingerprint(v.who || k);
-          rows.push({ key, who: v.who || k, lists: v.lists || [], plans: v.plans || [], look: v.look || "", lookChoice: v.lookChoice || "auto" });
-          if (k !== "everyone") await api.ensureRosterPupil(classId, v.who || k);
-        }
-        return rows.sort((a, b) => (a.key === "everyone" ? -1 : b.key === "everyone" ? 1 : a.who.localeCompare(b.who)));
-      }
       const snap = await getDocs(collection(store, "classes", classId, "assign"));
       const rows = snap.docs.map(d => ({ key: d.id, who: d.data().who || d.id,
         lists: d.data().lists || [], plans: d.data().plans || [], look: d.data().look || "", lookChoice: d.data().lookChoice || "auto" }))
@@ -692,19 +473,6 @@ async function start() {
       return rows;
     },
     async saveAssignment(classId, who, lists) {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.assign = dbObj.assign || {};
-        dbObj.assign[classId] = dbObj.assign[classId] || {};
-        const k = lower(who) === "everyone" ? "everyone" : lower(who);
-        const existing = dbObj.assign[classId][k] || { who: String(who).trim().slice(0, 40), lists: [], plans: [], look: "", lookChoice: "auto" };
-        existing.who = existing.who || String(who).trim().slice(0, 40);
-        existing.lists = lists.slice(0, 20);
-        dbObj.assign[classId][k] = existing;
-        savePreviewDb(dbObj);
-        if (k !== "everyone") await api.ensureRosterPupil(classId, existing.who);
-        return;
-      }
       const key = lower(who) === "everyone" ? "everyone" : await fingerprint(who);
       const ref = doc(store, "classes", classId, "assign", key);
       await setDoc(ref, { who: String(who).trim().slice(0, 40), lists: lists.slice(0, 20),
@@ -715,18 +483,6 @@ async function start() {
     // usual look). choice is the teacher's setting ("auto" follows the year group); look is the result,
     // which the pupil's device reads with its assigned work.
     async saveLook(classId, who, choice, look) {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.assign = dbObj.assign || {};
-        dbObj.assign[classId] = dbObj.assign[classId] || {};
-        const k = lower(who);
-        const existing = dbObj.assign[classId][k] || { who: String(who).trim().slice(0, 40), lists: [], plans: [] };
-        existing.lookChoice = ["auto", "younger", "older"].includes(choice) ? choice : "auto";
-        existing.look = look === "older" ? "older" : "";
-        dbObj.assign[classId][k] = existing;
-        savePreviewDb(dbObj);
-        return;
-      }
       const key = await fingerprint(who);
       await setDoc(doc(store, "classes", classId, "assign", key), { who: String(who).trim().slice(0, 40),
         lookChoice: ["auto", "younger", "older"].includes(choice) ? choice : "auto", look: look === "older" ? "older" : "",
@@ -734,18 +490,6 @@ async function start() {
     },
     async savePlans(classId, who, plans) {
       const cleanPlans = plans.slice(0, 30).map(p => ({ list: String(p.list).slice(0, 400), from: p.from, until: p.until }));
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.assign = dbObj.assign || {};
-        dbObj.assign[classId] = dbObj.assign[classId] || {};
-        const k = lower(who) === "everyone" ? "everyone" : lower(who);
-        const existing = dbObj.assign[classId][k] || { who: String(who).trim().slice(0, 40), lists: [], plans: [], look: "", lookChoice: "auto" };
-        existing.plans = cleanPlans;
-        dbObj.assign[classId][k] = existing;
-        savePreviewDb(dbObj);
-        if (k !== "everyone") await api.ensureRosterPupil(classId, existing.who);
-        return;
-      }
       const key = lower(who) === "everyone" ? "everyone" : await fingerprint(who);
       await setDoc(doc(store, "classes", classId, "assign", key), {
         who: String(who).trim().slice(0, 40),
@@ -756,15 +500,6 @@ async function start() {
     async recordWorksheet(classId, pupil, listId, listName, words) {
       const p = await api.me();
       if (!p || !p.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.sessions[classId] = dbObj.sessions[classId] || [];
-        dbObj.sessions[classId].unshift({ id: crypto.randomUUID(), pupil: String(pupil).trim().slice(0, 40),
-          list: String(listName).slice(0, 100), listId: String(listId).slice(0, 100), finished: true, words,
-          source: "worksheet", markedBy: p.email, at: Date.now() });
-        savePreviewDb(dbObj);
-        return;
-      }
       await addDoc(collection(store, "classes", classId, "sessions"), {
         pupil: String(pupil).trim().slice(0, 40), list: String(listName).slice(0, 100),
         listId: String(listId).slice(0, 100), finished: true, words,
@@ -777,17 +512,6 @@ async function start() {
     async recordPaperEvidence(classId, pupil, lesson, sheet, status, criteria, note) {
       const teacher = await api.me();
       if (!teacher || !teacher.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.paperEvidence[classId] = dbObj.paperEvidence[classId] || [];
-        dbObj.paperEvidence[classId].unshift({ id: crypto.randomUUID(), pupil: String(pupil).trim().slice(0, 40),
-          lessonId: String(lesson.id).slice(0, 100), lessonTitle: String(lesson.title).slice(0, 120),
-          sheetId: String(sheet?.id || "").slice(0, 100), sheetTitle: String(sheet?.title || "").slice(0, 120),
-          status, criteria: criteria.slice(0, 12), note: String(note || "").trim().slice(0, 1000),
-          by: teacher.email, at: Date.now() });
-        savePreviewDb(dbObj);
-        return;
-      }
       await addDoc(collection(store, "classes", classId, "paperEvidence"), {
         pupil: String(pupil).trim().slice(0, 40), lessonId: String(lesson.id).slice(0, 100),
         lessonTitle: String(lesson.title).slice(0, 120),
@@ -797,10 +521,6 @@ async function start() {
       });
     },
     async paperEvidence(classId, days = 365) {
-      if (isPreviewTeacher()) {
-        const since = Date.now() - days * 86400000;
-        return (loadPreviewDb().paperEvidence?.[classId] || []).filter(e => e.at >= since);
-      }
       const since = Timestamp.fromMillis(Date.now() - days * 86400000);
       const snap = await getDocs(query(collection(store, "classes", classId, "paperEvidence"), where("at", ">=", since), orderBy("at", "desc")));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
@@ -809,14 +529,12 @@ async function start() {
     // Phonics check practice, marked live: the teacher's screen sets the word on show, and the
     // pupil's device (which only knows its own key, as with assigned work) shows it
     async setDrive(classId, pupil, state) {
-      if (isPreviewTeacher()) return;
       const ref = doc(store, "classes", classId, "drive", await fingerprint(pupil));
       if (!state) return deleteDoc(ref);
       await setDoc(ref, { kind: "phonics", word: String(state.word).slice(0, 30), n: state.n, total: state.total,
         alien: !!state.alien, section: state.section, at: serverTimestamp() });
     },
     async watchDrive(classId, pupil, fn) {
-      if (isPreviewTeacher()) return () => {};
       await pupilAuth(classId, pupil);
       return onSnapshot(doc(store, "classes", classId, "drive", await fingerprint(pupil)),
         snap => fn(snap.exists() ? snap.data() : null), err => fn(null, err));
@@ -824,15 +542,6 @@ async function start() {
     async recordPhonicsCheck(classId, pupil, words) {
       const p = await api.me();
       if (!p || !p.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.sessions[classId] = dbObj.sessions[classId] || [];
-        dbObj.sessions[classId].unshift({ id: crypto.randomUUID(), pupil: String(pupil).trim().slice(0, 40),
-          list: "Phonics check practice", listId: "phonics-check", finished: true,
-          words: words.slice(0, 60), source: "phonics-check", markedBy: p.email, at: Date.now() });
-        savePreviewDb(dbObj);
-        return;
-      }
       await addDoc(collection(store, "classes", classId, "sessions"), {
         pupil: String(pupil).trim().slice(0, 40), list: "Phonics check practice", listId: "phonics-check",
         finished: true, words: words.slice(0, 60), source: "phonics-check", markedBy: p.email, at: serverTimestamp()
@@ -840,7 +549,6 @@ async function start() {
     },
 
     async diary(classId) {
-      if (isPreviewTeacher()) return loadPreviewDb().diary?.[classId] || [];
       const snap = await getDocs(query(collection(store, "classes", classId, "diary"),
         orderBy("at", "desc"), limit(100)));
       return snap.docs.map(d => ({ id: d.id, ...d.data(),
@@ -852,17 +560,6 @@ async function start() {
       const pupil = String(entry.pupil || "").trim().slice(0, 40);
       const nextList = String(entry.nextList || "").slice(0, 100);
       const nextDate = String(entry.nextDate || "");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.diary[classId] = dbObj.diary[classId] || [];
-        dbObj.diary[classId].unshift({ id: crypto.randomUUID(), pupil, lessonDate: entry.lessonDate,
-          lastWork: String(entry.lastWork || "").trim().slice(0, 2000),
-          nextLesson: String(entry.nextLesson || "").trim().slice(0, 2000),
-          nextList, nextDate, by: p.email, at: Date.now() });
-        savePreviewDb(dbObj);
-        await api.ensureRosterPupil(classId, pupil);
-        return;
-      }
       const batch = writeBatch(store);
       const ref = doc(collection(store, "classes", classId, "diary"));
       batch.set(ref, { pupil, lessonDate: entry.lessonDate,
@@ -887,28 +584,6 @@ async function start() {
     },
 
     async pupils(classId) {
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        const clsPupils = dbObj.pupils?.[classId] || {};
-        const clsAssign = dbObj.assign?.[classId] || {};
-        const rows = [];
-        const seen = new Set();
-        for (const [k, v] of Object.entries(clsPupils)) {
-          const key = await fingerprint(v.name || k);
-          seen.add(lower(v.name || k));
-          rows.push(Object.assign({ key }, v));
-        }
-        for (const [k, v] of Object.entries(clsAssign)) {
-          if (k === "everyone" || seen.has(lower(v.who || k))) continue;
-          const name = String(v.who || k).trim().slice(0, 40);
-          if (!name) continue;
-          const key = await fingerprint(name);
-          rows.push({ key, name, parentEmail: "", reminderOptIn: false, nextLessonDate: "", lessonTime: "", homeworkList: "" });
-        }
-        rows.sort((a, b) => a.name.localeCompare(b.name));
-        pupilCodes.set(classId, new Map(rows.filter(r => r.loginCode).map(r => [lower(r.name), r.loginCode])));
-        return rows;
-      }
       const [snap, assignSnap] = await Promise.all([
         getDocs(collection(store, "classes", classId, "pupils")),
         getDocs(collection(store, "classes", classId, "assign")).catch(() => ({ docs: [] }))
@@ -938,27 +613,6 @@ async function start() {
           spellingNext: !!l.spellingNext, mathsNext: !!l.mathsNext })) });
       const name = String(pupil.name || "").trim().slice(0, 40);
       if (!name) throw new Error("Enter the pupil's name or code.");
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        dbObj.pupils = dbObj.pupils || {};
-        dbObj.pupils[classId] = dbObj.pupils[classId] || {};
-        const k = lower(name);
-        dbObj.pupils[classId][k] = Object.assign({}, dbObj.pupils[classId][k] || {}, {
-          name, parentEmail: lower(pupil.parentEmail).slice(0, 254),
-          reminderOptIn: !!pupil.reminderOptIn,
-          nextLessonDate: String(pupil.nextLessonDate || "").slice(0, 10),
-          lessonTime: String(pupil.lessonTime || "").slice(0, 5),
-          homeworkList: String(pupil.homeworkList || "").slice(0, 100),
-          ...(pupil.parentNote !== undefined ? { parentNote: String(pupil.parentNote).trim().slice(0, 1000) } : {}),
-          ...(pupil.yearGroup !== undefined ? { yearGroup: String(pupil.yearGroup).slice(0, 10) } : {}),
-          ...(pupil.needs !== undefined ? { needs: String(pupil.needs).trim().slice(0, 500) } : {}),
-          ...(pupil.likes !== undefined ? { likes: String(pupil.likes).trim().slice(0, 300) } : {}),
-          ...(pupil.reports !== undefined ? { reports: pupil.reports.map(Number).filter(Number.isFinite).slice(-12) } : {}),
-          ...(pupil.programme !== undefined ? { programme: cleanProgramme(pupil.programme) } : {})
-        });
-        savePreviewDb(dbObj);
-        return;
-      }
       const key = await fingerprint(name);
       // The roster keeps the name as it was first written ("ava" and "Ava" are the same pupil), and
       // the rules don't let a name change, so a different capital letter mustn't make saving fail
@@ -993,7 +647,6 @@ async function start() {
     async publishParent(classId, pupilName, link, summary, note) {
       const p = await api.me();
       if (!p || !p.role) throw new Error("Sign in as a teacher first.");
-      if (isPreviewTeacher()) return;
       const batch = writeBatch(store);
       batch.set(doc(store, "parents", link), { classId, pupil: String(pupilName).trim().slice(0, 40),
         summary, note: String(note || "").trim().slice(0, 1000), updated: serverTimestamp(), by: p.email });
@@ -1005,18 +658,6 @@ async function start() {
     // notes, phonics check screen, parent page and roster record. Results are matched however the name was typed.
     async deletePupilRecords(classId, name, parentLink) {
       const same = v => lower(v) === lower(name);
-      if (isPreviewTeacher()) {
-        const dbObj = loadPreviewDb();
-        const k = lower(name);
-        if (dbObj.pupils?.[classId]) delete dbObj.pupils[classId][k];
-        if (dbObj.assign?.[classId]) delete dbObj.assign[classId][k];
-        if (dbObj.progress?.[classId]) delete dbObj.progress[classId][k];
-        const before = (dbObj.sessions?.[classId] || []).length;
-        if (dbObj.sessions?.[classId]) dbObj.sessions[classId] = dbObj.sessions[classId].filter(s => !same(s.pupil));
-        if (dbObj.diary?.[classId]) dbObj.diary[classId] = dbObj.diary[classId].filter(d => !same(d.pupil));
-        savePreviewDb(dbObj);
-        return before - (dbObj.sessions?.[classId] || []).length;
-      }
       const [sessions, diary, paperEvidence, key] = await Promise.all([
         getDocs(collection(store, "classes", classId, "sessions")),
         getDocs(collection(store, "classes", classId, "diary")),
@@ -1044,7 +685,6 @@ async function start() {
     },
 
     async stopParent(classId, pupilName, link) {
-      if (isPreviewTeacher()) return;
       const batch = writeBatch(store);
       batch.delete(doc(store, "parents", link));
       batch.update(doc(store, "classes", classId, "pupils", await fingerprint(pupilName)),
@@ -1059,10 +699,6 @@ async function start() {
     },
 
     async sessions(classId, days = 30) {
-      if (isPreviewTeacher()) {
-        const since = Date.now() - days * 86400000;
-        return (loadPreviewDb().sessions?.[classId] || []).filter(s => s.at >= since);
-      }
       const since = Timestamp.fromMillis(Date.now() - days * 86400000);
       const snap = await getDocs(query(collection(store, "classes", classId, "sessions"), where("at", ">=", since), orderBy("at", "desc")));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
@@ -1070,26 +706,19 @@ async function start() {
 
     // Every starting-assessment result, however old, so a report can compare the start with now
     async assessments(classId, listIds) {
-      if (isPreviewTeacher()) {
-        const set = new Set(listIds.slice(0, 30));
-        return (loadPreviewDb().sessions?.[classId] || []).filter(s => set.has(s.listId));
-      }
       const snap = await getDocs(query(collection(store, "classes", classId, "sessions"), where("listId", "in", listIds.slice(0, 30))));
       return snap.docs.map(d => Object.assign({ id: d.id }, d.data(), { at: d.data().at ? d.data().at.toMillis() : Date.now() }));
     },
 
     async teachers() {
-      if (isPreviewTeacher()) return [{ email: previewProfile.email, name: previewProfile.name, role: previewProfile.role }];
       const snap = await getDocs(collection(store, "teachers"));
       return snap.docs.map(d => Object.assign({ email: d.id }, d.data())).sort((a, b) => a.email.localeCompare(b.email));
     },
     inviteTeacher: async (email, name, role = "teacher") => {
-      if (isPreviewTeacher()) return;
       return setDoc(doc(store, "teachers", lower(email)),
         { name: String(name || "").trim().slice(0, 60) || lower(email), role, invitedBy: profile.email, invitedAt: serverTimestamp() });
     },
     removeTeacher: async email => {
-      if (isPreviewTeacher()) return;
       return deleteDoc(doc(store, "teachers", lower(email)));
     }
   };

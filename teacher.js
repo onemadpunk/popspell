@@ -138,14 +138,10 @@
   /* ---------- Signing in ---------- */
 
   function showSignIn() {
-    const isPreview = !/^(?:www\.)?popspell\.com$/i.test(location.hostname);
     message(`
       <h1>👩‍🏫 Teacher sign in</h1>
       <p>Sign in with the Google account your invitation was sent to.</p>
-      <div class="row center">
-        <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
-        ${isPreview && cloud.signInPreview ? `<button class="btn big" id="signInPreview" type="button">▶ Continue in Preview Mode</button>` : ""}
-      </div>
+      <button class="btn big primary" id="signIn"><span aria-hidden="true">G</span>&nbsp; Sign in with Google</button>
       <p class="hint" id="signHint"></p>
       <p class="hint">Pupils tap their name on a prepared tablet, or open a personal link, then enter their PIN.</p>`);
     $("#signIn").onclick = async () => {
@@ -153,12 +149,6 @@
       try { await cloud.signIn(); show(root); }
       catch (err) { $("#signHint").textContent = /popup-closed|cancelled/.test(err.code || "") ? "" : `Couldn't sign in: ${err.message}`; }
     };
-    if ($("#signInPreview")) {
-      $("#signInPreview").onclick = async () => {
-        await cloud.signInPreview();
-        show(root);
-      };
-    }
   }
 
   function showNotInvited() {
