@@ -1897,3 +1897,42 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .plan-suggest { margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--primary-soft); font-weight: 700; }
 .ps-hunt, .ps-lscwc, .ps-gaps, .ps-choices { break-inside: avoid; }
 .ps-step { break-after: avoid; page-break-after: avoid; }
+
+/* Practice sheets: three age looks, a theme for each list, and the extra activities */
+.ps-sheet { position: relative; --ps-accent: #0eb5f2; }
+.ps-step span { background: var(--ps-accent); }
+.ps-step { color: var(--ps-accent); }
+.ps-young .ps-step { font-size: 16pt; }
+.ps-young .ps-how { font-size: 13pt; }
+.ps-young .ps-tip { border-color: var(--ps-accent); background: color-mix(in srgb, var(--ps-accent) 8%, #fff); }
+.ps-corner { position: absolute; top: -6px; right: 0; font-size: 34pt; line-height: 1; opacity: .9; }
+.ps-young { border: 3px dashed var(--ps-accent); border-radius: 18px; padding: 10px 14px; }
+.ps-middle .ps-step { border-bottom: 2px solid var(--ps-accent); padding-bottom: 2px; }
+.ps-middle .ps-step span { border-radius: 6px; }
+.ps-older .ps-step { color: #0b2e6b; font-size: 13pt; text-transform: uppercase; letter-spacing: .06em; }
+.ps-older .ps-step span { background: #0b2e6b; border-radius: 4px; }
+.ps-older .ps-tip { background: #f3f6fb; border: 0; border-left: 4px solid #0b2e6b; border-radius: 0; }
+.ps-older .ps-lscwc .ps-word { font-family: Arial, sans-serif; font-size: 14pt; }
+.ps-lscwc th { background: color-mix(in srgb, var(--ps-accent) 12%, #fff); }
+.ps-bank span { border-color: var(--ps-accent); }
+.ps-tile { display: inline-block; min-width: 1.4em; margin: 0 3px; padding: 1px 8px; border: 2px solid var(--ps-accent); border-radius: 8px; text-align: center; font: 700 15pt var(--reading-font); }
+.ps-line { display: inline-block; width: 8em; border-bottom: 1.5px solid #333; margin-left: 10px; vertical-align: bottom; }
+.ps-scramble p, .ps-code p, .ps-count p { margin: 7px 0; font-size: 14pt; }
+.ps-key { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 4px 0 8px; padding: 6px 10px; border: 1.5px solid var(--ps-accent); border-radius: 10px; font: 13pt var(--reading-font); }
+.ps-key b, .ps-sym { font-size: 16pt; }
+.ps-sym { display: inline-block; width: 1.3em; text-align: center; }
+.ps-count { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 20px; }
+.ps-cw { display: inline-block; min-width: 4.5em; font: 700 16pt var(--reading-font); }
+.ps-dots { display: inline-block; width: 6em; height: 1.2em; border-bottom: 1.5px dotted #777; }
+.ps-num { font-size: 16pt; margin-left: 6px; }
+.ps-clue { margin: 6px 0 10px; break-inside: avoid; }
+.ps-clue p { margin: 0 0 4px; font: 13pt var(--reading-font); }
+.ps-boxes { display: flex; gap: 3px; margin-left: 1.4em; }
+.ps-boxes span { display: grid; place-items: center; width: 30px; height: 32px; border: 2px solid var(--ps-accent); font: 700 15pt var(--reading-font); }
+.ps-sort, .worksheet-print .ps-sort { width: 100%; border-collapse: collapse; }
+.ps-sort th, .ps-sort td { width: 50%; border: 1.5px solid #8aa0c4; height: 30px; padding: 2px 10px; font: 700 15pt var(--reading-font); text-align: center; }
+.ps-sort th { color: #0f8a3c; background: #f2f8f3; }
+.ps-speed, .worksheet-print .ps-speed { width: 100%; border-collapse: collapse; }
+.ps-speed td { border: 1.5px solid #8aa0c4; padding: 6px; text-align: center; font: 700 15pt var(--reading-font); }
+.ps-draw { height: 120px; border: 2px dashed var(--ps-accent); border-radius: 14px; margin: 4px 0 8px; }
+.ps-scramble, .ps-code, .ps-count, .ps-sort, .ps-speed, .ps-key { break-inside: avoid; }

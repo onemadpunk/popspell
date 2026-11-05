@@ -1481,7 +1481,7 @@
     body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
     body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
       const name = b.dataset.planLesson;
-      planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body));
+      planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body), roster.find(r => sameName(r.name, name)));
     }; });
   }
 
@@ -1498,12 +1498,12 @@
 
   // The next lesson for one child: what last time showed, the online work and a practice sheet on
   // the same focus, so one child can work online while the other does the sheet, then swap
-  function planLessonDialog(name, row, results, done) {
+  function planLessonDialog(name, row, results, done, pupil = null) {
     const spelling = results.filter(s => catalogueList(s.listId) && !s.source);
     const latest = spelling[0] || null;
     const suggestion = suggestFor(latest, null);
     const missed = missedFrom(results);
-    const older = row?.look === "older";
+    const band = row?.look === "older" ? "older" : bandFor(pupil?.yearGroup);
     const items = catalogueItems().filter(it => catalogueList(it.id));
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview plan-lesson";
@@ -1529,7 +1529,7 @@
     const pages = () => {
       const list = catalogueList(pick.value);
       // Only last time's words from this list or any list, as review at the top
-      return `<div class="ws-page">${practiceSheetHTML(name, list, { older })}</div>`;
+      return `<div class="ws-page">${practiceSheetHTML(name, list, { band })}</div>`;
     };
     const render = () => {
       const page = dialog.querySelector("[data-preview]");
@@ -2089,53 +2089,145 @@
     return { placed, html: `<table class="ps-search">${grid.map(row => `<tr>${row.map(ch => `<td>${ch}</td>`).join("")}</tr>`).join("")}</table>` };
   }
 
-  // A lesson's practice sheet for a spelling list: the same for every child, so a teacher can keep
-  // copies in a folder. older: the 12–17 look.
-  function practiceSheetHTML(who, list, { older = false } = {}) {
-    const focus = listFocus(list);
+  // Three looks, so a sheet suits the child holding it: younger (P1–P4, Reception–Year 4), middle
+  // (P5–P7, Years 5–6) and older (S1 up, Year 7 up). Each list has its own theme and its own mix
+  // of activities, so no two lessons' sheets feel the same.
+  const SHEET_BANDS = [["young", "Younger (P1–P4)"], ["middle", "Middle (P5–P7)"], ["older", "Older (S1 and up)"]];
+  const SHEET_THEMES = {
+    young: [["space", "🚀", "Space mission", "#5b4bdb"], ["ocean", "🐠", "Under the sea", "#0b8fc4"], ["jungle", "🐒", "Jungle trek", "#2f8f3a"],
+      ["dino", "🦕", "Dinosaur dig", "#c26a12"], ["castle", "🏰", "Castle quest", "#b02a6b"], ["farm", "🐄", "Farm day", "#7a5a12"]],
+    middle: [["detective", "🔍", "Case file", "#24456e"], ["explorer", "🧭", "Expedition log", "#1d6b52"], ["sport", "⚽", "Training session", "#b8322a"],
+      ["arcade", "🎮", "Level up", "#6a2fb8"], ["lab", "🧪", "Word lab", "#0f7a8a"]],
+    older: [["plain", "", "Spelling workout", "#0b2e6b"]]
+  };
+  const bandFor = yearGroup => {
+    const y = String(yearGroup || "");
+    if (/^S\d|^Y(7|8|9|1[01])$|Year (7|8|9|1[01])/i.test(y)) return "older";
+    if (/^P[5-7]$|^Y[56]$|Year [56]/i.test(y)) return "middle";
+    return "young";
+  };
+
+  // Each activity: the bands it suits, and a builder that returns its HTML (or "" when the list
+  // can't support it). ctx holds the list, its focus sound and a seeded shuffle.
+  const SHEET_ACTIVITIES = {
+    build: { bands: ["young", "middle", "older"], build: c => `${c.step(c.band === "older" ? "Look, say, cover, write, check" : "Read it, build it, write it")}
+      <p class="ps-how">${c.band === "older" ? "Notice the coloured parts. Cover the word, write it from memory, then check." : "Read each word. Build it with your letters, then cover it, write it and check it."}</p>
+      <table class="ps-lscwc"><thead><tr><th>Word</th>${c.band === "young" ? "<th>Built it</th>" : ""}<th>Write it</th><th>Write it again</th><th>✓</th></tr></thead>
+        <tbody>${c.shuffle(c.words, "lscwc").slice(0, c.band === "young" ? 6 : 8).map(w => `<tr><td class="ps-word">${colourWord(w)}</td>${c.band === "young" ? '<td class="ps-box">☐</td>' : ""}<td></td><td></td><td class="ps-box">☐</td></tr>`).join("")}</tbody></table>` },
+    gaps: { bands: ["young", "middle"], build: c => {
+      const items = c.shuffle(c.items, "gaps").filter(it => it.tokens.includes(c.focus)).slice(0, 6);
+      if (items.length < 3) return "";
+      const blank = it => { const a = P().analyse(it.spelling), g = it.tokens.indexOf(c.focus);
+        return a.chunks.map(ch => (ch.g === g ? `<span class="ps-gap">${"_".repeat(ch.text.length)}</span>` : esc(ch.text))).join(""); };
+      return `${c.step("Fill in the missing sound")}<p class="ps-how">Each word is missing <b class="ps-multi">${esc(c.focus.replace("_", "…"))}</b>. Say the word, then write the missing letters.</p>
+        <div class="ps-gaps">${items.map((it, i) => `<p><b>${i + 1}.</b> ${blank(it)}</p>`).join("")}</div>`; } },
+    circle: { bands: ["young", "middle", "older"], build: c => {
+      const many = c.band === "older" ? 2 : 1;
+      const rows = c.shuffle(c.items, "circle").map(it => { const wrong = wrongSpellings(it, c.focus).slice(0, many);
+        return wrong.length ? c.shuffle([it.spelling, ...wrong], `circle${it.spelling}`) : null; }).filter(Boolean).slice(0, 6);
+      if (rows.length < 3) return "";
+      return `${c.step(c.band === "young" ? "Circle the right spelling" : "Which spelling is right?")}<div class="ps-choices">${rows.map((o, i) => `<p><b>${i + 1}.</b> ${o.map(w => `<span>${esc(w)}</span>`).join("")}</p>`).join("")}</div>`; } },
+    sentence: { bands: ["young", "middle", "older"], build: c => {
+      const items = c.shuffle(c.items, "sent").filter(it => c.sentenceFor(it)).slice(0, c.band === "young" ? 3 : 4);
+      if (items.length < 3) return "";
+      return `${c.step("Finish the sentence")}<p class="ps-bank">${c.shuffle(items.map(it => it.spelling), "bank").map(w => `<span>${esc(w)}</span>`).join("")}</p>
+        ${items.map((it, i) => `<p class="ps-sentence"><b>${i + 1}.</b> ${esc(c.sentenceFor(it)).replace(new RegExp(`\\b${it.spelling}\\b`, "i"), '<span class="ws-blank"></span>')}</p>`).join("")}`; } },
+    hunt: { bands: ["young", "middle"], build: c => {
+      const s = wordSearch(c.shuffle(c.words, "hunt").slice(0, 8), c.shuffle([], "huntgrid").rand, c.band === "young" ? 8 : 10);
+      if (s.placed.length < 4) return "";
+      return `${c.step(c.band === "young" ? "Word hunt" : "Word search")}<div class="ps-hunt">${s.html}<div><p class="ps-how">Find these words. They go across → or down ↓.</p>
+        <ul class="ps-find">${s.placed.map(w => `<li>☐ ${esc(w)}</li>`).join("")}</ul></div></div>`; } },
+    scramble: { bands: ["young", "middle", "older"], build: c => {
+      const items = c.shuffle(c.items, "scr").filter(it => it.spelling.length >= 3 && it.spelling.length <= 9).slice(0, 5);
+      if (items.length < 3) return "";
+      // Younger children unscramble whole sounds (tiles); older ones unscramble letters
+      const mix = it => { const parts = c.band === "young" ? P().analyse(it.spelling).chunks.map(ch => ch.text) : [...it.spelling];
+        let out = c.shuffle(parts, `scr${it.spelling}`); if (out.join("") === it.spelling) out = out.slice(1).concat(out[0]); return out; };
+      return `${c.step(c.band === "young" ? "Mixed-up sounds" : "Unscramble")}<p class="ps-how">${c.band === "young" ? "Put the sound tiles in order to make a word from the list." : "Rearrange the letters to spell a word from the list."}</p>
+        <div class="ps-scramble">${items.map((it, i) => `<p><b>${i + 1}.</b> ${mix(it).map(x => `<span class="ps-tile">${esc(x)}</span>`).join("")} <span class="ps-line"></span></p>`).join("")}</div>`; } },
+    code: { bands: ["young", "middle"], build: c => {
+      const items = c.shuffle(c.items, "code").filter(it => it.spelling.length <= 7).slice(0, 3);
+      if (items.length < 3) return "";
+      const letters = [...new Set(items.flatMap(it => [...it.spelling.toLowerCase()]))].sort();
+      const SYMBOLS = ["★", "●", "▲", "■", "◆", "♥", "☀", "☂", "♣", "♠", "✿", "☾", "✚", "◐", "✦", "⬟"];
+      const key = new Map(letters.map((l, i) => [l, SYMBOLS[i % SYMBOLS.length]]));
+      return `${c.step("Code breaker")}<p class="ps-how">Use the key to crack each secret word.</p>
+        <div class="ps-key">${letters.map(l => `<span><b>${key.get(l)}</b> = ${esc(l)}</span>`).join("")}</div>
+        <div class="ps-code">${items.map((it, i) => `<p><b>${i + 1}.</b> ${[...it.spelling.toLowerCase()].map(l => `<span class="ps-sym">${key.get(l)}</span>`).join("")} <span class="ps-line"></span></p>`).join("")}</div>`; } },
+    count: { bands: ["young"], build: c => {
+      const items = c.shuffle(c.items, "count").slice(0, 6);
+      return `${c.step("Count the sounds")}<p class="ps-how">Say each word slowly. Draw a dot for each sound, then write how many.</p>
+        <div class="ps-count">${items.map(it => `<p><span class="ps-cw">${esc(it.spelling)}</span> <span class="ps-dots"></span> <span class="ps-num">□</span></p>`).join("")}</div>`; } },
+    clues: { bands: ["middle", "older"], build: c => {
+      const items = c.shuffle(c.items, "clue").filter(it => c.sentenceFor(it) && it.spelling.length <= 10).slice(0, 4);
+      if (items.length < 3) return "";
+      return `${c.step(c.band === "older" ? "Fill the grid" : "Word boxes")}<p class="ps-how">Read the clue. Write the missing word, one letter in each box. The first letter is there to help.</p>
+        ${items.map((it, i) => `<div class="ps-clue"><p><b>${i + 1}.</b> ${esc(c.sentenceFor(it)).replace(new RegExp(`\\b${it.spelling}\\b`, "i"), "_____")}</p>
+          <div class="ps-boxes">${[...it.spelling].map((ch, k) => `<span>${k === 0 ? esc(ch) : ""}</span>`).join("")}</div></div>`).join("")}`; } },
+    sort: { bands: ["middle", "older"], build: c => {
+      if (!c.contrast) return "";
+      const mine = c.shuffle(c.items, "sortA").slice(0, 5).map(it => it.spelling);
+      const other = c.shuffle(c.contrast.items, "sortB").slice(0, 5).map(it => it.spelling);
+      const all = c.shuffle(mine.concat(other), "sortAll");
+      const head = list => esc(listFocus(list).replace("_", "…"));
+      return `${c.step("Sort the words")}<p class="ps-how">The same sound can be spelled in different ways. Write each word in the right column.</p>
+        <p class="ps-bank">${all.map(w => `<span>${esc(w)}</span>`).join("")}</p>
+        <table class="ps-sort"><thead><tr><th>${head(c.list)}</th><th>${head(c.contrast)}</th></tr></thead><tbody>${"<tr><td></td><td></td></tr>".repeat(5)}</tbody></table>`; } },
+    proofread: { bands: ["middle", "older"], build: c => {
+      const items = c.shuffle(c.items, "proof").filter(it => c.sentenceFor(it) && wrongSpellings(it, c.focus).length).slice(0, 4);
+      if (items.length < 3) return "";
+      return `${c.step("Spot the mistake")}<p class="ps-how">One word in each sentence is spelled wrongly. Circle it, then write it correctly.</p>
+        ${items.map((it, i) => `<p class="ps-sentence"><b>${i + 1}.</b> ${esc(c.sentenceFor(it)).replace(new RegExp(`\\b${it.spelling}\\b`, "i"), esc(wrongSpellings(it, c.focus)[0]))} <span class="ps-line"></span></p>`).join("")}`; } },
+    speed: { bands: ["middle", "older"], build: c => {
+      const words = c.shuffle(c.words, "speed").slice(0, 12);
+      if (words.length < 8) return "";
+      return `${c.step("Speed read")}<p class="ps-how">Read the grid aloud as fast as you can without mistakes. Ask someone to time you. Try again and beat your time.</p>
+        <table class="ps-speed"><tbody>${[0, 1, 2].map(r => `<tr>${words.slice(r * 4, r * 4 + 4).map(w => `<td>${esc(w)}</td>`).join("")}</tr>`).join("")}</tbody></table>
+        <p class="ps-how">Time 1: ______ &nbsp; Time 2: ______ &nbsp; Time 3: ______</p>`; } }
+  };
+  // The last activity is always the child's own writing
+  const SHEET_FINISH = {
+    young: c => `${c.step("Draw and write")}<p class="ps-how">Pick a word from the sheet. Draw it in the box, then write a sentence about it.</p>
+      <div class="ps-draw"></div><div class="ps-lines"><span></span></div>`,
+    middle: c => `${c.step("Your sentences")}<p class="ps-how">Write two sentences, each using a word from this sheet. Use a capital letter and a full stop.</p><div class="ps-lines"><span></span><span></span><span></span></div>`,
+    older: c => `${c.step("Use the words")}<p class="ps-how">Write a short paragraph (three or four sentences) using at least three words from this sheet. Underline the spelling pattern in each.</p><div class="ps-lines"><span></span><span></span><span></span><span></span></div>`
+  };
+
+  // A lesson's practice sheet for a spelling list: the same for every child of that age, so a teacher
+  // can keep copies in a folder. band: "young", "middle" or "older".
+  function practiceSheetHTML(who, list, { band = "young" } = {}) {
+    if (!SHEET_THEMES[band]) band = "young";
     const sentences = window.SENTENCES || {};
-    const seed = list.id;
-    const fromList = list.items.map(it => it.spelling);
-    const lscwc = seededShuffle(fromList, seed).slice(0, 8);
-    const items = seededShuffle(list.items, `${seed}|x`);
-    const blankWord = item => {
-      const a = P().analyse(item.spelling);
-      const g = item.tokens.indexOf(focus);
-      return a.chunks.map(ch => (ch.g === g ? `<span class="ps-gap">${"_".repeat(ch.text.length)}</span>` : `<span>${esc(ch.text)}</span>`)).join("");
-    };
-    const gaps = items.filter(it => it.tokens.includes(focus)).slice(0, 6);
-    // Circle the right spelling: the same sound written another way
-    const choices = items.map(it => {
-      const wrong = wrongSpellings(it, focus).slice(0, older ? 2 : 1);
-      return wrong.length ? { word: it.spelling, options: seededShuffle([it.spelling, ...wrong], `${seed}|${it.spelling}`) } : null;
-    }).filter(Boolean).slice(0, older ? 6 : 5);
-    const withSentence = items.filter(it => sentences[it.spelling.toLowerCase()] && new RegExp(`\\b${it.spelling}\\b`, "i").test(sentences[it.spelling.toLowerCase()])).slice(0, 4);
-    const search = older ? null : wordSearch(seededShuffle(fromList, `${seed}|s`).slice(0, 8), seededShuffle([], `${seed}|g`).rand);
+    const focus = listFocus(list);
+    const seedOf = key => `${list.id}|${band}|${key}`;
+    const themes = SHEET_THEMES[band];
+    const theme = themes[seededShuffle(themes.map((_, i) => i), seedOf("theme"))[0]];
+    // Another list whose sound is spelled differently, for sorting (ee and ea, ai and ay…)
+    const alts = SOUND_ALTS.find(set => set.includes(focus)) || [];
+    const contrast = Object.values(P().LISTS).find(l => l.id !== list.id && l.items && l.items.length >= 5 && alts.includes(listFocus(l)) && listFocus(l) !== focus && listFocus(l).length > 1) || null;
     let n = 0;
-    const step = title => `<h2 class="ps-step"><span>${++n}</span>${title}</h2>`;
-    return `${brandHead(`${list.title}${older ? "" : " · practice"}`, `<b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)}
-      <div class="ps-sheet${older ? " ps-older" : ""}">
-      ${list.tip ? `<p class="ps-tip"><b>${older ? "Spelling pattern" : "Today's sound"}:</b> ${esc(list.tip)}</p>` : ""}
-      ${step(older ? "Look, say, cover, write, check" : "Read it, build it, write it")}
-      <p class="ps-how">${older ? "Read the word and notice the coloured parts. Cover it, write it from memory, then uncover and check."
-        : "Read each word. Build it with your letters, then cover it, write it and check it."}</p>
-      <table class="ps-lscwc"><thead><tr><th>Word</th>${older ? "" : "<th>Built it</th>"}<th>Write it</th><th>Write it again</th><th>✓</th></tr></thead>
-        <tbody>${lscwc.map(w => `<tr><td class="ps-word">${colourWord(w)}</td>${older ? "" : '<td class="ps-box">☐</td>'}<td></td><td></td><td class="ps-box">☐</td></tr>`).join("")}</tbody></table>
-      ${gaps.length ? `${step("Fill in the missing sound")}
-        <p class="ps-how">Each word is missing the <b class="ps-multi">${esc(focus.replace("_", "…"))}</b> sound. Say the word, then write the missing letters.</p>
-        <div class="ps-gaps">${gaps.map((it, i) => `<p><b>${i + 1}.</b> ${blankWord(it)}</p>`).join("")}</div>` : ""}
-      ${choices.length ? `${step("Circle the right spelling")}
-        <div class="ps-choices">${choices.map((c, i) => `<p><b>${i + 1}.</b> ${c.options.map(o => `<span>${esc(o)}</span>`).join("")}</p>`).join("")}</div>` : ""}
-      ${withSentence.length ? `${step("Finish the sentence")}
-        <p class="ps-bank">${seededShuffle(withSentence.map(it => it.spelling), `${seed}|b`).map(w => `<span>${esc(w)}</span>`).join("")}</p>
-        ${withSentence.map((it, i) => `<p class="ps-sentence"><b>${i + 1}.</b> ${esc(sentences[it.spelling.toLowerCase()]).replace(new RegExp(`\\b${it.spelling}\\b`, "i"), '<span class="ws-blank"></span>')}</p>`).join("")}` : ""}
-      ${search && search.placed.length >= 4 ? `${step("Word hunt")}
-        <div class="ps-hunt">${search.html}<div><p class="ps-how">Find these words. They go across → or down ↓.</p>
-          <ul class="ps-find">${search.placed.map(w => `<li>☐ ${esc(w)}</li>`).join("")}</ul></div></div>` : ""}
-      ${step(older ? "Use the words" : "Your turn")}
-      <p class="ps-how">${older ? "Write two sentences, each using a word from this sheet. Underline the spelling pattern." : "Write a sentence with one of the words in it. Remember a capital letter and a full stop."}</p>
-      <div class="ps-lines"><span></span><span></span>${older ? "<span></span><span></span>" : ""}</div>
-      <p class="ps-self">${older ? "Words I still find tricky: ______________________________" : "How did I do? &nbsp; 😀 &nbsp; 🙂 &nbsp; 😐 &nbsp;&nbsp; (circle one)"}</p>
+    const ctx = { list, band, focus, contrast, items: list.items, words: list.items.map(it => it.spelling),
+      shuffle: (arr, key) => seededShuffle(arr, seedOf(key)),
+      sentenceFor: it => { const s = sentences[it.spelling.toLowerCase()]; return s && new RegExp(`\\b${it.spelling}\\b`, "i").test(s) ? s : ""; },
+      step: title => `<h2 class="ps-step"><span>${++n}</span>${title}</h2>` };
+    // build first (it teaches the words), then four or five others in an order of the list's own
+    const pool = Object.keys(SHEET_ACTIVITIES).filter(k => k !== "build" && SHEET_ACTIVITIES[k].bands.includes(band));
+    const order = ["build"].concat(seededShuffle(pool, seedOf("mix")));
+    const want = band === "young" ? 4 : 5;
+    const parts = [];
+    for (const key of order) {
+      if (parts.length >= want) break;
+      const before = n;
+      const html = SHEET_ACTIVITIES[key].build(ctx);
+      if (html) parts.push(html); else n = before;
+    }
+    const name = esc(!who || who === "Everyone" ? "____________________" : who);
+    const head = band === "older" ? brandHead(list.title, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)
+      : brandHead(`${theme[1]} ${theme[2]}: ${list.title}`, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`);
+    return `${head}<div class="ps-sheet ps-${band} ps-theme-${theme[0]}" style="--ps-accent:${theme[3]}">
+      ${list.tip ? `<p class="ps-tip"><b>${band === "older" ? "Spelling pattern" : band === "middle" ? "The pattern" : "Today's sound"}:</b> ${esc(list.tip)}</p>` : ""}
+      ${parts.join("")}${SHEET_FINISH[band](ctx)}
+      <p class="ps-self">${band === "older" ? "Words I still find tricky: ______________________________" : band === "middle" ? "Rate your work: ☆ ☆ ☆ ☆ ☆" : "How did I do? &nbsp; 😀 &nbsp; 🙂 &nbsp; 😐 &nbsp; (circle one)"}</p>
       </div>`;
   }
   // Letters that start with the same movement are practised together, so each movement is learned once
@@ -2245,7 +2337,7 @@
     if (isPaper(plan.list)) return { className: "ws-literacy", html: PAPER[plan.list].html(who) };
     const list = catalogueList(plan.list);
     if (!list) return null;
-    if (mode === "practice") return { className: "ws-literacy", html: practiceSheetHTML(who, list) };
+    if (mode === "practice") return { className: "ws-literacy", html: practiceSheetHTML(who, list, { band: plan.band }) };
     if (mode === "handwriting") return { className: "ws-literacy", html: handwritingHTML(who, list) };
     if (mode === "sentences") return { className: "ws-literacy", html: sentencesHTML(who, list) };
     const fresh = mode === "key" || mode === "dictation" || mode === "mapping" ? (list.checks || []) : [];
@@ -2302,7 +2394,8 @@
     dialog.className = "worksheet-preview";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>Worksheet preview</h2>
       ${isPaper(plan.list) ? "" : `<label>Sheet type <select data-mode><option value="practice">Practice sheet</option><option value="mapping">Sound mapping</option><option value="dictation">Dictation</option>
-        <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>`}
+        <option value="handwriting">Handwriting</option><option value="sentences">Sentences</option><option value="key">Words to say (for you)</option></select></label>
+        <label data-band-box>Age <select data-band>${SHEET_BANDS.map(([v, t]) => `<option value="${v}">${t}</option>`).join("")}</select></label>`}
       <label class="check" data-words-box><input type="checkbox" data-words${isPaper(plan.list) && !PAPER[plan.list].needsAdult ? "" : " checked"}${isPaper(plan.list) && PAPER[plan.list].needsAdult ? " disabled" : ""}> ${isPaper(plan.list)
         ? (PAPER[plan.list].needsAdult ? "A page for you to mark from (needed)" : "Also print the answers, on a separate page for you") : "The words to say, on a separate page for you"}</label>
       <button class="btn small" type="button" data-close>Close</button>
@@ -2316,8 +2409,18 @@
     const cache = {};
     const offers = () => (isPaper(plan.list) ? Boolean((cache.paper = cache.paper || PAPER[plan.list].build(who)).answers) : needsWords(plan, chosenMode()));
     const words = () => offers() && dialog.querySelector("[data-words]").checked;
+    // The practice sheet's age look: the pupil's, when the sheet is for one, else the last one chosen
+    const bandPick = dialog.querySelector("[data-band]");
+    if (bandPick) {
+      let last = "";
+      try { last = localStorage.getItem("popspell-sheet-band") || ""; } catch { /* none */ }
+      bandPick.value = plan.band || (SHEET_THEMES[last] ? last : "young");
+      plan.band = bandPick.value;
+      bandPick.onchange = () => { plan.band = bandPick.value; try { localStorage.setItem("popspell-sheet-band", plan.band); } catch { /* not kept */ } render(); };
+    }
     const render = () => {
       dialog.querySelector("[data-words-box]").style.display = offers() ? "" : "none";
+      if (dialog.querySelector("[data-band-box]")) dialog.querySelector("[data-band-box]").style.display = chosenMode() === "practice" ? "" : "none";
       const sheet = withWords(who, plan, chosenMode(), words(), cache);
       const page = dialog.querySelector(".sheet-preview-page");
       page.className = `sheet-preview-page ${sheet.className}`;
