@@ -203,8 +203,9 @@
     const tabs = groups.flatMap(([, items]) => items);
     const [, tabName] = tabs.find(([k]) => k === tab) || tabs[0];
     const tabButtons = items => items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("");
-    let moreOpen = false;
-    try { moreOpen = localStorage.getItem("popspell-teacher-more") === "1"; } catch { /* closed */ }
+    // Open unless the teacher has folded it away themselves
+    let moreOpen = true;
+    try { moreOpen = localStorage.getItem("popspell-teacher-more") !== "0"; } catch { /* open */ }
     if (groups[1][1].some(([k]) => k === tab)) moreOpen = true;
     const initial = (shortName(me.name) || "?").slice(0, 1).toUpperCase();
     root.innerHTML = `
