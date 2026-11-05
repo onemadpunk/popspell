@@ -1998,3 +1998,47 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-dot-end { right: -20px; } .pp-dot-start { left: -20px; }
 .pp-draw.pp-troll { height: 190px; }
 .pp-draw.pp-troll { height: 135px; }
+.pp-wordcards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 4px 0 10px; break-inside: avoid; }
+.pp-wordcards > div { border: 2px solid #8aa0c4; border-radius: 12px; padding: 4px; text-align: center; }
+.pp-wordcards p { margin: 2px 0; font: 13pt var(--reading-font); }
+.pp-part { display: inline-block; margin: 0 2px; padding: 0 6px; border: 1.5px dashed #0eb5f2; border-radius: 6px; }
+.pp-whole { font-weight: 700; }
+.pp-wordcards .pp-emoji, .pp-silly .pp-emoji, .pp-penguins .pp-emoji { font-size: 22pt; }
+.pp-silly { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 4px 0 10px; break-inside: avoid; }
+.pp-silly > div { display: grid; grid-template-columns: auto 1fr; gap: 0 8px; align-items: center; border: 2px solid #ffc837; border-radius: 12px; padding: 6px 10px; }
+.pp-silly .pp-emoji { grid-row: span 2; }
+.pp-silly p { margin: 2px 0; font: 13pt var(--reading-font); }
+.pp-key2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 8px; }
+.pp-key2 > div { border: 2px solid #0eb5f2; border-radius: 12px; padding: 4px 12px; font: 13pt var(--reading-font); }
+.pp-key2 p { margin: 0; }
+.pp-penguins { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 4px 0 10px; break-inside: avoid; }
+.pp-penguins > div { border: 2px solid #8aa0c4; border-radius: 12px; padding: 6px 8px; text-align: center; }
+.pp-penguins p { margin: 2px 0; font: 12.5pt/1.3 var(--reading-font); }
+.pp-fo { display: flex; justify-content: center; gap: 18px; }
+.pp-fo span { display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid #333; border-radius: 50%; font-weight: 700; }
+.pp-animal { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; align-items: start; }
+.pp-animal .pp-draw { height: 150px; }
+.pp-faces { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 4px 0; }
+.pp-faces span { display: inline-grid; justify-items: center; font: 12pt var(--reading-font); }
+.pp-faces i { font-style: normal; font-size: 24pt; }
+/* Younger sheets fill the page: one part of the sheet (a drawing or writing area) takes the space left */
+.ws-age-young:has(.pp-grow) { display: flex; flex-direction: column; min-height: 256mm; }
+.ws-age-young .pp-grow { flex: 1 1 auto; }
+.pp-grow.pp-animal .pp-draw { height: auto; min-height: 150px; }
+.pp-grow > .pp-box { display: flex; flex-direction: column; }
+.pp-grow > .pp-box > .pp-draw { flex: 1 1 auto; height: auto; min-height: 120px; }
+.pp-lines-box { display: flex; flex-direction: column; justify-content: space-evenly; }
+.pp-wordcards > div { padding: 8px 4px; }
+.pp-wordcards .pp-emoji { font-size: 28pt; }
+.pp-wordcards p { font-size: 15pt; }
+.pp-silly > div { padding: 10px 12px; }
+.pp-silly p { font-size: 14.5pt; }
+.pp-penguins > div { padding: 10px 8px; }
+.pp-penguins .pp-emoji { font-size: 28pt; }
+.pp-penguins p { font-size: 13.5pt; }
+.pp-draw.pp-troll.pp-grow { height: auto; min-height: 120px; }
+.ws-age-young:has(.pp-grow) { min-height: 246mm; }
+.ws-age-young:has(.pp-grow) > * { margin-top: 0; }
+.ws-age-young:has(.pp-grow) > * + * { margin-top: 8px; }
+.ws-age-young:has(.pp-grow) > * { margin-bottom: 0; }
+.pp-grow.pp-animal { align-items: stretch; }

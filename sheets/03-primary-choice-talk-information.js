@@ -16,8 +16,8 @@
 
   add("paper-my-news", "lesson-early-sharing-my-news-and-new-words", "My news", "Draw your news in order, then tell it using a new word.", (who, h) => ({
     pupil: `${h.sheetHead("My news", who)}<p>Draw what happened, in order. Then tell your news to your adult.</p>
-      <div class="pp-cols3">${["First…", "Then…", "At the end…"].map(t => box(t, `<div class="pp-draw"></div>`)).join("")}</div>
-      ${box("How did I feel?", tick(["happy", "excited", "proud", "worried", "sad", "surprised"]))}
+      <div class="pp-cols3 pp-grow">${["First…", "Then…", "At the end…"].map(t => box(t, `<div class="pp-draw"></div>`)).join("")}</div>
+      ${box("How did I feel? Circle a face.", `<p class="pp-faces">${[["😀", "happy"], ["🤩", "excited"], ["😊", "proud"], ["😟", "worried"], ["😢", "sad"], ["😲", "surprised"]].map(([f, w]) => `<span><i aria-hidden="true">${f}</i>${w}</span>`).join("")}</p>`)}
       ${box("My new word", `${ruled(h, 1)}<p class="hint">Use it when you tell your news.</p>`)}
       ${box("Let's pretend: I am in a shop. I tell the shopkeeper what I want and why.", tick(["I spoke clearly", "I said please and thank you", "I used my new word"]))}`,
     answers: lookForPage(h, "My news", ["Events told in the right order (first, then, at the end)", "Feelings and ideas shared, not just what happened",
@@ -84,13 +84,13 @@
     const items = [["Penguins are birds.", "fact"], ["Penguins cannot fly.", "fact"], ["Penguins are the cutest animals in the world.", "opinion"],
       ["Penguins use their wings to swim.", "fact"], ["Watching penguins is the best thing to do at the zoo.", "opinion"], ["I think penguins look funny when they walk.", "opinion"]];
     return {
-      pupil: `${h.sheetHead("Fact or opinion? Penguins", who)}<p>Read the text.</p>
-        <p class="pp-passage">${items.map(i => i[0]).join(" ")}</p>
-        <p>A <b>fact</b> can be checked. An <b>opinion</b> is what someone thinks. Tick one for each sentence.</p>
-        <table class="pp-table"><tr><th>Sentence</th><th>Fact</th><th>Opinion</th></tr>${items.map(([t]) => `<tr><td>${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
-        <p><b>Circle</b> the words in the text that show an opinion.</p>
-        <p><b>Write a fact</b> about an animal you know:</p>${ruled(h, 1)}
-        <p><b>Write your opinion</b> about the same animal:</p>${ruled(h, 1)}`,
+      pupil: `${h.sheetHead("Fact or opinion? Penguins", who)}
+        <div class="pp-key2"><div><b>🔍 Fact</b><p>can be checked in a book</p></div><div><b>💭 Opinion</b><p>is what someone thinks</p></div></div>
+        <p><b>1.</b> Read each penguin's sentence. Is it a fact or an opinion? Colour <b>F</b> or <b>O</b>.</p>
+        <div class="pp-penguins">${items.map(([t]) => `<div><span class="pp-emoji" aria-hidden="true">🐧</span><p>${t}</p><p class="pp-fo"><span>F</span><span>O</span></p></div>`).join("")}</div>
+        <p><b>2.</b> Underline the words that give away an opinion, like <i>I think</i>.</p>
+        <p><b>3.</b> Draw an animal you know. Write a fact and an opinion about it.</p>
+        <div class="pp-animal pp-grow"><div class="pp-draw"></div><div><p><b>🔍 Fact:</b></p>${ruled(h, 1)}<p><b>💭 Opinion:</b></p>${ruled(h, 1)}</div></div>`,
       answers: answersPage(h, "Fact or opinion? Penguins", items.map(([t, k]) => `${t} <b>${k}</b>`).concat(["Opinion words: cutest, best, I think, funny",
         "Any fact that could be checked in a book, and any opinion"]), "Ask how they know: a fact can be checked; an opinion is what someone thinks.")
     };

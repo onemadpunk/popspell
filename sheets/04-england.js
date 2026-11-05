@@ -49,15 +49,15 @@
   });
 
   add("paper-longer-words", "lesson-england-reading-longer-words-and-checking-it-makes-sense-years-1-and-2", "Longer words", "Read two-syllable words part by part, then spot and fix the word that doesn't make sense.", (who, h) => {
-    const words = [["rab", "bit"], ["gar", "den"], ["sand", "wich"], ["pic", "nic"], ["chick", "en"], ["rock", "et"], ["sun", "set"], ["pump", "kin"], ["car", "pet"], ["thun", "der"]];
-    const sentences = [["I put my socks on my hands.", "feet"], ["The fish swam in the tree.", "pond (or sea, river)"], ["We ate our soup with a fork.", "spoon"], ["The sun came up at night.", "morning"], ["She rode her bike to the moon.", "park (or shop, school)"]];
+    const words = [["rab", "bit", "🐰"], ["gar", "den", "🌻"], ["sand", "wich", "🥪"], ["pic", "nic", "🧺"], ["chick", "en", "🐔"], ["rock", "et", "🚀"], ["sun", "set", "🌅"], ["pump", "kin", "🎃"], ["kit", "ten", "🐱"], ["thun", "der", "⛈️"]];
+    const sentences = [["I put my socks on my hands.", "feet", "🧦"], ["The fish swam in the tree.", "pond (or sea, river)", "🐟"], ["We ate our soup with a fork.", "spoon", "🥣"], ["The sun came up at night.", "morning", "🌞"]];
     return {
       pupil: `${h.sheetHead("Longer words", who)}
-        <p><b>1.</b> Read each part, then put the parts together and read the whole word. Tick it when you can read it.</p>
-        <div class="pp-cols">${words.map(([a, b]) => `<p class="pp-syll"><span>${a}</span> + <span>${b}</span> = <b>${a}${b}</b> ☐</p>`).join("")}</div>
-        <p><b>2.</b> One word in each sentence doesn't make sense. Read the sentence, circle the wrong word and write a better word.</p>
-        ${sentences.map(([s], i) => `<p><b>${String.fromCharCode(97 + i)}.</b> ${s} &nbsp; ${blank(6)}</p>`).join("")}
-        <p><b>3.</b> When something doesn't make sense as you read, what can you do?</p>${ruled(h, 1)}`,
+        <p><b>1.</b> Read each part, then put them together and read the whole word. Tick the box when you can read it.</p>
+        <div class="pp-wordcards">${words.map(([a, b, pic]) => `<div><span class="pp-emoji" aria-hidden="true">${pic}</span><p><span class="pp-part">${a}</span><span class="pp-part">${b}</span></p><p class="pp-whole">${a}${b} ☐</p></div>`).join("")}</div>
+        <p><b>2.</b> Silly sentences! One word in each sentence doesn't make sense. Circle it, then write a better word.</p>
+        <div class="pp-silly">${sentences.map(([s, , pic], i) => `<div><span class="pp-emoji" aria-hidden="true">${pic}</span><p>${s}</p><p>Better word: ${blank(6)}</p></div>`).join("")}</div>
+        <p><b>3.</b> Write your own silly sentence for a friend to fix!</p><div class="pp-grow pp-lines-box">${ruled(h, 2)}</div>`,
       answers: answersPage(h, "Longer words", sentences.map(([s, a], i) => `${String.fromCharCode(97 + i)}. ${s} → ${a}`).concat(["3. Stop, go back and reread; check the sounds in the word; ask: does that make sense?"]),
         "In part 1, listen for blending each part with the sounds they know, not guessing from the first letters. Note any part that's hard to read.")
     };
@@ -78,7 +78,7 @@
       <div class="pp-match"><div><p>"Who's that trip-trapping over my bridge?" <i class="pp-dot-end"></i></p><p>"Wait for my brother. He's much bigger." <i class="pp-dot-end"></i></p></div>
         <div><p><i class="pp-dot-start"></i> 👹 the troll</p><p><i class="pp-dot-start"></i> 🐐 the little goat</p></div></div>
       <p><b>3.</b> Draw the troll. Write a word that tells us what he is like.</p>
-      <div class="pp-draw pp-troll"></div><p>The troll is ${blank(8)}.</p>
+      <div class="pp-draw pp-troll pp-grow"></div><p>The troll is ${blank(8)}.</p>
       <p><b>4.</b> Tell the whole story to your adult. Use <b>first</b>, <b>next</b>, <b>then</b> and <b>in the end</b>.</p>`,
     answers: answersPage(h, "Three Billy Goats Gruff", ["1. Little goat 1, middle-sized goat 2, great big goat 3",
       "2. The troll: \"Who's that trip-trapping over my bridge?\" The little goat: \"Wait for my brother. He's much bigger.\"",
