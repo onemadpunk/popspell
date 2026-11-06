@@ -2089,3 +2089,8 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-say-step { grid-column: 1 / -1; margin: 0; font: 700 12pt var(--reading-font); }
 .pp-say .pp-draw { height: auto; min-height: 70px; margin: 0; }
 .pp-say .ws-row { align-self: end; }
+.pp-detective { display: grid; grid-template-rows: repeat(5, 1fr); gap: 6px; margin: 6px 0; break-inside: avoid; }
+.pp-case { display: grid; grid-template-columns: 7.5em 1fr 1fr 1fr; gap: 8px; align-items: stretch; border: 2px solid #8aa0c4; border-radius: 12px; padding: 4px 8px; }
+.pp-case-word { align-self: center; font: 700 15pt var(--reading-font); color: #0b7fb0; }
+.pp-case p { margin: 0; font: 10.5pt Arial, sans-serif; color: #444; }
+.pp-case .ws-row { align-self: end; }

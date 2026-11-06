@@ -703,11 +703,11 @@ window.PopPaper = (() => {
 
   const COLOSSAL = "The giant was colossal: his head brushed the clouds, and his boots were the size of houses. A timid mouse peeped out from a crack in the wall, too frightened to move. The giant's gleaming sword flashed in the sunlight. When he sneezed, the mouse scurried away as fast as its legs could carry it, and hid. By the evening, the giant was exhausted. He lay down and fell asleep before the sun had even set.";
   add("paper-word-meanings", "lesson-england-words-and-what-they-mean-years-1-to-6", "Word detective", "Work out word meanings from clues in the text, check them in a dictionary, and choose favourite words and phrases.", (who, h) => ({
-    pupil: `${h.sheetHead("Word detective", who)}<p class="pp-passage">${COLOSSAL}</p>
-      <table class="pp-table"><tr><th>Word</th><th>A clue in the text</th><th>I think it means</th><th>Dictionary says</th></tr>
-        ${["colossal", "timid", "gleaming", "scurried", "exhausted"].map(w => `<tr><td><b>${w}</b></td><td></td><td></td><td></td></tr>`).join("")}</table>
-      <p><b>2.</b> Which word is like a word you already know? (For example, <i>gleaming</i> is like <i>gleam</i>.)</p>${lines(1)}
-      <p><b>3.</b> Copy your favourite word or phrase from the text. Why do you like it?</p>${lines(2)}`,
+    pupil: `${h.sheetHead("Word detective", who)}<p>🔍 Read the story. Be a word detective: use the clues to find out what the hard words mean.</p>
+      <p class="pp-passage">${COLOSSAL}</p>
+      <div class="pp-detective pp-grow">${["colossal", "timid", "gleaming", "scurried", "exhausted"].map(w => `<div class="pp-case"><b class="pp-case-word">${w}</b><div><p>🔎 A clue in the story:</p>${ruled(h, 1)}</div><div><p>💭 I think it means:</p>${ruled(h, 1)}</div><div><p>📖 The dictionary says:</p>${ruled(h, 1)}</div></div>`).join("")}</div>
+      <p><b>2.</b> Which word is like a word you already know? (<i>gleaming</i> is like <i>gleam</i>.) ${blank(8)}</p>
+      <p><b>3.</b> Copy your favourite word or phrase from the story. Why do you like it?</p>${ruled(h, 1)}`,
     answers: answersPage(h, "Word detective", ["colossal: enormous (clue: head brushed the clouds, boots the size of houses)", "timid: shy and easily frightened (clue: too frightened to move)",
       "gleaming: shining brightly (clue: flashed in the sunlight)", "scurried: ran quickly with short steps (clue: as fast as its legs could carry it)", "exhausted: very tired (clue: fell asleep before the sun set)"],
       "Accept any meaning that fits the clue. Look for the pupil using the words around the new word, and checking the dictionary rather than guessing.")
