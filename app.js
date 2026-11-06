@@ -1342,8 +1342,9 @@
     const A = window.PopActivities;
     // Short tab names, so the tabs fit on a phone
     const SHORT = { games: "Games", "word-games": "Word games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
-    // The older look has no mascot, so its games are the word games
-    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly && !(a.id === "games" && isOlder())).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
+    // The older look has no mascot, so its games are the word games; the younger look keeps Pip's games
+    // (a teacher can still set a word game for a P5 to P7 pupil)
+    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly && (a.id === "games" ? !isOlder() : a.older ? isOlder() : true)).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
     areas.push({ id: "checks", icon: "🧭", title: "Checks", colour: "#0f766e",
       items: Object.entries(CHECKS).filter(([k]) => k === "spelling" || A).map(([k, c]) => ({ id: `check:${k}`, href: `#/check/${k}`, title: c.title.replace("Starting check: ", ""), icon: c.icon, level: "About 10 minutes", colour: c.accent })) });
     return areas;
