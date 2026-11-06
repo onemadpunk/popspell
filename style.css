@@ -2099,3 +2099,10 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young .pp-row4 svg.pp-pic { width: 75%; margin: 0 auto; display: block; }
 .ws-age-young .pp-cell svg.pp-pic, .ws-age-young .pp-cols .pp-q svg.pp-pic { width: 100%; height: auto; }
 .ws-age-young .pp-side svg.pp-pic { width: 82mm; height: auto; }
+
+/* Older sheets: room to show working fills whatever page is left, so every sheet uses its A4 page */
+.ws-age-older { display: flex; flex-direction: column; min-height: 246mm; }
+.pp-working { flex: 1 1 0; min-height: 0; container-type: size; overflow: hidden; margin: 0; border: 0; padding: 0; outline: 1.5px dashed #8a9ab4; outline-offset: -1.5px; background: repeating-linear-gradient(transparent 0 7mm, #e4e9f1 7mm calc(7mm + 1px)); }
+.pp-working > b { display: block; margin: 4px 8px; font: 700 9pt Arial, Helvetica, sans-serif; color: #0b2e6b; text-transform: uppercase; letter-spacing: .05em; }
+@container (max-height: 16mm) { .pp-working > b { display: none; } }
+@media print { .pp-working { break-inside: avoid; } }

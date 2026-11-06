@@ -2151,7 +2151,7 @@
   };
   // Any printed sheet in its age look: bigger and friendlier for younger pupils, plainer for older
   // ones (no mascot). The sheet's content is unchanged.
-  const ageLook = (html, band) => (!html ? html : `<div class="ws-age ws-age-${band}">${band === "older" ? html.replace(/<img class="ws-pip"[^>]*>/g, "") : html}</div>`);
+  const ageLook = (html, band) => (!html ? html : `<div class="ws-age ws-age-${band}">${band === "older" ? html.replace(/<img class="ws-pip"[^>]*>/g, "") + (/pp-working|ws-practice|ps-sheet/.test(html) ? "" : `<div class="pp-working"><b>Working out and notes</b></div>`) : html}</div>`);
   const bandFor = yearGroup => {
     const y = String(yearGroup || "");
     if (/^S\d|^Y(7|8|9|1[01])$|Year (7|8|9|1[01])/i.test(y)) return "older";
