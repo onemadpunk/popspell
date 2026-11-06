@@ -1858,6 +1858,8 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 #classNewName { flex: 1 1 260px; max-width: 420px; }
 @media (max-width: 900px) {
   .t-more, .t-more[open] { display: flex; flex-direction: row; gap: 4px; flex: none; }
+  .t-more::details-content { display: flex; flex-direction: row; gap: 4px; }
+  .t-app .t-tabs { align-items: center; }
   .t-more > summary { display: flex; padding: 7px 10px; border-radius: 8px; color: var(--t-side-ink); font: 500 .93rem var(--t-font); text-transform: none; letter-spacing: 0; white-space: nowrap; margin: 0; }
 }
 
