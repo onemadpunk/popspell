@@ -1483,7 +1483,8 @@
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
           <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}">🧭 Plan next lesson</button>
-            <button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button></div>
+            <button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button>
+            <button class="btn small" type="button" data-lesson-summary="${esc(name)}">📝 Lesson summary</button></div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
               <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
@@ -1526,10 +1527,63 @@
       catch (err) { b.disabled = false; showError(err); }
     }; });
     body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
+    body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => lessonSummaryDialog(b.dataset.lessonSummary, resultsOf(b.dataset.lessonSummary)); });
     body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
       const name = b.dataset.planLesson;
       planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body), roster.find(r => sameName(r.name, name)));
     }; });
+  }
+
+  // A short note about today's lesson for one child: drafted from what they did online, edited by the teacher,
+  // saved to the Diary (which the end-of-term report can include) and copied as a message for home.
+  function lessonSummaryDialog(name, results, done) {
+    const since = Date.now() - 20 * 3600000;
+    let recent = results.filter(s => s.at >= since && !s.source);
+    const fromToday = recent.length > 0;
+    if (!recent.length) recent = results.filter(s => s.at >= Date.now() - 14 * 86400000 && !s.source).slice(0, 1);
+    const first = String(name).split(/\s+/)[0];
+    const lines = recent.slice().reverse().map(s => {
+      const pct = firstPct(s);
+      return `${first} practised ${s.list || listTitle(s.listId)} online${pct == null ? "" : `: ${(s.words || []).filter(w => w.correct && w.triesUsed === 1).length} of ${(s.words || []).length} right first time`}${s.finished === false ? " (stopped early)" : ""}.`;
+    });
+    const missed = missedFrom(recent, 1);
+    const sounds = [...new Set(missed.flatMap(m => m.sounds))].slice(0, 4);
+    const latest = recent.find(s => catalogueList(s.listId));
+    const suggestion = latest ? suggestFor(latest, null).text.replace(/\s—\s.*$/, "") : "";
+    const draftLast = [...lines, ...(missed.length ? [`Words to go over: ${missed.slice(0, 5).map(m => m.word).join(", ")}${sounds.length ? ` (sounds: ${sounds.join(", ")})` : ""}.`] : []),
+      ...(!lines.length ? [`No online work was recorded for ${first} ${fromToday ? "today" : "recently"}. Add what you did together.`] : [])].join(" ");
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview lesson-summary";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📝 Lesson summary for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="plan-body">
+        <p class="hint">A draft from ${esc(first)}'s online results. Change it so it says what you saw. Saving puts it in the Diary, and you can include your diary notes in the end-of-term report.</p>
+        <label>Lesson date <input type="date" data-date value="${todayKey()}"></label>
+        <label>How the lesson went <textarea data-last rows="5" maxlength="2000">${esc(draftLast)}</textarea></label>
+        <label>Next lesson <textarea data-next rows="3" maxlength="2000">${esc(suggestion)}</textarea></label>
+        <div class="row"><button class="btn primary" type="button" data-save>💾 Save to diary</button>
+          <button class="btn" type="button" data-copy>📋 Copy a message for home</button></div>
+        <p class="hint" data-status role="status"></p>
+      </div>`;
+    document.body.append(dialog);
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    const q = s => dialog.querySelector(s);
+    const status = text => { q("[data-status]").textContent = text; };
+    q("[data-save]").onclick = async e => {
+      const button = e.currentTarget; button.disabled = true;
+      try {
+        await cloud.saveDiary(current.id, { pupil: name, lessonDate: q("[data-date]").value || todayKey(), lastWork: q("[data-last]").value.trim(),
+          nextLesson: q("[data-next]").value.trim(), nextList: "", nextDate: "" });
+        status("✓ Saved to the Diary. It will be there when you write the end-of-term report.");
+        if (done) done();
+      } catch (err) { button.disabled = false; showError(err); }
+    };
+    q("[data-copy]").onclick = async () => {
+      const text = `Hi, a quick note from today's lesson with ${first}.\n\n${q("[data-last]").value.trim()}${q("[data-next]").value.trim() ? `\n\nNext time: ${q("[data-next]").value.trim()}` : ""}\n\n${current.teacherName ? shortName(current.teacherName) : ""}`.trim();
+      try { await navigator.clipboard.writeText(text); status("✓ Copied. Paste it into your message to the family."); }
+      catch { status("Couldn't copy automatically: select the text above and copy it."); }
+    };
+    dialog.showModal();
   }
 
   // A lesson timer for the teacher only: it shows the time left and tells you when to swap the pair.
@@ -4138,7 +4192,7 @@
   const shortArea = o => o.replace(/^(Literacy|Numeracy) · /, "").replace(/ · Tools for (reading|writing|listening and talking)/, "");
   const statusBadge = s => `<span class="ar-status ar-${s.toLowerCase().replace(/ in practice$/, "").replace(/\s+/g, "-")}">${esc(s)}</span>`;
 
-  function parentsNightReport(pupil, sessions, assessments, { from, to, comment }) {
+  function parentsNightReport(pupil, sessions, assessments, { from, to, comment, notes = [] }) {
     const last = lastReportOf(pupil);
     const en = inEngland(pupil);
     const y = yearProgress(pupil.name, sessions, from, to, last, en);
@@ -4211,6 +4265,7 @@
         <div class="pn-box pn-support"><h2>Needs further support</h2>${support.length ? `<ul>${support.map(s => `<li>${s}</li>`).join("")}</ul>` : `<p>Nothing stands out: keep going!</p>`}</div>
       </div>
       <h2>Next steps</h2>${next.length ? `<ul>${next.map(s => `<li>${s}</li>`).join("")}</ul>` : `<p>Keep up the good work, and keep stretching with new lists.</p>`}
+      ${notes.length ? `<h2>From my lesson notes</h2><ul class="pn-notes">${notes.map(e => `<li><b>${esc(day(Date.parse(`${e.lessonDate}T12:00:00Z`)))}</b> ${esc(e.lastWork)}</li>`).join("")}</ul>` : ""}
       <h2>Teacher's comment</h2>${comment ? `<p class="pn-comment">${esc(comment).replace(/\n/g, "<br>")}</p>` : `<div class="ws-comment"></div>`}
       <p class="ar-note"><b>About this report.</b> It is worked out from ${name}'s PopSpell results. “Right first time” counts questions answered correctly without help.
         ${SECURE_NOTE} “Now” uses the last 8 weeks. Trends compare the first half of the period's questions in an area with the second half.
@@ -4233,6 +4288,7 @@
         <label data-date-wrap ${reportPeriod === "date" ? "" : "hidden"}>From <input type="date" data-date value="${esc(reportDate)}"></label>
         ${single ? `<label class="pn-comment-box">Teacher's comment, printed on the report (leave blank to write by hand)
           <textarea data-comment rows="3" maxlength="1500"></textarea></label>` : ""}
+        <label class="check"><input type="checkbox" data-notes> Include my diary notes from this period (check they are suitable for parents to read)</label>
         <label class="check"><input type="checkbox" data-mark checked> When printing, save today as ${single ? `${esc(pupils[0].name)}'s` : "each pupil's"} latest report, so the next one shows what's changed</label>
       </div>
       <div data-pages><div class="empty">Loading a year of results…</div></div>`;
@@ -4250,13 +4306,17 @@
         if (!loaded || need < loadedFrom) {
           pages.innerHTML = `<div class="empty">Loading a year of results…</div>`;
           const days = Math.min(3650, Math.ceil((Date.now() - need) / DAY_MS) + 1);
-          const [sessions, assessments] = await Promise.all([cloud.sessions(current.id, days), cloud.assessments(current.id, P().QUEST.map(q => q.id))]);
-          loaded = { sessions, assessments };
+          const [sessions, assessments, diary] = await Promise.all([cloud.sessions(current.id, days), cloud.assessments(current.id, P().QUEST.map(q => q.id)), cloud.diary(current.id).catch(() => [])]);
+          loaded = { sessions, assessments, diary };
           loadedFrom = need;
         }
       } catch (err) { pages.innerHTML = `<div class="empty">${esc(err.message || "Couldn't load the results.")}</div>`; return; }
       const comment = single ? dialog.querySelector("[data-comment]").value.trim() : "";
-      const reports = pupils.map(r => parentsNightReport(r, loaded.sessions, loaded.assessments, { from: reportFrom(r), to: Date.now(), comment }));
+      const withNotes = dialog.querySelector("[data-notes]").checked;
+      const notesOf = r => (!withNotes ? [] : (loaded.diary || []).filter(e => sameName(e.pupil, r.name) && e.lastWork
+        && Date.parse(`${e.lessonDate}T12:00:00Z`) >= reportFrom(r) && Date.parse(`${e.lessonDate}T12:00:00Z`) <= Date.now())
+        .sort((a, b) => String(a.lessonDate).localeCompare(String(b.lessonDate))).slice(-8));
+      const reports = pupils.map(r => parentsNightReport(r, loaded.sessions, loaded.assessments, { from: reportFrom(r), to: Date.now(), comment, notes: notesOf(r) }));
       html = reports.map(h => `<section class="pn-page">${h}</section>`).join("");
       pages.innerHTML = reports.map(h => `<section class="sheet-preview-page ws-report">${h}</section>`).join("");
       dialog.querySelector("[data-print]").disabled = false;
@@ -4267,6 +4327,7 @@
       render();
     };
     dialog.querySelector("[data-date]").onchange = e => { reportDate = e.target.value; render(); };
+    dialog.querySelector("[data-notes]").onchange = () => { if (loaded) render(); };
     if (single) dialog.querySelector("[data-comment]").oninput = () => { if (loaded) render(); };
     dialog.querySelector("[data-print]").onclick = async () => {
       const mark = dialog.querySelector("[data-mark]").checked;
