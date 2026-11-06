@@ -528,15 +528,23 @@ window.PopPaper = (() => {
     };
   });
 
-  add("paper-inform-persuade-first", "lesson-first-writing-to-share-information-or-an-opinion", "Inform or persuade", "Facts in one box, an opinion and reasons in another, then a short poster.", (who, h) => ({
-    pupil: `${h.sheetHead("Inform or persuade", who)}
-      ${box("My topic (a pet, a game, a place…)", ruled(h, 1))}
-      ${box("Inform: three facts about it", ruled(h, 3))}
-      ${box("My opinion, and a reason (I think… because…)", ruled(h, 1))}
-      ${box("Persuade: make your poster. Use \"You should…\" and a reason.", `<div class="pp-draw"></div>`)}`,
-    answers: lookForPage(h, "Inform or persuade", ["Facts chosen and organised clearly, not a mixed list of facts and opinions", "Words suited to the job: plain and clear to inform, strong and personal to persuade",
-      "An opinion with a reason, using because", "At least one attempt to persuade the reader (you should…, don't miss…)"])
-  }));
+  add("paper-inform-persuade-first", "lesson-first-writing-to-share-information-or-an-opinion", "Inform or persuade", "Sort sentences that tell from sentences that persuade, then write a fact file and make a poster.", (who, h) => {
+    const cards = [["Dogs have four legs.", "inform"], ["Everyone should have a dog!", "persuade"], ["A puppy needs food and water.", "inform"],
+      ["Dogs are the best pets ever.", "persuade"]];
+    return {
+      pupil: `${h.sheetHead("Inform or persuade", who)}
+        <div class="pp-key2"><div><b>📘 Inform</b><p>tells you facts</p></div><div><b>📣 Persuade</b><p>makes you want to agree</p></div></div>
+        <p><b>1.</b> Read each sentence. Does it <b>inform</b> or <b>persuade</b>? Tick one.</p>
+        <table class="pp-table pp-tf"><tr><th>Sentence</th><th class="pp-c">📘 Inform</th><th class="pp-c">📣 Persuade</th></tr>
+          ${cards.map(([t]) => `<tr><td>${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
+        <p><b>2.</b> <b>Inform:</b> choose a topic (a pet, a game, a place). Draw it, then write three facts.</p>
+        <div class="pp-animal pp-grow"><div class="pp-draw"></div><div><p><b>My topic:</b> ${blank(9)}</p><p><b>Fact 1:</b> It has…</p>${ruled(h, 1)}<p><b>Fact 2:</b> It can…</p>${ruled(h, 1)}<p><b>Fact 3:</b></p>${ruled(h, 1)}</div></div>
+        ${box("3. Persuade: make a poster. Use \"You should… because…\" and a persuading word.", `<p class="pp-bank">best · you will love · don't miss · everyone · amazing</p><div class="pp-draw pp-short"></div>`)}`,
+      answers: lookForPage(h, "Inform or persuade", ["Sorting: inform, persuade, inform, persuade (persuading sentences say what to think or do, with words such as should, best, everyone and you will love)",
+        "Facts chosen and organised clearly, not a mixed list of facts and opinions", "Words suited to the job: plain and clear to inform, strong and personal to persuade",
+        "At least one attempt to persuade the reader, with a reason (you should… because…)"])
+    };
+  });
 
   add("paper-recommend-it", "lesson-second-choosing-texts-and-authors-and-writing-my-own-choice", "Recommend it", "A review with evidence, a note on sources, and a plan for a text of your own with its audience and form.", (who, h) => ({
     pupil: `${h.sheetHead("Recommend it", who)}
