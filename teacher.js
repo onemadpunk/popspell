@@ -517,16 +517,16 @@
     const items = [];
     const add = (group, id, title) => items.push({ group, id, title });
     const A = window.PopActivities;
-    const gameArea = A && A.AREAS.find(area => area.id === "games");
+    const gameAreas = A ? A.AREAS.filter(area => area.game) : [];
     add("🧭 Starting checks", "assess", "🌟 Pip's Sound Quest (full assessment)");
     checks.forEach(c => add("🧭 Starting checks", c.id, c.title));
     ALL_STAGES().forEach(st => st.lists.forEach(l => add(st.stage, l.id, l.title)));
     if (A) {
-      A.AREAS.filter(area => area.id !== "games").forEach(area => area.activities.forEach(a => add(`${area.icon} ${area.title}`, a.id, `${a.title} (${a.level})`)));
+      A.AREAS.filter(area => !area.game).forEach(area => area.activities.forEach(a => add(`${area.icon} ${area.title}`, a.id, `${a.title} (${a.level})`)));
       P().STAGES.flatMap(st => st.lists).forEach(l => add("✍️ Sentence dictation", `dictate:${l.id}`, `Dictation: ${l.title}`));
     }
     // Spelling lists lead (they are most of what is set); the games come last
-    if (gameArea) gameArea.activities.forEach(a => add(`${gameArea.icon} ${gameArea.title}`, a.id, `${a.title} (${a.level})`));
+    gameAreas.forEach(gameArea => gameArea.activities.forEach(a => add(`${gameArea.icon} ${gameArea.title}`, a.id, `${a.title} (${a.level})`)));
     return items;
   }
   // <option>s in their groups; placeholder "" leaves out the "Choose work…" line
@@ -594,9 +594,9 @@
     }));
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
-      strand: strandOf(act.organiser), organiser: act.organiser, type: area.id === "games" ? "game" : act.passage ? "story" : "activity",
+      strand: strandOf(act.organiser), organiser: act.organiser, type: area.game ? "game" : act.passage ? "story" : "activity",
       england: !!area.england && !cfeUsed(act.id),
-      detail: act.blurb || "", print: area.id !== "games"
+      detail: act.blurb || "", print: !area.game
     })));
     // Dictation needs sentences, which the phonics lists have
     const dictation = A ? spelling.filter(item => item.list.items.some(it => it.sentence)).map(item => ({ id: `dictate:${item.id}`, title: `Dictation: ${item.title}`, type: "dictation",
@@ -968,7 +968,7 @@
       if (isPaper(id)) return false;
       if (catalogueList(id)) return true;
       const act = window.PopActivities?.get(id);
-      return !!act && act.area !== "games";
+      return !!act && !act.game;
     };
     const paperIds = [...new Set([...lessonPapers(lesson), ...lesson.use.filter(printable)])];
     const sheets = paperIds.map(id => ({ id, title: isPaper(id) ? PAPER[id].title : workTitle(id) }));
@@ -1030,7 +1030,7 @@
         return pupil.push({ label: `Practice sheet: ${workTitle(id)}`, html: () => withGoal(worksheetSpec(who, { list: id, from: todayKey(), band: bandForLevel(l.level) }, "practice").html, goal), checked: true });
       }
       const act = A && A.get(id);
-      if (!act || act.area === "games") return;
+      if (!act || act.game) return;
       const qs = act.make();
       const level = cur === "england" ? (enWork(id) || {}).label || "" : l.level;
       let made = null;
@@ -2695,7 +2695,7 @@
     const plans = rows.flatMap((row, rowIndex) => row.plans.map((plan, planIndex) =>
       ({ row, rowIndex, plan, planIndex })));
     const spellingOptions = ALL_STAGES().map(st => `<optgroup label="${esc(st.stage)}">${st.lists.map(l => `<option value="${esc(l.id)}">${esc(l.title)}</option>`).join("")}</optgroup>`).join("");
-    const games = (window.PopActivities?.AREAS.find(area => area.id === "games") || {}).activities || [];
+    const games = (window.PopActivities?.AREAS || []).filter(area => area.game).flatMap(area => area.activities);
     body.innerHTML = `<div class="work-flow">
       <h2>💻 Online work</h2>
       <p class="hint">Choose a list or activity, test it as a pupil, then schedule when it appears on the child's device.</p>
