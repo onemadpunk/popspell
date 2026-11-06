@@ -2077,3 +2077,15 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-things > div { border: 2px dashed #0eb5f2; border-radius: 14px; padding: 8px 12px; }
 .pp-pile { display: block; font-size: 24pt; line-height: 1.25; letter-spacing: .1em; word-break: break-all; }
 .pp-things p { margin: 4px 0 0; }
+.pp-poem { display: grid; gap: 8px; margin: 4px 0 8px; break-inside: avoid; }
+.pp-poem-pair { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; border: 2.5px solid #ffc837; border-radius: 16px; background: #fffaf0; padding: 6px 14px; }
+.pp-poem-pair p { margin: 0; font: 15pt/1.45 var(--reading-font); }
+.pp-star { font-size: 30pt; color: #f5a800; line-height: 1; }
+.pp-poem-pic { font-size: 28pt; }
+.pp-poem-own { display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px; align-items: stretch; }
+.pp-poem-own .pp-draw { height: auto; min-height: 120px; }
+.pp-say3 { display: grid; grid-template-rows: repeat(3, 1fr); gap: 8px; }
+.pp-say { position: relative; display: grid; grid-template-columns: 1fr 1.3fr; grid-template-rows: auto auto; gap: 4px 12px; border: 2.5px dashed #0eb5f2; border-radius: 16px; padding: 6px 12px 6px 40px; align-items: stretch; }
+.pp-say-step { grid-column: 1 / -1; margin: 0; font: 700 12pt var(--reading-font); }
+.pp-say .pp-draw { height: auto; min-height: 70px; margin: 0; }
+.pp-say .ws-row { align-self: end; }

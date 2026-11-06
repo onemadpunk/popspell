@@ -715,11 +715,13 @@ window.PopPaper = (() => {
 
   const PUDDLES = ["Splish goes the puddle when I jump in,", "splash goes the water right up to my chin.", "Drip go the leaves when the rain comes down,", "drop go the drops on the roofs of the town.", "Swish goes the wind and it rattles the door,", "and I'm out in my wellies to jump in some more!"];
   add("paper-poems-y2", "lesson-england-poems-to-learn-say-and-write-year-2", "Poems", "Learn a short poem by heart and say it with expression, then write a poem with the same pattern.", (who, h) => ({
-    pupil: `${h.sheetHead("Poems", who)}<p class="pp-passage">${PUDDLES.join("<br>")}</p>
-      <p><b>1.</b> Learn the poem two lines at a time. Tick each pair when you can say it without looking. ☐ ☐ ☐</p>
-      <p><b>2.</b> Say the poem to your adult. Which words will you say loudly? Underline them.</p>
-      <p><b>3.</b> Write your own poem with the same pattern: two sound words, then what happens.</p>
-      <p class="hint">For example: <i>Crunch goes the snow when I…</i></p>${ruled(h, 4)}`,
+    pupil: `${h.sheetHead("Poems", who)}
+      <p><b>1.</b> Learn the poem two lines at a time. Colour a star when you can say a pair without looking.</p>
+      <div class="pp-poem">${[0, 2, 4].map(i => `<div class="pp-poem-pair"><span class="pp-star" aria-hidden="true">☆</span><p>${PUDDLES[i]}<br>${PUDDLES[i + 1]}</p><span class="pp-poem-pic" aria-hidden="true">${["💦", "🍃", "💨"][i / 2]}</span></div>`).join("")}</div>
+      <p><b>2.</b> Say the poem to your adult. Underline the words you will say <b>loudly</b>, like splash.</p>
+      <p><b>3.</b> Write your own poem with the same pattern: a sound word, then what happens.</p>
+      <p class="hint">For example: <i>Crunch goes the snow when I…</i></p>
+      <div class="pp-grow pp-poem-own"><div class="pp-draw"></div><div class="pp-lines-box">${ruled(h, 3)}</div></div>`,
     answers: lookForPage(h, "Poems", ["Says the poem from memory, in order, with the rhymes landing at the end of each pair of lines",
       "Changes their voice to show meaning: louder for splash and rattles, a bouncy rhythm", "Their own poem keeps the pattern (sound word, sound word, what happens) and tries to rhyme in pairs",
       "Reads their own poem aloud with expression"], "Learning by heart is little and often: two lines a day works well.")
@@ -741,10 +743,10 @@ window.PopPaper = (() => {
   }));
 
   add("paper-talk-about-writing", "lesson-england-talking-about-my-writing-saying-it-reading-it-aloud-and-improving-it-years-1-and-2", "Say it, write it, read it", "Say each sentence before writing it, read the writing aloud, then talk about it with an adult and make one change.", (who, h) => ({
-    pupil: `${h.sheetHead("Say it, write it, read it", who)}<p>Write three sentences about something you did.</p>
-      ${[1, 2, 3].map(n => `<p><b>${n}.</b> ☐ I said it out loud first.</p>${ruled(h, 1)}`).join("")}
-      <p><b>Read it aloud</b> to your adult, clearly, so they can hear every word. ☐</p>
-      <div class="pp-cols">${box("⭐ Something good", ruled(h, 1))}${box("➜ Something to change", ruled(h, 1))}</div>
+    pupil: `${h.sheetHead("Say it, write it, read it", who)}<p>Write three sentences about something you did. Draw a picture to go with each one.</p>
+      <div class="pp-say3 pp-grow">${[1, 2, 3].map(n => `<div class="pp-say"><span class="pp-sb-n">${n}</span><p class="pp-say-step">🗣️ Say it out loud first ☐</p><div class="pp-draw"></div>${ruled(h, 1)}</div>`).join("")}</div>
+      <p><b>📖 Read it aloud</b> to your adult, clearly, so they can hear every word. ☐</p>
+      <div class="pp-cols">${box("⭐ Something good", ruled(h, 1))}${box("🔧 Something to change", ruled(h, 1))}</div>
       <p><b>Make your change.</b> Write the new sentence here:</p>${ruled(h, 1)}`,
     answers: lookForPage(h, "Say it, write it, read it", ["Says the whole sentence aloud before writing, and writes the same sentence (not a shorter one)",
       "Rereads to check it makes sense", "Reads aloud clearly enough to be heard, with intonation that shows the meaning",
