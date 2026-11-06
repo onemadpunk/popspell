@@ -2067,7 +2067,9 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young > .pp-cols > .pp-box, .ws-age-young > .pp-cols3 > .pp-box { display: flex; flex-direction: column; }
 .ws-age-young > .pp-draw { height: auto; min-height: 110px; }
 .ws-age-young .pp-box > b { font-size: 13pt; }
-.ws-age-young:not(:has(.pp-box, .pp-grow)) { justify-content: space-between; }
+.ws-age-young:not(:has(.pp-box, .pp-grow, .ws-qs)) { justify-content: space-between; }
+/* Question sheets: the header and intro stay together at the top, and the questions share out the spare room */
+.ws-age-young > .ws-qs:not(.ws-cols) { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
 .ws-age-young .pp-track { gap: 4px; }
 .ws-age-young .pp-num { min-width: 44px; height: 50px; font-size: 20pt; }
 .ws-age-young .pp-next { gap: 14px 26px; font-size: 18pt; }
@@ -2137,3 +2139,9 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young .ws-options { margin-left: 2.4em; }
 .ws-age-young .ws-options span { padding: 3px 14px 3px 8px; border: 2.5px solid #bfe9fa; border-radius: 999px; background: #fff; }
 .ws-age-young .ws-options i { border-color: #0eb5f2; }
+
+/* Younger question sheets: the cards share the page in a grid, so a short sheet is not left half empty */
+.ws-age-young > .ws-qs.ws-cols { columns: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; grid-auto-rows: minmax(min-content, 46mm); align-content: start; margin-top: 6px; }
+.ws-age-young > .ws-qs.ws-cols .ws-q { display: flex; flex-direction: column; justify-content: center; margin: 0; }
+.ws-age-young > .ws-qs.ws-cols .ws-q > p { font-size: 17pt; }
+.ws-age-young > .ws-qs.ws-cols .ws-answer .ws-blank { height: 14mm; }
