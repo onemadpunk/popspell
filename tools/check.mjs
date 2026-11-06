@@ -6,7 +6,8 @@
 //      (every statement exists, nothing is mapped twice, every key stage 4 statement is taught).
 //   5. lessons.js matches content/lessons, and every page's ?v= stamps match its files (tools/build.mjs).
 // The A4 fit of printed pages needs a browser: see tools/fit-sweep.js.
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -92,6 +93,16 @@ const gen = staleGenerated();
 if (gen.length) fail("Build", `${gen.join(", ")} out of date with content/: run npm run build`);
 const stale = staleStamps();
 if (stale.length) fail("Build", `stamps out of date in ${stale.join(", ")}: run npm run build`);
+
+// 6. Every image, icon and sound a page or script points to exists (a missing file shows as a broken picture)
+const rootPath = fileURLToPath(root);
+const assetRef = /["'`(]((?:\.\/)?assets\/[A-Za-z0-9_.\/-]+\.(?:svg|png|webp|jpe?g|gif|ico|mp3|wav|ogg))/g;
+for (const f of readdirSync(rootPath).filter(n => /\.(js|html|css)$/.test(n))) {
+  for (const m of read(f).matchAll(assetRef)) {
+    const path = m[1].replace(/^\.\//, "");
+    if (!existsSync(join(rootPath, path))) fail("Assets", `${f} points to ${path}, which doesn't exist`);
+  }
+}
 
 const summary = `${lessons.length} lessons, ${Object.keys(P.sheets).length} paper sheets, ${activityIds.size} activities, ${official.size} CfE outcomes`;
 if (problems.length) {

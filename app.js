@@ -1399,7 +1399,7 @@
     app.innerHTML = `
       <section class="welcome${name ? "" : " welcome-first"}">
         ${name ? pipHTML("big", "bob", "")
-          : `<div class="welcome-first-icon"><img src="assets/brand/teen/play-navy.svg" alt="" width="112" height="112"></div>`}
+          : `<div class="welcome-first-icon"><img src="assets/brand/teen/icon-play.svg" alt="" width="112" height="112"></div>`}
         <div class="welcome-main">
           <p class="hero-kicker">${name ? "Sounds become spellings" : "Welcome to PopSpell"}</p>
           <h1>${name ? `Hi, ${esc(name)}!` : "Hear it. Map it. Spell it."}</h1>
