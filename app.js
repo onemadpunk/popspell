@@ -1415,9 +1415,9 @@
           <div class="me-cards" id="meCards"></div>
           ${CLOUD_CONFIGURED && !CLASS ? `
             <form class="join-box" id="joinForm">
-              <label>Got a class code? <input id="joinCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. K7P2QX"></label>
-              <button class="btn" type="submit">Join</button>
-              <span class="hint" id="joinHint"></span>
+              <label>${name ? "Got a class code?" : "In a class? Your class code:"} <input id="joinCode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="e.g. K7P2QX"></label>
+              <button class="btn" type="submit">${name ? "Join" : "Join my class"}</button>
+              <span class="hint" id="joinHint">${name ? "" : "Type your first name in the box above, then your class code, then press Join my class."}</span>
             </form>` : ""}
         </div>
       </section>

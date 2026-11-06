@@ -518,7 +518,6 @@
     const add = (group, id, title) => items.push({ group, id, title });
     const A = window.PopActivities;
     const gameArea = A && A.AREAS.find(area => area.id === "games");
-    if (gameArea) gameArea.activities.forEach(a => add(`${gameArea.icon} ${gameArea.title}`, a.id, `${a.title} (${a.level})`));
     add("🧭 Starting checks", "assess", "🌟 Pip's Sound Quest (full assessment)");
     checks.forEach(c => add("🧭 Starting checks", c.id, c.title));
     ALL_STAGES().forEach(st => st.lists.forEach(l => add(st.stage, l.id, l.title)));
@@ -526,6 +525,8 @@
       A.AREAS.filter(area => area.id !== "games").forEach(area => area.activities.forEach(a => add(`${area.icon} ${area.title}`, a.id, `${a.title} (${a.level})`)));
       P().STAGES.flatMap(st => st.lists).forEach(l => add("✍️ Sentence dictation", `dictate:${l.id}`, `Dictation: ${l.title}`));
     }
+    // Spelling lists lead (they are most of what is set); the games come last
+    if (gameArea) gameArea.activities.forEach(a => add(`${gameArea.icon} ${gameArea.title}`, a.id, `${a.title} (${a.level})`));
     return items;
   }
   // <option>s in their groups; placeholder "" leaves out the "Choose work…" line

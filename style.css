@@ -2157,3 +2157,7 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .lesson-timer .timer-sub { margin: 0; font-size: 1.15rem; min-height: 1.5em; }
 .lesson-timer .timer-swap { border-color: #ffb400; background: #fff4cc; color: #2b2b2b; }
 .lesson-timer .timer-swap .timer-phase { color: #7a4f00; }
+
+/* First visit: the class code box stands out, because most pupils arrive with a code from their teacher */
+.welcome-first .join-box { margin-top: 16px; padding: 12px 14px; border: 2px dashed var(--line); border-radius: 16px; background: var(--primary-soft, #f2f8ff); }
+.welcome-first .join-box .hint { display: block; flex-basis: 100%; margin-top: 6px; }
