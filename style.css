@@ -2075,7 +2075,7 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young .pp-grid3 { gap: 12px; }
 .pp-things { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 0 8px; }
 .pp-things > div { border: 2px dashed #0eb5f2; border-radius: 14px; padding: 8px 12px; }
-.pp-pile { display: block; font-size: 24pt; line-height: 1.25; letter-spacing: .1em; word-break: break-all; }
+.pp-pile { display: block; font-size: 15pt; line-height: 1.25; letter-spacing: .1em; word-break: break-all; }
 .pp-things p { margin: 4px 0 0; }
 .pp-poem { display: grid; gap: 8px; margin: 4px 0 8px; break-inside: avoid; }
 .pp-poem-pair { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; border: 2.5px solid #ffc837; border-radius: 16px; background: #fffaf0; padding: 6px 14px; }
@@ -2094,3 +2094,8 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-case-word { align-self: center; font: 700 15pt var(--reading-font); color: #0b7fb0; }
 .pp-case p { margin: 0; font: 10.5pt Arial, sans-serif; color: #444; }
 .pp-case .ws-row { align-self: end; }
+
+/* Younger maths sheets: pictures grow to use the page instead of sitting small in empty space */
+.ws-age-young .pp-row4 svg.pp-pic { width: 75%; margin: 0 auto; display: block; }
+.ws-age-young .pp-cell svg.pp-pic, .ws-age-young .pp-cols .pp-q svg.pp-pic { width: 100%; height: auto; }
+.ws-age-young .pp-side svg.pp-pic { width: 82mm; height: auto; }
