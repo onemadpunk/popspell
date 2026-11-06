@@ -759,6 +759,7 @@
         <label>Strand <select id="libStrand"></select></label>
         <label>Type <select id="libType"><option value="">All types</option>${Object.entries(LIB_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></label>
         <label>Search <input id="librarySearch" type="search" placeholder="Words, skills or a year (P5, Year 4)"></label>
+        <button class="btn small" type="button" id="libFolder" aria-pressed="false">⭐ My folder (<span id="favCount">0</span>)</button>
       </div>
       <p class="hint" id="libraryCount"></p></div>
       <div id="libResults"></div>`;
@@ -767,6 +768,11 @@
       : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? `${esc(e.level)} level` : "Any level"}</span>`);
     const codesLine = e => (en ? (e.en && e.en.statements.length ? `<p class="prog-codes">${esc(ncSource(e.en))}: ${esc(e.en.label)} · ${esc(e.en.domain)}</p>` : "")
       : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
+    // My folder: the resources a teacher uses most, kept on this device
+    const favKey = `popspell-folder-${me ? me.uid : "teacher"}`;
+    const favs = new Set((() => { try { return JSON.parse(localStorage.getItem(favKey) || "[]"); } catch { return []; } })());
+    const saveFavs = () => { try { localStorage.setItem(favKey, JSON.stringify([...favs])); } catch { /* private mode */ } };
+    let folderOnly = false;
     const card = e => `<article class="pcard library-card">
         <p class="lib-tags">${tagOf(e)}
           <span class="lib-type">${LIB_TYPES[e.type]}</span>${e.stage && !(!en && (e.england || e.stage === "England statutory words")) ? `<span class="lib-type">${esc(e.stage)}</span>` : ""}
@@ -781,7 +787,8 @@
           : e.type === "paper" ? "" : `<a class="btn small" href="${esc(previewHref(e.id))}" target="_blank" rel="noopener">▶ Test</a>
           <button class="btn small" type="button" data-assign="${esc(e.id)}">📌 Assign</button>
           ${trialIds.has(e.id) ? `<button class="btn small" type="button" data-trial="${esc(e.id)}">🧒 Quick trial</button>` : ""}`}
-          ${e.print ? `<button class="btn small" type="button" data-print="${esc(e.id)}">🖨️ Print</button>` : `<span class="lib-online">Online only</span>`}</div>
+          ${e.print ? `<button class="btn small" type="button" data-print="${esc(e.id)}">🖨️ Print</button>` : `<span class="lib-online">Online only</span>`}
+          <button class="btn small fav-btn" type="button" data-fav="${esc(e.id)}" aria-pressed="${favs.has(e.id)}">${favs.has(e.id) ? "⭐ In my folder" : "☆ Save"}</button></div>
       </article>`;
     const trialIds = new Set(trialItems().map(it => it.id));
     const levelRank = e => (levelOfEntry(e) ? levels.findIndex(([l]) => l === levelOfEntry(e)) : -1);
@@ -806,19 +813,22 @@
         }
         return en ? e.band === prefs.level : !e.level || e.level === prefs.level;
       };
-      const shown = entries.filter(e => levelFits(e) && (!prefs.subject || e.subject === prefs.subject)
-        && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && found(e))
+      $("#favCount").textContent = String(favs.size);
+      $("#libFolder").setAttribute("aria-pressed", String(folderOnly));
+      $("#libFolder").classList.toggle("primary", folderOnly);
+      const shown = entries.filter(e => (folderOnly ? favs.has(e.id) && found(e) : levelFits(e) && (!prefs.subject || e.subject === prefs.subject)
+        && (!prefs.strand || strandOfEntry(e) === prefs.strand) && (!prefs.type || e.type === prefs.type) && found(e)))
         .sort((a, b) => order.indexOf(strandOfEntry(a)) - order.indexOf(strandOfEntry(b)) || levelRank(a) - levelRank(b)
           || (en && a.en && b.en ? (a.en.lo ?? 99) - (b.en.lo ?? 99) : 0)
           || (b.type === "lesson") - (a.type === "lesson") || (a.type === "game") - (b.type === "game") || a.order - b.order); // ready lessons first, games last
-      const narrowed = !!(prefs.level || prefs.subject || prefs.strand || prefs.type || query);
+      const narrowed = folderOnly || !!(prefs.level || prefs.subject || prefs.strand || prefs.type || query);
       const groups = order.map(s => ({ name: s, items: shown.filter(e => strandOfEntry(e) === s) })).filter(g => g.items.length);
       // A few results show straight away; more stay closed under their strands, which then read as a contents list
-      const openAll = narrowed && (shown.length <= LIB_OPEN_MAX || groups.length === 1);
+      const openAll = folderOnly || (narrowed && (shown.length <= LIB_OPEN_MAX || groups.length === 1));
       $("#libResults").innerHTML = groups.length ? groups.map(g => `<details class="lib-group"${openAll || g.name === FIND_LEVEL ? " open" : ""}>
           <summary><span>${esc(g.name)}</span><span class="lib-count">${g.items.length}</span></summary>
           <div class="library-grid">${g.items.map(card).join("")}</div></details>`).join("")
-        : `<div class="empty">Nothing matches. Try <button class="linklike" type="button" data-clear>showing everything</button>.</div>`;
+        : `<div class="empty">${folderOnly ? "Your folder is empty. Press ☆ Save on any resource to keep it here." : `Nothing matches. Try <button class="linklike" type="button" data-clear>showing everything</button>.`}</div>`;
       $("#libraryCount").textContent = narrowed ? `${shown.length} of ${entries.length} resources shown${openAll ? "" : `, in ${groups.length} strands. Open a strand to see its work`}.`
         : `${entries.length} resources in ${groups.length} strands. Choose a level and subject, or open a strand.`;
       saveLibraryPrefs(prefs);
@@ -845,9 +855,15 @@
     $("#libStrand").onchange = e => { prefs.strand = e.target.value; render(); };
     $("#libType").onchange = e => { prefs.type = e.target.value; render(); };
     $("#librarySearch").oninput = render;
+    $("#libFolder").onclick = () => { folderOnly = !folderOnly; render(); };
     $("#libResults").onclick = e => {
       const button = e.target.closest("button");
       if (!button) return;
+      if (button.dataset.fav) {
+        const id = button.dataset.fav;
+        if (favs.has(id)) favs.delete(id); else favs.add(id);
+        saveFavs(); render(); return;
+      }
       const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
       if (button.dataset.lesson) lessonDialog(entry.lesson, prefs.cur);
       else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", range: "exact", pupil: "", pupilClass: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; drawLibrary(body); }
