@@ -130,7 +130,8 @@
     const saved = (() => { try { return localStorage.getItem(CLASS_KEY); } catch { return null; } })();
     const visible = visibleClasses();
     current = visible.find(c => c.id === saved) || visible.find(c => c.teacher === me.uid) || visible[0] || null;
-    if (!classes.length && !["teachers", "trials", "library"].includes(tab)) tab = "trials";
+    // A teacher with no class yet starts on Classes, where the first class is made, not on Quick trial
+    if (!classes.length && !["teachers", "trials", "library", "classes"].includes(tab)) tab = "classes";
     await uploadTrials();
     draw();
   }

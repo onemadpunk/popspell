@@ -395,15 +395,22 @@
   if (TRIAL_MODE) document.documentElement.classList.add("trial-mode"); // no menu: the child stays on the work
   let pupilIdentity = null;
   let previewPupilName = "";
+  // The pupil is remembered per tab as well as per device, so two tabs on one laptop (one child each)
+  // never swap names: the last tab opened used to decide who every tab was working as.
+  const TAB_PUPIL_KEY = "popspell-tab-pupil-v1";
+  const PUPIL_TAB_KEY = "popspell-pupil-tab-v1";
+  const pupilTab = () => { try { return sessionStorage.getItem(PUPIL_TAB_KEY) === "1"; } catch { return false; } };
   const getPupil = () => {
     if (TRIAL_MODE) return trial?.name || "";
     if (CLASS && previewMode && teacherUnlocked()) return previewPupilName;
     if (CLASS && pupilIdentity?.classInfo.id === CLASS.id) return pupilIdentity.pupil;
+    try { const own = sessionStorage.getItem(TAB_PUPIL_KEY); if (own) return own; } catch { /* private mode */ }
     try { return localStorage.getItem(PUPIL_KEY) || ""; } catch { return ""; }
   };
   const setPupil = name => {
     if (TRIAL_MODE) return;
     if (CLASS && previewMode && teacherUnlocked()) { previewPupilName = name; return; }
+    try { if (name) sessionStorage.setItem(TAB_PUPIL_KEY, name); else sessionStorage.removeItem(TAB_PUPIL_KEY); } catch { /* private mode */ }
     try { if (name) localStorage.setItem(PUPIL_KEY, name); else localStorage.removeItem(PUPIL_KEY); } catch { /* private mode */ }
     updateReporting();
   };
@@ -1075,7 +1082,7 @@
     cloud = api;
     pupilIdentity = null;
     saveClass(info);
-    if (pupil) setPupil(pupil);
+    if (pupil) { setPupil(pupil); try { sessionStorage.setItem(PUPIL_TAB_KEY, "1"); } catch { /* private mode */ } applyTeacherMode(); }
     updateReporting();
     if (getPupil()) await syncLook(getPupil(), api);
     justJoined = true;
@@ -3611,13 +3618,15 @@
   /* ---------- Teacher mode: Settings and Make a list only show while a teacher is signed in ---------- */
 
   // Without Firebase set up there are no accounts, so everything is shown
-  const teacherUnlocked = () => !CLOUD_CONFIGURED || !!(TEACHER && TEACHER.role);
+  // A tab the teacher opened for a pupil (the Class page's Open for button) is a pupil tab: it hides the teacher's menu and
+  // follows "only the work set for them", even though the teacher is signed in on this computer.
+  const teacherUnlocked = () => !pupilTab() && (!CLOUD_CONFIGURED || !!(TEACHER && TEACHER.role));
 
   function applyTeacherMode() {
     const open = teacherUnlocked();
     document.querySelectorAll(".teacher-only").forEach(el => { el.hidden = !open; });
     const link = $("#teacherLink");
-    link.hidden = TRIAL_MODE || !CLOUD_CONFIGURED;
+    link.hidden = TRIAL_MODE || !CLOUD_CONFIGURED || pupilTab();
     // "Sara Green" → "Sara", but "Mr Smith" stays "Mr Smith" (as teacher.js shows it)
     const short = n => { const w = String(n || "").trim().split(/\s+/); return /^(mr|mrs|ms|miss|mx|dr)\.?$/i.test(w[0]) ? w.slice(0, 2).join(" ") : w[0]; };
     link.textContent = TEACHER && TEACHER.role ? `👩‍🏫 ${short(TEACHER.name)}` : "👩‍🏫 Teacher";
