@@ -165,20 +165,22 @@
     };
   });
 
-  add("paper-numbers-life", "lesson-first-numbers-in-life-work-and-history", "Numbers all around us", "A number hunt at home or outside, and Roman numerals on a clock.", (who, h) => {
+  add("paper-numbers-life", "lesson-first-numbers-in-life-work-and-history", "Numbers all around us", "A number hunt with picture clues, matching Roman numerals to numbers, and why people need numbers.", (who, h) => {
     const roman = [["I", 1], ["II", 2], ["III", 3], ["IV", 4], ["V", 5], ["VI", 6], ["VII", 7], ["VIII", 8], ["IX", 9], ["X", 10], ["XI", 11], ["XII", 12]];
-    const ask = shuffle(roman).slice(0, 6);
-    const places = ["On a clock or watch", "On a price label", "On a bus or a road sign", "In a book", "On a front door", "On a phone, TV or oven"];
+    const ask = shuffle(roman).slice(0, 4);
+    const nums = shuffle(ask.map(([, n]) => n));
+    const places = [["🕒", "On a clock"], ["🚌", "On a bus"], ["🏷️", "On a price tag"], ["🏠", "On a door"], ["📖", "In a book"], ["📱", "On a phone"]];
     return {
       pupil: `${h.sheetHead("Numbers all around us", who)}
-        <p><b>1.</b> Number hunt: find a number in each place. Write the number and what it tells you.</p>
-        <table class="pp-table"><tr><th>Where I found it</th><th>The number</th><th>What it tells us</th></tr>
-          ${places.map(p => `<tr><td>${p}</td><td></td><td></td></tr>`).join("")}<tr><td>My own idea: ${blank(6)}</td><td></td><td></td></tr></table>
-        <p><b>2.</b> Some clocks use Roman numerals. Write each one as a number.</p>
-        <div class="pp-next">${ask.map(([r]) => `<span><b>${r}</b> = ${blank(2.5)}</span>`).join("")}</div>
-        <p><b>3.</b> Why do you think people long ago needed numbers? Talk about it, then write one idea.</p>${ruled(h, 2)}`,
-      answers: answersPage(h, "Numbers all around us", ["1. Any numbers found, with a sensible meaning (the time, a price, a bus route, a page, a house number…)"]
-        .concat(ask.map(([r, n]) => `${r} = ${n}`), ["3. Any sensible idea: counting animals or food, trading, measuring land, telling the time…"]))
+        <p><b>1. Number hunt.</b> Find a number in each place. Write it. Is it the time, a price, a count or a label?</p>
+        <div class="pp-cols3">${places.map(([e, p]) => box(`${e} ${p}`, `<p>Number: ${blank(3)}</p><p>It is a: ${blank(4)}</p>`)).join("")}</div>
+        <p><b>2. Roman numbers.</b> Some clocks use Roman numerals. Draw a line from each Roman numeral to the number it means.</p>
+        <div class="pp-match"><div>${ask.map(([r]) => `<p><b>${r}</b></p>`).join("")}</div><div>${nums.map(n => `<p>${n}</p>`).join("")}</div></div>
+        <p><b>3.</b> Fill in the missing Roman numbers: &nbsp; I &nbsp; II &nbsp; III &nbsp; ${blank(2)} &nbsp; V &nbsp; VI &nbsp; ${blank(2)} &nbsp; VIII &nbsp; IX &nbsp; X</p>
+        ${box("4. Why do people need numbers? Circle your ideas, then draw one.", `<p class="pp-bank">telling the time · paying for things · counting animals · measuring · knowing the date · sharing fairly</p><div class="pp-draw pp-short"></div>`)}`,
+      answers: answersPage(h, "Numbers all around us", ["1. Any numbers found, with a sensible meaning (the time, a bus route, a price, a house number, a page, a temperature or a channel)"]
+        .concat(ask.map(([r, n]) => `${r} = ${n}`), ["3. IV (4) and VII (7)", "4. Any sensible idea: telling the time, paying, counting, measuring, sharing"]),
+        "Look at how the pupil describes what each number tells us: a number can be a count, a time, a price or a label.")
     };
   });
 
