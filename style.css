@@ -2073,3 +2073,7 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young .pp-next { gap: 14px 26px; font-size: 18pt; }
 .ws-age-young .pp-next span { font-size: 18pt; }
 .ws-age-young .pp-grid3 { gap: 12px; }
+.pp-things { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 4px 0 8px; }
+.pp-things > div { border: 2px dashed #0eb5f2; border-radius: 14px; padding: 8px 12px; }
+.pp-pile { display: block; font-size: 24pt; line-height: 1.25; letter-spacing: .1em; word-break: break-all; }
+.pp-things p { margin: 4px 0 0; }

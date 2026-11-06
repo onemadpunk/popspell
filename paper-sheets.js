@@ -74,12 +74,15 @@ window.PopPaper = (() => {
         <p><b>3.</b> What comes next?</p><div class="pp-next">${next.map(n => `<span>${n}, ${n + 1}, ${blank(2.5)}</span>`).join("")}</div>
         <p><b>4.</b> One more and one less.</p>
         <div class="pp-next">${[7, 12, 18, 20].map(n => `<span>${blank(2)} &lt; <b>${n}</b> &lt; ${blank(2)}</span>`).join("")}</div>
-        <p class="hint">One less goes on the left and one more on the right.</p>`,
+        <p class="hint">One less goes on the left and one more on the right.</p>
+        <p><b>5.</b> Count the things. Write how many.</p>
+        <div class="pp-things">${[["🍎", 7], ["⭐", 12], ["🐟", 9], ["🎈", 15]].map(([e, n]) => `<div><span class="pp-pile" aria-hidden="true">${Array(n).fill(e).join("")}</span><p>I counted ${blank(2)}</p></div>`).join("")}</div>`,
       answers: answersPage(h, "Counting to 20 and beyond", ["Mark each part separately: counting on, counting back, and one more or less are different skills.",
         `Missing numbers: ${[...gaps].sort((a, b) => a - b).join(", ")}`,
         `Counting back: ${back.filter((_, i) => backGaps.has(i)).join(", ")}`,
         `What comes next: ${next.map(n => n + 2).join(", ")}`,
-        `One less and one more: 6 and 8; 11 and 13; 17 and 19; 19 and 21`])
+        `One less and one more: 6 and 8; 11 and 13; 17 and 19; 19 and 21`,
+        `Counting things: 7 apples, 12 stars, 9 fish, 15 balloons. Watch for touching each one once, and for losing count in a bigger group.`])
     };
   });
 
