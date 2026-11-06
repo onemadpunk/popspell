@@ -624,6 +624,46 @@
   // Searching: every word has to match, in any order. Dashes are all the same, and a school year
   // ("P5", "S2", "Year 4") finds work at its CfE level or England year.
   const fold = t => String(t).toLowerCase().replace(/[‐-―−]/g, "-");
+
+  // Where a ready lesson sits in Scotland's draft Know, Do, Understand frameworks (Education Scotland, November 2026).
+  // The drafts have no statement codes and may change, so this names the strand and heading only. It is a provisional guide.
+  const KDU_LIT_YOUNG = {
+    "Handwriting": "Language Foundation · Concepts of print and letter knowledge",
+    "Listening and sounds": "Oral Language and Interaction; Language Foundation · Phonological awareness, phonemic awareness and phonics",
+    "Listening and talking": "Oral Language and Interaction",
+    "Reading: phonics and tricky words": "Language Foundation · Phonological awareness, phonemic awareness and phonics",
+    "Reading: understanding stories": "Enjoying, Engaging with and Creating Texts",
+    "Writing: creating texts": "Early Writing",
+    "Writing: sentences and punctuation": "Language Foundation · Sentence knowledge and conventions",
+    "Spelling": "Language Foundation · Word knowledge and spelling",
+    "Writing: dictation": "Language Foundation · Word knowledge and spelling"
+  };
+  const KDU_LIT_OLDER = {
+    "Handwriting": "Tools for Writing",
+    "Listening and talking": "Communicating and Interacting",
+    "Reading: phonics and tricky words": "Tools for Reading Comprehension",
+    "Reading: understanding stories": "Story and Identity; How Texts Work; Tools for Reading Comprehension",
+    "Writing: creating texts": "Tools for Writing",
+    "Writing: sentences and punctuation": "Tools for Writing",
+    "Spelling": "Tools for Writing",
+    "Writing: dictation": "Tools for Writing"
+  };
+  const KDU_MATHS = {
+    "Number": "Quantity, Numbers and the Algebraic Properties of Number · Number systems and structures; Number relationships and operations",
+    "Money": "Quantity, Numbers and the Algebraic Properties of Number · Finance",
+    "Fractions, decimals and percentages": "Proportional reasoning",
+    "Patterns and missing numbers": "Quantity, Numbers and the Algebraic Properties of Number · Patterns and sequences; Expressions, equations and relationships",
+    "Measurement": "Shape, Space and Measurement · Measures",
+    "Time": "Shape, Space and Measurement · Measures",
+    "Shape and angles": "Shape, Space and Measurement · Properties of shapes and solids; Position and movement",
+    "Data and chance": "Information, Data and Uncertainty"
+  };
+  const kduOf = l => {
+    if (!l || l.england || !l.strand) return "";
+    if (l.subject === "Maths") return KDU_MATHS[l.strand] || "";
+    if (l.subject !== "Literacy") return "";
+    return ((l.level === "Early" || l.level === "First") ? KDU_LIT_YOUNG : KDU_LIT_OLDER)[l.strand] || "";
+  };
   // Everyday names for things the Library calls something else
   const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"]];
   const CFE_YEARS = { nursery: "Early", p1: "Early", p2: "First", p3: "First", p4: "First", p5: "Second", p6: "Second", p7: "Second", s1: "Third", s2: "Third", s3: "Third" };
@@ -849,7 +889,8 @@
         <p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
         ${l.codes.length ? `<p><b>CfE experiences and outcomes it supports:</b> ${esc(l.codes.join(", "))}</p>` : ""}`
       : `<p><b>Success criteria</b> (from the CfE benchmarks):</p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-      <p><b>CfE experiences and outcomes:</b> ${esc(l.codes.join(", "))}</p>`)
+      ${kduOf(l) ? `<p><b>Know, Do, Understand (draft, Nov 2026):</b> ${esc(kduOf(l))}</p>` : ""}
+      <p><b>CfE experiences and outcomes (current):</b> ${esc(l.codes.join(", "))}</p>`)
       : en.statements.length ? `${l.england ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}<p><b>${en.hi === 0 ? "EYFS Early Learning Goals" : en.lo === 0 ? "EYFS Early Learning Goals and national curriculum (England)" : "National curriculum (England)"}, ${esc(en.label)}.</b>
         ${en.hi === 0 ? "Children at the expected level of development will:" : en.lo === 0 ? "What children are expected to do (Reception) and be taught (Year 1 on):" : "Pupils should be taught to:"}</p>
         <ul class="lesson-criteria">${lessonStatements(en).slice(0, 6).map(s => `<li>${esc(s.wording)} <span class="hint">(${esc(E_().yearLabel(s.year))} · ${esc(E_().domainLabel(s.domain))})</span></li>`).join("")}</ul>`
