@@ -2145,3 +2145,4 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young > .ws-qs.ws-cols .ws-q { display: flex; flex-direction: column; justify-content: center; margin: 0; }
 .ws-age-young > .ws-qs.ws-cols .ws-q > p { font-size: 17pt; }
 .ws-age-young > .ws-qs.ws-cols .ws-answer .ws-blank { height: 14mm; }
+.ws-age-young > .ws-qs.ws-cols:not(:has(.ws-q:nth-child(7))) { grid-auto-rows: minmax(min-content, 66mm); }
