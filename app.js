@@ -2135,6 +2135,9 @@
     all.forEach(x => x.missed.forEach(tok => { (bySound[tok] = bySound[tok] || []).push(x.item.spelling); }));
     const soundRows = Object.entries(bySound).sort((a, b) => b[1].length - a[1].length);
     const trialNote = saveTrialResult(session);
+    const bestWord = r.find(x => x.correct && !x.wrong.length);
+    const wellLine = bestWord ? `⭐ You spelled “${esc(bestWord.item.spelling)}” right first time!`
+      : right ? "⭐ You kept going until you got it. That's what counts!" : "⭐ You gave it a go, and every try helps your brain learn.";
 
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(session.list.accent)}">
@@ -2142,6 +2145,7 @@
         ${pipHTML("big", "cheer", "", "celebrate")}
         <h1>${esc(headline)}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(session.list.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
+        <p class="well-done" id="wellDone">${wellLine}</p>
         ${TRIAL_MODE ? `<p class="hint" role="status">${esc(trialNote)}</p>` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${newStars.length ? `
@@ -2154,6 +2158,7 @@
         ${challenges.length ? `
           <p class="challenge-result">🔍 New words: <b>${challengeRight} of ${challenges.length}</b> right${challengeRight === challenges.length ? " — you can use the rule!" : ""}</p>` : ""}
         ${comingBack ? `<p class="hint">🔁 ${plural(comingBack, "word", "words")} will come back tomorrow for more practice.</p>` : ""}
+        <details class="summary-details" id="summaryDetails"><summary>See all my words${soundRows.length ? " and sounds" : ""}</summary>
         ${soundRows.length ? `
           <div class="sound-report">
             <h2>Sounds to practise</h2>
@@ -2172,7 +2177,8 @@
               </tr>`).join("")}
           </tbody>
         </table>
-        <div class="row center no-print">
+        </details>
+        <div class="row center no-print" id="summaryActions">
           ${TRIAL_MODE ? `<button class="btn primary" id="trialFinish" type="button">Finished: hand back to ${esc(trial?.teacher || "your teacher")}</button>` : `
           ${tricky.length ? `<button class="btn primary" id="again-tricky">Practise the ${plural(tricky.length, "tricky word", "tricky words")}</button>` : ""}
           <button class="btn" id="again-all">Do this list again</button>
@@ -2195,7 +2201,19 @@
     const list = session.list;
     if (!TRIAL_MODE && tricky.length) $("#again-tricky").onclick = () => startPractice(Object.assign({}, list, { title: `${list.title} — tricky words` }), tricky);
     if (!TRIAL_MODE) $("#again-all").onclick = () => startPractice(list, list.items, checksFor(list));
-    $("#print").onclick = () => window.print();
+    $("#print").onclick = () => { const d = $("#summaryDetails"); if (d) d.open = true; window.print(); };
+    // The next piece of work the teacher set, as the main button
+    if (!TRIAL_MODE && CLASS && getPupil() && !session.preview) {
+      fetchAssigned(getPupil()).then(entries => {
+        if (phase !== my) return;
+        const next = entries.map(resolveAssigned).filter(Boolean).find(l => l.href && !String(l.href).endsWith(`/${list.id}`));
+        const row = $("#summaryActions");
+        if (!next || !row) return;
+        const a = document.createElement("a");
+        a.className = "btn primary big"; a.href = next.href; a.textContent = `Next: ${next.title} ➜`;
+        row.prepend(a);
+      }).catch(() => {});
+    }
   }
 
   /* ---------- Activities: writing, reading, listening and numeracy (content in activities.js) ---------- */

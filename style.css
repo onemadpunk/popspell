@@ -2167,3 +2167,10 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .lesson-summary textarea { width: 100%; box-sizing: border-box; font: inherit; font-weight: 400; padding: 8px 10px; border: 1.5px solid var(--line); border-radius: 10px; }
 .pn-notes { margin: 4px 0 10px; padding-left: 1.2em; }
 .pn-notes li { margin: 3px 0; }
+
+/* Finish screen: one thing done well, the detail folded away, and a clear next step */
+.summary .well-done { font-size: 1.25rem; font-weight: 800; margin: 6px 0 10px; }
+.summary-details { margin: 10px 0 14px; text-align: left; }
+.summary-details > summary { cursor: pointer; font-weight: 700; padding: 8px 12px; border-radius: 12px; background: var(--primary-soft, #eef4ff); width: fit-content; }
+.summary-details[open] > summary { margin-bottom: 10px; }
+@media print { .summary-details > summary { display: none; } }
