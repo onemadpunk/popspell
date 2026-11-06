@@ -1501,16 +1501,24 @@ window.PopPaper = (() => {
       "Ask why 8·995 rounds to 9·00: the 5 thousandths round the 9 hundredths up, which carries into the tenths and the units.")
   }));
 
-  add("paper-decimal-calcs", T3("calculating-with-whole-numbers-and-decimals"), "Decimal calculations", "Quick facts, then adding, subtracting, multiplying and dividing decimals, with a problem and an explanation.", (who, h) => ({
+  add("paper-decimal-calcs", T3("calculating-with-whole-numbers-and-decimals"), "Decimal calculations", "Estimate before calculating, add, subtract, multiply and divide decimals, mark three students' work, and solve a shopping problem.", (who, h) => ({
     pupil: `${h.sheetHead("Decimal calculations", who)}
-      <p><b>Quick facts:</b> 8 × 7 = ${blank(2)} &nbsp; 9 × 12 = ${blank(2)} &nbsp; 132 ÷ 11 = ${blank(2)} &nbsp; 96 ÷ 8 = ${blank(2)} &nbsp; 7 × 12 = ${blank(2)} &nbsp; 81 ÷ 9 = ${blank(2)}</p>
-      <p>Show your working. Estimate first so you can check the answer.</p>
-      <div class="pp-grid3">${["12·45 + 3·078", "20 − 6·375", "15·8 − 7·256", "4·26 × 7", "3·45 × 6", "0·125 × 8", "9·36 ÷ 4", "17·5 ÷ 7", "6·03 ÷ 3"]
-        .map((c, i) => `<div class="pp-cell"><p><b>${i + 1}.</b> ${c} =</p><div class="pp-draw pp-short"></div></div>`).join("")}</div>
-      ${qs([`Three tickets cost £12·85 each and a programme costs £4·50. How much change from £50?${lines(2)}`,
-        `Choose one question above. Explain your method in a sentence, and how you checked it.${lines(2)}`], 10)}`,
-    answers: answersPage(h, "Decimal calculations", ["15·528", "13·625", "8·544", "29·82", "20·7", "1", "2·34", "2·5", "2·01",
-      "3 × 12·85 = 38·55; + 4·50 = 43·05; change £6·95", "A clear method (lining up the points, or working in whole numbers and placing the point by estimating) and a check by estimating or the inverse"], "Quick facts: 56, 108, 12, 12, 84, 9.")
+      <p><b>1. Estimate first.</b> Round each number to something easy, estimate, then work out the exact answer.</p>
+      <table class="pp-table"><tr><th>Calculation</th><th>My estimate</th><th>Exact answer</th><th>Close? ☐ yes ☐ no</th></tr>
+        ${["12·45 + 3·078", "20 − 6·375", "4·26 × 7", "9·36 ÷ 4"].map(c => `<tr><td>${c}</td><td></td><td></td><td></td></tr>`).join("")}</table>
+      <p><b>2. Calculate.</b> Show your working.</p>
+      <div class="pp-grid3">${["15·8 − 7·256", "3·45 × 6", "0·125 × 8", "17·5 ÷ 7", "6·03 ÷ 3", "2·5 × 1·2"]
+        .map((c, i) => `<div class="pp-cell"><p><b>${String.fromCharCode(97 + i)})</b> ${c} =</p><div class="pp-draw" style="height:19mm"></div></div>`).join("")}</div>
+      <p><b>3. Mark the work.</b> Three students checked their answers. Is each one right? If not, explain the mistake and write the correct answer.</p>
+      <table class="pp-table pp-tf"><tr><th>Student</th><th>Their working</th><th class="pp-c">Right?</th><th>What went wrong, and the correct answer</th></tr>
+        <tr><td><b>Maya</b></td><td>12·45 + 3·078 = 12·523</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr>
+        <tr><td><b>Tom</b></td><td>0·125 × 8 = 10</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr>
+        <tr><td><b>Zara</b></td><td>17·5 ÷ 7 = 2·5</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr></table>
+      <p><b>4.</b> Three tickets cost £12·85 each and a programme costs £4·50. How much change from £50?${lines(2)}</p>`,
+    answers: answersPage(h, "Decimal calculations", ["Estimates will vary: for example 12 + 3 = 15, 20 − 6 = 14, 4 × 7 = 28, 9 ÷ 4 = 2 (or 8 ÷ 4). Exact: 15·528; 13·625; 29·82; 2·34",
+      "a) 8·544  b) 20·7  c) 1  d) 2·5  e) 2·01  f) 3",
+      "Maya: wrong. She lined up the last digits, not the decimal points: 12·450 + 3·078 = 15·528. Tom: wrong. The decimal point is in the wrong place: 125 × 8 = 1000, so 0·125 × 8 = 1. Zara: right (7 × 2·5 = 17·5)",
+      "3 × 12·85 = 38·55; + 4·50 = 43·05; change £6·95"], "Look for estimates that round sensibly and for answers checked against the estimate.")
   }));
 
   add("paper-below-zero", T3("negative-numbers-in-calculations"), "Below zero", "Adding, subtracting, multiplying and dividing with negative numbers, then temperature, depth and money problems.", (who, h) => ({
