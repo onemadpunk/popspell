@@ -1686,6 +1686,26 @@ window.PopActivities = (() => {
   }));
   const ALL = AREAS.flatMap(a => a.activities);
 
+  // Questions are made in a random order, so each activity puts them easy to hard: a child starts with the
+  // smaller numbers, shorter words and simpler sentences and builds up, instead of meeting a hard one first, an
+  // easy one next and a hard one again. Stories with questions in the order of the passage, listening work and the
+  // Year 4 times tables check (which is deliberately not ordered) and the Counting Canopy runs (a planned mix of
+  // four kinds of puzzle) keep their own order.
+  const demand = q => {
+    if (typeof q.diff === "number") return q.diff;
+    const text = String(q.prompt || q.label || "");
+    const numbers = `${text} ${q.answer == null ? "" : q.answer}`.match(/\d+(?:\.\d+)?/g) || [];
+    const size = Math.max(0, ...numbers.map(Number), q.total || 0, q.target || 0, q.count || 0);
+    return size + (q.tokens || []).length * 5 + text.length * 0.05 + String(q.answer == null ? "" : q.answer).length * 0.3;
+  };
+  const easyToHard = qs => (Array.isArray(qs) && qs.length > 3
+    ? qs.map((q, i) => [q, i]).sort((x, y) => demand(x[0]) - demand(y[0]) || x[1] - y[1]).map(x => x[0]) : qs);
+  ALL.forEach(act => {
+    if (act.passage || act.listen || act.id === "n-mtc" || /^g-canopy-run/.test(act.id) || typeof act.make !== "function") return;
+    const make = act.make;
+    act.make = () => easyToHard(make());
+  });
+
   // The Curriculum for Excellence Experiences and Outcomes each piece of work builds towards, so
   // lesson plans and the library can quote them. These are the current codes: the refreshed
   // curriculum (from August 2028) replaces them with its Know-Do-Understand model.
@@ -1728,6 +1748,7 @@ window.PopActivities = (() => {
 
   return {
     AREAS,
+    demand, // how demanding a question is: activities put their questions easy to hard by this
     // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
     alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),
     get(id) { return ALL.find(a => a.id === id) || (String(id).startsWith("dictate:") ? dictation(String(id).slice(8)) : null); },

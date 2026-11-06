@@ -36,7 +36,7 @@
       ["Cats make better pets than dogs.", "opinion"], ["There are seven days in a week.", "fact"], ["Winter is the most boring season.", "opinion"],
       ["The Sun is a star.", "fact"], ["Chocolate ice cream tastes nicer than vanilla.", "opinion"], ["A triangle has three sides.", "fact"],
       ["Everyone should learn to swim.", "opinion"], ["Penguins cannot fly.", "fact"], ["Homework is a waste of time.", "opinion"]];
-    const items = shuffle(all).slice(0, 8);
+    const items = shuffle(all).slice(0, 8).sort((a, b) => a[0].length - b[0].length); // shorter sentences first
     return {
       pupil: `${h.sheetHead("Fact or opinion?", who)}<p>A <b>fact</b> can be checked and proved. An <b>opinion</b> is what someone thinks or feels. Tick one box for each.</p>
         <table class="pp-table"><tr><th>Statement</th><th>Fact</th><th>Opinion</th></tr>${items.map(([t], i) => `<tr><td>${i + 1}. ${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
@@ -62,7 +62,7 @@
       ["my brother who is ten loves chess", "My brother, who is ten, loves chess."], ["were going to grans house on saturday", "We’re going to Gran’s house on Saturday."],
       ["mum shouted come inside now", "Mum shouted, “Come inside now!”"], ["the two girls coats were wet", "The two girls’ coats were wet."],
       ["slowly the fox crept past the hens", "Slowly, the fox crept past the hens."]];
-    const items = shuffle(all).slice(0, 7);
+    const items = shuffle(all).slice(0, 7).sort((a, b) => a[0].length - b[0].length); // shorter sentences first
     return {
       pupil: `${h.sheetHead("Commas, speech marks and apostrophes", who)}<p>Write each sentence correctly. Add capital letters, full stops, commas, speech marks and apostrophes.</p>
         ${items.map(([s], i) => `<div class="pp-q"><p><b>${i + 1}.</b> ${s}</p>${lines(2)}</div>`).join("")}`,

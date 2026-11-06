@@ -1,7 +1,7 @@
   /* ===================== Maths ===================== */
 
   add("paper-estimate", "lesson-early-estimate-then-count", "Guess, then count", "Groups of dots to estimate, then count to check.", (who, h) => {
-    const counts = shuffle([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]).slice(0, 6);
+    const counts = shuffle([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]).slice(0, 6).sort((a, b) => a - b);
     const dots = n => {
       const pts = [];
       for (let tries = 0; pts.length < n && tries < 2000; tries++) {
@@ -25,7 +25,7 @@
     const track = Array.from({ length: 20 }, (_, i) => i + 1);
     const back = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11];
     const backGaps = new Set([2, 4, 5, 8]);
-    const next = shuffle([3, 6, 9, 11, 14, 17, 19, 21, 24]).slice(0, 5);
+    const next = shuffle([3, 6, 9, 11, 14, 17, 19, 21, 24]).slice(0, 5).sort((a, b) => a - b);
     const cell = (n, hide) => `<span class="pp-num${hide ? " pp-gap" : ""}">${hide ? "" : n}</span>`;
     return {
       pupil: `${h.sheetHead("Counting to 20 and beyond", who)}
@@ -47,7 +47,7 @@
   });
 
   add("paper-sharing-halves", "lesson-early-sharing-equally-and-halves", "Sharing and halves", "Share things equally between plates, and colour half of each shape.", (who, h) => {
-    const shares = shuffle([[6, 2], [8, 2], [9, 3], [10, 2], [12, 3], [8, 4]]).slice(0, 3);
+    const shares = shuffle([[6, 2], [8, 2], [9, 3], [10, 2], [12, 3], [8, 4]]).slice(0, 3).sort((a, b) => a[0] - b[0]);
     const plates = n => svg(300, 90, Array.from({ length: n }, (_, i) => `<ellipse cx="${50 + i * (200 / Math.max(1, n - 1))}" cy="45" rx="42" ry="30" class="pp-frame"/>`).join(""));
     const things = n => svg(30 * n + 10, 30, Array.from({ length: n }, (_, i) => `<circle cx="${18 + i * 30}" cy="15" r="11" class="pp-dot pp-apple"/>`).join(""));
     const halves = [
@@ -124,7 +124,7 @@
       while (cells.size < n) { const [c, r] = pick(list); const [dc, dr] = pick([[1, 0], [-1, 0], [0, 1], [0, -1]]); const nc = c + dc, nr = r + dr;
         if (nc < 0 || nr < 0 || nc > 5 || nr > 4 || cells.has(`${nc},${nr}`)) continue; cells.add(`${nc},${nr}`); list.push([nc, nr]); }
       return list; };
-    const sizes = shuffle([5, 6, 7, 8, 9, 10, 11, 12]).slice(0, 6);
+    const sizes = shuffle([5, 6, 7, 8, 9, 10, 11, 12]).slice(0, 6).sort((a, b) => a - b);
     const s = 20;
     const shape = n => { const cells = grow(n); return svg(6 * s + 2, 5 * s + 2, gridLines(6, 5, s, 1, 1) + cells.map(([c, r]) => `<rect x="${1 + c * s}" y="${1 + r * s}" width="${s}" height="${s}" class="pp-fill"/>`).join("")); };
     return {
@@ -195,7 +195,7 @@
       () => { const c = r(2, 5), q = r(2, 8), b = r(1, 9); return [`(${q * c + b} − ${b}) ÷ ${c}`, q]; },
       () => { const a = r(4, 9), b = r(3, 9), c = r(2, 4), d = r(2, 4); return a * b > c * d ? [`${a} × ${b} − ${c} × ${d}`, a * b - c * d] : [`${c} × ${d} + ${a} × ${b}`, c * d + a * b]; },
       () => { const a = r(10, 40), b = r(2, 5), c = r(2, 5); return [`${a} − ${b} × ${c}`, a - b * c]; }];
-    const qs = shuffle(make).concat(shuffle(make)).slice(0, 10).map(f => f());
+    const qs = shuffle(make).concat(shuffle(make)).slice(0, 10).map(f => f()).sort((x, y) => x[0].length - y[0].length); // shortest, simplest first
     const brackets = [["3 + 4 × 2 = 14", "(3 + 4) × 2 = 14"], ["20 − 5 × 3 = 45", "(20 − 5) × 3 = 45"], ["6 × 5 − 2 = 18", "6 × (5 − 2) = 18"], ["12 ÷ 2 + 4 = 2", "12 ÷ (2 + 4) = 2"]];
     return {
       pupil: `${h.sheetHead("Order of operations", who)}<p>Remember: brackets first, then × and ÷, then + and −.</p>
