@@ -2128,3 +2128,12 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-mountain { fill: none; stroke: #0b2e6b; stroke-width: 3; stroke-linejoin: round; }
 .pp-mdot { fill: #fff; stroke: #0b2e6b; stroke-width: 2; }
 .pp-mnum { font: 700 12px Arial, sans-serif; fill: #0b2e6b; }
+
+/* Activity prints for younger pupils: round number badges, a drawn answer box instead of a bare line, and friendly choice buttons */
+.ws-age-young .ws-q { border-left: 0; border: 2.5px solid #ffe9a8; background: #fffdf5; border-radius: 14px; padding: 6px 12px 8px; }
+.ws-age-young .ws-q > p > b:first-child { display: inline-grid; place-items: center; width: 1.7em; height: 1.7em; margin-right: 8px; border-radius: 50%; background: #0eb5f2; color: #fff; font-size: 13pt; }
+.ws-age-young .ws-answer { margin-left: 2.4em; }
+.ws-age-young .ws-answer .ws-blank { display: block; width: 62%; height: 9mm; border: 2.5px dashed #0eb5f2; border-radius: 12px; background: #fff; }
+.ws-age-young .ws-options { margin-left: 2.4em; }
+.ws-age-young .ws-options span { padding: 3px 14px 3px 8px; border: 2.5px solid #bfe9fa; border-radius: 999px; background: #fff; }
+.ws-age-young .ws-options i { border-color: #0eb5f2; }
