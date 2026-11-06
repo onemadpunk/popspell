@@ -2146,3 +2146,12 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young > .ws-qs.ws-cols .ws-q > p { font-size: 17pt; }
 .ws-age-young > .ws-qs.ws-cols .ws-answer .ws-blank { height: 14mm; }
 .ws-age-young > .ws-qs.ws-cols:not(:has(.ws-q:nth-child(7))) { grid-auto-rows: minmax(min-content, 66mm); }
+
+/* Lesson timer: for the teacher's own screen only */
+.lesson-timer .timer-setup { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: end; margin: 8px 0 14px; }
+.lesson-timer .timer-face { text-align: center; border: 3px solid var(--line); border-radius: 22px; padding: 14px 10px 18px; margin: 6px 0 14px; background: var(--surface); }
+.lesson-timer .timer-phase { margin: 0; font-weight: 800; font-size: 1.3rem; color: var(--muted); }
+.lesson-timer .timer-time { margin: 0; font-weight: 900; font-size: clamp(4rem, 20vw, 8rem); line-height: 1.05; font-variant-numeric: tabular-nums; }
+.lesson-timer .timer-sub { margin: 0; font-size: 1.15rem; min-height: 1.5em; }
+.lesson-timer .timer-swap { border-color: #ffb400; background: #fff4cc; color: #2b2b2b; }
+.lesson-timer .timer-swap .timer-phase { color: #7a4f00; }

@@ -1465,7 +1465,8 @@
       <section class="pcard class-intro">
         <p><b>How pupils get their work:</b> on this computer, press <b>▶ Open for</b> a pupil and a new tab opens with their work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(classId))}" class="t-link" aria-label="Class link">
-          <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button></div>
+          <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button>
+          <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button></div>
       </section>
       ${everyone && (everyone.lists || []).length ? `<p class="hint">Set for <b>everyone</b> in the class: ${everyone.lists.map(l => chip("Everyone", l, true)).join(" ")}</p>` : ""}
       <form class="add-row" id="classAddPupil"><input type="text" id="classNewName" maxlength="40" aria-label="New pupil's first name" placeholder="Add a pupil: first name (and initial)" required>
@@ -1492,6 +1493,7 @@
         </article>`;
       }).join("")}</div>` : `<div class="empty">No pupils yet. Add the first one above.</div>`}`;
 
+    $("#lessonTimer").onclick = () => lessonTimerDialog(names);
     $("#copyClassLink").onclick = async e => {
       try { await navigator.clipboard.writeText(joinLink(classId)); e.target.textContent = "✓ Copied"; } catch { body.querySelector(".t-link").select(); }
     };
@@ -1525,6 +1527,84 @@
       const name = b.dataset.planLesson;
       planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body), roster.find(r => sameName(r.name, name)));
     }; });
+  }
+
+  // A lesson timer for the teacher only: it shows the time left and tells you when to swap the pair.
+  // It opens in the teacher's own tab or phone, so the child on the laptop never sees a countdown.
+  function lessonTimerDialog(names) {
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview lesson-timer";
+    const options = names.map(n => `<option>${esc(n)}</option>`).join("");
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>⏱ Lesson timer</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="plan-body">
+        <p class="hint">This is just for you: nothing here appears on a pupil's screen. Open it on your phone, or in a tab the child can't see.</p>
+        <div class="timer-setup">
+          <label>Lesson length <select data-mins><option value="20">20 minutes</option><option value="30" selected>30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label>
+          ${names.length > 1 ? `<label>Online first <select data-a>${options}</select></label><label>On paper first <select data-b>${options}</select></label>` : ""}
+          <label class="check"><input type="checkbox" data-sound checked> Soft chime when it's time to swap</label>
+        </div>
+        <div class="timer-face" data-face><p class="timer-phase" data-phase>Ready to start</p><p class="timer-time" data-time>30:00</p><p class="timer-sub" data-sub></p></div>
+        <div class="row"><button class="btn primary" type="button" data-start>▶ Start</button><button class="btn" type="button" data-pause disabled>⏸ Pause</button><button class="btn" type="button" data-reset>↺ Reset</button></div>
+      </div>`;
+    document.body.append(dialog);
+    const q = s => dialog.querySelector(s);
+    if (names.length > 1) q("[data-b]").selectedIndex = 1;
+    let total = 1800, left = 1800, last = 0, tick = null, swapped = false, shownSwapUntil = 0, wake = null;
+    const fmt = s => `${String(Math.floor(Math.max(0, s) / 60)).padStart(2, "0")}:${String(Math.max(0, Math.ceil(s) % 60)).padStart(2, "0")}`;
+    const pair = () => {
+      const a = names.length > 1 ? q("[data-a]").value : "", b = names.length > 1 ? q("[data-b]").value : "";
+      return swapped ? { online: b || "The second child", paper: a || "The first child" } : { online: a || "The first child", paper: b || "The second child" };
+    };
+    const chime = () => {
+      if (!q("[data-sound]").checked) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [660, 880].forEach((hz, i) => {
+          const o = ctx.createOscillator(), g = ctx.createGain();
+          o.type = "sine"; o.frequency.value = hz; g.gain.value = 0.08;
+          o.connect(g); g.connect(ctx.destination);
+          o.start(ctx.currentTime + i * 0.35); o.stop(ctx.currentTime + i * 0.35 + 0.3);
+        });
+      } catch { /* a chime is a nicety */ }
+    };
+    const draw = () => {
+      const p = pair(), face = q("[data-face]");
+      q("[data-time]").textContent = fmt(left);
+      const swapping = Date.now() < shownSwapUntil;
+      face.classList.toggle("timer-swap", swapping);
+      if (left <= 0) { q("[data-phase]").textContent = "Lesson finished"; q("[data-sub]").textContent = "Time for a quick word about how it went."; face.classList.remove("timer-swap"); return; }
+      q("[data-phase]").textContent = swapping ? "Time to swap" : swapped ? "Second half" : "First half";
+      q("[data-sub]").textContent = swapping ? `${p.online} moves to the laptop, ${p.paper} to the sheet.` : `${p.online} online · ${p.paper} on paper`;
+    };
+    const stop = () => {
+      clearInterval(tick); tick = null;
+      if (wake) { try { wake.release(); } catch { /* already released */ } wake = null; }
+      q("[data-pause]").disabled = true; q("[data-start]").disabled = false;
+    };
+    const step = () => {
+      const now = Date.now(); left -= (now - last) / 1000; last = now;
+      if (!swapped && left <= total / 2) { swapped = true; shownSwapUntil = now + 25000; chime(); }
+      if (left <= 0) { left = 0; stop(); chime(); }
+      draw();
+    };
+    q("[data-start]").onclick = async () => {
+      if (left <= 0) return;
+      if (!tick && left === total) { total = left = Number(q("[data-mins]").value) * 60; swapped = false; }
+      last = Date.now(); tick = setInterval(step, 500);
+      q("[data-pause]").disabled = false; q("[data-start]").disabled = true; q("[data-mins]").disabled = true;
+      try { if (navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); } catch { /* the screen may dim; that's fine */ }
+      draw();
+    };
+    q("[data-pause]").onclick = () => { stop(); q("[data-start]").textContent = "▶ Carry on"; };
+    q("[data-reset]").onclick = () => {
+      stop(); swapped = false; shownSwapUntil = 0; total = left = Number(q("[data-mins]").value) * 60;
+      q("[data-start]").textContent = "▶ Start"; q("[data-mins]").disabled = false;
+      q("[data-phase]").textContent = "Ready to start"; q("[data-sub]").textContent = ""; q("[data-time]").textContent = fmt(left); q("[data-face]").classList.remove("timer-swap");
+    };
+    q("[data-mins]").onchange = () => { if (!tick && left === total) { total = left = Number(q("[data-mins]").value) * 60; q("[data-time]").textContent = fmt(left); } };
+    q("[data-close]").onclick = () => dialog.close();
+    dialog.addEventListener("close", () => { stop(); dialog.remove(); }, { once: true });
+    dialog.showModal();
   }
 
   // What a child got wrong or needed several tries for, from their recent results (newest first)
