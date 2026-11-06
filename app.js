@@ -1799,7 +1799,7 @@
       return;
     }
     app.innerHTML = `<section class="panel forest-page"><a class="back" href="#/">← Home</a>
-      <h1>🌲 ${esc(getPupil())}'s Forest</h1><p>Play Counting Canopy to collect glow seeds. Choose what Pip builds here.</p>
+      <h1>🌲 ${esc(getPupil())}'s Forest</h1><p>Play Counting Canopy or Sound Hopper to collect glow seeds. Choose what Pip builds here.</p>
       <div id="forestCollection"></div><a class="btn primary" href="#/activity/g-canopy-run">Play Counting Canopy →</a></section>`;
     renderForestCollection($("#forestCollection"), previewMode);
     if (REPORTING && syncedFor !== getPupil())
@@ -2549,29 +2549,133 @@
     };
   }
 
-  // A separate play scene for Sound Hopper. The activity result still uses the usual
-  // teacher report, help button, personal best and class progress flow.
-  let hopperAudio = null;
-  function hopperTone(pitch) {
-    if (!settings.sounds) return; // Settings: "Play sounds for right and wrong answers"
+  /* ---------- Game feel: music, sparkles and Pip's moves, shared by Pip's games ---------- */
+  // All of it is decoration: silent when Settings turns sounds off, still when the device asks
+  // for reduced motion, and nothing in it is needed to play or to understand the feedback.
+  let gameAudio = null;
+  const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SCALE = [262, 294, 330, 392, 440, 523, 587, 659, 784, 880, 1047, 1175, 1319]; // a happy pentatonic scale
+  function gameCtx() {
+    if (!settings.sounds) return null; // Settings: "Play sounds for right and wrong answers"
     try {
       const Audio = window.AudioContext || window.webkitAudioContext;
-      if (!Audio) return;
-      hopperAudio = hopperAudio || new Audio();
-      const tone = hopperAudio.createOscillator();
-      const volume = hopperAudio.createGain();
-      tone.type = "sine";
-      tone.frequency.value = pitch;
-      volume.gain.setValueAtTime(0.001, hopperAudio.currentTime);
-      volume.gain.exponentialRampToValueAtTime(0.11, hopperAudio.currentTime + 0.015);
-      volume.gain.exponentialRampToValueAtTime(0.001, hopperAudio.currentTime + 0.16);
-      tone.connect(volume).connect(hopperAudio.destination);
-      tone.start();
-      tone.stop(hopperAudio.currentTime + 0.17);
-      navigator.vibrate?.(12);
-    } catch { /* sound and haptics are optional */ }
+      if (!Audio) return null;
+      gameAudio = gameAudio || new Audio();
+      if (gameAudio.state === "suspended") gameAudio.resume();
+      return gameAudio;
+    } catch { return null; }
+  }
+  // A soft wooden pluck, like a marimba bar
+  function pluck(freq, delay = 0, volume = 0.16, length = 0.4) {
+    const ctx = gameCtx();
+    if (!ctx) return;
+    try {
+      const t = ctx.currentTime + delay;
+      const out = ctx.createGain();
+      out.gain.setValueAtTime(0.0001, t);
+      out.gain.exponentialRampToValueAtTime(volume, t + 0.008);
+      out.gain.exponentialRampToValueAtTime(0.0001, t + length);
+      out.connect(ctx.destination);
+      for (const [mult, type, level] of [[1, "triangle", 1], [4, "sine", 0.18]]) {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq * mult;
+        gain.gain.value = level;
+        osc.connect(gain).connect(out);
+        osc.start(t);
+        osc.stop(t + length + 0.05);
+      }
+    } catch { /* sound is optional */ }
+  }
+  const fx = {
+    note: step => pluck(SCALE[Math.max(0, Math.min(SCALE.length - 1, step))]),
+    tune: (steps, gap = 0.1) => steps.forEach((s, i) => pluck(SCALE[s], i * gap, 0.15, 0.5)),
+    // Gentle and low, never a buzzer
+    oops: () => { pluck(220, 0, 0.1, 0.25); pluck(185, 0.11, 0.09, 0.35); },
+    win: () => fx.tune([5, 7, 9, 12, 9, 12], 0.09),
+    splash() {
+      const ctx = gameCtx();
+      if (!ctx) return;
+      try {
+        const length = Math.floor(ctx.sampleRate * 0.28);
+        const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+        const source = ctx.createBufferSource(), filter = ctx.createBiquadFilter(), gain = ctx.createGain();
+        source.buffer = buffer;
+        filter.type = "bandpass";
+        filter.frequency.value = 1100;
+        gain.gain.value = 0.22;
+        source.connect(filter).connect(gain).connect(ctx.destination);
+        source.start();
+      } catch { /* sound is optional */ }
+    },
+    buzz: () => { try { navigator.vibrate?.(12); } catch { /* haptics are optional */ } },
+    // Restart a one-off CSS animation on an element
+    pop(el, name = "fx-pop") {
+      if (!el) return;
+      el.classList.remove(name);
+      void el.offsetWidth;
+      el.classList.add(name);
+    },
+    // A shower of sparkles from a point inside host (which must be position: relative)
+    burst(host, x, y, count = 16, chars = ["✦", "★", "♪", "✧", "♫"]) {
+      if (!host || calm()) return;
+      const colours = ["#ffd23f", "#ff4f9a", "#3fc5f0", "#7ed957", "#b28dff"];
+      for (let i = 0; i < count; i++) {
+        const spark = document.createElement("span");
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.5;
+        const reach = 55 + Math.random() * 75;
+        spark.className = "fx-spark";
+        spark.setAttribute("aria-hidden", "true");
+        spark.textContent = chars[i % chars.length];
+        spark.style.cssText = `left:${x}px;top:${y}px;color:${colours[i % colours.length]};`
+          + `--dx:${Math.round(Math.cos(angle) * reach)}px;--dy:${Math.round(Math.sin(angle) * reach - 35)}px;--spin:${Math.round(Math.random() * 360 - 180)}deg`;
+        host.appendChild(spark);
+        setTimeout(() => spark.remove(), 1000);
+      }
+    },
+    // A star (or seed) that flies from one element into another, for the counter in the corner
+    fly(from, to, text, done) {
+      if (!from || !to || calm()) return done && done();
+      const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+      const star = document.createElement("span");
+      star.className = "fx-fly";
+      star.setAttribute("aria-hidden", "true");
+      star.textContent = text;
+      star.style.cssText = `left:${a.left + a.width / 2}px;top:${a.top + a.height / 3}px;`
+        + `--dx:${Math.round(b.left + b.width / 2 - a.left - a.width / 2)}px;--dy:${Math.round(b.top + b.height / 2 - a.top - a.height / 3)}px`;
+      document.body.appendChild(star);
+      setTimeout(() => { star.remove(); if (done) done(); }, 750);
+    }
+  };
+  // Sound Switch and Counting Canopy's taps, now in the same wooden voice
+  function hopperTone(pitch) {
+    pluck(pitch * 1.4, 0, pitch < 260 ? 0.1 : 0.15, 0.3);
+    fx.buzz();
   }
 
+  // Glow seeds for Pip's Forest, from any of Pip's games. One entry per game played, so saved
+  // progress stays small; placement games, teacher previews and quick trials earn none.
+  function awardGameSeeds(s, count, kind = "canopy") {
+    if (s.preview || TRIAL_MODE || isAssessment(s.activity?.id)) return false;
+    s.forestRunId ||= `${kind}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    saveForestState(FOREST.award(forestState(), s.forestRunId, Math.min(20, count)));
+    return true;
+  }
+
+  // Sound Hopper: count the sounds, build the bridge plank by plank, and Pip hops across.
+  // Every river looks a little different, Pip walks the bridge as it grows, perfect bridges
+  // in a row make a streak, and each crossing grows a glow seed for Pip's Forest.
+  // The activity result still uses the usual teacher report, help button and personal best.
+  const HOPPER_MOODS = [
+    { sky: "morning", critter: "🐟", line: "Help Pip cross!" },
+    { sky: "day", critter: "🦆", line: "Another river to cross!" },
+    { sky: "breezy", critter: "🐸", line: "Hop, hop, hooray! Next river!" },
+    { sky: "sunset", critter: "🐢", line: "The sun is going down. Keep going!" },
+    { sky: "night", critter: "🦉", line: "Night river! Listen carefully." },
+    { sky: "rainbow", critter: "🐬", line: "The last river! Treasure ahead!" }
+  ];
   function showSoundHopper(q) {
     const act = session.activity;
     const wrong = [];
@@ -2581,23 +2685,35 @@
     let beats = 0;
     let active = 0;
     let finished = false;
+    const isLast = session.i === session.items.length - 1;
+    const mood = isLast ? HOPPER_MOODS[5] : HOPPER_MOODS[session.i % 5];
+    const seedsSoFar = session.results.length + (session.bonusSeeds || 0);
+    const streak = session.hopStreak || 0;
+    const counts = !session.preview && !TRIAL_MODE && !isAssessment(act.id);
     app.innerHTML = `
       <section class="panel practice activity hopper" style="--accent:${esc(act.colour)}">
         ${progressHTML()}
         <div class="game-trail" aria-label="River crossings">${session.items.map((_, i) =>
-          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Crossing ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i + 1}</span>`).join("")}</div>
-        <div class="hopper-scene" id="hopperScene" aria-label="Help Pip cross the musical river">
+          `<span class="trail-stone ${i < session.i ? "done" : i === session.i ? "current" : ""}" aria-label="Crossing ${i + 1}${i < session.i ? " complete" : i === session.i ? " current" : ""}">${i < session.i ? "✓" : i === session.items.length - 1 ? "🎁" : i + 1}</span>`).join("")}</div>
+        <div class="hopper-scene sky-${mood.sky}" id="hopperScene" aria-label="Help Pip cross the musical river">
+          <span class="hopper-sun" aria-hidden="true"></span>
+          ${mood.sky === "night" ? `<span class="hopper-night-stars" aria-hidden="true">✦ · ✧ · ✦ · ✧</span>` : ""}
           <div class="hopper-wave" id="hopperWave" aria-hidden="true"><span></span><span></span><span></span></div>
           <div class="hopper-river" aria-hidden="true">♪ &nbsp; ♫ &nbsp; ♪ &nbsp; ♫</div>
+          <span class="hopper-critter" id="hopperCritter" aria-hidden="true">${mood.critter}</span>
+          <div class="hopper-stones" id="hopperStones" aria-hidden="true"></div>
           <div class="hopper-bank left" aria-hidden="true"></div><div class="hopper-bank right" aria-hidden="true"></div>
-          <div class="hopper-bridge" aria-hidden="true">${q.tokens.map((_, i) => `<span class="bridge-plank" data-plank="${i}"></span>`).join("")}</div>
+          <span class="hopper-goal" id="hopperGoal" aria-hidden="true">${isLast ? "🎁" : "🌼"}</span>
+          <div class="hopper-bridge" id="hopperBridge" aria-hidden="true">${q.tokens.map((_, i) => `<span class="bridge-plank" data-plank="${i}"></span>`).join("")}</div>
           <img class="hopper-creature" id="hopperCreature" src="assets/brand/pip-hop-small.webp"
             alt="Pip, the sound hopper" width="88" height="88">
+          ${counts ? `<span class="hopper-seeds" id="hopperSeeds" aria-label="${seedsSoFar} glow seeds this game">✨ <b>${seedsSoFar}</b></span>` : ""}
+          ${streak >= 2 ? `<span class="hopper-streak" id="hopperStreak">🎵 ${streak} perfect in a row</span>` : `<span class="hopper-streak" id="hopperStreak" hidden></span>`}
           <div class="hopper-reward" id="hopperReward" aria-live="polite"></div>
         </div>
-        <h1 class="hopper-title">${session.i === 0 ? "Help Pip cross!" : "Another river to cross!"}</h1>
+        <h1 class="hopper-title">${mood.line}</h1>
         <div class="hopper-head">
-          <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap once for every sound you hear.</p>
+          <p class="hopper-instruction" id="hopperInstruction">Listen to the word. Tap the drum once for every sound you hear.</p>
           <button type="button" class="btn small" id="hearQ">🔊 Hear it again</button>
         </div>
         <div class="hopper-beats" id="beatPhase">
@@ -2621,8 +2737,11 @@
     window.scrollTo(0, 0);
     wireStop();
     const scene = $("#hopperScene");
+    const pip = $("#hopperCreature");
+    const stones = $("#hopperStones");
     const feedback = $("#feedback");
     const slots = [...app.querySelectorAll(".map-slot")];
+    const planks = [...app.querySelectorAll(".bridge-plank")];
     const sayAgain = () => {
       const wave = $("#hopperWave");
       wave.classList.remove("pulse");
@@ -2632,17 +2751,35 @@
     };
     $("#hearQ").onclick = sayAgain;
     sayAgain();
+    // Pip hops to a spot in the scene: a plank's middle, or the far bank
+    const hopTo = (left, up) => {
+      pip.style.left = `${Math.round(left)}px`;
+      pip.style.bottom = up == null ? "" : `${Math.round(up)}px`;
+      fx.pop(pip, "fx-hop");
+    };
+    const critterJump = () => fx.pop($("#hopperCritter"), "jump");
 
+    // Beats: each tap drops a stepping stone in the river, a note higher each time
     const renderBeats = () => {
       $("#beatDots").textContent = beats ? "● ".repeat(beats).trim() : "No sounds yet";
       $("#beatUndo").disabled = beats === 0;
       $("#beatCheck").disabled = beats === 0;
+      const have = stones.children.length;
+      for (let i = have; i < beats; i++) {
+        const stone = document.createElement("i");
+        stone.style.left = `${27 + i * 7}%`;
+        stones.appendChild(stone);
+      }
+      for (let i = have; i > beats; i--) stones.lastElementChild?.remove();
     };
     $("#beatPad").onclick = () => {
       if (beats >= 8) return;
       beats++;
-      hopperTone(240 + beats * 45);
+      fx.note(beats + 1);
+      fx.buzz();
+      fx.pop($("#beatPad"), "hit");
       renderBeats();
+      fx.pop(stones.lastElementChild, "plop");
     };
     $("#beatUndo").onclick = () => { beats = Math.max(0, beats - 1); renderBeats(); };
     $("#beatCheck").onclick = () => {
@@ -2651,21 +2788,27 @@
         missed.add("segmenting sounds");
         feedback.className = "feedback oops";
         feedback.textContent = `You tapped ${beats}. Listen once more and tap once for each sound.`;
-        beats = 0;
-        renderBeats();
-        hopperTone(190);
+        [...stones.children].forEach(stone => stone.classList.add("sink"));
+        later(() => { beats = 0; renderBeats(); }, calm() ? 0 : 500);
+        $("#beatUndo").disabled = $("#beatCheck").disabled = true;
+        fx.oops();
+        critterJump();
         sayAgain();
         return;
       }
-      hopperTone(540);
-      $("#beatPhase").hidden = true;
-      $("#mapPhase").hidden = false;
-      scene.classList.add("mapping");
-      $("#hopperInstruction").textContent = `${beats} sounds! Now choose the letters for each one.`;
+      fx.tune([4, 6, 8]);
+      [...stones.children].forEach(stone => stone.classList.add("glow"));
+      later(() => {
+        stones.innerHTML = "";
+        $("#beatPhase").hidden = true;
+        $("#mapPhase").hidden = false;
+        scene.classList.add("mapping");
+        $("#hopperInstruction").textContent = `${beats} sounds! Now choose the letters for each one.`;
+        renderChoices();
+        slots[0].focus();
+      }, calm() ? 0 : 450);
       feedback.className = "feedback good";
       feedback.textContent = "Great listening. Build Pip's bridge!";
-      renderChoices();
-      slots[0].focus();
     };
 
     const renderChoices = () => {
@@ -2675,16 +2818,26 @@
         slot.disabled = locked.has(i);
         slot.setAttribute("aria-label", `Sound ${i + 1}${locked.has(i) ? `, ${label(q.tokens[i])}, correct` : ", empty"}`);
       });
+      planks.forEach((plank, i) => plank.classList.toggle("next", i === active && !locked.has(i)));
       const choices = q.optionsBySlot[active] || [];
       $("#mapChoices").innerHTML = choices.map((token, i) =>
         `<button type="button" class="map-choice" data-choice="${i}" draggable="true" ${rejected[active].has(token) ? "disabled" : ""}>${esc(label(token))}</button>`).join("");
       app.querySelectorAll(".map-choice").forEach(button => {
         const token = choices[Number(button.dataset.choice)];
-        button.onclick = () => chooseTile(token);
+        button.onclick = () => chooseTile(token, button);
         button.ondragstart = event => event.dataTransfer.setData("text/plain", token);
       });
     };
-    const chooseTile = token => {
+    // Pip walks out along the bridge as far as it is built from the near bank
+    const walkBridge = () => {
+      let reach = -1;
+      while (locked.has(reach + 1)) reach++;
+      if (reach < 0) return;
+      const plank = planks[reach], bridge = $("#hopperBridge");
+      hopTo(bridge.offsetLeft + plank.offsetLeft + plank.offsetWidth / 2 - pip.offsetWidth / 2,
+        scene.offsetHeight - bridge.offsetTop - bridge.offsetHeight + plank.offsetHeight - 4);
+    };
+    const chooseTile = (token, button) => {
       if (finished || locked.has(active) || rejected[active].has(token) || !q.optionsBySlot[active].includes(token)) return;
       if (token !== q.tokens[active]) {
         if (wrong.length < 6) wrong.push(`sound ${active + 1}: ${label(token)}`);
@@ -2692,17 +2845,25 @@
         rejected[active].add(token);
         feedback.className = "feedback oops";
         feedback.textContent = `That tile doesn't write sound ${active + 1} in this word. Listen and try another.`;
-        hopperTone(190);
-        renderChoices();
+        fx.oops();
+        fx.pop(button, "shake");
+        fx.pop(planks[active], "shake");
+        critterJump();
+        later(renderChoices, calm() ? 0 : 380);
         return;
       }
       locked.add(active);
       const slot = slots[active];
       slot.querySelector(".map-value").textContent = label(token);
-      const plank = app.querySelector(`[data-plank="${active}"]`);
+      fx.pop(slot, "fx-pop");
+      const plank = planks[active];
       plank.textContent = label(token);
       plank.classList.add("built", token.includes("_") || /[aeiou]/.test(token) ? "vowel" : token.length > 1 ? "digraph" : "consonant");
-      hopperTone(390 + locked.size * 65);
+      fx.pop(plank, "drop");
+      fx.note(3 + locked.size * 2);
+      fx.splash();
+      fx.burst(scene, $("#hopperBridge").offsetLeft + plank.offsetLeft + plank.offsetWidth / 2, $("#hopperBridge").offsetTop, 6, ["✦", "✧"]);
+      walkBridge();
       feedback.className = "feedback good";
       feedback.textContent = token.length > 1 ? `${label(token)} writes one sound. The bridge is growing!` : "That sound is mapped. Keep building!";
       if (locked.size === q.tokens.length) return finishHopper();
@@ -2722,28 +2883,69 @@
     function finishHopper() {
       if (finished) return;
       finished = true;
-      const earned = wrong.length ? 1 : 2;
+      const perfect = !wrong.length;
+      const earned = perfect ? 2 : 1;
       session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned, missed: [...missed] });
       if (!session.preview) countGo();
-      livePing(session, "word", { word: q.label, ok: !wrong.length });
+      livePing(session, "word", { word: q.label, ok: perfect });
+      // A streak of perfect bridges; every third one in a row grows a bonus seed
+      session.hopStreak = perfect ? (session.hopStreak || 0) + 1 : 0;
+      const bonus = perfect && session.hopStreak % 3 === 0;
+      if (bonus) session.bonusSeeds = (session.bonusSeeds || 0) + 1;
+      const seeds = session.results.length + (session.bonusSeeds || 0);
+      const saved = awardGameSeeds(session, seeds, "hopper");
       scene.classList.add("crossed");
-      $("#hopperCreature").src = "assets/brand/pip-celebrate-small.webp";
-      $("#hopperReward").textContent = wrong.length ? "♪ Bridge built!" : "✨ 💎 Perfect bridge!";
+      app.querySelectorAll(".map-slot, .map-choice").forEach(el => { el.disabled = true; });
+      later(() => {
+        pip.src = "assets/brand/pip-celebrate-small.webp";
+        hopTo(scene.offsetWidth - pip.offsetWidth - scene.offsetWidth * 0.04, null);
+        fx.win();
+        later(() => {
+          fx.burst(scene, scene.offsetWidth * 0.85, scene.offsetHeight * 0.45, perfect ? 22 : 14);
+          fx.pop($("#hopperGoal"), "open");
+          if (isLast) fx.burst(scene, scene.offsetWidth * 0.88, scene.offsetHeight * 0.6, 18, ["💎", "⭐", "✨", "🌟"]);
+        }, calm() ? 0 : 380);
+      }, calm() ? 0 : 260);
+      $("#hopperReward").textContent = bonus ? "🎵 Three perfect! Bonus seed!" : perfect ? "✨ 💎 Perfect bridge!" : "♪ Bridge built!";
+      fx.pop($("#hopperReward"), "fx-pop");
+      const streakBadge = $("#hopperStreak");
+      if (session.hopStreak >= 2) {
+        streakBadge.hidden = false;
+        streakBadge.textContent = `🎵 ${session.hopStreak} perfect in a row`;
+        fx.pop(streakBadge, "fx-pop");
+      } else streakBadge.hidden = true;
+      // Stars fly to the counter in the corner; the glow seed lands in the scene's seed jar
+      const counter = app.querySelector(".progress .earned");
+      later(() => fx.fly(pip, counter, "★", () => {
+        if (!counter) return;
+        const total = session.results.reduce((t, r) => t + r.stars, 0);
+        counter.textContent = `★ ${total}`;
+        counter.setAttribute("aria-label", `${total} stars`);
+        fx.pop(counter, "fx-pop");
+      }), calm() ? 0 : 900);
+      const jar = $("#hopperSeeds");
+      if (saved && jar) later(() => fx.fly(pip, jar, "✨", () => {
+        jar.querySelector("b").textContent = seeds;
+        jar.setAttribute("aria-label", `${seeds} glow seeds this game`);
+        fx.pop(jar, "fx-pop");
+      }), calm() ? 0 : 1100);
+      const stone = app.querySelector(".trail-stone.current");
+      if (stone) { stone.classList.add("done"); stone.textContent = "✓"; fx.pop(stone, "fx-pop"); }
       feedback.className = "feedback good";
       feedback.innerHTML = `You built <b>${esc(q.answer)}</b> — ${q.tokens.map(t => `<span class="chip">${esc(label(t))}</span>`).join("")} <span class="stars-inline">${stars(earned)}</span>`;
-      chimeRight();
-      app.querySelectorAll(".map-slot, .map-choice").forEach(el => { el.disabled = true; });
       const next = document.createElement("div");
       next.className = "row center";
-      const isLast = session.i === session.items.length - 1;
-      next.innerHTML = `<button class="btn big primary" id="nextQ">${isLast ? "See my stars 🏆" : "Next river →"}</button>`;
+      next.innerHTML = `<button class="btn big primary${isLast || calm() ? "" : " auto-next"}" id="nextQ">${isLast ? "Open the treasure 🎁" : "Next river →"}</button>`;
       feedback.after(next);
-      $("#nextQ").focus();
-      $("#nextQ").onclick = () => {
+      const nextButton = $("#nextQ");
+      nextButton.focus();
+      nextButton.onclick = () => {
         if (isLast) return showActivitySummary();
         session.i++;
         showQuestion();
       };
+      // Keep the game moving: the next river comes along by itself after a short celebration
+      if (!isLast && !calm()) later(() => { if (app.contains(nextButton)) nextButton.click(); }, 4200);
     }
   }
 
@@ -3119,6 +3321,8 @@
     const trialNote = saveTrialResult(session);
     const canopy = String(act.id || "").startsWith("g-canopy-");
     const glowEarned = canopy ? r.length : 0;
+    const hopper = String(act.id || "").startsWith("g-hopper-") && !isAssessment(act.id);
+    const hopperSeeds = r.length + (session.bonusSeeds || 0);
     const bestNotes = personalBests(session, firstGo, r.length);
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
@@ -3133,6 +3337,11 @@
           <p>${session.preview ? "Teacher preview: no glow seeds are saved." : `You collected ${glowEarned} glow seeds to build Pip's Forest!`}</p></div>
           <div id="forestCollection"></div>
           ${session.preview ? "" : `<p><a class="btn small" href="#/forest">Visit my forest →</a></p>`}` : ""}
+        ${hopper ? `<div class="canopy-victory hopper-victory" role="status">
+          <span aria-hidden="true">🎁 💎 🎁</span><h2>River Champion!</h2>
+          <p>Pip crossed ${r.length} musical rivers on bridges you built, and found the treasure!</p>
+          <p>${session.preview || TRIAL_MODE ? "Practice run: no glow seeds are saved." : `You grew ${hopperSeeds} glow seeds for Pip's Forest!`}</p></div>
+          ${session.preview || TRIAL_MODE ? "" : `<div id="forestCollection"></div><p><a class="btn small" href="#/forest">Visit my forest →</a></p>`}` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${bestsHTML(bestNotes)}
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
@@ -3148,7 +3357,8 @@
             : `<button class="btn primary" id="againAct">Have another go</button><a class="btn" href="#/">Choose something else</a>`}
         </div>
       </section>`;
-    if (canopy) renderForestCollection($("#forestCollection"), session.preview);
+    if (canopy || (hopper && $("#forestCollection"))) renderForestCollection($("#forestCollection"), session.preview);
+    if (hopper && !calm()) { fx.win(); setTimeout(() => fx.burst(app.querySelector(".hopper-victory"), 160, 30, 24, ["💎", "⭐", "✨", "🎵"]), 300); }
     sayPhrase(right === r.length ? PHRASES.allDone : PHRASES.finished);
     livePing(session, "end");
     session.ended = true;

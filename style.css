@@ -467,15 +467,12 @@ button.box { cursor: pointer; }
 .bridge-plank.consonant { background: #ffe36b; }
 .hopper-creature { position: absolute; left: 7%; bottom: 56px; z-index: 4; width: 92px; height: 92px;
   object-fit: contain; filter: drop-shadow(0 7px 3px rgba(9, 45, 83, .2)); animation: hopper-bob 1s ease-in-out infinite alternate; }
-.hopper-scene.crossed .hopper-creature { animation: hopper-cross 1.3s ease-in-out forwards; }
 .hopper-reward { position: absolute; right: 7%; top: 25px; z-index: 5; font-size: 1.5rem; font-weight: 900; color: #173665; }
 .hopper-wave { position: absolute; left: 15%; top: 25px; display: flex; align-items: center; gap: 5px; height: 35px; }
 .hopper-wave span { width: 6px; height: 12px; border-radius: 99px; background: #145b9d; }
 .hopper-wave.pulse span { animation: hopper-wave .55s ease-in-out 3 alternate; }
 .hopper-wave.pulse span:nth-child(2) { animation-delay: .12s; }.hopper-wave.pulse span:nth-child(3) { animation-delay: .24s; }
 @keyframes hopper-bob { to { transform: translateY(-6px); } }
-@keyframes hopper-cross { 0% { left: 8%; transform: translateY(0); } 35% { left: 39%; transform: translateY(-55px); }
-  70% { left: 66%; transform: translateY(-30px); } 100% { left: calc(100% - 96px); transform: translateY(0); } }
 @keyframes hopper-wave { to { height: 33px; background: #ff4081; } }
 .hopper-beats { margin: 16px auto 0; }
 .beat-pad { width: 136px; height: 136px; border-radius: 50%; border: 6px solid #173665; background: linear-gradient(145deg, #ff8fc1, #ff4081);
@@ -500,6 +497,74 @@ button.box { cursor: pointer; }
   font-weight: 800; cursor: pointer; }
 .map-choice:hover, .map-choice.chosen { border-color: var(--accent); background: #effaff; }
 .map-slot:focus-visible, .map-choice:focus-visible { outline: 4px solid var(--primary); outline-offset: 3px; }
+
+/* Sound Hopper's game feel: a different sky for each river, stepping stones for each beat,
+   planks that drop into place, Pip walking out along the bridge, a streak and a seed jar */
+.hopper-scene.sky-morning { background: linear-gradient(#ffe7c4, #f6fdff 62%, #76d1d5 63%); }
+.hopper-scene.sky-day { background: linear-gradient(#bdefff, #f2feff 62%, #76d1d5 63%); }
+.hopper-scene.sky-breezy { background: linear-gradient(#c8f2e4, #f4fff9 62%, #76d1d5 63%); }
+.hopper-scene.sky-sunset { background: linear-gradient(#ffb48a, #ffe1b8 62%, #4fb6c4 63%); }
+.hopper-scene.sky-night { background: linear-gradient(#24346e, #4b5aa0 62%, #2c7f9b 63%); }
+.hopper-scene.sky-rainbow { background: linear-gradient(#ffd6f0, #d9f1ff 35%, #f4fff0 62%, #76d1d5 63%); }
+.hopper-scene.sky-night .hopper-river { background: repeating-linear-gradient(170deg, #1a6f8d 0 18px, #23809e 18px 35px); }
+.hopper-scene.sky-night .hopper-reward { color: #fff; }
+.hopper-scene.sky-night .hopper-wave span { background: #ffe680; }
+.hopper-sun { position: absolute; right: 22%; top: 14px; width: 56px; height: 56px; border-radius: 50%; background: #fff2a0;
+  box-shadow: 0 0 0 10px rgba(255, 242, 160, .35); }
+.sky-sunset .hopper-sun { top: 52%; background: #ffcf6b; box-shadow: 0 0 0 14px rgba(255, 170, 90, .35); }
+.sky-night .hopper-sun { background: #f4f1d0; box-shadow: inset -14px -6px 0 #c9c4a0; }
+.sky-rainbow .hopper-sun { width: 180px; height: 90px; top: 30px; right: 30%; border-radius: 180px 180px 0 0; background: none;
+  box-shadow: inset 0 8px 0 #ff6b8b, inset 0 16px 0 #ffb347, inset 0 24px 0 #ffe066, inset 0 32px 0 #7ed957, inset 0 40px 0 #5ab8ff; opacity: .7; }
+.hopper-night-stars { position: absolute; left: 26%; top: 58px; color: #fff7c2; letter-spacing: .6em; font-size: 1.1rem;
+  animation: twinkle 1.6s ease-in-out infinite alternate; }
+@keyframes twinkle { to { opacity: .45; } }
+.hopper-critter { position: absolute; bottom: 10px; left: 30%; z-index: 1; font-size: 1.7rem; animation: critter-swim 9s ease-in-out infinite alternate; }
+.hopper-critter.jump { animation: critter-jump .7s ease-out, critter-swim 9s ease-in-out infinite alternate; }
+@keyframes critter-swim { to { transform: translateX(160px); } }
+@keyframes critter-jump { 45% { translate: 0 -46px; rotate: -20deg; } }
+.hopper-stones { position: absolute; inset: auto 0 18px 0; height: 30px; z-index: 2; }
+.hopper-stones i { position: absolute; bottom: 0; width: 46px; height: 22px; margin-left: -23px; border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 35%, #f3f6f8, #9fb3bf); box-shadow: 0 3px 0 #6c8594; transition: transform .45s, opacity .45s; }
+.hopper-stones i.plop { animation: stone-plop .35s ease-out; }
+.hopper-stones i.glow { background: radial-gradient(ellipse at 40% 35%, #fffbe0, #ffd23f); box-shadow: 0 0 14px #ffe680, 0 3px 0 #c99a20; }
+.hopper-stones i.sink { transform: translateY(26px); opacity: 0; }
+@keyframes stone-plop { 0% { transform: translateY(-40px) scale(.6); } 70% { transform: translateY(3px) scale(1.12, .85); } 100% { transform: none; } }
+.hopper-goal { position: absolute; right: 5%; bottom: 84px; z-index: 3; font-size: 2rem; }
+.hopper-goal.open { animation: goal-open .7s ease-out; }
+@keyframes goal-open { 40% { transform: scale(1.5) rotate(-12deg); } 100% { transform: scale(1.15); } }
+.bridge-plank.next { border-color: #fff; background: rgba(255, 255, 255, .6); animation: plank-wait 1s ease-in-out infinite alternate; }
+@keyframes plank-wait { to { background: rgba(255, 255, 255, .25); } }
+.bridge-plank.drop { animation: plank-drop .42s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes plank-drop { 0% { transform: translateY(-70px) rotate(-8deg); opacity: .3; } 100% { transform: none; opacity: 1; } }
+.shake { animation: shake .36s ease-in-out; }
+@keyframes shake { 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+.hopper-scene .hopper-creature { transition: left .34s ease-out, bottom .34s ease-out; }
+.hopper-scene .hopper-creature.fx-hop { animation: hopper-bob 1s ease-in-out infinite alternate, pip-hop .4s ease-out; }
+@keyframes pip-hop { 0% { scale: 1.08 .9; } 45% { translate: 0 -40px; scale: .94 1.08; } 85% { translate: 0 0; scale: 1.1 .9; } 100% { scale: 1; } }
+.hopper-scene.crossed .hopper-creature { animation: hopper-bob 1s ease-in-out infinite alternate, pip-hop .4s ease-out; }
+.beat-pad.hit { animation: pad-hit .18s ease-out; }
+@keyframes pad-hit { 50% { transform: scale(.9); } }
+.hopper-seeds { position: absolute; left: 12px; top: 10px; z-index: 5; padding: 3px 11px; border: 2px solid #e2b23a; border-radius: 99px;
+  background: #fff7d1; color: #6b4b00; font-weight: 900; font-size: .95rem; }
+.hopper-streak { position: absolute; right: 12px; top: 10px; z-index: 5; padding: 3px 11px; border-radius: 99px;
+  background: #ff4f9a; color: #fff; font-weight: 900; font-size: .9rem; box-shadow: 0 3px 0 #b51d63; }
+.hopper-streak[hidden] { display: none; }
+.hopper-victory { border-color: #3fc5f0; background: linear-gradient(#f1fbff, #fff8e1); position: relative; overflow: visible; }
+.btn.auto-next { background-image: linear-gradient(90deg, rgba(255, 255, 255, .28) 50%, transparent 50%);
+  background-size: 200% 100%; background-position: 100% 0; animation: auto-next 4.2s linear forwards; }
+@keyframes auto-next { to { background-position: 0 0; } }
+
+/* Shared by Pip's games: sparkles, a pop, and a star that flies to the counter */
+.fx-spark { position: absolute; z-index: 9; pointer-events: none; font-size: 1.2rem; font-weight: 900;
+  animation: fx-spark .9s ease-out forwards; }
+@keyframes fx-spark { 0% { transform: translate(-50%, -50%) scale(.4); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--spin)) scale(1.1); opacity: 0; } }
+.fx-pop { animation: fx-pop .38s ease-out; }
+@keyframes fx-pop { 45% { transform: scale(1.22); } }
+.hopper .hopper-reward.fx-pop { animation: none; }
+.fx-fly { position: fixed; z-index: 99; pointer-events: none; font-size: 1.8rem; color: #ffbf1f; text-shadow: 0 2px 0 #9b6a00;
+  transform: translate(-50%, -50%); animation: fx-fly .75s cubic-bezier(.5, -.4, .7, 1) forwards; }
+@keyframes fx-fly { to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(.6); opacity: .7; } }
 
 /* Sound Hopper fits one screen: no site bar or footer, the stones are the progress bar,
    a river sized to the screen, and the drum with its buttons side by side */
@@ -536,16 +601,19 @@ body.playing-game .wrap { padding-top: 8px; padding-bottom: 8px; }
   .bridge-plank.built { height: 36px; }
   /* Pip waits on the bank, clear of the first plank, however narrow the screen */
   .hopper-creature { width: 66px; height: 66px; bottom: 40px; left: max(2px, calc(21% - 66px)); }
-  .hopper-wave { top: 14px; }
+  .hopper-wave { top: 14px; left: 30%; }
+  .hopper-night-stars { top: 36px; font-size: .9rem; }
   .hopper .hopper-reward { top: 4px; font-size: 1.2rem; }
   .beat-pad { width: 108px; height: 108px; font-size: 2rem; box-shadow: 0 6px 0 #9c1f56; }
   .map-slot { min-height: 64px; min-width: 62px; }
   .map-choice { min-height: 50px; }
-  /* a lower hop, so Pip stays inside the shorter scene */
-  .hopper-scene.crossed .hopper-creature { animation-name: hopper-cross-low; }
+  .hopper-goal { bottom: 58px; font-size: 1.5rem; }
+  .hopper-sun { width: 40px; height: 40px; top: 10px; }
+  .hopper-stones { bottom: 10px; }
+  .hopper-stones i { width: 36px; height: 17px; margin-left: -18px; }
+  .hopper-critter { font-size: 1.3rem; bottom: 4px; }
+  .hopper-seeds, .hopper-streak { top: 6px; font-size: .8rem; }
 }
-@keyframes hopper-cross-low { 0% { left: max(2px, calc(21% - 66px)); transform: translateY(0); } 35% { left: 39%; transform: translateY(-34px); }
-  70% { left: 66%; transform: translateY(-18px); } 100% { left: calc(100% - 70px); transform: translateY(0); } }
 @media (max-height: 640px) {
   .hopper-scene { height: 118px; }
   .hopper .hopper-title { display: none; }
