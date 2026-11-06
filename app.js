@@ -398,6 +398,7 @@
   // The pupil is remembered per tab as well as per device, so two tabs on one laptop (one child each)
   // never swap names: the last tab opened used to decide who every tab was working as.
   const TAB_PUPIL_KEY = "popspell-tab-pupil-v1";
+  const START_LESSON_KEY = "popspell-start-lesson-v1";
   const PUPIL_TAB_KEY = "popspell-pupil-tab-v1";
   const pupilTab = () => { try { return sessionStorage.getItem(PUPIL_TAB_KEY) === "1"; } catch { return false; } };
   const getPupil = () => {
@@ -1049,7 +1050,11 @@
       }, { stage: "Your teacher's list", accent: "#0f766e" }));
     }
     // A class link (#/join/CODE or #/join/CODE?pupil=Ava) puts this device in the class; personal links use #/p/CODE.
-    else if (parts[0] === "join") joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), then);
+    else if (parts[0] === "join") {
+      // The Class page's Start lesson button adds start=1: go straight to the first work set, once, in this tab
+      if (params.get("start") === "1") { try { sessionStorage.setItem(START_LESSON_KEY, "1"); } catch { /* private mode */ } }
+      joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), then);
+    }
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
     else if (parts[0] === "teacher") showTeacherArea(decodeURIComponent(parts[1] || ""));
@@ -1529,6 +1534,14 @@
           : "There's no new work set for you today. Practise your review words, or ask your teacher.";
       }
       if (!lists.length) return;
+      // Opened with Start lesson: step straight into the first work set (only once in this tab)
+      try {
+        if (sessionStorage.getItem(START_LESSON_KEY) === "1") {
+          sessionStorage.removeItem(START_LESSON_KEY);
+          const first = String(lists[0].href || "");
+          if (first.includes("#")) { location.hash = first.slice(first.indexOf("#")); return; }
+        }
+      } catch { /* private mode */ }
       say(setLine(lists.length));
       const section = document.createElement("section");
       section.className = "assigned home-section";

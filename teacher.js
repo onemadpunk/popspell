@@ -1449,7 +1449,8 @@
     sessions.forEach(s => { if (s.pupil && !names.some(n => sameName(n, s.pupil))) names.push(String(s.pupil).trim()); });
     names.sort((a, b) => a.localeCompare(b));
     const resultsOf = name => sessions.filter(s => sameName(s.pupil, name)).sort((a, b) => b.at - a.at);
-    const openHref = name => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}`;
+    const hasWork = name => { const w = workOf(name); return w.lists.length + w.dated.length > 0 || !!(everyone && (everyone.lists || []).length); };
+    const openHref = name => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}${hasWork(name) ? "&start=1" : ""}`;
     const when = ms => new Date(ms).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
     const score = s => {
       const ws = s.words || [];
@@ -1465,7 +1466,7 @@
     const chip = (name, l, removable) => `<span class="t-chip">${esc(listTitle(l))}${removable ? `<button type="button" title="Remove" aria-label="Remove ${esc(listTitle(l))} from ${esc(name)}" data-unset="${esc(name)}" data-list="${esc(l)}">×</button>` : ""}</span>`;
     body.innerHTML = `
       <section class="pcard class-intro">
-        <p><b>How pupils get their work:</b> on this computer, press <b>▶ Open for</b> a pupil and a new tab opens with their work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
+        <p><b>How pupils get their work:</b> on this computer, press <b>▶ Start lesson</b> on a pupil's card and a new tab opens straight on their first piece of work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(classId))}" class="t-link" aria-label="Class link">
           <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button>
           <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button></div>
@@ -1477,7 +1478,7 @@
         const w = workOf(name), done = resultsOf(name), onRoster = roster.some(r => sameName(r.name, name));
         return `<article class="pcard class-card">
           <div class="class-card-head"><h2>${esc(name)}</h2>
-            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener">▶ Open for ${esc(name)}</a></div>
+            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener">▶ ${hasWork(name) ? "Start lesson for" : "Open for"} ${esc(name)}</a></div>
           <h3 class="class-sub">Work set</h3>
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
