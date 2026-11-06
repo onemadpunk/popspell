@@ -4,10 +4,10 @@
 
   add("paper-favourite-story", "lesson-early-choosing-and-sharing-stories-i-like", "My favourite story", "Draw a favourite part of a story, say how it felt and why the book was chosen.", (who, h) => ({
     pupil: `${h.sheetHead("My favourite story", who)}<p>Your adult can write your words for you.</p>
-      ${box("My story is called", ruled(h, 1))}
-      ${box("I chose it because of the… (tick)", tick(["cover", "title", "pictures", "author", "someone told me about it"]))}
-      ${box("Draw your favourite part", `<div class="pp-draw"></div>`)}
-      ${box("How did the story make you feel?", faces)}
+      <div class="pp-cols">${box("My story is called", ruled(h, 2))}${box("I chose it because of the… (tick)", tick(["cover", "title", "pictures", "author", "someone told me about it"]))}</div>
+      <div class="pp-cols3 pp-grow">${["Who is in it?", "Where does it happen?", "My favourite part"].map(x => box(x, `<div class="pp-draw"></div>`)).join("")}</div>
+      ${box("How did the story make you feel? Circle a face.", `<p class="pp-faces">${[["😀", "happy"], ["😮", "surprised"], ["😢", "sad"], ["😨", "scared"], ["😂", "funny"]].map(([e, w]) => `<span><i aria-hidden="true">${e}</i>${w}</span>`).join("")}</p>`)}
+      ${box("Would you tell a friend to read it?", tick(["yes!", "maybe", "no"]))}
       ${box("Tell your adult why. Then act out a part with toys or puppets.", ruled(h, 1))}`,
     answers: lookForPage(h, "My favourite story", ["A reason for choosing that's about the book: its cover, title, pictures or author",
       "Likes and dislikes shared, with a reason (\"I didn't like it when the wolf…\")", "Retelling or acting out a part in their own way, in order",
@@ -26,16 +26,17 @@
   }));
 
   add("paper-find-it", "lesson-early-finding-information-in-signs-and-books", "Find it!", "Read a poster and a menu with an adult, find information and use it to choose.", (who, h) => ({
-    pupil: `${h.sheetHead("Find it!", who)}<p>Read the poster and the menu with your adult.</p>
+    pupil: `${h.sheetHead("Find it!", who)}<p>Read the signs, the poster and the menu with your adult.</p>
+      <div class="pp-cols3">${box("Sign", `<p class="pp-advert">🚫🐕<br><b>NO DOGS</b></p>`)}${box("Sign", `<p class="pp-advert">🚻<br><b>TOILETS</b></p>`)}${box("Sign", `<p class="pp-advert">🅿️<br><b>CAR PARK</b></p>`)}</div>
+      <p><b>1.</b> Where would you go to wash your hands? Circle the sign.</p>
       <div class="pp-cols">${box("Poster", `<p class="pp-advert"><b>PET SHOW</b><br>Saturday<br>10 o'clock<br>In the park<br>Bring your pet! 🐶 🐱 🐰</p>`)}
         ${box("Café menu", `<p class="pp-advert">🥪 Sandwich 3p<br>🍎 Apple 1p<br>🍪 Biscuit 2p<br>🥛 Milk 2p</p>`)}</div>
-      <p><b>1.</b> What day is the pet show? ${blank(6)}</p>
-      <p><b>2.</b> Where is it? ${blank(6)}</p>
-      <p><b>3.</b> What pet would you take? Draw it.</p><div class="pp-draw pp-short"></div>
-      <p><b>4.</b> You have 3p. Choose what to buy from the menu. Draw or write it.</p><div class="pp-draw pp-short"></div>
-      <p><b>5.</b> Is this a story or information? Circle one: &nbsp; <b>story</b> &nbsp; <b>information</b></p>`,
-    answers: answersPage(h, "Find it!", ["Saturday", "In the park", "Any pet, and a reason if they give one", "Anything that costs 3p or less in total, for example a sandwich, or an apple and a biscuit",
-      "Information: it tells you facts, not a story"], "Read the poster and menu aloud with the pupil if needed: the skill here is finding and using the information.")
+      <p><b>2.</b> What day is the pet show? ${blank(6)} &nbsp; <b>3.</b> Where is it? ${blank(6)}</p>
+      <p><b>4.</b> You have 3p. Draw what you will buy from the menu. Can you buy two things?</p><div class="pp-draw pp-short pp-grow"></div>
+      <p><b>5.</b> What pet would you take to the show? Draw it.</p><div class="pp-draw pp-short pp-grow"></div>
+      <p><b>6.</b> Is a menu a story or information? Circle one: &nbsp; <b>story</b> &nbsp; <b>information</b></p>`,
+    answers: answersPage(h, "Find it!", ["The toilets sign", "Saturday", "In the park", "Anything that costs 3p or less in total, for example a sandwich, or an apple and a biscuit",
+      "Any pet, and a reason if they give one", "Information: it tells you facts, not a story"], "Read the poster and menu aloud with the pupil if needed: the skill here is finding and using the information.")
   }));
 
   add("paper-my-choices", "lesson-first-choosing-texts-and-explaining-why", "My choices", "A log of texts chosen for enjoyment or information, with reasons, then a plan for a text of your own.", (who, h) => ({
@@ -54,29 +55,32 @@
 
   add("paper-talking-together", "lesson-first-listening-and-talking-in-a-group", "Talking together", "Prepare a short talk about an object, then check how the talk and the listening went.", (who, h) => ({
     pupil: `${h.sheetHead("Talking together", who)}
-      ${box("My object or picture is", lines(1))}
-      ${box("Three things I will say about it", lines(3))}
+      <div class="pp-cols">${box("My object or picture is", `<div class="pp-draw pp-short"></div>${lines(1)}`)}${box("Three things I will say about it", lines(3))}</div>
       ${box("A question I could ask my listener", lines(1))}
-      <h2 class="ws-sub">When I talk</h2><p>${tick(["I spoke clearly and loudly enough", "I looked at my listener", "I used my voice and face to make it interesting", "I showed my object or picture"])}</p>
-      <h2 class="ws-sub">When I listen</h2><p>${tick(["I waited for my turn", "I looked at the speaker", "I nodded or agreed", "I asked a question that fitted"])}</p>
-      ${box("Next time I will…", lines(1))}`,
+      <div class="pp-cols">
+        <div class="pp-box"><b>🗣️ When I talk</b>${tick(["I spoke clearly and loudly enough", "I looked at my listener", "I made it interesting", "I showed my object or picture"])}</div>
+        <div class="pp-box"><b>👂 When I listen</b>${tick(["I waited for my turn", "I looked at the speaker", "I nodded or agreed", "I asked a question that fitted"])}</div>
+      </div>
+      <p class="pp-faces"><span><i aria-hidden="true">👍</i>My talk went well</span><span><i aria-hidden="true">🤔</i>I could try harder</span></p>
+      ${box("Next time I will…", lines(2))}`,
     answers: `${h.brandHead("What to look for: Talking together", "For the adult, while you listen and talk.")}
       <table class="pp-table"><tr><th></th><th>Not yet</th><th>Some of the time</th><th>Yes</th></tr>
         ${["Takes turns and talks at the right time", "Listens and responds respectfully (nods, agrees, asks, answers)", "Speaks clearly and audibly", "Uses eye contact, expression and body language",
-          "Shares ideas in a sensible order, with useful words", "Uses the object or picture to help the listener"].map(t => `<tr><td>${t}</td><td class="pp-c">☐</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
+          "Shares ideas in a sensible order, with useful words", "Uses the object or picture to help the listener"].map(x => `<tr><td>${x}</td><td class="pp-c">☐</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>
       <p>Ask one question after the talk, and note how the pupil answers.</p>`
   }));
 
   const HEDGEHOGS = "Hedgehogs are small, spiny animals that live in gardens, parks and woods. They come out at night to find food. They eat beetles, worms, slugs and caterpillars. In winter, when there's less food, hedgehogs hibernate in a nest of leaves. You can help them by leaving a gap under your fence so they can travel between gardens.";
   add("paper-notes-listening", "lesson-first-notes-from-listening-then-using-them", "Notes from listening", "Make notes under headings while an adult reads a short talk, then use them to write.", (who, h) => ({
-    pupil: `${h.sheetHead("Notes from listening", who)}<p>Your adult will read a short talk twice. The first time, just listen. The second time, write <b>key words</b> under each heading.</p>
+    pupil: `${h.sheetHead("Notes from listening", who)}<p>Your adult will read a short talk twice. The first time, just listen. The second time, write <b>key words</b> or draw tiny pictures under each heading.</p>
       <p><b>The talk is about:</b> ${blank(12)}</p>
-      <div class="pp-cols">${["Where they live", "What they eat", "What they do in winter", "How we can help"].map(t => box(t, lines(2))).join("")}</div>
+      <div class="pp-cols pp-grow">${[["🏡", "Where they live"], ["🍽️", "What they eat"], ["❄️", "What they do in winter"], ["🤝", "How we can help"]].map(([e, x]) => box(`${e} ${x}`, lines(2))).join("")}</div>
+      <p><b>Key words are short.</b> Tick the best notes for <i>What they eat</i>:</p><p>${tick(["beetles, worms", "they eat many different things every night", "slugs"])}</p>
       ${box("Now use your notes: write three sentences, in order, for someone who didn't hear the talk.", ruled(h, 3))}`,
     answers: `${h.brandHead("For the adult: Notes from listening", "Read this aloud twice: once to listen, once for notes.")}
       <p class="pp-passage">${HEDGEHOGS}</p>
       <ul class="ws-answers"><li><b>About:</b> hedgehogs</li><li><b>Where:</b> gardens, parks, woods</li><li><b>Eat:</b> beetles, worms, slugs, caterpillars</li>
-        <li><b>Winter:</b> hibernate in a nest of leaves</li><li><b>Help:</b> a gap under the fence</li></ul>
+        <li><b>Winter:</b> hibernate in a nest of leaves</li><li><b>Help:</b> a gap under the fence</li><li><b>Tick the key words:</b> "beetles, worms" and "slugs"</li></ul>
       <p>Look for key words, not whole sentences, and three sentences that follow a sensible order and make sense to a new reader.</p>`
   }), { needsAdult: true });
 
