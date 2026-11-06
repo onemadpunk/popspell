@@ -2110,3 +2110,21 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 /* True or false table and matching columns on S1+ sheets */
 .pp-tf td, .pp-tf th { padding: 5px 8px; }
 .pp-tf .pp-c { width: 18mm; text-align: center; }
+
+/* S1+ planning sheets: process flow, argument table, feelings graph, character card, story mountain */
+.pp-flow { display: grid; gap: 0; }
+.pp-arrow { text-align: center; font: 700 11pt Arial, Helvetica, sans-serif; color: #0b2e6b; margin: -2px 0 2px; }
+.pp-arrow i { font-weight: 400; font-style: italic; color: #4a5a78; }
+.pp-small { font-size: 9.5pt; color: #4a5a78; margin: 2px 0 !important; }
+.pp-pee td { height: 22mm; vertical-align: top; }
+.pp-pee td:first-child { width: 9mm; text-align: center; }
+.pp-emograph { display: flex; gap: 6px; height: 46mm; margin: 4px 0 22px; }
+.pp-ylabels { display: flex; flex-direction: column; justify-content: space-between; font: 700 8.5pt Arial, Helvetica, sans-serif; color: #0b2e6b; text-align: right; width: 17mm; }
+.pp-plot { position: relative; flex: 1; display: flex; justify-content: space-around; align-items: flex-end; border-left: 2px solid #0b2e6b; border-bottom: 2px solid #0b2e6b;
+  background: linear-gradient(#d7deea 1px, transparent 1px) 0 0 / 100% 25%, linear-gradient(90deg, #d7deea 1px, transparent 1px) 0 0 / 20% 100%; }
+.pp-plot span { transform: translateY(150%); font: 700 8.5pt Arial, Helvetica, sans-serif; color: #0b2e6b; }
+.pp-profile p { margin: 5px 0 !important; }
+.pp-mount { width: 100%; height: auto; max-height: 32mm; }
+.pp-mountain { fill: none; stroke: #0b2e6b; stroke-width: 3; stroke-linejoin: round; }
+.pp-mdot { fill: #fff; stroke: #0b2e6b; stroke-width: 2; }
+.pp-mnum { font: 700 12px Arial, sans-serif; fill: #0b2e6b; }

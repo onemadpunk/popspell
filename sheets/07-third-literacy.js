@@ -227,49 +227,55 @@
 
   add("paper-explain-it", T3("writing-to-inform-describe-and-explain"), "Explain it", "Plan and write an explanation of a process: reader, stages with topic sentences, cause and effect words, technical words and a diagram.", (who, h) => ({
     pupil: `${h.sheetHead("Explain it", who)}
-      <div class="pp-cols">${box("The process I'll explain", lines(1))}${box("My reader, and what they know already", lines(1))}</div>
+      <div class="pp-cols">${box("The process I'll explain (for example: how a bill becomes a law, how a volcano erupts, how a phone finds its location)", lines(2))}${box("My reader, and what they already know", lines(2))}</div>
       ${box("Title, and an introduction: what it is and why it matters", lines(2))}
-      ${[1, 2, 3].map(n => box(`Stage ${n}: topic sentence and detail`, lines(2))).join("")}
-      <p class="pp-bank"><b>Linking words:</b> because, so, as a result, this means that, which causes, first, next, finally</p>
-      <div class="pp-cols">${box("Technical words, and what they mean", lines(3))}${box("Diagram", `<div class="pp-draw pp-short"></div>`)}</div>
-      ${box("Conclusion", lines(1))}`,
+      <div class="pp-flow">${[1, 2, 3].map(n => `<div class="pp-box"><b>Stage ${n}</b><p class="pp-small">Topic sentence, then the detail. What happens, and what does it cause?</p>${lines(1)}</div>${n < 3 ? `<div class="pp-arrow" aria-hidden="true">⬇ <i>and so…</i></div>` : ""}`).join("")}</div>
+      <div class="pp-cols">${box("Technical words and what they mean", lines(3))}${box("Draw a labelled diagram of the process", `<div class="pp-draw pp-short"></div>`)}</div>
+      <p class="pp-bank"><b>Cause and effect words to use:</b> because · so · as a result · this means that · which causes · first · next · finally</p>
+      ${box("Conclusion: why does understanding this process matter?", lines(2))}`,
     answers: lookForPage(h, "Explain it", ["A style and format suited to the reader, with features of an explanation (title, introduction, stages, technical words, diagram)",
-      "Relevant information with supporting detail, in a logical order", "Topic sentences that signpost each paragraph", "Linking words that show sequence and cause and effect", "A tone and vocabulary that suit the reader"])
+      "Relevant information with supporting detail, in a logical order", "Topic sentences that signpost each paragraph", "Linking words that show sequence and cause and effect, such as because and as a result", "A tone and vocabulary that suit the reader, with technical words explained"])
   }));
 
   add("paper-make-case", T3("writing-to-persuade-and-argue"), "Make your case", "Plan a persuasive article: hook, view, points with evidence, the other side and an answer, techniques, and a conclusion.", (who, h) => ({
     pupil: `${h.sheetHead("Make your case", who)}
-      ${box("Issue (for example: should the school day start later?)", lines(1))}
-      <div class="pp-cols">${box("My view", lines(1))}${box("Hook to open with", lines(1))}</div>
-      ${[1, 2, 3].map(n => box(`Point ${n}: point, evidence (a fact, statistic, expert or example), and why it matters`, lines(2))).join("")}
-      ${box("The other side says… and my answer is…", lines(2))}
-      ${box("Techniques I'll use", tick(["rhetorical question", "repetition", "emotive language", "statistic", "direct address"]))}
-      ${box("Conclusion: sum up my line of thought, and end strongly", lines(2))}`,
+      <div class="pp-cols">${box("The issue (for example: should the school day start later? should phones be banned in class? should fast food be taxed?)", lines(2))}${box("My view, in one sentence", lines(2))}</div>
+      ${box("Hook to open with: a question, a surprising fact or a short scene", lines(1))}
+      <table class="pp-table pp-pee"><tr><th>My argument</th><th>My evidence (fact, statistic, expert or example)</th><th>Why it matters</th></tr>
+        ${[1, 2, 3].map(n => `<tr><td><b>${n}.</b></td><td></td><td></td></tr>`).join("")}</table>
+      <div class="pp-cols"><div class="pp-box"><b>⚖️ The other side says…</b>${lines(2)}</div><div class="pp-box"><b>…but my answer is</b>${lines(2)}</div></div>
+      ${box("Techniques I'll use on purpose: tick, then underline them in your draft", tick(["rhetorical question", "rule of three", "repetition", "emotive language", "statistic", "direct address", "expert quotation"]))}
+      ${box("Conclusion: sum up my line of thought and end with a call to action", lines(2))}`,
     answers: lookForPage(h, "Make your case", ["A clear point of view, stated early, with an introduction that engages", "Points in a logical order with relevant evidence, signposted by topic sentences and linking phrases",
-      "The other side answered, not ignored", "Persuasive language used on purpose, without relying on it instead of evidence", "A conclusion that sums up the argument"])
+      "Evidence that is a fact, statistic, expert view or example, with an explanation of why it matters", "The other side answered, not ignored", "Persuasive language used on purpose, without relying on it instead of evidence", "A conclusion that sums up the argument"])
   }));
 
-  add("paper-moment-mattered", T3("writing-about-a-personal-experience"), "A moment that mattered", "Plan personal writing: a feelings timeline, setting from the senses, showing not telling, and reflection.", (who, h) => ({
-    pupil: `${h.sheetHead("A moment that mattered", who)}
-      ${box("The experience, in one sentence", lines(1))}
-      <h2 class="ws-sub">Feelings timeline</h2>
-      <div class="pp-cols3">${["Before", "When it started", "The turning point", "Straight after", "Now, looking back"].map(t => box(t, lines(2))).join("")}</div>
-      <div class="pp-cols3">${box("I could see…", lines(1))}${box("I could hear…", lines(1))}${box("I could feel or smell…", lines(1))}</div>
-      ${box("Show, don't tell: rewrite \"I was nervous\" in two ways", lines(2))}
-      ${box("Reflection: Looking back, I realise… / It taught me…", lines(2))}
-      ${box("My opening paragraph", lines(3))}`,
-    answers: lookForPage(h, "A moment that mattered", ["A clear context and setting for the events", "Events described with feelings and reactions made clear, changing as the experience goes on",
-      "Feelings shown through actions, thoughts and the senses, not only named", "Some reflection on the experience", "Language, style and tone that engage the reader"])
-  }));
+  add("paper-moment-mattered", T3("writing-about-a-personal-experience"), "A moment that mattered", "Plan personal writing: a feelings graph, setting from the senses, showing not telling, and reflection.", (who, h) => {
+    const labels = ["Before", "It started", "Turning point", "Straight after", "Now"];
+    return {
+      pupil: `${h.sheetHead("A moment that mattered", who)}
+        ${box("The experience, in one sentence", lines(1))}
+        <p><b>1. Feelings graph.</b> Plot how you felt at each stage with a dot. Join the dots. Label the lowest and highest points.</p>
+        <div class="pp-emograph"><div class="pp-ylabels"><span>Excited</span><span>Happy</span><span>Calm</span><span>Worried</span><span>Upset</span></div><div class="pp-plot">${labels.map(t => `<span>${t}</span>`).join("")}</div></div>
+        <div class="pp-cols3">${box("I could see…", lines(1))}${box("I could hear…", lines(1))}${box("I could feel or smell…", lines(1))}</div>
+        ${box("Show, don't tell: rewrite \"I was nervous\" in two ways without using the word", lines(2))}
+        ${box("Reflection: Looking back, I realise… / It taught me…", lines(2))}
+        ${box("My opening paragraph", lines(3))}`,
+      answers: lookForPage(h, "A moment that mattered", ["A clear context and setting for the events", "Events described with feelings and reactions made clear, changing as the experience goes on, as the graph shows",
+        "Feelings shown through actions, thoughts and the senses, not only named", "Some reflection on the experience", "Language, style and tone that engage the reader"])
+    };
+  });
 
   add("paper-story-builder", T3("creating-texts-in-a-genre-characters-and-settings"), "Story builder", "Plan a story in a chosen genre: its features, a convincing character, a setting with mood, a structure, then the opening scene.", (who, h) => ({
     pupil: `${h.sheetHead("Story builder", who)}
-      <div class="pp-cols">${box("Genre", lines(1))}${box("Features readers expect from it", lines(1))}</div>
-      <div class="pp-cols">${box("Character: name, what they want, what they fear", lines(2))}${box("A secret, how they speak, and a line of their dialogue", lines(2))}</div>
-      ${box("Setting: three senses, and one detail that hints at the mood", lines(2))}
-      <div class="pp-cols3">${["Hook", "Problem", "Rising tension", "Turning point", "Ending or cliffhanger"].map(t => box(t, lines(1))).join("")}</div>
-      ${box("The opening scene", lines(7))}`,
+      <div class="pp-cols">${box("Genre (mystery, horror, sci-fi, adventure, realistic…)", lines(1))}${box("Three features readers expect from it", lines(2))}</div>
+      <div class="pp-cols"><div class="pp-box pp-profile"><b>🧑 Character profile</b><p>Name: ${blank(8)}</p><p>Wants: ${blank(8)}</p><p>Fears: ${blank(8)}</p><p>A secret: ${blank(7)}</p></div>${box("How they speak, and one line of their dialogue", lines(4))}</div>
+      ${box("Setting: write one thing for each sense, and one detail that hints at the mood", lines(2))}
+      <p><b>Story mountain.</b> Write one short note at each point.</p>
+      ${svg(600, 130, `<polyline points="20,115 130,70 250,40 330,15 450,65 580,115" class="pp-mountain"/>${[[20, 115, "1"], [130, 70, "2"], [250, 40, "3"], [330, 15, "4"], [450, 65, "5"], [580, 115, "6"]].map(([x, y, n]) => `<circle cx="${x}" cy="${y}" r="11" class="pp-mdot"/><text x="${x - 4}" y="${y + 4}" class="pp-mnum">${n}</text>`).join("")}`, "pp-pic pp-mount")}
+      <div class="pp-cols3">${["1 Hook: grab the reader", "2 Problem begins", "3 Tension rises", "4 Climax", "5 Turning point", "6 Ending or cliffhanger"].map(t => box(t, lines(1))).join("")}</div>
+      ${box("The opening scene: start in the middle of the action, with a hook", lines(4))}`,
     answers: lookForPage(h, "Story builder", ["Key features of the chosen genre used on purpose", "A character with believable wants, fears and a voice of their own",
-      "A setting that comes to life through detail, and creates mood", "A structure planned to engage the reader, with an opening hook", "Language chosen for effect"])
+      "A setting that comes to life through detail, and creates mood", "A structure planned to engage the reader, with an opening hook and a build to a climax", "Language chosen for effect"])
   }));
 
