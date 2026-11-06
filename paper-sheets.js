@@ -284,8 +284,8 @@ window.PopPaper = (() => {
   /* ===================== Literacy ===================== */
 
   add("paper-my-story", "lesson-early-telling-and-drawing-my-own-story", "My story", "Draw and write a story in three parts: beginning, middle and end.", (who, h) => ({
-    pupil: `${h.sheetHead("My story", who)}<p>Draw your story in the boxes. Then write a sentence under each picture. Tell your adult the story first.</p>
-      ${["At the beginning…", "In the middle…", "At the end…"].map(t => box(t, `<div class="pp-draw pp-short"></div>${ruled(h, 1)}`)).join("")}`,
+    pupil: `${h.sheetHead("My story", who)}<p>Tell your adult your story first. Then draw it in the boxes and write a sentence under each picture.</p>
+      <div class="pp-storyboard pp-grow">${[["1", "At the beginning…"], ["2", "In the middle…"], ["3", "At the end…"]].map(([n, t]) => `<div class="pp-sb"><span class="pp-sb-n">${n}</span><b>${t}</b><div class="pp-draw"></div>${ruled(h, 1)}</div>`).join("")}</div>`,
     answers: lookForPage(h, "My story", ["Telling the story aloud first, in order, before drawing and writing", "A clear beginning, middle and end that follow on from each other",
       "Story words such as once upon a time, then, suddenly, in the end", "Sentences that can be read back (sounding out is fine)"],
       "The telling matters as much as the page: jot down what the pupil says as they tell the story.")
@@ -293,8 +293,8 @@ window.PopPaper = (() => {
 
   add("paper-recount", "lesson-first-planning-and-writing-a-recount", "Plan a recount", "A planning frame for a recount: who, where and when, then what happened in order.", (who, h) => ({
     pupil: `${h.sheetHead("Plan a recount", who)}<p>Plan a recount of something you did. Then use your plan to write it.</p>
-      <div class="pp-cols">${["Who was there?", "Where were you?", "When was it?", "How did you feel?"].map(q => box(q, ruled(h, 1))).join("")}</div>
-      ${["First…", "Next…", "Then…", "Finally…"].map(q => box(q, ruled(h, 1))).join("")}
+      <div class="pp-cols">${[["👫", "Who was there?"], ["📍", "Where were you?"], ["📅", "When was it?"], ["😊", "How did you feel?"]].map(([e, q]) => box(`${e} ${q}`, ruled(h, 1))).join("")}</div>
+      <div class="pp-timeline pp-grow">${["First…", "Next…", "Then…", "Finally…"].map((q, i) => `<div class="pp-tl"><span class="pp-sb-n">${i + 1}</span><b>${q}</b><div class="pp-draw"></div>${ruled(h, 1)}</div>`).join("")}</div>
       <p class="pp-bank"><b>Words to help:</b> first, next, then, after that, later, finally, because, so, and, but</p>`,
     answers: lookForPage(h, "Plan a recount", ["Events in the order they happened, not just a list", "Who, where and when answered, so a reader could picture it",
       "Relevant detail and a feeling, not every small thing", "Time words (first, next, then, finally) joining the events"],
@@ -303,7 +303,7 @@ window.PopPaper = (() => {
 
   add("paper-story-planner", "lesson-first-writing-a-story-with-characters-and-a-setting", "Plan a story", "Plan a character, a setting, a problem and an ending.", (who, h) => ({
     pupil: `${h.sheetHead("Plan a story", who)}
-      <div class="pp-cols">
+      <div class="pp-cols pp-grow">
         ${box("My character", `<div class="pp-draw pp-short"></div><p>Name: ${blank(8)}</p><p>Looks like: ${blank(9)}</p><p>Feels: ${blank(10)}</p>`)}
         ${box("The setting", `<div class="pp-draw pp-short"></div><p>Where: ${blank(9)}</p><p>I can see: ${blank(8)}</p><p>I can hear: ${blank(8)}</p>`)}</div>
       ${box("The problem: what goes wrong?", ruled(h, 1))}${box("How is it sorted out?", ruled(h, 1))}${box("How does it end?", ruled(h, 1))}
