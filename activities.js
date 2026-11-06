@@ -1645,8 +1645,129 @@ window.PopActivities = (() => {
       ]) }
   ];
 
+  /* ---------- Word Builder: prefixes, roots and suffixes (word games for older pupils) ---------- */
+
+  // A pupil reads a meaning, builds the word from its parts, then (in some words) fixes the spelling
+  // where the parts join. The parts are written "un-" (prefix), "-ful" (suffix) or "graph" (root).
+  // These games use a plain look with no mascot, so they suit P6 to S3.
+  const PART_MEANS = {
+    "un-": "not", "dis-": "not, or the opposite of", "re-": "again or back", "mis-": "wrongly", "pre-": "before",
+    "im-": "not (before m or p)", "il-": "not (before l)", "ir-": "not (before r)", "in-": "not, or in",
+    "sub-": "under", "inter-": "between", "non-": "not", "over-": "too much", "super-": "above or beyond",
+    "anti-": "against", "auto-": "self", "tele-": "far", "trans-": "across", "micro-": "very small", "bio-": "life",
+    "geo-": "earth", "de-": "undo or down", "con-": "together", "ex-": "out", "co-": "together",
+    "-ful": "full of", "-less": "without", "-ness": "the state of being", "-ment": "the act or result of",
+    "-ly": "in that way", "-er": "a person or thing that does it", "-or": "a person who does it", "-able": "able to be, or able to",
+    "-ible": "able to be, or able to", "-ous": "full of or having", "-ion": "the act or result of", "-ation": "the act or result of",
+    "-ist": "a person who does or studies it", "-ive": "tending to", "-ology": "the study of", "-al": "to do with",
+    "-y": "to do with", "-ence": "the state of", "-ise": "to make",
+    graph: "write or draw", port: "carry", struct: "build", dict: "say", spect: "look", rupt: "break", ject: "throw",
+    scope: "look at", vis: "see", aud: "hear", phone: "sound", tract: "pull", script: "write", marine: "the sea",
+    nation: "a country", fiction: "made-up stories", bio: "life", logy: "study"
+  };
+  const partType = p => (p.endsWith("-") ? "prefix" : p.startsWith("-") ? "suffix" : "root");
+  const partText = p => p.replace(/^-|-$/g, "");
+  // w: the word · p: its parts · clue: what it means · use: a sentence with ___ for the word
+  // rule and trap: when the parts change as they join, the rule to learn and a likely wrong spelling
+  const BUILD_PREFIXES = [
+    { w: "unfair", p: "un-|fair", clue: "not fair", use: "It felt ___ that only one team got extra time." },
+    { w: "rebuild", p: "re-|build", clue: "to build again", use: "After the storm, the village had to ___ the bridge." },
+    { w: "disagree", p: "dis-|agree", clue: "to have a different opinion", use: "It is fine to ___ with a friend, as long as you listen." },
+    { w: "misread", p: "mis-|read", clue: "to read wrongly", use: "I ___ the timetable and missed the bus." },
+    { w: "preview", p: "pre-|view", clue: "a look at something before it starts", use: "We watched a short ___ of the film." },
+    { w: "impossible", p: "im-|possible", clue: "not able to happen", use: "The fog made it almost ___ to see the road." },
+    { w: "illegal", p: "il-|legal", clue: "not allowed by law", use: "Dropping litter is ___ in many places." },
+    { w: "irregular", p: "ir-|regular", clue: "not following the usual pattern", use: "Some verbs are ___, like go and went." },
+    { w: "submarine", p: "sub-|marine", clue: "a boat that travels under the sea", use: "The ___ dived deep below the waves." },
+    { w: "international", p: "inter-|national", clue: "between countries", use: "The ___ match had fans from all over the world." },
+    { w: "nonfiction", p: "non-|fiction", clue: "writing about real facts, not made-up stories", use: "A book about volcanoes is ___." },
+    { w: "overreact", p: "over-|react", clue: "to react too strongly", use: "Try not to ___ if your plan changes." }
+  ];
+  const BUILD_SUFFIXES = [
+    { w: "hopeful", p: "hope|-ful", clue: "full of hope", use: "She was ___ that the rain would stop." },
+    { w: "careless", p: "care|-less", clue: "without enough care", use: "One ___ mistake cost us the point." },
+    { w: "kindness", p: "kind|-ness", clue: "the quality of being kind", use: "Small acts of ___ make a big difference." },
+    { w: "enjoyment", p: "enjoy|-ment", clue: "the feeling of enjoying something", use: "Music adds to my ___ of a long journey." },
+    { w: "teacher", p: "teach|-er", clue: "a person who teaches", use: "Our ___ showed us how to check our work." },
+    { w: "comfortable", p: "comfort|-able", clue: "giving a relaxed, easy feeling", use: "The old sofa was surprisingly ___." },
+    { w: "carelessly", p: "care|-less|-ly", clue: "in a way that shows no care", use: "He threw his bag ___ onto the floor." },
+    { w: "happiness", p: "happy|-ness", clue: "the state of being happy", use: "Her face was full of ___.",
+      rule: "When a word ends in a consonant and y, change the y to i before adding a suffix.", trap: ["happyness", "hapiness"] },
+    { w: "beautiful", p: "beauty|-ful", clue: "full of beauty", use: "We watched a ___ sunset over the hills.",
+      rule: "When a word ends in a consonant and y, change the y to i before adding a suffix.", trap: ["beautyful", "beautifull"] },
+    { w: "famous", p: "fame|-ous", clue: "known by very many people", use: "The castle is ___ for its ghost stories.",
+      rule: "Drop the final e before a suffix that starts with a vowel.", trap: "fameous" },
+    { w: "runner", p: "run|-er", clue: "a person who runs", use: "The fastest ___ crossed the line first.",
+      rule: "After one short vowel and one consonant, double the consonant before a suffix that starts with a vowel.", trap: "runer" },
+    { w: "adventurous", p: "adventure|-ous", clue: "keen to try new and exciting things", use: "An ___ cat climbed onto the roof.",
+      rule: "Drop the final e before a suffix that starts with a vowel.", trap: "adventureous" }
+  ];
+  const BUILD_ROOTS = [
+    { w: "autograph", p: "auto-|graph", clue: "a famous person's own signature", use: "She asked the player for an ___." },
+    { w: "transport", p: "trans-|port", clue: "to carry from one place to another", use: "Lorries ___ food across the country." },
+    { w: "microscope", p: "micro-|scope", clue: "a tool for looking at very small things", use: "Under the ___, the leaf was full of tiny cells." },
+    { w: "telephone", p: "tele-|phone", clue: "a device that carries sound over a long distance", use: "She answered the ___ on the first ring." },
+    { w: "interrupt", p: "inter-|rupt", clue: "to break in while someone is speaking", use: "Please don't ___ while I'm explaining." },
+    { w: "audible", p: "aud|-ible", clue: "loud enough to be heard", use: "His whisper was barely ___." },
+    { w: "invisible", p: "in-|vis|-ible", clue: "not able to be seen", use: "The thread was almost ___ against the white cloth." },
+    { w: "prediction", p: "pre-|dict|-ion", clue: "a statement about what will happen", use: "My ___ was that the ice would melt by lunch." },
+    { w: "destruction", p: "de-|struct|-ion", clue: "the act of breaking something down completely", use: "The flood left a trail of ___." },
+    { w: "inspector", p: "in-|spect|-or", clue: "a person whose job is to look closely and check", use: "The ___ checked every room in the building." },
+    { w: "decision", p: "decide|-ion", clue: "a choice you make after thinking", use: "It was a hard ___ to leave the team.",
+      rule: "Words ending in -ide usually change to -ision: decide, decision.", trap: ["decidion", "decission"] },
+    { w: "explanation", p: "explain|-ation", clue: "the reasons or details that make something clear", use: "Her ___ helped me understand the puzzle.",
+      rule: "Some roots change their spelling when a suffix is added: explain loses its i in explanation.", trap: ["explaination", "explanaition"] },
+    { w: "argument", p: "argue|-ment", clue: "a disagreement, or a reason for an opinion", use: "She made a strong ___ for a longer break.",
+      rule: "Usually a consonant suffix keeps the e, but argue drops it: argument is an exception to learn.", trap: ["arguement", "argumant"] },
+    { w: "reliable", p: "rely|-able", clue: "able to be trusted to do the same each time", use: "Our old bike is slow but ___.",
+      rule: "When a word ends in a consonant and y, change the y to i before adding a suffix.", trap: ["relyable", "realiable"] },
+    { w: "noticeable", p: "notice|-able", clue: "easy to see or notice", use: "There was a ___ change in the weather.",
+      rule: "Keep the e after c or g before -able, so the c still says s: notice, noticeable.", trap: ["noticable", "noticeible"] }
+  ];
+  // A short name for each spelling rule, for the teacher's "to practise" list
+  const changeName = rule => /y to i/.test(rule) ? "y to i" : /Drop the final e/.test(rule) ? "drop the e"
+    : /double/.test(rule) ? "double the consonant" : /-ision/.test(rule) ? "-ide to -ision" : /Keep the e/.test(rule) ? "keep the e after c or g"
+      : /argue/.test(rule) ? "argue to argument" : "root changes (explain, explanation)";
+  function buildRound(spec, pool) {
+    const parts = spec.p.split("|");
+    const joined = parts.map(partText).join("");
+    if (!spec.rule && joined !== spec.w) throw new Error(`Word Builder: ${spec.p} makes ${joined}, not ${spec.w}`);
+    const traps = [].concat(spec.trap || []);
+    // (noticeable keeps its e: the parts join unchanged, but the rule is still the thing to learn)
+    if (spec.rule && (!traps.length || traps.includes(spec.w))) throw new Error(`Word Builder: ${spec.w} needs a likely wrong spelling to choose from`);
+    // Two or three extra tiles of the same kinds, so the pupil has to think about meaning
+    const kinds = new Set(parts.map(partType));
+    const spare = shuffle([...new Set(pool.flatMap(s => s.p.split("|")))]
+      .filter(x => !parts.includes(x) && kinds.has(partType(x)) && partType(x) !== "root"));
+    const extraRoots = shuffle([...new Set(pool.flatMap(s => s.p.split("|")))].filter(x => partType(x) === "root" && !parts.includes(x)));
+    const tray = shuffle(parts.concat(spare.slice(0, parts.length > 2 ? 3 : 2), extraRoots.slice(0, 1)));
+    // The right spelling and up to two likely wrong ones (the parts simply stuck together comes first)
+    const options = spec.rule ? shuffle([spec.w].concat([...new Set([joined].concat(traps))].filter(o => o !== spec.w).slice(0, 2))) : [];
+    return {
+      kind: "build", answer: spec.w, label: spec.w, spelling: spec.w, tokens: [],
+      parts, tray, trayMeans: tray.map(x => PART_MEANS[x] || ""), clue: spec.clue, use: spec.use, rule: spec.rule || "", joined, options,
+      means: parts.map(x => [partText(x), partType(x), PART_MEANS[x] || ""]),
+      skill: spec.rule ? `spelling change: ${changeName(spec.rule)}` : parts.filter(x => partType(x) !== "root").map(x => `${partType(x)} ${x}`).join(", "),
+      // Easy to hard: two parts, then three parts, then words whose spelling changes at the join
+      diff: parts.length * 10 + (spec.rule ? 25 : 0) + spec.w.length
+    };
+  }
+  const buildGame = (pool, n = 8) => shuffle(pool).slice(0, n).map(spec => buildRound(spec, pool));
+  const wordGames = [
+    { id: "w-build-prefixes", title: "Word Builder: prefixes", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Read the meaning, then build the word from a prefix and a root. Learn what un-, dis-, mis-, im- and more mean.",
+      make: () => buildGame(BUILD_PREFIXES) },
+    { id: "w-build-suffixes", title: "Word Builder: suffixes", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Build words with -ful, -less, -ness, -ment and more, then fix the spelling where y changes to i, an e drops or a letter doubles.",
+      make: () => buildGame(BUILD_SUFFIXES) },
+    { id: "w-build-roots", title: "Word Builder: roots and spelling changes", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Use Greek and Latin roots such as graph, port, spect and dict, and learn the spelling changes in words like decision and noticeable.",
+      make: () => buildGame(BUILD_ROOTS) }
+  ];
+
   const AREAS = [
-    { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames) },
+    { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames), game: true },
+    { id: "word-games", title: "Word games", colour: "#334155", icon: "🧩", activities: wordGames, game: true, older: true },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     // England's grammar by year: found by teachers in the Library and set as work, not shown on every pupil's home page
     { id: "grammar", title: "Grammar and punctuation by year (England)", colour: "#7C3AED", icon: "🔤", activities: grammarByYear, assignedOnly: true, england: true },
@@ -1660,7 +1781,7 @@ window.PopActivities = (() => {
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
     { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore) }
   ];
-  AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; }));
+  AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
     if (Number.isFinite(q.difficulty)) return q.difficulty;
     // Clock times: o'clock, then half past, then quarter past and quarter to
@@ -1679,7 +1800,7 @@ window.PopActivities = (() => {
     const scored = qs.map(q => [difficulty(q), q]);
     return scored.every(([d]) => d !== null) ? scored.sort((x, y) => x[0] - y[0]).map(([, q]) => q) : qs;
   };
-  AREAS.filter(area => area.id !== "games").forEach(area => area.activities.forEach(a => {
+  AREAS.filter(area => !area.game).forEach(area => area.activities.forEach(a => {
     if (!/^Numeracy/.test(a.organiser || "")) return;
     const make = a.make;
     a.make = (...args) => easyFirst(make(...args));
@@ -1732,7 +1853,8 @@ window.PopActivities = (() => {
   const EO_FOR_ID = {
     "n-negative": ["MNU 2-04a"], "n-durations": ["MNU 1-10c"], "n-area": ["MNU 2-11c"], "n-units": ["MNU 2-11b"],
     "n-decimals": ["MNU 2-02a", "MNU 2-03b"], "n-percent": ["MNU 2-07a", "MNU 2-07b"], "n-equivalent": ["MTH 2-07c", "MNU 2-07b"],
-    "sec-linear-equations": ["MTH 3-15a", "MTH 3-15b"], "sec-proportion": ["MNU 4-08a"], "sec-evidence-bias": ["LIT 4-16a", "ENG 4-17a", "LIT 4-18a"]
+    "sec-linear-equations": ["MTH 3-15a", "MTH 3-15b"], "sec-proportion": ["MNU 4-08a"], "sec-evidence-bias": ["LIT 4-16a", "ENG 4-17a", "LIT 4-18a"],
+    "w-build-prefixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-suffixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-roots": ["LIT 3-21a", "LIT 3-13a"]
   };
   function eo(organiser, level, id) {
     if (EO_FOR_ID[id]) return EO_FOR_ID[id].slice();
@@ -1759,7 +1881,7 @@ window.PopActivities = (() => {
     // Level, organiser and CfE outcomes for anything a pupil can do: an activity id, a dictation, or a spelling list
     tag(id) {
       const a = this.get(id);
-      if (a) return { level: a.level, organiser: a.organiser, area: a.area, eo: eo(a.organiser, a.level, a.id) };
+      if (a) return { level: a.level, organiser: a.organiser, area: a.area, game: !!a.game, eo: eo(a.organiser, a.level, a.id) };
       const stages = window.SPELLING_LISTS || [];
       const s = stages.findIndex(st => st.lists.some(l => l.id === id));
       if (s >= 0) return { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) };

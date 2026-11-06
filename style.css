@@ -2174,3 +2174,50 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .summary-details > summary { cursor: pointer; font-weight: 700; padding: 8px 12px; border-radius: 12px; background: var(--primary-soft, #eef4ff); width: fit-content; }
 .summary-details[open] > summary { margin-bottom: 10px; }
 @media print { .summary-details > summary { display: none; } }
+
+/* ---------- Word Builder (word games for older pupils): plain, no mascot ---------- */
+.word-builder, .wb-howto { --wb-prefix: #1d4ed8; --wb-prefix-soft: #eaf1ff; --wb-root: #334155; --wb-root-soft: #f1f4f8;
+  --wb-suffix: #7c3aed; --wb-suffix-soft: #f3edff; }
+.wb-howto { display: grid; gap: 4px; max-width: 540px; margin: 12px auto 20px; padding: 14px 16px; text-align: left;
+  border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; background: var(--surface); }
+.word-builder { text-align: center; }
+.wb-kicker { margin: 18px 0 2px; font-size: .85rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.wb-clue { margin: 0 auto; max-width: 30ch; font-size: clamp(1.4rem, 4.5vw, 2rem); line-height: 1.2; }
+.wb-use { max-width: 46ch; margin: 10px auto 0; color: var(--muted); font-size: 1.05rem; font-style: italic; }
+.wb-gap { display: inline-block; min-width: 5.5em; border-bottom: 2px solid var(--muted); font-style: normal; }
+.wb-gap.filled { min-width: 0; border-color: var(--good); color: var(--good); font-weight: 800; }
+.wb-slots { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 22px 0 6px; min-height: 76px; }
+.wb-plus { font-size: 1.3rem; font-weight: 700; color: var(--muted); }
+.wb-slot, .wb-tile { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 88px; min-height: 64px; padding: 6px 14px; border-radius: 10px; font: inherit; }
+.wb-slot.empty { border: 2px dashed var(--line); background: var(--surface); }
+.wb-tile-text { font-size: 1.45rem; font-weight: 800; line-height: 1.1; font-family: var(--reading-font, inherit); }
+.wb-slot small, .wb-tile small { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; opacity: .75; }
+.wb-tile, .wb-slot:not(.empty) { cursor: pointer; border: 2px solid currentColor; box-shadow: 0 2px 0 currentColor;
+  transition: transform .12s ease, opacity .12s ease; }
+.wb-tile:hover:not(:disabled), .wb-slot:hover:not(:disabled):not(.empty) { transform: translateY(-2px); }
+.wb-tile:focus-visible, .wb-slot:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+.wb-tile:disabled { opacity: .25; cursor: default; box-shadow: none; }
+.wb-slot:disabled { cursor: default; }
+.wb-prefix { color: var(--wb-prefix); background: var(--wb-prefix-soft); }
+.wb-root { color: var(--wb-root); background: var(--wb-root-soft); }
+.wb-suffix { color: var(--wb-suffix); background: var(--wb-suffix-soft); }
+.wb-tray { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 18px auto 4px; padding: 16px;
+  max-width: 640px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.wb-tile.hinted { animation: wb-glow 1.2s ease-in-out infinite; }
+@keyframes wb-glow { 50% { box-shadow: 0 0 0 5px rgba(250, 204, 21, .6); } }
+.wb-actions { margin-top: 12px; }
+.wb-fix { margin-top: 10px; }
+.wb-sum { font-size: 1.2rem; }
+.wb-sum .chip { border-color: var(--primary); color: var(--primary); }
+.wb-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.wb-option { font-size: 1.3rem; min-width: 150px; font-family: var(--reading-font, inherit); }
+.wb-word { font-size: 1.7rem; font-family: var(--reading-font, inherit); }
+.wb-breakdown { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0; }
+.wb-part { display: grid; gap: 2px; min-width: 110px; max-width: 200px; padding: 10px 12px; border-radius: 10px; border-top: 4px solid currentColor; }
+.wb-part b { font-size: 1.25rem; }
+.wb-part small { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.wb-part span { color: var(--ink); font-size: .95rem; }
+.wb-rule { max-width: 52ch; margin: 6px auto 12px; padding: 10px 14px; border-radius: 10px; background: var(--primary-soft); text-align: left; }
+@media (prefers-reduced-motion: reduce) { .wb-tile, .wb-slot { transition: none; } .wb-tile.hinted { animation: none; outline: 3px solid #facc15; } }
+@media (max-width: 480px) { .wb-slot, .wb-tile { min-width: 72px; min-height: 58px; padding: 4px 10px; } .wb-tile-text { font-size: 1.25rem; } }

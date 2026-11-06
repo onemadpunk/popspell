@@ -450,7 +450,7 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? (["map", "switch", "canopy"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
+        triesUsed: r.correct ? (["map", "switch", "canopy", "build"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
         ...(Number.isFinite(r.seconds) ? { seconds: r.seconds } : {}),
@@ -1339,8 +1339,9 @@
   function exploreAreas() {
     const A = window.PopActivities;
     // Short tab names, so the tabs fit on a phone
-    const SHORT = { games: "Games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
-    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
+    const SHORT = { games: "Games", "word-games": "Word games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
+    // The older look has no mascot, so its games are the word games
+    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly && !(a.id === "games" && isOlder())).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
     areas.push({ id: "checks", icon: "🧭", title: "Checks", colour: "#0f766e",
       items: Object.entries(CHECKS).filter(([k]) => k === "spelling" || A).map(([k, c]) => ({ id: `check:${k}`, href: `#/check/${k}`, title: c.title.replace("Starting check: ", ""), icon: c.icon, level: "About 10 minutes", colour: c.accent })) });
     return areas;
@@ -1501,7 +1502,8 @@
       ${storyActivities().length && !locked ? tile("#/stories", "📚", "My stories", `${readyStories(prog).length} ready to read`) : ""}
       ${locked || older ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
       ${locked || older ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
-      ${locked || older ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}`;
+      ${locked || older ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}
+      ${locked || !older ? "" : tile("#/activity/w-build-prefixes", "🧩", "Word Builder", "Build words from their parts")}`;
     // Pip says what's most useful right now (and changes if the teacher has set work)
     const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
       const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
@@ -1880,7 +1882,7 @@
       ${previewBanner()}
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity && session.items[session.i]?.kind === "canopy" ? "Clearing" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
+        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity && session.items[session.i]?.kind === "canopy" ? "Clearing" : session.items[session.i]?.kind === "build" ? "Word" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
         ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -2221,6 +2223,8 @@
   const ACTIVITY_TRIES = 2;
   const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
 
+  // Word games for older pupils: a plain look with no mascot, whichever look the pupil has
+  const plainGame = act => !!act && act.area === "word-games";
   function showActivityStart(act) {
     document.title = `${act.title} · ${SITE.title}`;
     // Seconds per question when the activity is timed (the times tables check), so it can be lengthened or switched off
@@ -2230,7 +2234,7 @@
       <section class="panel start" style="--accent:${esc(act.colour)}">
         ${TRIAL_MODE ? "" : `<a class="back" href="#/">← All activities</a>`}
         ${previewBanner()}
-        <div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>
+        ${plainGame(act) ? "" : `<div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>`}
         ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>` : ""}
         <h1>${act.icon ? `<span aria-hidden="true">${act.icon}</span> ` : ""}${esc(act.title)}</h1>
         ${forTeacher() ? `<p class="tip">${esc(act.blurb)}</p>` : ""}
@@ -2238,7 +2242,10 @@
           <span>Catch lights ✦ · Cross rivers 🌉 · Find hidden friends 🍃 · Choose the path ↗</span>
           <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
           : /^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌟 Focused number practice with Pip</strong>
-          <small>Six quick challenges for one skill. Replay or use a clue whenever you need one.</small></div>` : ""}
+          <small>Six quick challenges for one skill. Replay or use a clue whenever you need one.</small></div>`
+          : /^w-build-/.test(act.id) ? `<div class="wb-howto"><strong>How to play</strong>
+          <span>Read the meaning. Tap the parts in order to build the word, then press Check.</span>
+          <small>Prefixes go at the start, suffixes at the end. Some words change their spelling where the parts join.</small></div>` : ""}
         ${/^g-(hopper|switch)-/.test(act.id) && teacherUnlocked() ? `<label class="field hopper-accent">How do you say r sounds?
           <select id="hopperAccent"${CLASS && CLASS.accent ? " disabled" : ""}>
             <option value="scottish">Scottish: hear the vowel and r separately (c · a · r)</option>
@@ -2399,6 +2406,7 @@
     if (q.kind === "map") return showSoundHopper(q);
     if (q.kind === "switch") return showSoundSwitch(q);
     if (q.kind === "canopy") return showCountingCanopy(q);
+    if (q.kind === "build") return showWordBuilder(q);
     if (!q.say) q.say = questionSay(q);
     // Answers made of words can be heard too (not bare numbers or punctuation)
     const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
@@ -2898,6 +2906,150 @@
     }
   }
 
+  /* ---------- Word Builder: build a word from its parts, then fix the join (older pupils) ---------- */
+
+  // A plain screen with no mascot. Tiles go into the slots in order; Check compares the whole word.
+  // Two misses make the next right tile glow. Words whose spelling changes at the join have a second
+  // step: choose the correct spelling, with the rule shown after a wrong choice.
+  function showWordBuilder(q) {
+    document.body.classList.add("playing-game");
+    const wrong = [];
+    const missed = new Set();
+    const startedAt = Date.now();
+    const placed = []; // indexes into q.tray
+    let misses = 0;
+    let stage = "build";
+    let finished = false;
+    const kindName = { prefix: "prefix", root: "root", suffix: "suffix" };
+    const typeOf = p => (p.endsWith("-") ? "prefix" : p.startsWith("-") ? "suffix" : "root");
+    const tileText = p => p.replace(/^-|-$/g, "");
+    const tileHTML = p => `<span class="wb-tile-text">${esc(tileText(p))}</span><small>${kindName[typeOf(p)]}</small>`;
+    const useHTML = q.use ? `<p class="wb-use">${esc(q.use).replace("___", `<span class="wb-gap" aria-label="missing word">&nbsp;</span>`)}</p>` : "";
+    app.innerHTML = `
+      <section class="panel practice activity word-builder" style="--accent:${esc(session.activity.colour)}">
+        ${progressHTML()}
+        <p class="wb-kicker">Build the word that means</p>
+        <h1 class="wb-clue">${esc(q.clue)}</h1>
+        ${useHTML}
+        <div class="wb-slots" id="wbSlots" role="group" aria-label="Your word, ${q.parts.length} parts"></div>
+        <div class="wb-tray" id="wbTray" role="group" aria-label="Word parts"></div>
+        <div class="row center wb-actions">
+          <button type="button" class="btn" id="wbClear">Clear</button>
+          <button type="button" class="btn primary" id="wbCheck" disabled>Check</button>
+        </div>
+        <div class="wb-fix" id="wbFix" hidden></div>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+        <div id="wbDone"></div>
+      </section>`;
+    wireStop();
+    const feedback = $("#feedback");
+    const say = (cls, html) => { feedback.className = `feedback ${cls}`; feedback.innerHTML = html; };
+    const draw = () => {
+      const slots = $("#wbSlots");
+      slots.innerHTML = q.parts.map((_, i) => {
+        const at = placed[i];
+        return at === undefined
+          ? `<span class="wb-slot empty" aria-label="Empty part ${i + 1}"></span>`
+          : `<button type="button" class="wb-slot wb-${typeOf(q.tray[at])}" data-slot="${i}" aria-label="Remove ${esc(tileText(q.tray[at]))}"${finished || stage !== "build" ? " disabled" : ""}>${tileHTML(q.tray[at])}</button>`;
+      }).join(`<span class="wb-plus" aria-hidden="true">+</span>`);
+      const hint = misses >= 2 && stage === "build" ? q.tray.findIndex((p, i) => p === q.parts[placed.length] && !placed.includes(i)) : -1;
+      $("#wbTray").innerHTML = q.tray.map((p, i) => `<button type="button" class="wb-tile wb-${typeOf(p)}${i === hint ? " hinted" : ""}" data-tile="${i}"
+        ${placed.includes(i) || finished || stage !== "build" ? "disabled" : ""} aria-label="${esc(tileText(p))}, ${kindName[typeOf(p)]}">${tileHTML(p)}</button>`).join("");
+      $("#wbCheck").disabled = placed.length !== q.parts.length || stage !== "build";
+      $("#wbClear").disabled = !placed.length || stage !== "build";
+      slots.querySelectorAll("[data-slot]").forEach(b => { b.onclick = () => { placed.splice(Number(b.dataset.slot), 1); draw(); }; });
+      $("#wbTray").querySelectorAll("[data-tile]").forEach(b => {
+        b.onclick = () => {
+          if (placed.length >= q.parts.length) return;
+          placed.push(Number(b.dataset.tile));
+          draw();
+          if (placed.length === q.parts.length) $("#wbCheck").focus();
+          else $("#wbTray button:not(:disabled)")?.focus();
+        };
+      });
+    };
+    draw();
+
+    $("#wbClear").onclick = () => { placed.length = 0; draw(); };
+    $("#wbCheck").onclick = () => {
+      const built = placed.map(i => q.tray[i]);
+      if (built.join("|") === q.parts.join("|")) return q.rule ? fixJoin() : finish();
+      misses++;
+      if (wrong.length < 8) wrong.push(built.map(tileText).join(" + "));
+      const at = built.findIndex((p, i) => p !== q.parts[i]);
+      const want = q.parts[at], got = built[at];
+      // A wrong prefix or suffix is that part to practise; a wrong root means the meaning was misread
+      missed.add(typeOf(want) === "root" ? "matching the meaning" : `${typeOf(want)} ${want}`);
+      tones([220, 196], 0.12);
+      const means = q.means[at][2];
+      const sameIdea = /^not/.test(means) && typeOf(got) === "prefix" && /^not/.test(q.trayMeans[placed[at]] || "");
+      say("oops", sameIdea
+        ? `Good thinking: <b>${esc(tileText(got))}</b> also means “not”. This word uses a different one, so try another.`
+        : typeOf(got) !== typeOf(want)
+          ? `Check the order: part ${at + 1} should be a <b>${kindName[typeOf(want)]}</b>.`
+          : misses >= 2 && means
+            ? `Look for the ${kindName[typeOf(want)]} that means “${esc(means)}”. It's glowing.`
+            : `Not quite. Read the meaning again and change the ${kindName[typeOf(want)]}.`);
+      placed.splice(at); // keep the parts that were right
+      draw();
+    };
+
+    // Step 2 for words whose parts change as they join (happy + ness → happiness)
+    function fixJoin() {
+      stage = "fix";
+      draw();
+      $("#wbTray").hidden = true;
+      app.querySelector(".wb-actions").hidden = true;
+      const box = $("#wbFix");
+      box.hidden = false;
+      box.innerHTML = `<p class="wb-kicker">Right parts! Now join them</p>
+        <p class="wb-sum">${q.parts.map(p => `<span class="chip">${esc(tileText(p))}</span>`).join(" + ")} =</p>
+        <div class="wb-options" role="group" aria-label="Choose the correct spelling">${q.options.map((o, i) => `<button type="button" class="btn wb-option" data-option="${i}">${esc(o)}</button>`).join("")}</div>`;
+      say("good", "Watch the join: the spelling can change where the parts meet. Which is correct?");
+      box.querySelector(".wb-option").focus();
+      box.querySelectorAll("[data-option]").forEach(b => {
+        b.onclick = () => {
+          const o = q.options[Number(b.dataset.option)];
+          if (o === q.answer) return finish();
+          b.disabled = true;
+          if (wrong.length < 8) wrong.push(o);
+          missed.add(q.skill);
+          tones([220, 196], 0.12);
+          say("oops", `Not that one. <b>Rule:</b> ${esc(q.rule)}`);
+        };
+      });
+    }
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      stage = "done";
+      const earned = wrong.length ? 1 : 2;
+      session.results.push({ item: q, correct: true, wrong: wrong.slice(), stars: earned, missed: [...missed],
+        seconds: Math.min(3600, Math.max(1, Math.round((Date.now() - startedAt) / 1000))) });
+      if (!session.preview) countGo();
+      livePing(session, "word", { word: q.label, ok: !wrong.length });
+      draw();
+      $("#wbFix").hidden = true;
+      app.querySelector(".wb-actions").hidden = true;
+      $("#wbTray").hidden = true;
+      const gap = app.querySelector(".wb-gap");
+      if (gap) { gap.textContent = q.answer; gap.classList.add("filled"); }
+      chimeRight();
+      say("good", `<b class="wb-word">${esc(q.answer)}</b> <span class="stars-inline">${stars(earned)}</span>`);
+      const last = session.i === session.items.length - 1;
+      $("#wbDone").innerHTML = `
+        <div class="wb-breakdown" aria-label="What the parts mean">${q.means.map(([text, type, means]) =>
+          `<div class="wb-part wb-${type}"><b>${esc(text)}</b><small>${esc(type)}</small><span>${esc(means || "the base word")}</span></div>`).join("")}</div>
+        ${q.rule ? `<p class="wb-rule"><b>Spelling rule:</b> ${esc(q.rule)}</p>` : ""}
+        <div class="row center"><button class="btn" id="hearResult">🔊 Hear it</button>
+          <button class="btn big primary" id="nextQ">${last ? "See my results" : "Next word →"}</button></div>`;
+      $("#hearResult").onclick = () => sayWord(q.answer);
+      $("#nextQ").focus();
+      $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
+    }
+  }
+
   /* ---------- Counting Canopy: four ways to think about number ---------- */
 
   const CANOPY_FLASH = { 1: [0], 2: [0, 1], 3: [0, 1, 2],
@@ -3123,7 +3275,7 @@
     app.innerHTML = `
       <section class="panel summary" style="--accent:${esc(act.colour)}">
         ${previewBanner()}
-        ${pipHTML("big", "cheer", "", "celebrate")}
+        ${plainGame(act) ? "" : pipHTML("big", "cheer", "", "celebrate")}
         <h1>${right === r.length ? (firstGo === r.length ? "Perfect — all right first time!" : "You got them all!") : `You got ${right} out of ${r.length}!`}</h1>
         <p class="meta">${session.pupil ? `${esc(session.pupil)} · ` : ""}${esc(act.title)} · ★ ${earned} stars · ${firstGo} right first time</p>
         ${TRIAL_MODE ? `<p class="hint" role="status">${esc(trialNote)}</p>` : ""}
