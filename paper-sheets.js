@@ -1477,6 +1477,10 @@ window.PopPaper = (() => {
   // Numbered questions, each with an answer space
   const qs = (items, from = 1) => items.map((q, i) => `<div class="pp-q"><p><b>${from + i}.</b> ${q}</p></div>`).join("");
   const T3 = id => `lesson-third-${id}`;
+  // True or false: a statement per row with two tick boxes
+  const trueFalse = (n0, items) => `<table class="pp-table pp-tf"><tr><th>${n0}. True or false? Tick one for each.</th><th class="pp-c">True</th><th class="pp-c">False</th></tr>${items.map(s => `<tr><td>${s}</td><td class="pp-c">☐</td><td class="pp-c">☐</td></tr>`).join("")}</table>`;
+  // Match it: draw a line from each item on the left to its partner on the right (right side already shuffled)
+  const matchUp = (n0, instruction, left, right) => `<div class="pp-q"><p><b>${n0}.</b> ${instruction}</p><div class="pp-match"><div>${left.map(l => `<p>${l}</p>`).join("")}</div><div>${right.map(r => `<p>${r}</p>`).join("")}</div></div></div>`;
 
   add("paper-round-sensibly", T3("rounding-to-decimal-places-and-estimating"), "Round it sensibly", "Round to 1, 2 and 3 decimal places, round to suit the problem, and estimate before calculating.", (who, h) => ({
     pupil: `${h.sheetHead("Round it sensibly", who)}
@@ -1488,10 +1492,12 @@ window.PopPaper = (() => {
       <div class="pp-q"><p><b>6.</b> Estimate first, then calculate (a calculator is fine for the exact answer).</p>
         <table class="pp-table"><tr><th>Calculation</th><th>Rounded to</th><th>Estimate</th><th>Exact answer</th></tr>
           ${["38·7 × 5·2", "61·8 ÷ 2·9", "4·96 × 19·8"].map(c => `<tr><td>${c}</td><td></td><td></td><td></td></tr>`).join("")}</table></div>
-      ${qs([`A calculator shows 312·5 for 29·6 × 1·05. Use an estimate to say whether it's right.${lines(2)}`], 7)}`,
+      ${qs([`A calculator shows 312·5 for 29·6 × 1·05. Use an estimate to say whether it's right.${lines(2)}`], 7)}
+      ${trueFalse(8, ["4·996 rounded to 2 decimal places is 4·99", "0·0749 rounded to 1 decimal place is 0·1", "A sensible estimate for 49·7 × 2·1 is 100", "2·45 rounded to 1 decimal place is 2·4"])}`,
     answers: answersPage(h, "Round it sensibly", ["6·5, 12·3, 1·0", "3·14, 9·00, 0·07", "2·718, 0·667, 5·000",
       "245 ÷ 52 = 4·71…, so 5 coaches: round up, or some pupils have no seat", "0·666… m, so 0·667 m (66·7 cm): to the nearest millimetre, as that's as accurately as a saw can cut",
-      "40 × 5 = 200, exact 201·24; 60 ÷ 3 = 20, exact 21·31 (to 2 d.p.); 5 × 20 = 100, exact 98·208", "No: 30 × 1 = 30, so the answer should be about 30 (it's 31·08). The point is in the wrong place."],
+      "40 × 5 = 200, exact 201·24; 60 ÷ 3 = 20, exact 21·31 (to 2 d.p.); 5 × 20 = 100, exact 98·208", "No: 30 × 1 = 30, so the answer should be about 30 (it's 31·08). The point is in the wrong place.",
+      "8. False (4·996 is 5·00 to 2 d.p.: the 6 rounds the 9 up and carries); True (0·0749 is 0·1 to 1 d.p.); True (50 × 2 = 100); False (2·45 is 2·5: the 5 rounds up)"],
       "Ask why 8·995 rounds to 9·00: the 5 thousandths round the 9 hundredths up, which carries into the tenths and the units.")
   }));
 
@@ -1517,24 +1523,28 @@ window.PopPaper = (() => {
         <p>c) Moscow warms up by 9 degrees. What is its temperature now? ${blank(4)}</p></div>
       ${qs([`A diver is at −12 m (12 m below the surface). They rise 7 m. Where are they now? ${blank(5)}`,
         `Kai has £25 in the bank and spends £40 with a card. What is the balance now? Then £30 is paid in. What is it now? ${lines(1)}`,
-        `Explain why −5 × −6 is positive, using a pattern or an example.${lines(2)}`], 4)}`,
+        `Explain why −5 × −6 is positive, using a pattern or an example.${lines(2)}`], 4)}
+      ${matchUp(7, "Draw a line to join each calculation to its answer.", ["−7 + 3", "−7 − 3", "−7 × −3", "−21 ÷ 3", "7 − (−3)"], ["21", "−7", "−4", "10", "−10"])}`,
     answers: answersPage(h, "Below zero", ["5, −5, −10, 8, −9, 2", "−12, 3, 30, −4, 9, −3", "a) Moscow, Oslo, Reykjavik, Edinburgh  b) 16 degrees  c) −3°C", "−5 m (5 m below the surface)",
-      "−£15 (overdrawn by £15), then £15", "A pattern such as 2 × −6 = −12, 1 × −6 = −6, 0 × −6 = 0, so −1 × −6 = 6: each step goes up by 6"])
+      "−£15 (overdrawn by £15), then £15", "A pattern such as 2 × −6 = −12, 1 × −6 = −6, 0 × −6 = 0, so −1 × −6 = 6: each step goes up by 6",
+      "7. −7 + 3 = −4; −7 − 3 = −10; −7 × −3 = 21; −21 ÷ 3 = −7; 7 − (−3) = 10"])
   }));
 
   add("paper-factor-trees", T3("common-multiples-common-factors-and-primes"), "Factor trees and primes", "Highest common factors, lowest common multiples, factor trees, primes, and a bus timetable problem.", (who, h) => ({
     pupil: `${h.sheetHead("Factor trees and primes", who)}
-      ${qs([`List the factors of 36: ${lines(1)} and of 48: ${lines(1)} Circle the common factors. The highest common factor is ${blank(3)}`,
-        `List the multiples of 6 and of 8 up to 50. The lowest common multiple is ${blank(3)}${lines(1)}`,
+      ${qs([`List the factors of each number, then circle the common factors. The highest common factor is ${blank(3)}<br>Factors of 36: ${blank(22)}<br>Factors of 48: ${blank(22)}`,
+        `List the multiples of 6 and of 8 up to 50. The lowest common multiple is ${blank(3)}<br>Multiples of 6: ${blank(20)}<br>Multiples of 8: ${blank(20)}`,
         `Find the highest common factor and the lowest common multiple of 18 and 24. HCF ${blank(3)} LCM ${blank(3)}`])}
       <div class="pp-q"><p><b>4.</b> Draw a factor tree for each number, then write it as a product of primes.</p>
         <div class="pp-cols3">${[60, 84, 90].map(n => `<div class="pp-cell"><p><b>${n}</b></p><div class="pp-draw pp-short"></div><p>${n} = ${blank(6)}</p></div>`).join("")}</div></div>
       ${qs([`Circle the prime numbers: &nbsp; 2 &nbsp; 9 &nbsp; 17 &nbsp; 21 &nbsp; 29 &nbsp; 39 &nbsp; 41 &nbsp; 51 &nbsp; 57 &nbsp; 61 &nbsp; 87 &nbsp; 97`,
         `Buses to the city leave every 12 minutes and buses to the coast every 18 minutes. Both leave together at 9:00. When do they next leave together? Show how you know.${lines(1)}`,
-        `Is 91 prime? Explain.${lines(1)}`], 5)}`,
+        `Is 91 prime? Explain.${lines(1)}`], 5)}
+      ${trueFalse(8, ["All prime numbers are odd", "The highest common factor of 12 and 18 is 6", "1 is a prime number", "The lowest common multiple of 4 and 6 is 24"])}`,
     answers: answersPage(h, "Factor trees and primes", ["36: 1, 2, 3, 4, 6, 9, 12, 18, 36. 48: 1, 2, 3, 4, 6, 8, 12, 16, 24, 48. Common: 1, 2, 3, 4, 6, 12. HCF 12",
       "6, 12, 18, 24, 30, 36, 42, 48 and 8, 16, 24, 32, 40, 48: LCM 24", "HCF 6, LCM 72", "60 = 2 × 2 × 3 × 5; 84 = 2 × 2 × 3 × 7; 90 = 2 × 3 × 3 × 5",
-      "Primes: 2, 17, 29, 41, 61, 97 (9 = 3 × 3, 21 = 3 × 7, 39 = 3 × 13, 51 = 3 × 17, 57 = 3 × 19, 87 = 3 × 29)", "9:36: the LCM of 12 and 18 is 36", "No: 91 = 7 × 13"])
+      "Primes: 2, 17, 29, 41, 61, 97 (9 = 3 × 3, 21 = 3 × 7, 39 = 3 × 13, 51 = 3 × 17, 57 = 3 × 19, 87 = 3 × 29)", "9:36: the LCM of 12 and 18 is 36", "No: 91 = 7 × 13",
+      "8. False (2 is prime and even); True; False (a prime has exactly two factors, and 1 has only one); False (it is 12)"])
   }));
 
   add("paper-powers", T3("powers-and-indices"), "Powers", "Index notation, evaluating powers, writing numbers as powers, and a paper-folding pattern.", (who, h) => ({

@@ -2106,3 +2106,7 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .pp-working > b { display: block; margin: 4px 8px; font: 700 9pt Arial, Helvetica, sans-serif; color: #0b2e6b; text-transform: uppercase; letter-spacing: .05em; }
 @container (max-height: 16mm) { .pp-working > b { display: none; } }
 @media print { .pp-working { break-inside: avoid; } }
+
+/* True or false table and matching columns on S1+ sheets */
+.pp-tf td, .pp-tf th { padding: 5px 8px; }
+.pp-tf .pp-c { width: 18mm; text-align: center; }
