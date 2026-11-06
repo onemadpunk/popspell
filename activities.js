@@ -1765,6 +1765,204 @@ window.PopActivities = (() => {
       make: () => buildGame(BUILD_ROOTS) }
   ];
 
+  /* ---------- More word games for older pupils: Code Word, Letter Hunt, Word Sort, Clue Crossword, Letter Grid ---------- */
+
+  // Spelling-list words for the games, with the list they come from (its tip names the pattern)
+  const LIST_GROUPS = {
+    phonics: () => (window.SPELLING_LISTS || []).slice(3),            // vowel teams, r sounds, endings and tricky bits
+    y34: () => (window.ENGLAND_LISTS || []).flatMap(st => st.lists).filter(l => /^(wl-y34|cew-y2)/.test(l.id)),
+    y56: () => (window.ENGLAND_LISTS || []).flatMap(st => st.lists).filter(l => /^wl-y56/.test(l.id))
+  };
+  function listWords(groups, test) {
+    const seen = new Set();
+    return groups.flatMap(g => {
+      const lists = LIST_GROUPS[g]();
+      return (lists[0] && lists[0].lists ? lists.flatMap(st => st.lists) : lists).flatMap(l => l.words.map(w => ({ word: String(w).replace(/-$/, ""), list: l })));
+    }).filter(({ word }) => /^[a-z]+$/.test(word) && test(word) && !seen.has(word) && seen.add(word));
+  }
+  const tipOf = list => (list.tip || "").replace(/^From the statutory word list[^.]*\.\s*/, "");
+
+  // Code Word: guess the hidden word in six tries; each letter shows right place, in the word, or not in it
+  const codeRound = ({ word, list }) => ({
+    kind: "codeword", answer: word, label: word, spelling: word, tokens: [], length: word.length, tries: 6,
+    tip: tipOf(list), listTitle: list.title, skill: `spelling: ${list.title.replace(/\s*\(.*\)$/, "")}`,
+    diff: word.length * 10 + new Set(word).size // longer words, then words with more different letters
+  });
+  const codeGame = (groups, test, n = 5) => () => shuffle(listWords(groups, test)).slice(0, n).map(codeRound);
+
+  // Letter Hunt: guess the letters of a hidden word; each miss unlocks a clue instead of drawing anything
+  const CLUE_LEVEL = { Second: "second", Third: "third" };
+  function huntGame(level, n = 6) {
+    return () => {
+      const clues = (window.WORD_CLUES || {})[CLUE_LEVEL[level]] || {};
+      const lists = level === "Third" ? ["y56"] : ["phonics", "y34"];
+      const words = listWords(lists, w => clues[w] && w.length >= 5);
+      return shuffle(words).slice(0, n).map(({ word, list }) => ({
+        kind: "hunt", answer: word, label: word, spelling: word, tokens: [], misses: 8,
+        meaning: clues[word][0], use: clues[word][1], tip: tipOf(list),
+        skill: `spelling: ${list.title.replace(/\s*\(.*\)$/, "")}`,
+        diff: new Set(word).size * 3 + word.length
+      }));
+    };
+  }
+
+  // Word Sort: put each word in the right group. Each set is one round; mistakes name the word.
+  const SORT_SETS = {
+    types: [
+      { title: "Nouns, verbs and adjectives", bins: ["noun", "verb", "adjective"], diff: 1,
+        words: [["castle", 0], ["teacher", 0], ["island", 0], ["whisper", 1], ["explore", 1], ["climb", 1], ["gloomy", 2], ["ancient", 2], ["brave", 2]] },
+      { title: "Things, actions and how actions happen", bins: ["noun", "verb", "adverb"], diff: 2,
+        words: [["thunder", 0], ["journey", 0], ["courage", 0], ["gallop", 1], ["shiver", 1], ["describe", 1], ["quietly", 2], ["suddenly", 2], ["carefully", 2]] },
+      { title: "Joining words and position words", bins: ["conjunction (joins ideas)", "preposition (where or when)"], diff: 3,
+        words: [["because", 0], ["although", 0], ["while", 0], ["unless", 0], ["beneath", 1], ["during", 1], ["between", 1], ["across", 1]] },
+      { title: "Pronouns and determiners", bins: ["pronoun (stands for a noun)", "determiner (comes before a noun)"], diff: 4,
+        words: [["they", 0], ["herself", 0], ["mine", 0], ["someone", 0], ["every", 1], ["those", 1], ["several", 1], ["the", 1]] },
+      { title: "Words made with suffixes", bins: ["noun", "adjective", "verb"], diff: 5,
+        words: [["kindness", 0], ["movement", 0], ["decision", 0], ["hopeful", 1], ["dangerous", 1], ["comfortable", 1], ["simplify", 2], ["organise", 2], ["strengthen", 2]] }
+    ],
+    meaning: [
+      { title: "Loud or quiet ways to speak", bins: ["loud", "quiet"], diff: 1,
+        words: [["bellowed", 0], ["yelled", 0], ["roared", 0], ["shrieked", 0], ["whispered", 1], ["murmured", 1], ["mumbled", 1], ["muttered", 1]] },
+      { title: "Happy or unhappy feelings", bins: ["happy", "unhappy"], diff: 2,
+        words: [["delighted", 0], ["cheerful", 0], ["content", 0], ["thrilled", 0], ["miserable", 1], ["gloomy", 1], ["dismayed", 1], ["glum", 1]] },
+      { title: "Big or small", bins: ["big", "small"], diff: 2,
+        words: [["enormous", 0], ["vast", 0], ["immense", 0], ["colossal", 0], ["tiny", 1], ["minute", 1], ["miniature", 1], ["petite", 1]] },
+      { title: "Formal or informal", bins: ["formal (a letter to the council)", "informal (a chat with a friend)"], diff: 4,
+        words: [["purchase", 0], ["require", 0], ["assist", 0], ["inform", 0], ["buy", 1], ["need", 1], ["help out", 1], ["let you know", 1]] },
+      { title: "Fact or opinion words", bins: ["shows an opinion", "neutral"], diff: 5,
+        words: [["dreadful", 0], ["superb", 0], ["pointless", 0], ["brilliant", 0], ["Tuesday", 1], ["measured", 1], ["northern", 1], ["wooden", 1]] }
+    ],
+    spelling: [
+      { title: "-tion, -sion or -cian?", bins: ["-tion", "-sion", "-cian"], diff: 1,
+        words: [["action", 0], ["station", 0], ["invention", 0], ["television", 1], ["decision", 1], ["confusion", 1], ["musician", 2], ["magician", 2], ["electrician", 2]] },
+      { title: "-able or -ible?", bins: ["-able", "-ible"], diff: 2,
+        words: [["comfortable", 0], ["enjoyable", 0], ["reasonable", 0], ["valuable", 0], ["terrible", 1], ["visible", 1], ["possible", 1], ["horrible", 1]] },
+      { title: "-ant or -ent?", bins: ["-ant", "-ent"], diff: 3,
+        words: [["important", 0], ["elegant", 0], ["hesitant", 0], ["relevant", 0], ["different", 1], ["excellent", 1], ["confident", 1], ["innocent", 1]] },
+      { title: "ie or ei?", bins: ["ie", "ei"], diff: 4,
+        words: [["believe", 0], ["field", 0], ["achieve", 0], ["piece", 0], ["receive", 1], ["ceiling", 1], ["deceive", 1], ["weight", 1]] },
+      { title: "-ous words: keep the e, drop it, or change y to i?", bins: ["just add -ous", "drop the e", "y to i"], diff: 5,
+        words: [["dangerous", 0], ["poisonous", 0], ["mountainous", 0], ["famous", 1], ["adventurous", 1], ["nervous", 1], ["various", 2], ["furious", 2], ["glorious", 2]] }
+    ]
+  };
+  const sortRound = set => ({
+    kind: "sort", answer: set.title, label: set.title, spelling: set.title, tokens: [], bins: set.bins,
+    words: shuffle(set.words.map(([word, bin]) => ({ word, bin }))), skill: set.title, diff: set.diff
+  });
+  const sortGame = key => () => shuffle(SORT_SETS[key]).slice(0, 4).map(sortRound);
+
+  // Clue Crossword: 6 words that cross, with their meanings as clues. Every word is one result.
+  function crossword(entries, want = 6, tries = 60) {
+    let best = null;
+    for (let t = 0; t < tries && (!best || best.length < want); t++) {
+      const pool = shuffle(entries);
+      const placed = [];
+      const cells = new Map(); // "r,c" → letter
+      const at = (r, c) => cells.get(`${r},${c}`);
+      const fits = (w, r, c, down) => {
+        let crosses = 0;
+        for (let i = 0; i < w.length; i++) {
+          const rr = down ? r + i : r, cc = down ? c : c + i;
+          const here = at(rr, cc);
+          if (here && here !== w[i]) return -1;
+          if (here) { crosses++; continue; }
+          // no touching neighbours along the sides of a new letter
+          if (down ? (at(rr, cc - 1) || at(rr, cc + 1)) : (at(rr - 1, cc) || at(rr + 1, cc))) return -1;
+        }
+        const before = down ? at(r - 1, c) : at(r, c - 1);
+        const after = down ? at(r + w.length, c) : at(r, c + w.length);
+        return before || after ? -1 : crosses;
+      };
+      const place = (e, r, c, down) => {
+        placed.push({ ...e, r, c, down });
+        for (let i = 0; i < e.word.length; i++) cells.set(`${down ? r + i : r},${down ? c : c + i}`, e.word[i]);
+      };
+      place(pool[0], 0, 0, false);
+      for (const e of pool.slice(1)) {
+        if (placed.length >= want) break;
+        const spots = [];
+        for (const p of placed) for (let i = 0; i < p.word.length; i++) for (let j = 0; j < e.word.length; j++) {
+          if (p.word[i] !== e.word[j]) continue;
+          const down = !p.down;
+          const r = p.down ? p.r + i : p.r - j, c = p.down ? p.c - j : p.c + i;
+          if (fits(e.word, r, c, down) > 0) spots.push([r, c, down]);
+        }
+        if (spots.length) place(e, ...pick(spots));
+      }
+      // keep it compact enough for a phone
+      const rows = placed.flatMap(p => [p.r, p.down ? p.r + p.word.length - 1 : p.r]);
+      const cols = placed.flatMap(p => [p.c, p.down ? p.c : p.c + p.word.length - 1]);
+      const h = Math.max(...rows) - Math.min(...rows) + 1, w = Math.max(...cols) - Math.min(...cols) + 1;
+      if (w > 13 || h > 13) continue;
+      if (!best || placed.length > best.length) {
+        const r0 = Math.min(...rows), c0 = Math.min(...cols);
+        best = placed.map(p => ({ ...p, r: p.r - r0, c: p.c - c0 }));
+        best.size = { rows: h, cols: w };
+      }
+    }
+    // Number the starts in reading order, like a printed crossword
+    const starts = [...new Set(best.map(p => `${p.r},${p.c}`))].sort((a, b) => { const [ar, ac] = a.split(",").map(Number), [br, bc] = b.split(",").map(Number); return ar - br || ac - bc; });
+    best.forEach(p => { p.number = starts.indexOf(`${p.r},${p.c}`) + 1; });
+    return best;
+  }
+  function crosswordGame(level) {
+    return () => {
+      const clues = (window.WORD_CLUES || {})[CLUE_LEVEL[level]] || {};
+      const entries = Object.entries(clues).filter(([w]) => w.length >= 4 && w.length <= 10).map(([word, [meaning]]) => ({ word, meaning }));
+      if (entries.length < 6) return [];
+      const words = crossword(entries);
+      const puzzle = { size: words.size, words: words.map(({ word, meaning, r, c, down, number }) => ({ word, meaning, r, c, down, number })) };
+      return puzzle.words.slice().sort((a, b) => (a.down - b.down) || a.number - b.number).map((p, i) => ({
+        kind: "crossword", answer: p.word, label: p.word, spelling: p.word, tokens: [], puzzle, index: puzzle.words.indexOf(p),
+        skill: "spelling words from their meaning", diff: i // the puzzle keeps its own order
+      }));
+    };
+  }
+
+  // Letter Grid: find words in a grid of letters. The grid is made when the game starts (it needs the
+  // word list, which loads separately); this is the one round that holds the result.
+  const gridGame = (size, min) => () => [{ kind: "grid", answer: "", label: `${size} × ${size} letter grid`, spelling: "letter grid", tokens: [],
+    size, min, skill: "finding and spelling words" }];
+
+  wordGames.push(
+    { id: "w-code-5", title: "Code Word: five letters", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Crack the hidden five-letter word from the spelling lists in six tries. Colours show which letters are in the right place.",
+      make: codeGame(["phonics", "y34"], w => w.length === 5) },
+    { id: "w-code-6", title: "Code Word: six letters", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Crack hidden six-letter words. Think about which letters can spell each sound.",
+      make: codeGame(["phonics", "y34"], w => w.length === 6) },
+    { id: "w-code-long", title: "Code Word: challenge words", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Crack seven- and eight-letter words from the challenge lists, such as achieve, average and foreign.",
+      make: codeGame(["y56", "y34"], w => w.length >= 7 && w.length <= 8) },
+    { id: "w-hunt-second", title: "Letter Hunt: everyday words", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Guess the letters of a hidden word. Each miss unlocks a clue: its meaning, a sentence, then its spelling pattern.",
+      make: huntGame("Second") },
+    { id: "w-hunt-third", title: "Letter Hunt: challenge words", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Guess the letters of longer, trickier words such as necessary and mischievous, with clues after each miss.",
+      make: huntGame("Third") },
+    { id: "w-sort-types", title: "Word Sort: word types", level: "Second", organiser: "Literacy · Writing · Tools for writing (grammar)",
+      blurb: "Sort words into nouns, verbs, adjectives, adverbs and more.",
+      make: sortGame("types") },
+    { id: "w-sort-meaning", title: "Word Sort: shades of meaning", level: "Second", organiser: "Literacy · Reading · Tools for reading (vocabulary)",
+      blurb: "Sort words by what they mean and how they sound: loud or quiet, big or small, formal or informal.",
+      make: sortGame("meaning") },
+    { id: "w-sort-spelling", title: "Word Sort: spelling choices", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Choose between -tion, -sion and -cian, -able and -ible, -ant and -ent, ie and ei.",
+      make: sortGame("spelling") },
+    { id: "w-cross-second", title: "Clue Crossword: everyday words", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Read the meaning, then spell the word into the crossword. Every crossword is new.",
+      make: crosswordGame("Second") },
+    { id: "w-cross-third", title: "Clue Crossword: challenge words", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "A crossword of challenge words such as conscience, neighbour and rhythm, from their meanings.",
+      make: crosswordGame("Third") },
+    { id: "w-grid-4", title: "Letter Grid: 4 × 4", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "Find words of three letters or more by joining letters that touch. Longer words score more; beat your own best.",
+      make: gridGame(4, 3) },
+    { id: "w-grid-5", title: "Letter Grid: 5 × 5", level: "Third", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "A bigger grid: find words of four letters or more. Add endings like -ed, -ing and -er to find more.",
+      make: gridGame(5, 4) }
+  );
+
   const AREAS = [
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames), game: true },
     { id: "word-games", title: "Word games", colour: "#334155", icon: "🧩", activities: wordGames, game: true, older: true },
@@ -1854,7 +2052,12 @@ window.PopActivities = (() => {
     "n-negative": ["MNU 2-04a"], "n-durations": ["MNU 1-10c"], "n-area": ["MNU 2-11c"], "n-units": ["MNU 2-11b"],
     "n-decimals": ["MNU 2-02a", "MNU 2-03b"], "n-percent": ["MNU 2-07a", "MNU 2-07b"], "n-equivalent": ["MTH 2-07c", "MNU 2-07b"],
     "sec-linear-equations": ["MTH 3-15a", "MTH 3-15b"], "sec-proportion": ["MNU 4-08a"], "sec-evidence-bias": ["LIT 4-16a", "ENG 4-17a", "LIT 4-18a"],
-    "w-build-prefixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-suffixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-roots": ["LIT 3-21a", "LIT 3-13a"]
+    "w-build-prefixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-suffixes": ["LIT 2-21a", "LIT 2-13a"], "w-build-roots": ["LIT 3-21a", "LIT 3-13a"],
+    "w-code-5": ["LIT 2-21a"], "w-code-6": ["LIT 2-21a"], "w-code-long": ["LIT 3-21a"],
+    "w-hunt-second": ["LIT 2-21a", "LIT 2-13a"], "w-hunt-third": ["LIT 3-21a", "LIT 3-13a"],
+    "w-sort-types": ["LIT 2-22a"], "w-sort-meaning": ["LIT 2-13a", "ENG 2-12a"], "w-sort-spelling": ["LIT 3-21a"],
+    "w-cross-second": ["LIT 2-21a", "LIT 2-13a"], "w-cross-third": ["LIT 3-21a", "LIT 3-13a"],
+    "w-grid-4": ["LIT 2-21a"], "w-grid-5": ["LIT 3-21a"]
   };
   function eo(organiser, level, id) {
     if (EO_FOR_ID[id]) return EO_FOR_ID[id].slice();

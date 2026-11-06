@@ -450,7 +450,7 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? (["map", "switch", "canopy", "build"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
+        triesUsed: r.correct ? (["map", "switch", "canopy", "build", "codeword", "hunt", "sort", "crossword", "grid"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
         ...(Number.isFinite(r.seconds) ? { seconds: r.seconds } : {}),
@@ -807,6 +807,7 @@
   /* ---------- Helpers ---------- */
 
   let timers = [];
+  let stopKeys = null; // a word game's keyboard listener
   let phase = 0; // bumps on every screen change so old timers/speech callbacks do nothing
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
   let stopDrive = null; // the phonics check's word watcher, while that screen is open
@@ -814,6 +815,7 @@
     timers.forEach(clearTimeout);
     timers = [];
     if (stopDrive) { stopDrive(); stopDrive = null; }
+    if (stopKeys) { stopKeys(); stopKeys = null; }
     document.body.classList.remove("playing-game");
     if (synth) synth.cancel();
     stopRecorded();
@@ -1875,6 +1877,9 @@
     && !previewMode ? `<button type="button" class="help-btn${helpOn ? " on" : ""}" id="helpBtn" aria-pressed="${helpOn}">${helpOn ? "🙋 Help is coming" : "🙋 Help"}</button>`
     : "";
 
+  // How the progress line names each word game's step
+  const WORD_GAME_STEP = { build: (i, n) => `Word ${i + 1} of ${n}`, codeword: (i, n) => `Code word ${i + 1} of ${n}`, hunt: (i, n) => `Word ${i + 1} of ${n}`,
+    sort: (i, n) => `Set ${i + 1} of ${n}`, crossword: (i, n) => `Crossword: ${n} words`, grid: () => "Letter grid" };
   function progressHTML() {
     const n = session.items.length;
     const earned = session.results.reduce((t, r) => t + r.stars, 0);
@@ -1882,7 +1887,7 @@
       ${previewBanner()}
       <div class="progress">
         <a class="stop" href="#/" id="stopLink">✕ Stop</a>
-        <span>${session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity && session.items[session.i]?.kind === "canopy" ? "Clearing" : session.items[session.i]?.kind === "build" ? "Word" : session.activity ? "Question" : "Word"} ${session.i + 1} of ${n}</span>
+        <span>${WORD_GAME_STEP[session.items[session.i]?.kind] ? WORD_GAME_STEP[session.items[session.i].kind](session.i, n) : session.activity && session.items[session.i]?.kind === "map" ? "Crossing" : session.activity && session.items[session.i]?.kind === "switch" ? "Door" : session.activity && session.items[session.i]?.kind === "canopy" ? "Clearing" : session.activity ? "Question" : "Word"}${WORD_GAME_STEP[session.items[session.i]?.kind] ? "" : ` ${session.i + 1} of ${n}`}</span>
         ${helpHTML()}
         <span class="earned" aria-label="${earned} stars">★ ${earned}</span>
       </div>
@@ -2223,6 +2228,13 @@
   const ACTIVITY_TRIES = 2;
   const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
 
+  const WORD_GAME_HOWTO = {
+    code: ["Guess the hidden word. After each guess, green letters are in the right place, amber letters are in the word but somewhere else, and grey letters are not in it.", "The first letter is given. You have six tries, and a word we don't know doesn't use one up."],
+    hunt: ["Guess the hidden word one letter at a time.", "Each miss unlocks a clue: what it means, a sentence, the word read aloud, then a spelling tip. Eight misses and the word is shown."],
+    sort: ["Tap a word, then tap the group it belongs in. You can drag words too.", "After two tries, the right group glows."],
+    cross: ["Read each clue and type the word into the crossword.", "Press Check to see which letters to fix. Show a letter if you're stuck."],
+    grid: ["Join letters that touch to make words. Longer words score more points.", "There's no clock: finish when you're ready and try to beat your best."]
+  };
   // Word games for older pupils: a plain look with no mascot, whichever look the pupil has
   const plainGame = act => !!act && act.area === "word-games";
   function showActivityStart(act) {
@@ -2243,6 +2255,8 @@
           <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
           : /^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌟 Focused number practice with Pip</strong>
           <small>Six quick challenges for one skill. Replay or use a clue whenever you need one.</small></div>`
+          : WORD_GAME_HOWTO[(act.id.match(/^w-([a-z]+)/) || [])[1]] ? `<div class="wb-howto"><strong>How to play</strong>
+          <span>${WORD_GAME_HOWTO[act.id.match(/^w-([a-z]+)/)[1]][0]}</span><small>${WORD_GAME_HOWTO[act.id.match(/^w-([a-z]+)/)[1]][1]}</small></div>`
           : /^w-build-/.test(act.id) ? `<div class="wb-howto"><strong>How to play</strong>
           <span>Read the meaning. Tap the parts in order to build the word, then press Check.</span>
           <small>Prefixes go at the start, suffixes at the end. Some words change their spelling where the parts join.</small></div>` : ""}
@@ -2407,6 +2421,11 @@
     if (q.kind === "switch") return showSoundSwitch(q);
     if (q.kind === "canopy") return showCountingCanopy(q);
     if (q.kind === "build") return showWordBuilder(q);
+    if (q.kind === "codeword") return showCodeWord(q);
+    if (q.kind === "hunt") return showLetterHunt(q);
+    if (q.kind === "sort") return showWordSort(q);
+    if (q.kind === "crossword") return showCrossword(q);
+    if (q.kind === "grid") return showLetterGrid(q);
     if (!q.say) q.say = questionSay(q);
     // Answers made of words can be heard too (not bare numbers or punctuation)
     const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
@@ -3048,6 +3067,530 @@
       $("#nextQ").focus();
       $("#nextQ").onclick = () => { if (last) showActivitySummary(); else { session.i++; showQuestion(); } };
     }
+  }
+
+  /* ---------- More word games for older pupils (plain look, no mascot) ---------- */
+
+  // The words the games accept (assets/words/dictionary.txt, made by tools/make_dictionary.mjs). It loads
+  // only when a game needs it. Without a connection the games still work: any guess is accepted.
+  let dictionaryLoad = null;
+  const loadDictionary = () => (dictionaryLoad = dictionaryLoad || fetch("assets/words/dictionary.txt")
+    .then(res => (res.ok ? res.text() : Promise.reject(new Error(res.status))))
+    .then(text => new Set(text.split("\n").filter(Boolean)))
+    .catch(() => { dictionaryLoad = null; return null; }));
+  // Keys typed on a real keyboard, for the game on screen: cleared by the next screen
+  const listenKeys = handler => {
+    const on = event => { if (!event.ctrlKey && !event.metaKey && !event.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName)) handler(event); };
+    document.addEventListener("keydown", on);
+    stopKeys = () => document.removeEventListener("keydown", on);
+  };
+  const KEY_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+  // An on-screen keyboard; state(letter) gives a class (hit, near, miss) for letters already tried
+  const keyboardHTML = (state, enter) => `<div class="wg-keys" role="group" aria-label="Letters">${KEY_ROWS.map((row, i) => `<div class="wg-key-row">
+    ${i === 2 && enter ? `<button type="button" class="wg-key wide" data-key="enter">Enter</button>` : ""}
+    ${[...row].map(k => { const s = state(k); return `<button type="button" class="wg-key ${s}" data-key="${k}"${s === "used" ? " disabled" : ""} aria-label="${k}${s ? `, ${s === "hit" ? "right place" : s === "near" ? "in the word" : s === "miss" ? "not in the word" : "tried"}` : ""}">${k}</button>`; }).join("")}
+    ${i === 2 && enter ? `<button type="button" class="wg-key wide" data-key="back" aria-label="Delete">⌫</button>` : ""}</div>`).join("")}</div>`;
+  // Records a word game's round, like the other games: two stars first time, one with help, none if missed
+  function wordGameResult(q, { correct, wrong = [], stars: earned, missed = [], startedAt }) {
+    session.results.push({ item: q, correct, wrong: wrong.slice(0, 8), stars: earned, missed: [...new Set(missed)],
+      seconds: Math.min(3600, Math.max(1, Math.round((Date.now() - startedAt) / 1000))) });
+    if (!session.preview) countGo();
+    livePing(session, "word", { word: q.label, ok: correct && !wrong.length });
+  }
+  const nextRoundHTML = () => {
+    const last = session.i >= session.items.length - 1;
+    return `<button class="btn big primary" id="nextQ">${last ? "See my results" : "Next →"}</button>`;
+  };
+  const wireNextRound = () => {
+    const btn = $("#nextQ");
+    if (!btn) return;
+    btn.focus();
+    btn.onclick = () => { if (session.i >= session.items.length - 1) showActivitySummary(); else { session.i++; showQuestion(); } };
+  };
+  const gameShell = (cls, body) => `<section class="panel practice activity word-game ${cls}" style="--accent:${esc(session.activity.colour)}">
+    ${progressHTML()}${body}<p class="feedback" id="feedback" aria-live="polite"></p><div id="wgDone"></div></section>`;
+  const feedbackSay = (cls, html) => { const f = $("#feedback"); if (f) { f.className = `feedback ${cls}`; f.innerHTML = html; } };
+  const oopsTone = () => tones([220, 196], 0.12);
+
+  /* Code Word: crack the hidden word in six tries, with the first letter given */
+  function showCodeWord(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const guesses = [];
+    let typing = q.answer[0];
+    let done = false;
+    const marks = guess => {
+      const out = Array(guess.length).fill("miss");
+      const left = {};
+      [...q.answer].forEach((ch, i) => { if (guess[i] === ch) out[i] = "hit"; else left[ch] = (left[ch] || 0) + 1; });
+      [...guess].forEach((ch, i) => { if (out[i] !== "hit" && left[ch]) { out[i] = "near"; left[ch]--; } });
+      return out;
+    };
+    const keyState = k => {
+      let s = "";
+      guesses.forEach(g => marks(g).forEach((m, i) => { if (g[i] === k && (m === "hit" || (m === "near" && s !== "hit") || (m === "miss" && !s))) s = m; }));
+      return s;
+    };
+    app.innerHTML = gameShell("code-word", `
+      <p class="wb-kicker">Crack the code word</p>
+      <p class="wg-lead">A ${q.length}-letter word from the spelling lists, starting with <b>${esc(q.answer[0].toUpperCase())}</b>. You have ${q.tries} tries.</p>
+      <div class="cw-board" id="cwBoard" role="grid" aria-label="Your guesses" style="--n:${q.length}"></div>
+      <ul class="cw-key-help" aria-label="What the colours mean"><li><span class="cw-cell hit">a</span> right place</li><li><span class="cw-cell near">a</span> in the word, wrong place</li><li><span class="cw-cell miss">a</span> not in the word</li></ul>
+      <div id="cwKeys"></div>`);
+    wireStop();
+    const draw = () => {
+      $("#cwBoard").innerHTML = Array.from({ length: q.tries }, (_, row) => {
+        const g = guesses[row];
+        const m = g ? marks(g) : null;
+        const text = g || (row === guesses.length && !done ? typing : "");
+        return `<div class="cw-row${row === guesses.length && !done ? " current" : ""}" role="row">${Array.from({ length: q.length }, (_, i) =>
+          `<span class="cw-cell ${m ? m[i] : text[i] ? "typed" : ""}" role="gridcell" aria-label="${text[i] ? `${text[i]}${m ? `, ${m[i] === "hit" ? "right place" : m[i] === "near" ? "in the word" : "not in the word"}` : ""}` : "empty"}">${esc(text[i] || "")}</span>`).join("")}</div>`;
+      }).join("");
+      $("#cwKeys").innerHTML = done ? "" : keyboardHTML(keyState, true);
+      app.querySelectorAll("#cwKeys [data-key]").forEach(b => { b.onclick = () => press(b.dataset.key); });
+    };
+    const finish = solved => {
+      done = true;
+      stopKeys && stopKeys();
+      const tries = guesses.length;
+      const earned = solved ? (tries <= 3 ? 2 : 1) : 0;
+      wordGameResult(q, { correct: solved, wrong: solved ? guesses.slice(0, -1) : guesses, stars: earned, missed: solved ? [] : [q.skill], startedAt });
+      draw();
+      if (solved) chimeRight(); else oopsTone();
+      feedbackSay(solved ? "good" : "oops", solved ? `Cracked it in ${tries} ${tries === 1 ? "try" : "tries"}! <span class="stars-inline">${stars(earned)}</span>` : `The code word was <b>${esc(q.answer)}</b>.`);
+      $("#wgDone").innerHTML = `<p class="wb-word">${esc(q.answer)}</p>
+        ${q.tip ? `<p class="wb-rule"><b>${esc(q.listTitle)}:</b> ${esc(q.tip)}</p>` : ""}
+        <div class="row center"><button class="btn" id="hearResult">🔊 Hear it</button>${nextRoundHTML()}</div>`;
+      $("#hearResult").onclick = () => sayWord(q.answer);
+      sayWord(q.answer);
+      wireNextRound();
+    };
+    const submit = async () => {
+      if (typing.length < q.length) { feedbackSay("oops", `The word has ${q.length} letters.`); return; }
+      const dict = await loadDictionary();
+      if (done) return;
+      if (dict && !dict.has(typing) && typing !== q.answer) {
+        oopsTone();
+        feedbackSay("oops", `<b>${esc(typing)}</b> isn't in our word list. Check the spelling: it doesn't use up a try.`);
+        return;
+      }
+      guesses.push(typing);
+      typing = q.answer[0];
+      feedbackSay("", "");
+      if (guesses[guesses.length - 1] === q.answer) return finish(true);
+      if (guesses.length >= q.tries) return finish(false);
+      draw();
+    };
+    const press = key => {
+      if (done) return;
+      if (key === "enter") return submit();
+      if (key === "back") { if (typing.length > 1) typing = typing.slice(0, -1); }
+      else if (/^[a-z]$/.test(key) && typing.length < q.length) typing += key;
+      draw();
+    };
+    listenKeys(e => {
+      const k = e.key === "Enter" ? "enter" : e.key === "Backspace" ? "back" : e.key.toLowerCase();
+      if (k === "enter" || k === "back" || /^[a-z]$/.test(k)) { e.preventDefault(); press(k); }
+    });
+    loadDictionary();
+    draw();
+  }
+
+  /* Letter Hunt: a gentle letter-guessing game. Each miss unlocks a clue; nothing is drawn or hanged. */
+  function showLetterHunt(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const tried = new Set();
+    const wrong = [];
+    let done = false;
+    const CLUES = [
+      [1, "What it means", () => esc(q.meaning)],
+      [2, "In a sentence", () => esc(q.use).replace("___", `<span class="wb-gap">&nbsp;</span>`)],
+      [3, "Hear it", () => `<button type="button" class="btn small" id="huntHear">🔊 Hear the word</button>`],
+      [5, "Spelling tip", () => esc(q.tip || "Say it slowly in syllables and think about how each sound is spelled.")]
+    ];
+    app.innerHTML = gameShell("letter-hunt", `
+      <p class="wb-kicker">Letter Hunt</p>
+      <p class="wg-lead">Find the hidden word, one letter at a time. Each miss unlocks a clue.</p>
+      <div class="hunt-word" id="huntWord" aria-live="polite"></div>
+      <div class="hunt-meter" id="huntMeter"></div>
+      <div class="hunt-clues" id="huntClues"></div>
+      <div id="huntKeys"></div>`);
+    wireStop();
+    const found = () => [...q.answer].every(ch => tried.has(ch));
+    const draw = () => {
+      $("#huntWord").innerHTML = [...q.answer].map(ch => `<span class="hunt-letter${tried.has(ch) || done ? " shown" : ""}">${tried.has(ch) || done ? esc(ch) : ""}</span>`).join("");
+      $("#huntWord").setAttribute("aria-label", [...q.answer].map(ch => (tried.has(ch) || done ? ch : "blank")).join(", "));
+      $("#huntMeter").innerHTML = `<span class="hunt-dots" aria-hidden="true">${Array.from({ length: q.misses }, (_, i) => `<i class="${i < wrong.length ? "used" : ""}"></i>`).join("")}</span>
+        <span>${wrong.length ? `Misses: ${wrong.map(esc).join(" ")}` : "No misses yet"}</span>`;
+      $("#huntClues").innerHTML = CLUES.map(([after, title, body]) => wrong.length >= after || done
+        ? `<div class="hunt-clue open"><b>${title}</b><div>${body()}</div></div>`
+        : `<div class="hunt-clue"><b>${title}</b><div class="hint">Unlocks after ${after} ${after === 1 ? "miss" : "misses"}</div></div>`).join("");
+      const hear = $("#huntHear");
+      if (hear) hear.onclick = () => sayWord(q.answer);
+      $("#huntKeys").innerHTML = done ? "" : keyboardHTML(k => (tried.has(k) ? "used" : ""), false);
+      app.querySelectorAll("#huntKeys [data-key]").forEach(b => { b.onclick = () => guess(b.dataset.key); });
+    };
+    const finish = solved => {
+      done = true;
+      stopKeys && stopKeys();
+      const earned = solved ? (wrong.length <= 2 ? 2 : 1) : 0;
+      wordGameResult(q, { correct: solved, wrong, stars: earned, missed: solved && wrong.length <= 2 ? [] : [q.skill], startedAt });
+      draw();
+      if (solved) chimeRight(); else oopsTone();
+      feedbackSay(solved ? "good" : "oops", solved ? `You found <b>${esc(q.answer)}</b>! <span class="stars-inline">${stars(earned)}</span>` : `The word was <b>${esc(q.answer)}</b>. Have a look at its clues.`);
+      $("#wgDone").innerHTML = `<div class="row center"><button class="btn" id="hearResult">🔊 Hear it</button>${nextRoundHTML()}</div>`;
+      $("#hearResult").onclick = () => sayWord(q.answer);
+      sayWord(q.answer);
+      wireNextRound();
+    };
+    const guess = k => {
+      if (done || tried.has(k) || !/^[a-z]$/.test(k)) return;
+      tried.add(k);
+      if (q.answer.includes(k)) {
+        const n = [...q.answer].filter(ch => ch === k).length;
+        feedbackSay("good", `Yes: ${n === 1 ? "one" : n} <b>${esc(k)}</b>.`);
+        if (found()) return finish(true);
+      } else {
+        wrong.push(k);
+        oopsTone();
+        const clue = CLUES.find(([after]) => after === wrong.length);
+        feedbackSay("oops", `No <b>${esc(k)}</b>.${clue ? ` New clue: ${clue[1].toLowerCase()}.` : ""}`);
+        if (wrong.length >= q.misses) return finish(false);
+      }
+      draw();
+    };
+    listenKeys(e => { const k = e.key.toLowerCase(); if (/^[a-z]$/.test(k)) { e.preventDefault(); guess(k); } });
+    draw();
+  }
+
+  /* Word Sort: tap (or drag) a word, then the group it belongs in */
+  function showWordSort(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const wrong = [];
+    const missed = [];
+    const placed = new Map(); // word → bin
+    const tries = {};
+    let selected = null;
+    let done = false;
+    app.innerHTML = gameShell("word-sort", `
+      <p class="wb-kicker">Word Sort</p>
+      <h1 class="wb-clue">${esc(q.label)}</h1>
+      <p class="wg-lead">Tap a word, then tap its group. You can drag words too.</p>
+      <div class="sort-pool" id="sortPool" role="group" aria-label="Words to sort"></div>
+      <div class="sort-bins" id="sortBins" style="--bins:${q.bins.length}"></div>`);
+    wireStop();
+    const draw = () => {
+      $("#sortPool").innerHTML = q.words.filter(w => !placed.has(w.word)).map(w =>
+        `<button type="button" class="sort-chip${selected === w.word ? " selected" : ""}" data-word="${esc(w.word)}" draggable="true" aria-pressed="${selected === w.word}">${esc(w.word)}</button>`).join("")
+        || `<span class="hint">All sorted!</span>`;
+      const hintBin = selected && (tries[selected] || 0) >= 2 ? q.words.find(w => w.word === selected).bin : -1;
+      $("#sortBins").innerHTML = q.bins.map((bin, i) => `<div class="sort-bin${i === hintBin ? " hinted" : ""}" data-bin="${i}" role="button" tabindex="0" aria-label="Put it in: ${esc(bin)}">
+        <h2>${esc(bin)}</h2><div class="sort-placed">${q.words.filter(w => placed.get(w.word) === i).map(w => `<span class="sort-chip in">${esc(w.word)}</span>`).join("")}</div></div>`).join("");
+      app.querySelectorAll("#sortPool [data-word]").forEach(b => {
+        b.onclick = () => { selected = selected === b.dataset.word ? null : b.dataset.word; draw(); };
+        b.ondragstart = e => { selected = b.dataset.word; e.dataTransfer.setData("text/plain", b.dataset.word); };
+      });
+      app.querySelectorAll("#sortBins [data-bin]").forEach(bin => {
+        const put = () => drop(Number(bin.dataset.bin));
+        bin.onclick = put;
+        bin.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); put(); } };
+        bin.ondragover = e => e.preventDefault();
+        bin.ondrop = e => { e.preventDefault(); selected = e.dataTransfer.getData("text/plain") || selected; put(); };
+      });
+    };
+    const drop = bin => {
+      if (done) return;
+      if (!selected) { feedbackSay("oops", "Tap a word first, then its group."); return; }
+      const w = q.words.find(x => x.word === selected);
+      if (w.bin === bin) {
+        placed.set(w.word, bin);
+        feedbackSay("good", `<b>${esc(w.word)}</b>: ${esc(q.bins[bin])}.`);
+        selected = null;
+        if (placed.size === q.words.length) return finish();
+      } else {
+        tries[w.word] = (tries[w.word] || 0) + 1;
+        if (wrong.length < 8) wrong.push(`${w.word} → ${q.bins[bin]}`);
+        missed.push(w.word);
+        oopsTone();
+        feedbackSay("oops", tries[w.word] >= 2 ? `Not ${esc(q.bins[bin])}. The right group is glowing.` : `<b>${esc(w.word)}</b> isn't ${esc(q.bins[bin])}. Think again.`);
+      }
+      draw();
+    };
+    const finish = () => {
+      done = true;
+      const earned = wrong.length ? 1 : 2;
+      wordGameResult(q, { correct: true, wrong, stars: earned, missed, startedAt });
+      chimeRight();
+      draw();
+      feedbackSay("good", `All sorted${wrong.length ? "" : " first time"}! <span class="stars-inline">${stars(earned)}</span>`);
+      $("#wgDone").innerHTML = `<div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    draw();
+  }
+
+  /* Clue Crossword: the whole crossword on one screen; each word is a result when it is finished */
+  function showCrossword(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const { puzzle } = q;
+    const words = puzzle.words;
+    const items = session.items;
+    const state = words.map(() => ({ wrong: [], hinted: false, right: false }));
+    const cellWords = new Map(); // "r,c" → indexes of words through it
+    words.forEach((w, k) => { for (let i = 0; i < w.word.length; i++) { const key = `${w.down ? w.r + i : w.r},${w.down ? w.c : w.c + i}`; (cellWords.get(key) || cellWords.set(key, []).get(key)).push(k); } });
+    const letterAt = key => { const k = cellWords.get(key)[0], w = words[k]; const [r, c] = key.split(",").map(Number); return w.word[w.down ? r - w.r : c - w.c]; };
+    let active = 0;
+    let done = false;
+    const clueList = down => words.map((w, k) => [w, k]).filter(([w]) => w.down === down).sort((a, b) => a[0].number - b[0].number)
+      .map(([w, k]) => `<li><button type="button" class="cross-clue" data-word="${k}"><b>${w.number}</b> ${esc(w.meaning)} <span class="hint">(${w.word.length})</span></button></li>`).join("");
+    app.innerHTML = gameShell("clue-crossword", `
+      <p class="wb-kicker">Clue Crossword</p>
+      <p class="wg-lead">Read a clue, then type the word into the grid. Press Check when you're ready.</p>
+      <div class="cross-wrap">
+        <div class="cross-grid" id="crossGrid" style="--rows:${puzzle.size.rows};--cols:${puzzle.size.cols}">${Array.from({ length: puzzle.size.rows }, (_, r) =>
+          Array.from({ length: puzzle.size.cols }, (_, c) => {
+            const key = `${r},${c}`;
+            if (!cellWords.has(key)) return `<span class="cross-block" aria-hidden="true"></span>`;
+            const start = words.find(w => w.r === r && w.c === c);
+            return `<label class="cross-cell" data-cell="${key}">${start ? `<small>${start.number}</small>` : ""}<input maxlength="1" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Row ${r + 1}, column ${c + 1}"></label>`;
+          }).join("")).join("")}</div>
+        <div class="cross-clues"><h2>Across</h2><ol>${clueList(false)}</ol><h2>Down</h2><ol>${clueList(true)}</ol></div>
+      </div>
+      <div class="row center wb-actions"><button type="button" class="btn" id="crossHint">Show a letter</button><button type="button" class="btn primary" id="crossCheck">Check</button></div>`);
+    wireStop();
+    const input = key => app.querySelector(`[data-cell="${key}"] input`);
+    const cellsOf = k => { const w = words[k]; return Array.from({ length: w.word.length }, (_, i) => `${w.down ? w.r + i : w.r},${w.down ? w.c : w.c + i}`); };
+    const typed = k => cellsOf(k).map(key => input(key).value.toLowerCase()).join("");
+    const highlight = () => {
+      app.querySelectorAll(".cross-cell").forEach(cell => cell.classList.toggle("active", cellWords.get(cell.dataset.cell).includes(active)));
+      app.querySelectorAll(".cross-clue").forEach(b => b.classList.toggle("active", Number(b.dataset.word) === active));
+    };
+    const focusWord = k => { active = k; highlight(); const empty = cellsOf(k).find(key => !input(key).value); input(empty || cellsOf(k)[0]).focus(); };
+    app.querySelectorAll(".cross-clue").forEach(b => { b.onclick = () => focusWord(Number(b.dataset.word)); });
+    app.querySelectorAll(".cross-cell").forEach(cell => {
+      const key = cell.dataset.cell;
+      const box = cell.querySelector("input");
+      box.onfocus = () => { if (!cellWords.get(key).includes(active)) { active = cellWords.get(key)[0]; } highlight(); };
+      box.onclick = () => { const through = cellWords.get(key); if (through.length > 1 && document.activeElement === box) { active = through.find(k => k !== active) ?? active; highlight(); } };
+      box.oninput = () => {
+        box.value = box.value.replace(/[^a-z]/gi, "").slice(-1).toLowerCase();
+        cell.classList.remove("wrong");
+        if (!box.value) return;
+        const list = cellsOf(active), at = list.indexOf(key);
+        if (at >= 0 && at < list.length - 1) input(list[at + 1]).focus();
+      };
+      box.onkeydown = e => {
+        const list = cellsOf(active), at = list.indexOf(key);
+        if (e.key === "Backspace" && !box.value && at > 0) { e.preventDefault(); const prev = input(list[at - 1]); prev.value = ""; prev.focus(); }
+        else if (e.key === "Enter") { e.preventDefault(); $("#crossCheck").click(); }
+        else if (/^Arrow/.test(e.key)) {
+          const [r, c] = key.split(",").map(Number);
+          const [dr, dc] = { ArrowUp: [-1, 0], ArrowDown: [1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] }[e.key];
+          const next = `${r + dr},${c + dc}`;
+          if (cellWords.has(next)) { e.preventDefault(); if (cellWords.get(next).length === 1 || !cellWords.get(next).includes(active)) active = cellWords.get(next)[0]; input(next).focus(); }
+        }
+      };
+    });
+    $("#crossHint").onclick = () => {
+      if (done) return;
+      const k = state[active].right ? state.findIndex(s => !s.right) : active;
+      if (k < 0) return;
+      const key = cellsOf(k).find(cell => input(cell).value.toLowerCase() !== letterAt(cell));
+      if (!key) return;
+      state[k].hinted = true;
+      cellWords.get(key).forEach(j => { state[j].hinted = true; });
+      input(key).value = letterAt(key);
+      input(key).closest(".cross-cell").classList.add("given");
+      active = k;
+      highlight();
+      feedbackSay("good", `Here's a letter for ${words[k].number} ${words[k].down ? "down" : "across"}.`);
+    };
+    $("#crossCheck").onclick = () => {
+      if (done) return;
+      let newlyRight = 0, wrongWords = 0;
+      words.forEach((w, k) => {
+        if (state[k].right) return;
+        const t = typed(k);
+        if (t.length < w.word.length) return;
+        if (t === w.word) { state[k].right = true; newlyRight++; cellsOf(k).forEach(key => { input(key).readOnly = true; input(key).closest(".cross-cell").classList.add("right"); }); }
+        else {
+          wrongWords++;
+          if (!state[k].wrong.includes(t)) state[k].wrong.push(t);
+          cellsOf(k).forEach(key => { if (input(key).value.toLowerCase() !== letterAt(key)) input(key).closest(".cross-cell").classList.add("wrong"); });
+        }
+      });
+      app.querySelectorAll(".cross-clue").forEach(b => b.classList.toggle("solved", state[Number(b.dataset.word)].right));
+      if (state.every(s => s.right)) return finish();
+      if (wrongWords) { oopsTone(); feedbackSay("oops", `${wrongWords === 1 ? "One word has" : `${wrongWords} words have`} a letter to fix (shown in red).`); }
+      else if (newlyRight) { chimeRight(); feedbackSay("good", `${newlyRight} more right. Keep going!`); }
+      else feedbackSay("", "Fill in a whole word, then press Check.");
+    };
+    const finish = () => {
+      done = true;
+      chimeRight();
+      // One result per word, in the order the activity listed them
+      items.forEach(item => {
+        const s = state[item.index];
+        wordGameResult(item, { correct: true, wrong: s.wrong, stars: s.wrong.length || s.hinted ? 1 : 2, missed: s.wrong.length || s.hinted ? [item.skill] : [], startedAt });
+      });
+      session.i = items.length - 1;
+      $("#crossHint").disabled = true;
+      $("#crossCheck").disabled = true;
+      feedbackSay("good", "Crossword complete!");
+      $("#wgDone").innerHTML = `<div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    focusWord(0);
+  }
+
+  /* Letter Grid: join letters that touch (across, down or diagonally) to make words */
+  const GRID_LETTERS = "eeeeeeeaaaaaiiiiiooooouuussssrrrrttttnnnnnllllddddcccmmmpppgghhbbffyywwkvjxz";
+  const GRID_POINTS = len => (len <= 3 ? 1 : len === 4 ? 2 : len === 5 ? 3 : len === 6 ? 5 : 8);
+  function gridSolve(tiles, size, dict, prefixes, min) {
+    const found = new Set();
+    const walk = (at, used, word) => {
+      if (!prefixes.has(word) && !dict.has(word)) return;
+      if (word.length >= min && dict.has(word)) found.add(word);
+      const r = Math.floor(at / size), c = at % size;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const rr = r + dr, cc = c + dc, next = rr * size + cc;
+        if ((dr || dc) && rr >= 0 && cc >= 0 && rr < size && cc < size && !used.has(next)) { used.add(next); walk(next, used, word + tiles[next]); used.delete(next); }
+      }
+    };
+    tiles.forEach((t, i) => walk(i, new Set([i]), t));
+    return found;
+  }
+  // The tiles a word could use, in order, or null if it can't be made in the grid
+  function gridPath(tiles, size, word) {
+    const path = [];
+    const go = (at, rest) => {
+      if (!rest.startsWith(tiles[at]) || path.includes(at)) return false;
+      path.push(at);
+      const left = rest.slice(tiles[at].length);
+      if (!left) return true;
+      const r = Math.floor(at / size), c = at % size;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) {
+        const rr = r + dr, cc = c + dc;
+        if ((dr || dc) && rr >= 0 && cc >= 0 && rr < size && cc < size && go(rr * size + cc, left)) return true;
+      }
+      path.pop();
+      return false;
+    };
+    for (let i = 0; i < tiles.length; i++) if (go(i, word)) return path;
+    return null;
+  }
+  let gridPrefixes = null;
+  let gridCommon = null;
+  const gridEveryday = () => (gridCommon = gridCommon || new Set(JSON.stringify([window.SENTENCES, window.PASSAGES, window.STORIES, window.WORD_CLUES,
+    Object.values(LISTS).map(l => l.items.map(it => it.spelling))]).match(/\b[a-z]{3,}\b/g))); // lower case only, so no names
+  async function showLetterGrid(q) {
+    document.body.classList.add("playing-game");
+    const my = phase;
+    app.innerHTML = gameShell("letter-grid", `<p class="wb-kicker">Letter Grid</p><p class="wg-lead">Getting the letters ready…</p>`);
+    wireStop();
+    const dict = await loadDictionary();
+    if (my !== phase) return;
+    if (!dict) { feedbackSay("oops", "Letter Grid needs the internet the first time, to fetch its word list. Try again when you're connected."); return; }
+    if (!gridPrefixes) { gridPrefixes = new Set(); dict.forEach(w => { for (let i = 1; i < w.length; i++) gridPrefixes.add(w.slice(0, i)); }); }
+    const size = q.size, min = q.min;
+    const want = size === 4 ? 30 : 40;
+    let tiles = [], all = new Set();
+    for (let t = 0; t < 60 && all.size < want; t++) {
+      tiles = Array.from({ length: size * size }, () => GRID_LETTERS[Math.floor(Math.random() * GRID_LETTERS.length)]);
+      if (tiles.filter(x => "aeiou".includes(x)).length < size + 1) continue;
+      tiles = tiles.map(x => (x === "q" ? "qu" : x));
+      all = gridSolve(tiles, size, dict, gridPrefixes, min);
+    }
+    const startedAt = Date.now();
+    const found = [];
+    const notWords = [];
+    let path = [];
+    let done = false;
+    // The goal is half the everyday words in this grid (rare words count when found, but not towards the goal)
+    const goal = Math.min(12, Math.max(5, Math.round([...all].filter(w => gridEveryday().has(w)).length * 0.5)));
+    app.innerHTML = gameShell("letter-grid", `
+      <p class="wb-kicker">Letter Grid</p>
+      <p class="wg-lead">Join letters that touch, across, down or diagonally, to make words of ${min} letters or more. Use each tile once in a word. Aim for <b>${goal}</b> words.</p>
+      <div class="grid-play">
+        <div>
+          <div class="grid-board" id="gridBoard" style="--size:${size}" role="group" aria-label="Letter grid">${tiles.map((t, i) => `<button type="button" class="grid-tile" data-tile="${i}">${esc(t)}</button>`).join("")}</div>
+          <div class="grid-current" id="gridWord" aria-live="polite">&nbsp;</div>
+          <div class="row center wb-actions"><button type="button" class="btn" id="gridClear">Clear</button><button type="button" class="btn primary" id="gridAdd">Add word</button></div>
+          <p class="hint">On a keyboard, just type a word and press Enter.</p>
+        </div>
+        <div class="grid-found"><p class="grid-score" id="gridScore"></p><ul id="gridList"></ul>
+          <button type="button" class="btn" id="gridFinish">I've finished</button></div>
+      </div>`);
+    wireStop();
+    const word = () => path.map(i => tiles[i]).join("");
+    const points = () => found.reduce((t, w) => t + GRID_POINTS(w.length), 0);
+    const draw = () => {
+      app.querySelectorAll("[data-tile]").forEach(b => {
+        const i = Number(b.dataset.tile);
+        b.classList.toggle("on", path.includes(i));
+        b.classList.toggle("last", path[path.length - 1] === i);
+      });
+      $("#gridWord").textContent = word() || " ";
+      $("#gridScore").innerHTML = `<b>${found.length}</b> ${found.length === 1 ? "word" : "words"} · <b>${points()}</b> points${found.length >= goal ? " · goal reached!" : ""}`;
+      $("#gridList").innerHTML = found.slice().reverse().map(w => `<li><span>${esc(w)}</span><small>+${GRID_POINTS(w.length)}</small></li>`).join("");
+    };
+    const adjacent = (a, b) => Math.abs(Math.floor(a / size) - Math.floor(b / size)) <= 1 && Math.abs((a % size) - (b % size)) <= 1;
+    app.querySelectorAll("[data-tile]").forEach(b => {
+      b.onclick = () => {
+        if (done) return;
+        const i = Number(b.dataset.tile);
+        if (path[path.length - 1] === i) path.pop();
+        else if (!path.includes(i) && (!path.length || adjacent(path[path.length - 1], i))) path.push(i);
+        else path = [i];
+        draw();
+      };
+    });
+    const add = () => {
+      const w = word();
+      if (!w) return;
+      if (w.length < min) feedbackSay("oops", `Words need ${min} letters or more.`);
+      else if (found.includes(w)) feedbackSay("oops", `You already have <b>${esc(w)}</b>.`);
+      else if (!dict.has(w)) { if (notWords.length < 8 && !notWords.includes(w)) notWords.push(w); oopsTone(); feedbackSay("oops", `<b>${esc(w)}</b> isn't in our word list. Check the spelling.`); }
+      else { found.push(w); chimeRight(); feedbackSay("good", `<b>${esc(w)}</b> +${GRID_POINTS(w.length)}`); }
+      path = [];
+      draw();
+    };
+    $("#gridAdd").onclick = add;
+    $("#gridClear").onclick = () => { path = []; draw(); };
+    let typedWord = "";
+    listenKeys(e => {
+      if (done) return;
+      if (e.key === "Enter") { e.preventDefault(); typedWord = ""; add(); return; }
+      if (e.key === "Backspace") { e.preventDefault(); typedWord = typedWord.slice(0, -1); }
+      else if (/^[a-z]$/i.test(e.key)) typedWord += e.key.toLowerCase();
+      else return;
+      const p = gridPath(tiles, size, typedWord);
+      if (p) path = p;
+      else if (typedWord) { feedbackSay("oops", `<b>${esc(typedWord)}</b> can't be made in this grid.`); typedWord = word(); }
+      else path = [];
+      draw();
+    });
+    $("#gridFinish").onclick = () => {
+      if (done) return;
+      done = true;
+      stopKeys && stopKeys();
+      const earned = found.length >= goal ? 2 : found.length >= 3 ? 1 : 0;
+      q.label = `${size} × ${size} grid: ${found.length} ${found.length === 1 ? "word" : "words"}, ${points()} points`;
+      q.answer = `${goal} words`;
+      wordGameResult(q, { correct: found.length >= 3, wrong: notWords, stars: earned, missed: found.length >= goal ? [] : [q.skill], startedAt });
+      // Ideas for next time: everyday words from PopSpell's own lists, sentences and stories, not rare Scrabble words
+      const everyday = gridEveryday();
+      const longest = [...all].filter(w => !found.includes(w) && everyday.has(w)).sort((a, b) => b.length - a.length || a.localeCompare(b)).slice(0, 12);
+      app.querySelectorAll("[data-tile], #gridAdd, #gridClear, #gridFinish").forEach(b => { b.disabled = true; });
+      feedbackSay(found.length >= goal ? "good" : "", `You found ${found.length} ${found.length === 1 ? "word" : "words"} and scored ${points()} points. <span class="stars-inline">${stars(earned)}</span>`);
+      $("#wgDone").innerHTML = `${longest.length ? `<div class="wb-rule"><b>Some words you could find next time:</b> ${longest.map(esc).join(", ")}</div>` : ""}
+        <div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    draw();
   }
 
   /* ---------- Counting Canopy: four ways to think about number ---------- */

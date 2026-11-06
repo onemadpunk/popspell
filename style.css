@@ -2221,3 +2221,88 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .wb-rule { max-width: 52ch; margin: 6px auto 12px; padding: 10px 14px; border-radius: 10px; background: var(--primary-soft); text-align: left; }
 @media (prefers-reduced-motion: reduce) { .wb-tile, .wb-slot { transition: none; } .wb-tile.hinted { animation: none; outline: 3px solid #facc15; } }
 @media (max-width: 480px) { .wb-slot, .wb-tile { min-width: 72px; min-height: 58px; padding: 4px 10px; } .wb-tile-text { font-size: 1.25rem; } }
+
+/* ---------- Word games for older pupils: Code Word, Letter Hunt, Word Sort, Clue Crossword, Letter Grid ---------- */
+.word-game { text-align: center; --wg-hit: #15803d; --wg-near: #b45309; --wg-miss: #64748b; }
+.wg-lead { max-width: 52ch; margin: 6px auto 14px; color: var(--muted); }
+.wg-keys { display: grid; gap: 6px; max-width: 560px; margin: 16px auto 4px; }
+.wg-key-row { display: flex; justify-content: center; gap: 5px; }
+.wg-key { flex: 1 1 0; max-width: 46px; min-height: 50px; padding: 0; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--ink); font: 700 1.1rem/1 var(--font); text-transform: uppercase; cursor: pointer; }
+.wg-key.wide { flex: 1.6 1 0; max-width: 76px; font-size: .85rem; }
+.wg-key:hover:not(:disabled) { border-color: var(--primary); }
+.wg-key:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.wg-key.hit { background: var(--wg-hit); border-color: var(--wg-hit); color: #fff; }
+.wg-key.near { background: var(--wg-near); border-color: var(--wg-near); color: #fff; }
+.wg-key.miss, .wg-key.used { background: #e2e8f0; color: #94a3b8; }
+/* Code Word board: shape as well as colour (a solid fill, a dotted ring, a faded tile) */
+.cw-board { display: grid; gap: 6px; justify-content: center; margin: 10px auto; }
+.cw-row { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 52px)); gap: 6px; }
+.cw-cell { display: inline-grid; place-items: center; aspect-ratio: 1; min-width: 34px; border: 2px solid var(--line); border-radius: 8px;
+  background: var(--surface); font: 800 clamp(1.1rem, 4.5vw, 1.6rem)/1 var(--font); text-transform: uppercase; }
+.cw-row.current .cw-cell { border-color: #94a3b8; }
+.cw-cell.typed { border-color: var(--ink); }
+.cw-cell.hit { background: var(--wg-hit); border-color: var(--wg-hit); color: #fff; }
+.cw-cell.near { background: #fff7ed; border: 3px dashed var(--wg-near); color: var(--wg-near); }
+.cw-cell.miss { background: #e2e8f0; border-color: #e2e8f0; color: var(--wg-miss); }
+.cw-key-help { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; padding: 0; margin: 6px 0; list-style: none; font-size: .9rem; color: var(--muted); }
+.cw-key-help .cw-cell { width: 26px; min-width: 26px; height: 26px; font-size: .9rem; vertical-align: middle; margin-right: 4px; }
+/* Letter Hunt */
+.hunt-word { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 14px 0; }
+.hunt-letter { display: inline-grid; place-items: end center; width: clamp(28px, 7vw, 44px); height: 52px; border-bottom: 4px solid var(--ink);
+  font: 800 clamp(1.3rem, 5vw, 2rem)/1.4 var(--reading-font, var(--font)); }
+.hunt-letter.shown { border-color: var(--wg-hit); color: var(--ink); }
+.hunt-meter { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; color: var(--muted); font-weight: 700; }
+.hunt-dots { display: inline-flex; gap: 5px; }
+.hunt-dots i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #94a3b8; }
+.hunt-dots i.used { background: #94a3b8; }
+.hunt-clues { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-width: 760px; margin: 14px auto; text-align: left; }
+.hunt-clue { padding: 10px 12px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); }
+.hunt-clue.open { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--surface); color: var(--ink); }
+.hunt-clue b { display: block; font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+/* Word Sort */
+.sort-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 52px; margin: 10px auto 16px; max-width: 720px; }
+.sort-chip { padding: 9px 16px; border: 2px solid var(--ink); border-radius: 999px; background: var(--surface); color: var(--ink);
+  font: 700 1.1rem/1.2 var(--font); cursor: grab; }
+.sort-chip.selected { background: var(--ink); color: #fff; }
+.sort-chip.in { display: inline-block; padding: 4px 12px; margin: 3px; border-width: 1px; font-size: .95rem; cursor: default; border-color: var(--wg-hit); color: var(--wg-hit); }
+.sort-bins { display: grid; grid-template-columns: repeat(var(--bins), minmax(0, 1fr)); gap: 10px; }
+.sort-bin { min-height: 130px; padding: 10px; border: 2px dashed #94a3b8; border-radius: 12px; background: var(--surface); cursor: pointer; }
+.sort-bin:hover, .sort-bin:focus-visible { border-color: var(--primary); outline: none; background: var(--primary-soft); }
+.sort-bin.hinted { border-style: solid; border-color: #facc15; box-shadow: 0 0 0 4px rgba(250, 204, 21, .45); }
+.sort-bin h2 { margin: 0 0 6px; font-size: 1rem; }
+@media (max-width: 560px) { .sort-bins { grid-template-columns: 1fr; } .sort-bin { min-height: 80px; } }
+/* Clue Crossword */
+.cross-wrap { display: grid; grid-template-columns: minmax(0, auto) minmax(220px, 1fr); gap: 20px; align-items: start; text-align: left; }
+.cross-grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 36px)); grid-template-rows: repeat(var(--rows), auto); gap: 2px; justify-content: center; }
+.cross-block { aspect-ratio: 1; }
+.cross-cell { position: relative; aspect-ratio: 1; display: block; border: 2px solid var(--ink); border-radius: 4px; background: var(--surface); }
+.cross-cell small { position: absolute; top: 0; left: 2px; font-size: .6rem; font-weight: 800; line-height: 1; pointer-events: none; }
+.cross-cell input { width: 100%; height: 100%; padding: 0; border: 0; background: transparent; text-align: center; text-transform: uppercase;
+  font: 800 1.1rem/1 var(--font); color: var(--ink); caret-color: transparent; }
+.cross-cell input:focus { outline: none; background: #fde68a; }
+.cross-cell.active { background: #e0ecff; }
+.cross-cell.right { background: #dcfce7; border-color: var(--wg-hit); }
+.cross-cell.wrong { background: #fee2e2; border-color: var(--oops); }
+.cross-cell.given input { color: var(--wg-near); }
+.cross-clues h2 { margin: 0 0 4px; font-size: 1rem; }
+.cross-clues ol { list-style: none; padding: 0; margin: 0 0 12px; }
+.cross-clue { width: 100%; padding: 6px 8px; border: 0; border-radius: 6px; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.cross-clue.active { background: #e0ecff; }
+.cross-clue.solved { color: var(--wg-hit); text-decoration: line-through; }
+@media (max-width: 720px) { .cross-wrap { grid-template-columns: 1fr; } .cross-grid { grid-template-columns: repeat(var(--cols), minmax(0, 30px)); } }
+/* Letter Grid */
+.grid-play { display: grid; grid-template-columns: auto minmax(200px, 1fr); gap: 24px; align-items: start; justify-content: center; }
+.grid-board { display: grid; grid-template-columns: repeat(var(--size), 64px); gap: 8px; justify-content: center; }
+.grid-tile { aspect-ratio: 1; border: 2px solid var(--ink); border-radius: 12px; background: var(--surface); color: var(--ink);
+  font: 800 1.7rem/1 var(--font); text-transform: uppercase; cursor: pointer; box-shadow: 0 3px 0 var(--ink); }
+.grid-tile.on { background: #dbeafe; border-color: #1d4ed8; color: #1d4ed8; box-shadow: 0 3px 0 #1d4ed8; }
+.grid-tile.last { background: #1d4ed8; color: #fff; }
+.grid-tile:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.grid-current { min-height: 2.2rem; margin-top: 12px; font: 800 1.6rem/1.3 var(--reading-font, var(--font)); letter-spacing: .05em; }
+.grid-found { text-align: left; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.grid-score { margin: 0 0 8px; }
+.grid-found ul { list-style: none; padding: 0; margin: 0 0 12px; max-height: 320px; overflow: auto; columns: 2; }
+.grid-found li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 4px; break-inside: avoid; }
+.grid-found small { color: var(--wg-hit); font-weight: 700; }
+@media (max-width: 720px) { .grid-play { grid-template-columns: 1fr; } .grid-board { grid-template-columns: repeat(var(--size), minmax(0, 60px)); } }
