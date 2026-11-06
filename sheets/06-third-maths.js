@@ -102,15 +102,25 @@
       "11/4 = 2·75; 3⅖ = 3·4; 1⅗ = 8/5", "35%, ⅜ (0·375), 0·38, 0·4", "£42, £4·20, 51, 75%", "Shop A: £30; Shop B: £31·50. Shop A is cheaper by £1·50", "25% off (£45) is cheaper than £14 off (£46)"])
   }));
 
-  add("paper-fraction-sums", T3("adding-and-subtracting-fractions"), "Fraction sums", "Add and subtract fractions and mixed numbers with different denominators, a jug problem and a mistake to spot.", (who, h) => ({
+  add("paper-fraction-sums", T3("adding-and-subtracting-fractions"), "Fraction sums", "Add and subtract fractions and mixed numbers with different denominators, spot three students' mistakes, find missing fractions and solve a jug problem.", (who, h) => ({
     pupil: `${h.sheetHead("Fraction sums", who)}
       <p>Find a common denominator first. Simplify your answers, and write improper fractions as mixed numbers.</p>
-      <div class="pp-grid3">${["⅓ + ¼", "⅖ + ⅓", "⅚ − ¼", "¾ + ⅝", "7/10 − ⅖", "2½ + 1⅔", "3¼ − 1⅔", "5 − 2⅜", "1⅚ + 2¾"]
-        .map((c, i) => `<div class="pp-cell"><p><b>${i + 1}.</b> ${c} =</p><div class="pp-draw pp-short"></div></div>`).join("")}</div>
-      ${qs([`A jug holds 2 litres. ¾ litre of juice and ⅖ litre of lemonade are poured in. How much more will fit?${lines(2)}`,
-        `Ali says ½ + ⅓ = 2/5. Explain the mistake and give the right answer.${lines(2)}`], 10)}`,
-    answers: answersPage(h, "Fraction sums", ["7/12", "11/15", "7/12", "1⅜", "3/10", "4⅙", "1 7/12", "2⅝", "4 7/12",
-      "¾ + ⅖ = 15/20 + 8/20 = 1 3/20 litres; 2 − 1 3/20 = 17/20 litre", "The parts are different sizes, so you can't add tops and bottoms: 3/6 + 2/6 = 5/6"])
+      <p><b>1. Warm up.</b> Write &lt;, &gt; or = between each pair.</p>
+      <div class="pp-next">${[["⅗","⅔"],["¾","7/10"],["5/8","10/16"],["1⅓","5/4"]].map(([a,b])=>`<span>${a} ${blank(1.5)} ${b}</span>`).join("")}</div>
+      <p><b>2. Calculate.</b> Show your common denominator.</p>
+      <div class="pp-grid3">${["⅓ + ¼", "⅖ + ⅓", "⅚ − ¼", "¾ + ⅝", "2½ + 1⅔", "3¼ − 1⅔"]
+        .map((c, i) => `<div class="pp-cell"><p><b>${String.fromCharCode(97 + i)})</b> ${c} =</p><div class="pp-draw" style="height:19mm"></div></div>`).join("")}</div>
+      <p><b>3. Spot the mistake.</b> Three students checked their work. Is each one right? If not, explain the mistake and write the correct answer.</p>
+      <table class="pp-table pp-tf"><tr><th>Student</th><th>Their working</th><th class="pp-c">Right?</th><th>What went wrong, and the correct answer</th></tr>
+        <tr><td><b>Ali</b></td><td>½ + ⅓ = 2/5</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr>
+        <tr><td><b>Bea</b></td><td>3¼ − 1⅔ = 2 5/12</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr>
+        <tr><td><b>Cal</b></td><td>⅔ + ⅚ = 9/6 = 1½</td><td class="pp-c">☐ yes<br>☐ no</td><td></td></tr></table>
+      <p><b>4. Missing fractions.</b> Work out what goes in each box.</p>
+      <div class="pp-next">${["⅓ + ▢ = 7/12","▢ + ⅖ = 9/10","1 − ▢ = ⅜"].map(s=>`<span>${s} &nbsp; ▢ = ${blank(3)}</span>`).join("")}</div>
+      <p><b>5.</b> A jug holds 2 litres. ¾ litre of juice and ⅖ litre of lemonade are poured in. How much more will fit?${lines(2)}</p>`,
+    answers: answersPage(h, "Fraction sums", ["Warm up: ⅗ &lt; ⅔; ¾ &gt; 7/10; 5/8 = 10/16; 1⅓ &gt; 5/4 (1⅓ = 4/3 = 16/12 and 5/4 = 15/12)", "a) 7/12  b) 11/15  c) 7/12  d) 1⅜  e) 4⅙  f) 1 7/12",
+      "Ali: wrong. He added the tops and added the bottoms, but the parts are different sizes: 3/6 + 2/6 = 5/6. Bea: wrong. She took ¼ − ⅔ the wrong way round; 3¼ − 1⅔ = 3 3/12 − 1 8/12 = 1 7/12. Cal: right. ⅔ = 4/6, so 4/6 + 5/6 = 9/6 = 1½",
+      "¼ (7/12 − 4/12 = 3/12); ½ (9/10 − 4/10 = 5/10); ⅝ (8/8 − 3/8 = 5/8)", "¾ + ⅖ = 15/20 + 8/20 = 1 3/20 litres; 2 − 1 3/20 = 17/20 litre"])
   }));
 
   add("paper-recipe-crowd", T3("proportion-and-ratio"), "Recipe for a crowd", "Scale a recipe, use the unitary method, simplify and share in a ratio, and find the best buy.", (who, h) => ({
