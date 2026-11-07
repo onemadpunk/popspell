@@ -819,10 +819,11 @@
   function fitToScreen() {
     cancelAnimationFrame(fitFrame);
     fitFrame = requestAnimationFrame(() => {
-      const panel = app.querySelector(".panel.practice, .panel.start");
+      const panel = app.querySelector(".panel.practice, .panel.start, .panel.summary");
       if (!panel) return;
       panel.style.zoom = "";
-      if (innerWidth < 700) return;
+      // Phones scroll by touch; a results table someone opened on purpose is left full size
+      if (innerWidth < 700 || panel.querySelector(".summary-details[open]")) return;
       const room = innerHeight - (panel.getBoundingClientRect().top + scrollY) - 10;
       const height = panel.offsetHeight;
       if (height > room) panel.style.zoom = String(Math.max(0.6, Math.floor((room / height) * 100) / 100));
@@ -3859,6 +3860,7 @@
           ${session.preview ? "" : `<p><a class="btn small" href="#/forest">Visit my forest →</a></p>`}` : ""}
         ${REPORTING && !session.preview ? `<p class="sent no-print" id="sent" aria-live="polite">📤 Sending to your teacher…</p>` : ""}
         ${bestsHTML(bestNotes)}
+        <details class="summary-details"><summary>See all my answers</summary>
         ${Object.keys(skills).length ? `<div class="sound-report"><h2>To practise</h2><ul>${Object.entries(skills).sort((a, b) => b[1] - a[1])
           .map(([s, n]) => `<li><span class="chip">${esc(s)}</span> ×${n}</li>`).join("")}</ul></div>` : ""}
         <table class="results">
@@ -3867,6 +3869,7 @@
             <td>${x.correct ? `<span class="star-cell">${stars(x.stars)}</span>` : `<span class="miss">Answer: ${esc(x.item.answer)}</span>`}</td>
             <td class="tries-cell">${x.wrong.length ? x.wrong.map(w => `<s>${esc(w)}</s>`).join(" ") : "—"}</td></tr>`).join("")}</tbody>
         </table>
+        </details>
         <div class="row center no-print">
           ${TRIAL_MODE ? `<button class="btn primary" id="trialFinish" type="button">Finished: hand back to ${esc(trial?.teacher || "your teacher")}</button>`
             : `<button class="btn primary" id="againAct">Have another go</button><a class="btn" href="#/">Choose something else</a>`}
