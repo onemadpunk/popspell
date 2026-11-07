@@ -1181,7 +1181,11 @@ a.me-card:hover { border-color: var(--primary); }
 .sound-choices { display: flex; flex-wrap: wrap; gap: 4px 10px; }
 .sound-choices label { white-space: nowrap; }
 .roster-grid { margin: 12px 0 24px; }
-.roster-card { display: grid; gap: 8px; }
+.roster-card, .parent-card { display: grid; gap: 8px; align-content: start; }
+.parent-card label:not(.check) { display: grid; gap: 2px; font-size: .85rem; color: var(--muted); }
+.parent-card label:not(.check) > input:not([type="checkbox"]), .parent-card label:not(.check) > textarea { width: 100%; }
+.parent-card .check { text-align: left; font-size: .95rem; }
+.parent-card > * { min-width: 0; }
 .roster-card label:not(.check) { display: grid; gap: 2px; font-size: .85rem; color: var(--muted); }
 .roster-card .check { text-align: left; font-size: .95rem; margin-top: 4px; }
 .roster-card .check input { width: 20px; height: 20px; }
@@ -1219,6 +1223,21 @@ a.me-card:hover { border-color: var(--primary); }
   .lib-more label, .lib-more select, .lib-more input { width: 100%; }
 }
 .lib-more label { display: grid; gap: 2px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+/* Library: the rarer filters (curriculum, level range, strand, type) fold under "More filters" */
+.lib-filters { margin: 4px 0 8px; }
+.lib-filters > summary { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; list-style: none; font-weight: 700; color: var(--primary); padding: 4px 0; }
+.lib-filters > summary::-webkit-details-marker { display: none; }
+.lib-filters > summary::before { content: "▸"; color: var(--accent); transition: transform .15s; }
+.lib-filters[open] > summary::before { transform: rotate(90deg); }
+.lib-filters-on { font-weight: 600; color: var(--muted); }
+.lib-filters-body { padding: 8px 0 0; }
+/* Pupils page: one part at a time */
+.pupil-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 16px; }
+.pupil-tabs button { padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.pupil-tabs button[aria-selected="true"] { background: var(--t-blue, var(--primary)); border-color: var(--t-blue, var(--primary)); color: #fff; }
+.pupil-pane[hidden] { display: none; }
+.pupil-pane > .next-head { margin-top: 0; }
+@media (max-width: 560px) { .pupil-tabs { display: grid; grid-template-columns: 1fr 1fr; } }
 .library-card .lib-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; }
 .lib-level, .lib-type { font-size: .78rem; font-weight: 700; border-radius: 999px; padding: 1px 9px; background: #eef0f3; color: var(--muted); }
 .lib-level.lv-early { background: #e3f6ee; color: #11683f; }
