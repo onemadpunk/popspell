@@ -29,6 +29,16 @@ WORD_TEXT = "{Word}."  # how single words are given to the voice
 WORD_FIXES = {
 }
 
+# Names the voice says wrongly, written the way they sound (Isla is "EYE-la"). The words on screen
+# don't change. Keep in step with SAY_AS in speech-text.js
+SAY_AS = {"Isla": "Eye-la", "Ayr": "Air"}
+
+
+def voiced(text):
+    """The text as the voice is given it: names respelled as they sound."""
+    return re.sub(r"\b(" + "|".join(SAY_AS) + r")\b", lambda m: SAY_AS[m.group(1)], text)
+
+
 # Recordings checked by ear and approved: never re-recorded, even with --force
 APPROVED = set()
 
@@ -265,15 +275,15 @@ def main():
             continue
         folder, name = key.split("/")
         wanted = args.force or (name in only and folder in ("words", "sentences"))
-        if wanted or not path.exists() or made.get(key) != signature(text):
+        if wanted or not path.exists() or made.get(key) != signature(voiced(text)):
             todo.append((key, path, text))
 
     if todo:
         synth = load_voice()
         for n, (key, path, text) in enumerate(todo, 1):
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(to_mp3(*synth(text)))
-            made[key] = signature(text)
+            path.write_bytes(to_mp3(*synth(voiced(text))))
+            made[key] = signature(voiced(text))
             print(f"[{n}/{len(todo)}] audio/{key}.mp3  ({text})")
             if n % 50 == 0:  # save progress, so a stopped run can carry on
                 MADE.write_text(json.dumps(made, indent=0, sort_keys=True, ensure_ascii=False), encoding="utf-8")

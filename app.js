@@ -223,7 +223,7 @@
       let timer;
       let done = false;
       const finish = () => { if (!done) { done = true; clearTimeout(timer); resolve(); } };
-      const u = new SpeechSynthesisUtterance(text);
+      const u = new SpeechSynthesisUtterance(window.PopSpeech ? window.PopSpeech.voiced(text) : text);
       const v = currentVoice();
       if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = "en-GB"; }
       u.rate = rate;
@@ -811,6 +811,27 @@
   let phase = 0; // bumps on every screen change so old timers/speech callbacks do nothing
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
   let stopDrive = null; // the phonics check's word watcher, while that screen is open
+  // Pupils on a laptop often have no mouse and can't scroll, so an activity screen that would run
+  // off the bottom of the window is shrunk to fit it. Phones scroll by touch, so they're left alone.
+  // On a wide screen a story sits beside its question (see .with-story in style.css).
+  const storySideBySide = () => matchMedia("(min-width: 900px) and (orientation: landscape)").matches;
+  let fitFrame = 0;
+  function fitToScreen() {
+    cancelAnimationFrame(fitFrame);
+    fitFrame = requestAnimationFrame(() => {
+      const panel = app.querySelector(".panel.practice, .panel.start");
+      if (!panel) return;
+      panel.style.zoom = "";
+      if (innerWidth < 700) return;
+      const room = innerHeight - (panel.getBoundingClientRect().top + scrollY) - 10;
+      const height = panel.offsetHeight;
+      if (height > room) panel.style.zoom = String(Math.max(0.6, Math.floor((room / height) * 100) / 100));
+    });
+  }
+  new MutationObserver(fitToScreen).observe(app, { childList: true, subtree: true });
+  app.addEventListener("toggle", fitToScreen, true); // a story opened or closed
+  addEventListener("resize", fitToScreen);
+
   function newScreen() {
     timers.forEach(clearTimeout);
     timers = [];
@@ -2444,7 +2465,7 @@
       : act.decodable
       ? `<details class="passage" id="storyBox"><summary>📖 ${esc(passage.title)} — read it again</summary>
           <div class="story-text">${storyHTML(passage)}</div></details>`
-      : `<details class="passage" id="passageBox"${session.i === 0 ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
+      : `<details class="passage" id="passageBox"${session.i === 0 || storySideBySide() ? " open" : ""}><summary>📖 ${esc(passage.title)} — read the story</summary>
           <p class="read-along">${readAlongHTML(passage)}</p>${readControlsHTML("🔊 Read it to me")}</details>`) : "";
     const optionHTML = (opt, i) => `
       <div class="q-option-wrap">
@@ -2452,11 +2473,13 @@
         ${hearOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}
       </div>`;
     app.innerHTML = `
-      <section class="panel practice activity" style="--accent:${esc(act.colour)}">
+      <section class="panel practice activity${passage && !act.listen ? " with-story" : ""}" style="--accent:${esc(act.colour)}">
         <h1 class="sr-only">${esc(session.list.title)}</h1>
         ${progressHTML()}
         ${time ? `<div class="mtc-bar" aria-hidden="true"><span style="animation-duration:${time}s"></span></div>` : ""}
+        <div class="q-layout">
         ${passageBox}
+        <div class="q-side">
         <p class="phase q-prompt${q.time ? " mtc-q" : ""}">${esc(q.prompt)}</p>
         ${q.html || ""}
         ${q.say && !time ? `<div class="row center"><button class="btn icon-btn" id="hearQ"><span aria-hidden="true">🔊</span>Hear it</button></div>` : ""}
@@ -2469,6 +2492,7 @@
                 : `<input id="qAnswer" class="answer" type="text" inputmode="${q.input === "numeric" || q.input === "decimal" ? q.input : "text"}" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" maxlength="40">`}
               <button class="btn primary" type="submit">Check ✓</button></form>`}
         <p class="feedback" id="feedback" aria-live="polite"></p>
+        </div></div>
       </section>`;
     wireStop();
     if ($("#hearQ")) $("#hearQ").onclick = () => sayQuestion(q);

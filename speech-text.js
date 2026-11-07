@@ -20,6 +20,11 @@
     .replace(/(\d)\s?km\b/g, "$1 kilometres").replace(/(\d)\s?kg\b/g, "$1 kilograms").replace(/(\d)\s?ml\b/g, "$1 millilitres")
     .replace(/(\d)\s?m\b/g, "$1 metres").replace(/(\d)\s?g\b/g, "$1 grams").replace(/(\d)\s?l\b/g, "$1 litres"));
 
+  // Names the voice says wrongly, written the way they sound. The words on screen don't change.
+  // Keep in step with SAY_AS in tools/make_audio.py
+  const SAY_AS = { Isla: "Eye-la", Ayr: "Air" };
+  const voiced = text => String(text || "").replace(new RegExp(`\\b(${Object.keys(SAY_AS).join("|")})\\b`, "g"), name => SAY_AS[name]);
+
   // Emoji aren't read out: 🔊 becomes "the speaker", the rest are dropped
   const forSpeech = text => tidy(String(text || "").replace(/🔊/g, "the speaker")
     .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, ""));
@@ -97,6 +102,6 @@
     return out;
   }
 
-  const api = { speakable, forSpeech, answerLine, said, keyOf, numberParts, pieces, NUMBER_WORDS };
+  const api = { speakable, forSpeech, voiced, SAY_AS, answerLine, said, keyOf, numberParts, pieces, NUMBER_WORDS };
   (typeof window !== "undefined" ? window : globalThis).PopSpeech = api;
 })();

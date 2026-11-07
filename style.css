@@ -1341,6 +1341,17 @@ a.me-card:hover { border-color: var(--primary); }
 .passage summary { cursor: pointer; font-weight: 700; }
 .passage p { font-family: var(--reading-font); font-size: 1.25rem; line-height: 1.7; }
 .passage.listen { text-align: center; }
+/* A laptop or wider: the story beside its question, so both fit the window without scrolling */
+@media (min-width: 900px) and (orientation: landscape) {
+  .panel.with-story { max-width: none; padding-top: 18px; padding-bottom: 22px; }
+  .with-story .bar { margin-bottom: 14px; }
+  .with-story .q-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+  .with-story .passage { margin: 0; }
+  .with-story .q-prompt { margin-top: 6px; }
+  /* A story read alone: wider, so it takes fewer lines */
+  .panel.story-read { max-width: 1080px; padding-top: 18px; padding-bottom: 22px; }
+  .story-read .hint { margin: 2px 0; }
+}
 
 /* Read along: the sentence being read lights up; pupils pick the speed */
 .ra-s { cursor: pointer; border-radius: 6px; transition: background .2s; }
