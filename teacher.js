@@ -721,6 +721,7 @@
     }
     return { cur: "", level: CFE_YEARS[String(pupil.yearGroup || "").toLowerCase()] || (/^S[4-6]$/.test(pupil.yearGroup || "") ? "Third" : "") };
   };
+  let libFiltersOpen = false; // "More filters" stays open or closed as the teacher left it
   async function drawLibrary(body) {
     const prefs = libraryPrefs();
     const classId = current && current.id;
@@ -749,20 +750,25 @@
       <h2>Find work</h2>
       <p class="hint">Choose a pupil to start at their year group, then show that level and below. Change the level if they are working ahead or need earlier work. ${prefs.pupil && !pupils.find(p => sameName(p.name, prefs.pupil))?.yearGroup ? `Add ${esc(prefs.pupil)}'s year group in Pupils, or choose a level here. ` : ""}The lesson programme and starting checks can guide your choice.</p>
       ${pupils.length ? `<div class="add-row lib-more"><label>Find lessons for
-        <select id="libPupil"><option value="">Choose a pupil (optional)</option>${pupils.map(p => `<option value="${esc(p.name)}"${sameName(p.name, prefs.pupil) ? " selected" : ""}>${esc(p.name)}${p.yearGroup ? ` · ${esc(p.yearGroup)}` : ""}</option>`).join("")}</select></label>
-        <label>Show levels <select id="libRange"><option value="exact"${prefs.range !== "upto" ? " selected" : ""}>Selected level only</option><option value="upto"${prefs.range === "upto" ? " selected" : ""}>Selected level and below</option></select></label></div>`
-        : `<div class="add-row lib-more"><label>Show levels <select id="libRange"><option value="exact"${prefs.range !== "upto" ? " selected" : ""}>Selected level only</option><option value="upto"${prefs.range === "upto" ? " selected" : ""}>Selected level and below</option></select></label></div>`}
-      ${E_() ? `<div class="lib-seg lib-cur" role="group" aria-label="Curriculum">
-        <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
-        <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
+        <select id="libPupil"><option value="">Choose a pupil (optional)</option>${pupils.map(p => `<option value="${esc(p.name)}"${sameName(p.name, prefs.pupil) ? " selected" : ""}>${esc(p.name)}${p.yearGroup ? ` · ${esc(p.yearGroup)}` : ""}</option>`).join("")}</select></label></div>` : ""}
       ${segment("level", prefs.range === "upto" ? (en ? "Up to year" : "Up to level") : (en ? "Year" : "Level"), [["", en ? "All years" : "All levels"]].concat(levels), " lib-years")}
       ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s])))}
       <div class="add-row lib-more">
-        <label>Strand <select id="libStrand"></select></label>
-        <label>Type <select id="libType"><option value="">All types</option>${Object.entries(LIB_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></label>
         <label>Search <input id="librarySearch" type="search" placeholder="Words, skills or a year (P5, Year 4)"></label>
         <button class="btn small" type="button" id="libFolder" aria-pressed="false">⭐ My folder (<span id="favCount">0</span>)</button>
       </div>
+      <details class="lib-filters" id="libFilters"${libFiltersOpen ? " open" : ""}>
+        <summary>More filters<span class="lib-filters-on" id="libFiltersOn"></span></summary>
+        <div class="lib-filters-body">
+        ${E_() ? `<div class="lib-seg lib-cur" role="group" aria-label="Curriculum">
+          <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
+          <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
+        <div class="add-row lib-more">
+          <label>Show levels <select id="libRange"><option value="exact"${prefs.range !== "upto" ? " selected" : ""}>Selected level only</option><option value="upto"${prefs.range === "upto" ? " selected" : ""}>Selected level and below</option></select></label>
+          <label>Strand <select id="libStrand"></select></label>
+          <label>Type <select id="libType"><option value="">All types</option>${Object.entries(LIB_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></label>
+        </div></div>
+      </details>
       <p class="hint" id="libraryCount"></p></div>
       <div id="libResults"></div>`;
     const tagOf = e => (en
@@ -799,6 +805,9 @@
       if (prefs.strand && !strands.includes(prefs.strand)) prefs.strand = "";
       $("#libStrand").innerHTML = `<option value="">All strands</option>${strands.map(s => `<option${s === prefs.strand ? " selected" : ""}>${esc(s)}</option>`).join("")}`;
       $("#libType").value = prefs.type;
+      // The rarer filters fold away; their summary says which are on, so nothing is hidden by surprise
+      const on = [en ? "England" : "", prefs.range === "upto" ? "this level and below" : "", prefs.strand, prefs.type ? LIB_TYPES[prefs.type] : ""].filter(Boolean);
+      $("#libFiltersOn").textContent = on.length ? `· ${on.join(", ")}` : "";
       body.querySelector(".lib-years").setAttribute("aria-label", `${prefs.range === "upto" ? "Up to " : ""}${en ? "year" : "level"}`);
       body.querySelectorAll("[data-level]").forEach(b => b.setAttribute("aria-pressed", b.dataset.level === prefs.level));
       body.querySelectorAll("[data-subject]").forEach(b => b.setAttribute("aria-pressed", b.dataset.subject === prefs.subject));
@@ -858,6 +867,7 @@
     $("#libType").onchange = e => { prefs.type = e.target.value; render(); };
     $("#librarySearch").oninput = render;
     $("#libFolder").onclick = () => { folderOnly = !folderOnly; render(); };
+    $("#libFilters").addEventListener("toggle", e => { libFiltersOpen = e.target.open; });
     $("#libResults").onclick = e => {
       const button = e.target.closest("button");
       if (!button) return;
@@ -1654,7 +1664,7 @@
     body.querySelectorAll("[data-pupil-page]").forEach(b => { b.onclick = () => {
       const r = roster.find(x => sameName(x.name, b.dataset.pupilPage));
       if (r) openRoster.add(r.key);
-      tab = "pupils"; draw();
+      pupilsView = "roster"; tab = "pupils"; draw();
       setTimeout(() => { const card = r && document.querySelector(`[data-roster="${CSS.escape(r.key)}"]`); if (card) card.scrollIntoView({ block: "start" }); }, 600);
     }; });
     body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => {
@@ -4882,6 +4892,7 @@
   const parentData = () => Promise.all([cloud.sessions(current.id, PARENT_DAYS), cloud.assignments(current.id)]);
 
   let days = 30;
+  let pupilsView = "roster"; // which part of the Pupils page is showing
   const openRoster = new Set();
   const PERIODS =[[7, "Last 7 days"], [30, "Last 30 days"], [91, "Last 3 months (a term)"], [365, "Last year"], [3650, "Everything"]];
 
@@ -4937,65 +4948,49 @@
     roster.forEach(r => { const row = lookRow(r), want = lookFor(row.lookChoice, r.yearGroup);
       if (want !== (row.look || "")) cloud.saveLook(current.id, r.name, row.lookChoice, want).catch(() => {}); });
     const dueTomorrow = roster.filter(r => r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey()).length;
+    // The page shows one part at a time: the pupils themselves, their progress, the parent page and reports
+    const PANES = [["roster", "👥 Pupils"], ["progress", "📊 Progress"], ["parent", "👪 Parent page"], ["reports", "📄 Reports"]];
+    if (!PANES.some(([k]) => k === pupilsView)) pupilsView = "roster";
+    const pane = (key, html) => `<section class="pupil-pane" id="pane-${key}" role="tabpanel" aria-labelledby="ptab-${key}"${pupilsView === key ? "" : " hidden"}>${html}</section>`;
+    // Pupils with results who aren't on the roster yet still get reports
+    const reportNames = [...roster.map(r => r.name), ...pupils.filter(p => !roster.some(r => sameName(r.name, p.pupil))).map(p => p.pupil)]
+      .sort((x, y) => x.localeCompare(y));
     body.innerHTML = `
-      <div class="next-head"><h2 class="t-h2">Pupils in ${esc(current.name)}</h2><div class="row">
+      <h2 class="t-h2">Pupils in ${esc(current.name)}</h2>
+      <div class="pupil-tabs" role="tablist" aria-label="Pupils page">${PANES.map(([k, t]) =>
+        `<button type="button" role="tab" id="ptab-${k}" data-pane="${k}" aria-controls="pane-${k}" aria-selected="${pupilsView === k}">${t}</button>`).join("")}</div>
+      ${pane("roster", `
+      <div class="row"><button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button>
         <button class="btn" id="setUpTablet">Set up pupil tablet</button>
         <button class="btn" id="calAll">🗓️ Lessons to my calendar</button>
-        <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
-        ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}
-        <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
-      <p class="hint">Pupils can already sign in with the class code and their first name: nothing more is needed. A personal link and four-digit PIN (<b>Issue pupil login</b>) is optional, for families who want extra privacy at home. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
-      <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
+        ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}</div>
+      <p class="hint">Pupils can already sign in with the class code and their first name: nothing more is needed. A personal link and four-digit PIN (<b>Issue pupil login</b>) is optional, for families who want extra privacy at home. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN.</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" aria-label="Pupil's first name" placeholder="Pupil's first name (and initial)" required>
         <input type="email" id="rosterParent" aria-label="Parent email (optional)" placeholder="Parent email (optional)">
         <button class="btn primary" type="submit">Add pupil</button></form>
-      ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}">
+      ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard roster-card" data-roster="${esc(r.key)}" data-pk="${esc(r.key)}">
         <div class="next-head"><h3>${esc(r.name)}${r.yearGroup ? ` <span class="meta">${esc(r.yearGroup)}</span>` : ""}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
           <div class="row"><button class="btn small primary" data-assign-pupil="${esc(r.name)}">📌 Set work</button>
             <button class="btn small" data-issue-login="${esc(r.key)}">${r.loginCode ? "Replace PIN" : "Issue pupil login"}</button>
             <button class="btn small" data-assess="${esc(r.key)}">🌟 Assessment and report</button>
             ${pupils.some(p => sameName(p.pupil, r.name)) ? `<button class="btn small" data-results="${esc(r.name)}">📊 Results</button>` : ""}</div></div>
         <details class="roster-more" data-key="${esc(r.key)}"${openRoster.has(r.key) ? " open" : ""}>
-          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}More: reports, year group, lesson date, homework, home login and parent page</summary>
+          <summary>${r.nextLessonDate >= todayKey() ? `Next lesson ${esc(day(new Date(`${r.nextLessonDate}T12:00:00Z`).getTime()))}${r.lessonTime ? ` at ${esc(r.lessonTime)}` : ""} · ` : ""}More: year group, lesson date and homework</summary>
           <div class="roster-more-body">
-        <div class="row"><button class="btn small" type="button" data-report="${esc(r.name)}">📄 Progress report</button>
-          <button class="btn small" type="button" data-pn="${esc(r.name)}">📅 Parents' night report</button>
-          <button class="btn small" type="button" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button></div>
         <div class="add-row"><label>Year group <select data-year><option value="">Not set</option>${yearOptions(r.yearGroup)}</select></label>
           <label>${esc(r.name)}'s screens <select data-look>${LOOK_CHOICES.map(([v, t]) => `<option value="${v}"${lookRow(r).lookChoice === v ? " selected" : ""}>${t}</option>`).join("")}</select></label></div>
         <p class="hint">Automatic gives S1 and Year 7 upwards the older look. Their work still follows the level they're working at.</p>
-        <label>Parent email <input type="email" data-parent value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
-        <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
         <div class="add-row"><label>Next lesson <input type="date" data-lesson-date value="${esc(r.nextLessonDate || "")}"></label>
           <label>Time <input type="time" data-lesson-time value="${esc(r.lessonTime || "")}"></label>
           <button class="btn small" type="button" data-calendar="${esc(r.key)}">🗓️ Add to calendar</button></div>
         <label>Homework list <select data-homework>${catalogueOptions()}</select></label>
-        <div class="parent-box">
-          <p><b>🏠 Home login</b></p>
-          <p class="hint">A parent opens ${esc(r.name)}'s personal link; ${esc(r.name)} enters the PIN. The link alone cannot change progress.</p>
-          ${r.loginCode ? `<div class="add-row"><input type="text" readonly class="t-link" value="${esc(homeLink(r.name))}" aria-label="Home login link">
-            <button class="btn small" data-home-copy="${esc(r.key)}">📋 Copy</button>
-            <button class="btn small primary" data-home-email="${esc(r.key)}">✉️ Email home login</button></div>` : `<p class="hint">Issue this pupil's login to make their home link.</p>`}
-        </div>
-        <div class="parent-box">
-          <p><b>👪 Parent page</b>${r.parentLink ? ` <span class="meta">· updated ${r.parentAt ? esc(day(r.parentAt)) : "—"}</span>` : ""}</p>
-          <label>Note for home, shown on the parent page
-            <textarea data-parent-note rows="2" maxlength="1000" placeholder="e.g. Great effort this week! Practise the ai words at bedtime.">${esc(r.parentNote || "")}</textarea></label>
-          ${r.parentLink ? `
-            <div class="add-row"><input type="text" readonly class="t-link" value="${esc(parentURL(r.parentLink))}" aria-label="Parent link">
-              <button class="btn small" data-parent-copy="${esc(r.key)}">📋 Copy</button>
-              <a class="btn small" href="${esc(parentURL(r.parentLink))}" target="_blank" rel="noopener">Open</a></div>
-            <div class="row"><button class="btn small" data-parent="update" data-key="${esc(r.key)}">Update now</button>
-              <button class="btn small" data-parent="new" data-key="${esc(r.key)}">Make a new link</button>
-              <button class="btn small" data-parent="off" data-key="${esc(r.key)}">Turn off</button></div>`
-          : `<button class="btn small" data-parent="make" data-key="${esc(r.key)}">Make a parent link</button>`}
-        </div>
+        <p class="hint">Parent email, reminders, home login and the parent page are under <button class="linklike" type="button" data-go-pane="parent">👪 Parent page</button>.</p>
         <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
-          ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}
           ${r.homeworkList ? `<button class="btn small" data-print-homework="${esc(r.key)}">Print homework / Save PDF</button>` : ""}
           <button class="btn small danger" data-delete-pupil="${esc(r.key)}">🗑️ Delete pupil and records</button></div>
           </div></details>
-      </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}
+      </article>`).join("")}</div>` : `<div class="empty">No pupils added yet.</div>`}`)}
+      ${pane("progress", `
       <div class="row t-row">
         <label class="t-class">Show <select id="days">${PERIODS.map(([d, t]) => `<option value="${d}"${d === days ? " selected" : ""}>${t}</option>`).join("")}</select></label>
         <p class="hint">${esc(current.name)}: ${sessions.length} lists done by ${pupils.length} pupils.</p>
@@ -5041,18 +5036,68 @@
           ${english.length ? `<h2 class="t-h2">National curriculum (England) overview</h2>
           <p class="hint">Pupils with an England year group, by national curriculum strand, in this period. ${key}</p>${table(english, true)}` : ""}`;
       })() : ""}
+`)}
+      ${pane("parent", `
+      <p class="hint">Each family can have a parent page (a private link showing progress, your note and homework) and, if you issued a pupil login, a home login link. Parent contact details stay in the teacher area.</p>
+      <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
+      ${roster.length ? `<div class="pupil-grid roster-grid">${roster.map(r => `<article class="pcard parent-card" data-pk="${esc(r.key)}">
+        <h3>${esc(r.name)}${r.reminderOptIn && r.nextLessonDate === tomorrowKey() ? ` <span class="t-role">Reminder tomorrow</span>` : ""}</h3>
+        <label>Parent email <input type="email" data-parent-email value="${esc(r.parentEmail || "")}" placeholder="parent@example.com"></label>
+        <label class="check"><input type="checkbox" data-optin ${r.reminderOptIn ? "checked" : ""}> Parent requested reminders</label>
+        <div class="parent-box">
+          <p><b>👪 Parent page</b>${r.parentLink ? ` <span class="meta">· updated ${r.parentAt ? esc(day(r.parentAt)) : "—"}</span>` : ""}</p>
+          <label>Note for home, shown on the parent page
+            <textarea data-parent-note rows="2" maxlength="1000" placeholder="e.g. Great effort this week! Practise the ai words at bedtime.">${esc(r.parentNote || "")}</textarea></label>
+          ${r.parentLink ? `
+            <div class="add-row"><input type="text" readonly class="t-link" value="${esc(parentURL(r.parentLink))}" aria-label="Parent link">
+              <button class="btn small" data-parent-copy="${esc(r.key)}">📋 Copy</button>
+              <a class="btn small" href="${esc(parentURL(r.parentLink))}" target="_blank" rel="noopener">Open</a></div>
+            <div class="row"><button class="btn small" data-parent="update" data-key="${esc(r.key)}">Update now</button>
+              <button class="btn small" data-parent="new" data-key="${esc(r.key)}">Make a new link</button>
+              <button class="btn small" data-parent="off" data-key="${esc(r.key)}">Turn off</button></div>`
+          : `<button class="btn small" data-parent="make" data-key="${esc(r.key)}">Make a parent link</button>`}
+        </div>
+        <div class="parent-box">
+          <p><b>🏠 Home login</b></p>
+          <p class="hint">A parent opens ${esc(r.name)}'s personal link; ${esc(r.name)} enters the PIN. The link alone cannot change progress.</p>
+          ${r.loginCode ? `<div class="add-row"><input type="text" readonly class="t-link" value="${esc(homeLink(r.name))}" aria-label="Home login link">
+            <button class="btn small" data-home-copy="${esc(r.key)}">📋 Copy</button>
+            <button class="btn small primary" data-home-email="${esc(r.key)}">✉️ Email home login</button></div>` : `<p class="hint">Issue this pupil's login (on the Pupils part of this page) to make their home link.</p>`}
+        </div>
+        <div class="row"><button class="btn small" data-save-pupil="${esc(r.key)}">Save details</button>
+          ${r.reminderOptIn && r.parentEmail && r.nextLessonDate === tomorrowKey() ? `<button class="btn small" data-email-pupil="${esc(r.key)}">Prepare tomorrow's reminder</button>` : ""}</div>
+      </article>`).join("")}</div>` : `<div class="empty">Add pupils first.</div>`}`)}
+      ${pane("reports", `
+      <div class="row"><button class="btn primary" id="pnAll">📅 Parents' night reports (whole class)</button></div>
+      ${reportNames.length ? `<div class="t-scroll"><table class="t-table"><thead><tr><th>Pupil</th><th>Reports</th></tr></thead><tbody>
+        ${reportNames.map(name => { const r = roster.find(x => sameName(x.name, name));
+          return `<tr><td class="who">${esc(name)}</td><td><div class="row"><button class="btn small" type="button" data-report="${esc(name)}">📄 Progress report</button>
+            <button class="btn small" type="button" data-pn="${esc(name)}">📅 Parents' night report</button>
+            ${r ? `<button class="btn small" type="button" data-phonics="${esc(r.key)}">🔤 Phonics check practice</button>` : ""}</div></td></tr>`; }).join("")}
+        </tbody></table></div>` : `<div class="empty">Add pupils first: each one gets a report.</div>`}
       <h2 class="t-h2">🧹 Old records</h2>
       <p class="hint">PopSpell's privacy page promises to delete a child's records within 12 months of their last lesson.
         This checks every result ever saved in ${esc(current.name)} and lists anyone with no lessons or results for over a year.</p>
       <button class="btn" id="checkOld">Check for records over 12 months old</button>
-      <div id="oldRecords"></div>`;
+      <div id="oldRecords"></div>`)}`;
     if ($("#csv")) $("#csv").onclick = () => downloadCSV(sessions);
     body.querySelectorAll("[data-report]").forEach(b => { b.onclick = () => printReport(b.dataset.report, sessions,
       inEngland(roster.find(r => sameName(r.name, b.dataset.report))), paperEvidence); });
     $("#days").onchange = e => { days = Number(e.target.value); drawPupils(body); };
     // Each pupil's details fold away; the open ones stay open when the tab redraws
     body.querySelectorAll(".roster-more").forEach(d => d.addEventListener("toggle", () => { if (d.open) openRoster.add(d.dataset.key); else openRoster.delete(d.dataset.key); }));
+    // One part of the page at a time; switching parts doesn't reload anything
+    const showPane = key => {
+      pupilsView = key;
+      body.querySelectorAll("[data-pane]").forEach(t => t.setAttribute("aria-selected", String(t.dataset.pane === key)));
+      body.querySelectorAll(".pupil-pane").forEach(el => { el.hidden = el.id !== `pane-${key}`; });
+    };
+    body.querySelectorAll("[data-pane]").forEach(t => { t.onclick = () => showPane(t.dataset.pane); });
+    body.querySelectorAll("[data-go-pane]").forEach(t => { t.onclick = () => { showPane(t.dataset.goPane); $(`#ptab-${t.dataset.goPane}`).focus(); }; });
+    // A pupil's fields sit on their card under Pupils and under Parent page
+    const field = (key, sel) => body.querySelector(`[data-pk="${CSS.escape(key)}"] ${sel}`);
     body.querySelectorAll("[data-results]").forEach(b => { b.onclick = () => {
+      showPane("progress");
       const card = body.querySelector(`[data-results-of="${CSS.escape(b.dataset.results.trim().toLowerCase())}"]`);
       if (card) { card.scrollIntoView({ block: "start" }); card.focus({ preventScroll: true }); card.classList.add("t-flash"); setTimeout(() => card.classList.remove("t-flash"), 1600); }
     }; });
@@ -5112,17 +5157,17 @@
     body.querySelectorAll("[data-homework]").forEach((el, i) => { el.value = roster[i].homeworkList || ""; });
     body.querySelectorAll("[data-save-pupil]").forEach(b => { b.onclick = async () => {
       const pupil = roster.find(r => r.key === b.dataset.savePupil);
-      const card = b.closest(".roster-card");
-      const parentEmail = card.querySelector("[data-parent]").value.trim();
-      const reminderOptIn = card.querySelector("[data-optin]").checked;
+      const f = sel => field(pupil.key, sel);
+      const parentEmail = f("[data-parent-email]").value.trim();
+      const reminderOptIn = f("[data-optin]").checked;
       if (reminderOptIn && !parentEmail) return showError(new Error("Add a parent email before enabling reminders."));
       const details = { name: pupil.name, parentEmail, reminderOptIn,
-        nextLessonDate: card.querySelector("[data-lesson-date]").value,
-        lessonTime: card.querySelector("[data-lesson-time]").value,
-        homeworkList: card.querySelector("[data-homework]").value,
-        parentNote: card.querySelector("[data-parent-note]").value,
-        yearGroup: card.querySelector("[data-year]").value };
-      const choice = card.querySelector("[data-look]").value;
+        nextLessonDate: f("[data-lesson-date]").value,
+        lessonTime: f("[data-lesson-time]").value,
+        homeworkList: f("[data-homework]").value,
+        parentNote: f("[data-parent-note]").value,
+        yearGroup: f("[data-year]").value };
+      const choice = f("[data-look]").value;
       try {
         await cloud.savePupil(current.id, details);
         const row = lookRow(pupil), look = lookFor(choice, details.yearGroup);
@@ -5208,7 +5253,7 @@
     }; });
     body.querySelectorAll("[data-home-email]").forEach(b => { b.onclick = () => {
       const pupil = roster.find(r => r.key === b.dataset.homeEmail);
-      const to = b.closest(".roster-card").querySelector("[data-parent]").value.trim() || pupil.parentEmail || "";
+      const to = field(pupil.key, "[data-parent-email]").value.trim() || pupil.parentEmail || "";
       previewEmail(to, homeLoginEmail(pupil));
     }; });
     body.querySelectorAll("[data-parent-copy]").forEach(b => { b.onclick = async () => {
@@ -5220,7 +5265,7 @@
     body.querySelectorAll("[data-parent]").forEach(b => { b.onclick = async () => {
       const pupil = roster.find(r => r.key === b.dataset.key);
       const action = b.dataset.parent;
-      const parentNote = b.closest(".roster-card").querySelector("[data-parent-note]").value;
+      const parentNote = field(pupil.key, "[data-parent-note]").value;
       if (action === "off" && !confirm(`Turn off ${pupil.name}'s parent page? The link will stop working.`)) return;
       if (action === "new" && !confirm(`Make a new link for ${pupil.name}? The old link will stop working.`)) return;
       b.disabled = true;
