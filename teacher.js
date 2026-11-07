@@ -982,7 +982,8 @@
         ${sheets.length ? `<p class="hint">Press a sheet to see it full size.</p><div class="sheet-thumbs">${sheets.map(thumbHTML).join("")}</div>`
           : `<p class="hint">This lesson's practice is online or with you. You can still print the lesson plan.</p>`}
         <div class="row"><button class="btn primary" type="button" data-print-top>🖨️ Print…</button>
-          ${lessonOnline(l).length ? `<button class="btn" type="button" data-assign-top>📌 Assign the online work</button>` : ""}</div>
+          ${lessonOnline(l).length ? `<button class="btn" type="button" data-assign-top>📌 Assign the online work</button>` : ""}
+          <button class="btn" type="button" data-paper-top>✍️ Record paper result</button></div>
       </section>
       <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">England</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
@@ -995,6 +996,7 @@
     dialog.querySelector("[data-print]").onclick = dialog.querySelector("[data-print-top]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur, made); };
     dialog.querySelectorAll("[data-thumb]").forEach(b => { b.onclick = () => sheetViewer(sheets, Number(b.dataset.thumb), "the lesson"); });
     dialog.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => { dialog.close(); lessonDialog(b.dataset.go === "prev" ? prev : next, cur, others); }; });
+    dialog.querySelector("[data-paper-top]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
     const assignTop = dialog.querySelector("[data-assign-top]");
     if (assignTop) assignTop.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.querySelector("[data-paper]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
