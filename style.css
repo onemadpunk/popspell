@@ -2329,3 +2329,4 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .sheet-thumb:hover .sheet-thumb-frame, .sheet-thumb:focus-visible .sheet-thumb-frame { outline: 3px solid var(--primary, #1d4ed8); }
 .sheet-thumb-frame > .sheet-preview-page { width: 794px; min-height: 1123px; margin: 0; transform: scale(.2015); transform-origin: 0 0; box-shadow: none; pointer-events: none; }
 .sheet-thumb-label { font-size: .85rem; font-weight: 700; line-height: 1.25; }
+.class-links { margin: 6px 0 0; font-size: .9rem; color: var(--muted); }

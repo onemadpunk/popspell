@@ -1517,6 +1517,13 @@
   // Each pupil's card: the work set, a button to open it for them in a new tab on this device,
   // and their recent results, each opening to show every word.
   const STEPS_KEY = "popspell-class-steps-hidden";
+  // Coming back from a pupil's tab shows their new results without pressing anything
+  let classShownAt = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || tab !== "class" || !current || document.querySelector("dialog[open]")) return;
+    const body = document.getElementById("tBody");
+    if (body && Date.now() - classShownAt > 5000) drawClass(body);
+  });
   async function drawClass(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
     const classId = current.id;
@@ -1524,6 +1531,7 @@
     try { [rows, roster, sessions] = await Promise.all([cloud.assignments(classId), cloud.pupils(classId), cloud.sessions(classId, 90)]); }
     catch (err) { return showError(err); }
     if (tab !== "class" || !current || current.id !== classId || !body.isConnected) return;
+    classShownAt = Date.now();
     const today = todayKey();
     const workOf = name => {
       const row = rows.find(a => a.key !== "everyone" && sameName(a.who, name));
@@ -1588,7 +1596,8 @@
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
           <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}" title="Set the online work and print a practice sheet on the same sounds">🧭 Plan next lesson</button>
             <button class="btn small" type="button" data-add-work="${esc(name)}" title="Add any piece of online work from the Library">＋ Add work</button>
-            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: a note for the Diary or a message for home">📝 Lesson summary</button></div>
+            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: a note for the Diary or a message for home">📝 Lesson summary</button>
+            ${(() => { const l = w.lists.concat(w.dated).find(id => catalogueList(id)); return l ? `<button class="btn small" type="button" data-mark-sheet="${esc(name)}" data-list="${esc(l)}" title="Enter how ${esc(name)} did on the paper sheet for ${esc(listTitle(l))}">✍️ Mark the sheet</button>` : ""; })()}</div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
               <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
@@ -1597,6 +1606,8 @@
             </details>`).join("")}</div>
             ${done.length > 6 ? `<p class="hint">${done.length - 6} older result${done.length === 7 ? "" : "s"} from the last 90 days are on the <button type="button" class="linklike" data-go-tab="pupils">Pupils</button> page.</p>` : ""}`
           : `<p class="hint">No work saved yet in the last 90 days.</p>`}
+          ${onRoster ? `<p class="class-links">Reports: <button type="button" class="linklike" data-term-report="${esc(name)}">📅 End-of-term report</button> ·
+            <button type="button" class="linklike" data-pupil-page="${esc(name)}">📄 Progress, PIN and parent page</button></p>` : ""}
           ${onRoster ? "" : `<p class="hint">Not on the class list yet. <button type="button" class="linklike" data-roster-add="${esc(name)}">Add ${esc(name)}</button></p>`}
         </article>`;
       }).join("")}</div>` : `<div class="empty">No pupils yet. Add the first one above.</div>`}`;
@@ -1634,6 +1645,14 @@
       catch (err) { b.disabled = false; showError(err); }
     }; });
     body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
+    body.querySelectorAll("[data-mark-sheet]").forEach(b => { b.onclick = () => { marking = { who: b.dataset.markSheet, list: b.dataset.list, back: "class" }; tab = "plans"; draw(); }; });
+    body.querySelectorAll("[data-term-report]").forEach(b => { b.onclick = () => parentsNight([roster.find(r => sameName(r.name, b.dataset.termReport))]); });
+    body.querySelectorAll("[data-pupil-page]").forEach(b => { b.onclick = () => {
+      const r = roster.find(x => sameName(x.name, b.dataset.pupilPage));
+      if (r) openRoster.add(r.key);
+      tab = "pupils"; draw();
+      setTimeout(() => { const card = r && document.querySelector(`[data-roster="${CSS.escape(r.key)}"]`); if (card) card.scrollIntoView({ block: "start" }); }, 600);
+    }; });
     body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => lessonSummaryDialog(b.dataset.lessonSummary, resultsOf(b.dataset.lessonSummary)); });
     body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
       const name = b.dataset.planLesson;
@@ -2755,7 +2774,7 @@
     const list = catalogueList(marking.list);
     if (!list) { marking = null; return drawPlans(body); }
     body.innerHTML = `<div class="row t-row"><h2 class="t-h2">Mark ${esc(list.title)} · ${esc(marking.who)}</h2>
-      <button class="btn" id="cancelMark">Back to plans</button></div>
+      <button class="btn" id="cancelMark">${marking.back ? "Back to the Class page" : "Back to plans"}</button></div>
       <p class="hint">Mark every word. “Right with help” counts as correct, but not first time. Tick any sound-to-spelling choices that need practice; they will appear in the pupil's progress summary.</p>
       <form id="markForm"><table class="t-table"><thead><tr><th>Word</th><th>Result</th><th>Sounds to revisit</th></tr></thead>
         <tbody>${list.items.map((item, i) => `<tr><td class="who">${esc(item.spelling)}</td>
@@ -2763,7 +2782,9 @@
             <option value="help">Right with help</option><option value="miss">Missed</option></select></td>
           <td><div class="sound-choices">${[...new Set(item.tokens)].map(tok => `<label><input type="checkbox" data-sound="${i}" value="${esc(tok)}"> ${esc(tok)}</label>`).join("")}</div></td></tr>`).join("")}</tbody></table>
         <div class="row end"><button class="btn primary" type="submit">Save worksheet results</button></div></form>`;
-    $("#cancelMark").onclick = () => { marking = null; drawPlans(body); };
+    // Marking started from the Class page goes back there
+    const done = () => { const back = marking.back; marking = null; if (back) { tab = back; draw(); } else drawPlans(body); };
+    $("#cancelMark").onclick = done;
     $("#markForm").onsubmit = async e => {
       e.preventDefault();
       const words = list.items.map((item, i) => {
@@ -2773,7 +2794,7 @@
           triesUsed: status === "first" ? 1 : status === "help" ? 2 : 3, wrong: [], missed };
       });
       try { await cloud.recordWorksheet(current.id, marking.who, marking.list, list.title, words);
-        marking = null; drawPlans(body); } catch (err) { showError(err); }
+        done(); } catch (err) { showError(err); }
     };
   }
 
