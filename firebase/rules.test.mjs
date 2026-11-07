@@ -229,6 +229,11 @@ await check("a programme keeps 30 lessons at most", assertFails(updateDoc(doc(tu
 await check("a pupil device can't change a programme", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { programme })));
 await check("teacher loads every starting assessment", assertSucceeds(getDocs(query(collection(tutor, "classes/ABC234/sessions"), where("listId", "in", ["assess-read", "check-spelling"])))));
 await check("a pupil device can't load the class's assessments", assertFails(getDocs(query(collection(pupil, "classes/ABC234/sessions"), where("listId", "in", ["assess-read"])))));
+const parentLesson = { date: "2026-11-04", notes: "We worked on ai and ay. Great effort!", practice: "Practise rain, play, day.", at: Date.now() };
+await check("teacher saves lesson notes for the family", assertSucceeds(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLesson })));
+await check("lesson notes can't hold other fields", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLesson: { ...parentLesson, extra: 1 } })));
+await check("lesson notes can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentLesson: { ...parentLesson, notes: "x".repeat(2001) } })));
+await check("a pupil device can't change lesson notes", assertFails(updateDoc(doc(pupil, "classes/ABC234/pupils/ava"), { parentLesson })));
 await check("parent note can't be huge", assertFails(updateDoc(doc(tutor, "classes/ABC234/pupils/ava"), { parentNote: "x".repeat(1001) })));
 
 console.log("Pupils' own progress");

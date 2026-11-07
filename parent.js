@@ -21,13 +21,19 @@
     const name = p.pupil;
     const sounds = s.sounds || { secure: [], learning: [], practise: [] };
     const week = s.week || { done: 0, questions: 0 };
-    const upcoming = s.upcoming || [];
     document.title = `${name} · PopSpell progress`;
     app.innerHTML = `
       <section class="panel parent-page">
         <p class="eyebrow">👪 Progress at home</p>
         <div class="page-head"><img class="pip" src="assets/brand/pip-celebrate-small.webp" alt="Pip" width="64" height="64"><h1>${esc(name)}'s progress</h1></div>
         <p class="meta">${s.teacher ? `From ${esc(s.teacher)} · ` : ""}updated ${esc(day(p.updated))}</p>
+
+        ${s.lesson ? `<div class="parent-lesson">
+          <h2>📝 Lesson notes${s.lesson.date ? ` · ${esc(date(s.lesson.date))}` : ""}</h2>
+          ${s.lesson.notes ? `<p>${esc(s.lesson.notes)}</p>` : ""}
+          ${s.lesson.practice ? `<h3>🏠 Practice at home</h3><p>${esc(s.lesson.practice)}</p>` : ""}
+          ${s.teacher ? `<p class="meta">${esc(s.teacher)}</p>` : ""}
+        </div>` : ""}
 
         ${p.note ? `<div class="parent-note"><b>💬 A note from ${esc(s.teacher || "the tutor")}</b><p>${esc(p.note)}</p></div>` : ""}
 
@@ -37,13 +43,9 @@
           <div><b>${sounds.secure.length}</b><span>${sounds.secure.length === 1 ? "sound" : "sounds"} known well ⭐</span></div>
         </div>
 
-        ${s.nextLesson || s.homework || upcoming.length ? `
-          <h2>📌 Coming up</h2>
-          <ul class="parent-list">
-            ${s.nextLesson ? `<li>Next lesson: <b>${esc(date(s.nextLesson))}</b></li>` : ""}
-            ${s.homework ? `<li>Homework: <b>${esc(s.homework)}</b></li>` : ""}
-            ${upcoming.map(u => `<li>${esc(date(u.from))}: ${esc(u.title)}</li>`).join("")}
-          </ul>` : ""}
+        ${s.homework && !(s.lesson && s.lesson.practice) ? `
+          <h2>📌 Homework</h2>
+          <ul class="parent-list"><li><b>${esc(s.homework)}</b> on PopSpell</li></ul>` : ""}
 
         <h2>🔶 Sounds to practise at home</h2>
         ${sounds.practise.length ? `<p>${chips(sounds.practise, "practise")}</p>` : `<p class="hint">Nothing to catch up on right now. Well done!</p>`}
