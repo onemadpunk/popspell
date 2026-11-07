@@ -50,7 +50,7 @@ NUMBER_WORDS = dict(enumerate(["zero", "one", "two", "three", "four", "five", "s
                                "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]))
 NUMBER_WORDS.update({(i + 2) * 10: w for i, w in enumerate(["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"])})
 NUMBER_WORDS = {str(k): v for k, v in NUMBER_WORDS.items()}
-NUMBER_WORDS.update({"hundred": "hundred", "thousand": "thousand", "and": "and", "point": "point"})
+NUMBER_WORDS.update({"hundred": "hundred", "thousand": "thousand", "million": "million", "and": "and", "point": "point"})
 
 # Keep in step with PHRASES in app.js
 PHRASES = {
@@ -207,7 +207,14 @@ def plan():
     # Everything else the activities say (tools/activity_lines.mjs lists it), and the number
     # words sums are built from (speech-text.js)
     # A piece Eponine already says in another recording (a list sentence, a phrase, a story
-    # question) isn't recorded again: the site plays that recording instead (ALIASES)
+    # question, so the stories come first) isn't recorded again: the site plays that recording instead (ALIASES)
+    for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
+        jobs[f"passages/{pid}"] = story
+        # Read-along: each sentence on its own, so pupils can follow at their own speed
+        for n, sentence in enumerate(split_sentences(story), 1):
+            jobs[f"passages/{pid}-s{n}"] = sentence
+        for n, q in enumerate(questions, 1):
+            jobs[f"passages/{pid}-q{n}"] = q
     lines = ROOT / "tools" / "lines.json"
     already = {said(text): key for key, text in jobs.items()}
     ALIASES.clear()
@@ -219,13 +226,6 @@ def plan():
                 jobs[f"lines/{key}"] = text
     for key, text in NUMBER_WORDS.items():
         jobs[f"numbers/{key}"] = text
-    for pid, story, questions in list_passages(ROOT / "passages.js") + list_passages(ROOT / "stories.js"):
-        jobs[f"passages/{pid}"] = story
-        # Read-along: each sentence on its own, so pupils can follow at their own speed
-        for n, sentence in enumerate(split_sentences(story), 1):
-            jobs[f"passages/{pid}-s{n}"] = sentence
-        for n, q in enumerate(questions, 1):
-            jobs[f"passages/{pid}-q{n}"] = q
     return jobs
 
 

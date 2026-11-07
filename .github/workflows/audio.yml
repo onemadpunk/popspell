@@ -4,8 +4,8 @@ name: Make recordings
 
 on:
   push:
-    paths: ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js",
-            "tools/make_audio.py", "tools/activity_lines.mjs", ".github/workflows/audio.yml"]
+    paths: ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js", "app.js",
+            "tools/make_audio.py", "tools/activity_lines.mjs", "tools/spoken.mjs", ".github/workflows/audio.yml"]
   workflow_dispatch:
 
 permissions:
@@ -60,3 +60,8 @@ jobs:
             sleep 10
           done
           exit 1
+
+      # A red cross here means something the site says still has no recording (the device voice
+      # would say it): the list of what's missing is in this step's log
+      - name: Check every spoken line has a recording
+        run: node tools/audio_check.mjs --strict
