@@ -320,6 +320,10 @@
         const clip = recLines.has(part.key) ? `lines/${part.key}` : RECORDED.aliases[part.key];
         if (!clip) return null;
         steps.push(`audio/${clip}.mp3`);
+      } else if (part.letters) {
+        // A Roman numeral, letter by letter (XLII: X · L · I · I)
+        if (!RECORDED.letters) return null;
+        steps.push(...letterSteps(part.letters));
       } else {
         for (const [i, n] of part.number.entries()) {
           if (!recNumbers.has(n)) return null;

@@ -1521,7 +1521,9 @@ window.PopActivities = (() => {
         if (k === 0) { const i = rand(24) + 1, after = rand(2) === 1, ans = ALPHABET[after ? i + 1 : i - 1];
           return choice(`Which letter comes ${after ? "after" : "before"} ${ALPHABET[i]}?`, ans, others2(ans, ALPHABET.filter(c => c !== ALPHABET[i])), { label: `${after ? "after" : "before"} ${ALPHABET[i]}`, skill: "the alphabet in order", explain: `In the alphabet: ${ALPHABET[i - 1]}, ${ALPHABET[i]}, ${ALPHABET[i + 1]}.` }); }
         if (k === 1) { const words = shuffle(["apple", "bed", "cat", "dog", "egg", "fish", "goat", "hat", "jam", "kite", "leg", "mop", "nut", "pig", "sun", "van"]).slice(0, 3), first = words.slice().sort()[0];
-          return choice(`Which word comes first in alphabetical order: ${words.join(", ")}?`, first, words.filter(w => w !== first), { label: `abc ${words.join(",")}`, skill: "alphabetical order", explain: `Look at the first letters: ${first[0]} comes first in the alphabet.` }); }
+          // Said as the question then each word on its own ("Sun. Pig. Apple."), so every part has a recording
+          return choice(`Which word comes first in alphabetical order: ${words.join(", ")}?`, first, words.filter(w => w !== first), { label: `abc ${words.join(",")}`, skill: "alphabetical order", explain: `Look at the first letters: ${first[0]} comes first in the alphabet.`,
+            say: { text: `Which word comes first in alphabetical order? ${words.map(w => `${w[0].toUpperCase()}${w.slice(1)}.`).join(" ")}` } }); }
         const [word, sound, ans, wrong] = pick([["rain", "ai", "a-i", ["a-y", "a-e"]], ["play", "ai", "a-y", ["a-i", "a-e"]], ["boat", "oa", "o-a", ["o-w", "o-e"]], ["snow", "oa", "o-w", ["o-a", "o-e"]],
           ["tree", "ee", "e-e", ["e-a", "e-y"]], ["leaf", "ee", "e-a", ["e-e", "y"]], ["night", "igh", "i-g-h", ["i-e", "y"]], ["cake", "ai", "a, then e at the end", ["a-i", "a-y"]]]);
         return choice(`In the word “${word}”, which letters spell the ${sound} sound?`, ans, wrong, { label: `letters ${word}`, skill: "letter names for spellings", explain: `“${word}” uses ${ans} for the ${sound} sound.` });
