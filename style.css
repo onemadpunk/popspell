@@ -2313,3 +2313,9 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .class-steps li.done { color: var(--muted); }
 .class-steps li.done > b:first-child { color: #15803d; }
 .class-steps .hint { margin: 0; }
+.pack-how { margin: 4px 0 0; }
+.pack-jump { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0 0; }
+.pack-jump > span { font-weight: 700; color: var(--muted); }
+.sheet-preview-page .pack-cap { margin: 0 0 8px; font-weight: 800; color: var(--primary, #1d4ed8); scroll-margin-top: 90px; }
+.sheet-preview-page .ws-page + .pack-cap { margin-top: 28px; padding-top: 16px; border-top: 3px dashed #999; }
+@media print { .pack-cap { display: none; } }

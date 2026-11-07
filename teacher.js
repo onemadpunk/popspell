@@ -935,16 +935,17 @@
     dialog.className = "worksheet-preview cal-dialog lesson-dialog";
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
+        <button class="btn small primary" type="button" data-print-top>🖨️ See and print the sheets</button>
         <button class="btn small" type="button" data-close>Close</button></div>
       <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">England</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
-      <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the pupil's worksheet</button>
+      <div class="row end"><button class="btn small" type="button" data-print>🖨️ See and print the sheets</button>
         <button class="btn small" type="button" data-paper>Record paper result</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
+    dialog.querySelector("[data-print]").onclick = dialog.querySelector("[data-print-top]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
     dialog.querySelector("[data-paper]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
     const assign = dialog.querySelector("[data-assign]");
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
@@ -1062,16 +1063,26 @@
         ${adultPages.length ? `<div><b>For you</b>${adultPages.map((pg, i) => box(pg, i + pupilPages.length)).join("")}</div>` : ""}
         ${note ? `<p class="hint">${esc(note)}</p>` : ""}
       </div>
+      <p class="hint pack-how">Only the ticked sheets print, each on its own page, so there's no need to choose pages in the printer settings.</p>
+      <nav class="pack-jump" aria-label="Go to a sheet in the preview"></nav>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const html = (all = false) => pages.filter((pg, i) => all || dialog.querySelector(`[data-page="${i}"]`).checked)
       .map(pg => `<div class="ws-page${pg.adult ? " ws-adult" : ""}">${pg.html()}</div>`).join("");
     const render = () => {
       const page = dialog.querySelector(".sheet-preview-page");
-      const h = html();
-      page.innerHTML = h || `<p class="hint">Tick something to print.</p>`;
+      const ticked = pages.map((pg, i) => ({ pg, i })).filter(({ i }) => dialog.querySelector(`[data-page="${i}"]`).checked);
+      // In the preview each sheet has its name above it, and the buttons above jump straight to it
+      page.innerHTML = ticked.length ? ticked.map(({ pg }, n) => `<p class="pack-cap" id="packSheet${n}">${n + 1}. ${esc(pg.label)}</p><div class="ws-page${pg.adult ? " ws-adult" : ""}">${pg.html()}</div>`).join("")
+        : `<p class="hint">Tick something to print.</p>`;
       page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
-      if (h) fitPages(page, sheetClass("ws-activity"));
+      if (ticked.length) fitPages(page, sheetClass("ws-activity"));
+      const jump = dialog.querySelector(".pack-jump");
+      jump.innerHTML = ticked.length > 1 ? `<span>Go to:</span>${ticked.map(({ pg }, n) => `<button class="btn small" type="button" data-jump="${n}">${n + 1}. ${esc(pg.label)}</button>`).join("")}` : "";
+      jump.querySelectorAll("[data-jump]").forEach(b => { b.onclick = () => dialog.querySelector(`#packSheet${b.dataset.jump}`).scrollIntoView({ behavior: "smooth", block: "start" }); });
+      const go = dialog.querySelector("[data-print]");
+      go.textContent = ticked.length ? `🖨️ Print ${ticked.length === 1 ? "1 page" : `${ticked.length} pages`}` : "Print";
+      go.disabled = !ticked.length;
     };
     dialog.querySelectorAll("[data-page]").forEach(el => { el.onchange = render; });
     wireHideLevel(dialog, render);
