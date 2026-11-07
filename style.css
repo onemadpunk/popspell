@@ -2330,3 +2330,14 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .sheet-thumb-frame > .sheet-preview-page { width: 794px; min-height: 1123px; margin: 0; transform: scale(.2015); transform-origin: 0 0; box-shadow: none; pointer-events: none; }
 .sheet-thumb-label { font-size: .85rem; font-weight: 700; line-height: 1.25; }
 .class-links { margin: 6px 0 0; font-size: .9rem; color: var(--muted); }
+
+/* Games: Fill time for one pupil, and the teacher's Games page */
+.game-picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 10px 0 14px; }
+.game-pick { display: grid; gap: 6px; align-content: start; padding: 14px; border: 2px solid var(--line); border-top: 6px solid var(--accent); border-radius: 16px; background: var(--surface); min-width: 0; }
+.game-pick h3 { margin: 0; font-size: 1.05rem; }
+.game-pick .game-age { margin: 0; font-weight: 700; font-size: .9rem; color: var(--muted); }
+.game-pick .hint { margin: 0; }
+.game-pick .btn { justify-self: start; margin-top: 4px; }
+.game-more ul { margin: 8px 0 0; padding-left: 1.2em; display: grid; gap: 6px; }
+.games-section { margin-bottom: 18px; }
+.fill-time .plan-body { max-width: 760px; }
