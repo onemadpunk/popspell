@@ -2340,7 +2340,7 @@ window.PopActivities = (() => {
 
   const numberGames = [
     { id: "ng-target-second", title: "Make the Target", level: "Second", organiser: NUM,
-      blurb: "Join four number tiles with +, − and × to make the target number. There's always a way.", make: targetGame("Second") },
+      blurb: "Join four number tiles with +, −, × and ÷ to make the target number. There's always a way.", make: targetGame("Second") },
     { id: "ng-target-third", title: "Make the Target: bigger numbers", level: "Third", organiser: NUM,
       blurb: "Five tiles, a target in the hundreds and all four operations. Plan a few steps ahead.", make: targetGame("Third") },
     { id: "ng-pairs-second", title: "Equal Pairs", level: "Second", organiser: FDP,
