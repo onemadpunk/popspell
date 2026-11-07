@@ -385,6 +385,11 @@ MAP = {
   "eg-pronouns": "en 3-4 vgp 4; en 3-4 co 11",
   "eg-tense-perfect": "en 5-6 co 14; en 5-6 vgp 4",
   "y1-days": "en 1 sp 4",
+  # England: key stage 3 (Years 7 to 9), for the statements the Third and Fourth level lessons don't cover (November 2026)
+  "lesson-england-algebraic-notation-and-expanding-double-brackets-years-7-to-9": "ma 7-9 al 2; ma 7-9 al 3; ma 7-9 al 5; ma 7-9 al 6; ma 7-9 al 4; ma 7-9 al 14; ma 7-9 gm 16",
+  "lesson-england-using-graphs-to-estimate-and-solve-and-geometric-sequences-years-7-to-9": "ma 7-9 al 22; ma 7-9 al 23; ma 7-9 al 26",
+  "lesson-england-one-quantity-as-a-fraction-of-another-and-ratios-as-fractions-years-7-to-9": "ma 7-9 rpr 3; ma 7-9 rpr 7",
+  "lesson-england-sets-of-numbers-and-venn-diagrams-years-7-to-9": "ma 7-9 prob 3; ma 7-9 num 16",
   # England: key stage 4 (Years 10 and 11). Every statement, and the GCSE detail added with them, is taught by one of these
   # (the eight headings, such as "speak confidently, audibly and effectively, including through:", through their bullets)
   "lesson-england-powers-roots-indices-and-standard-form-years-10-and-11": "ma 10-11 num 3; ma 10-11 num 2; ma 10-11 num 5; ma 10-11 al 3",
@@ -452,6 +457,10 @@ bullets = lambda x: [b for b in nc if b["year"] == x["year"] and b["domain"] == 
 ks4_left = sorted(x["id"] for x in nc if x["year"] == "10-11" and x["id"] not in mapped and not (bullets(x) and all(b["id"] in mapped for b in bullets(x))))
 if ks4_left:
     print("KEY STAGE 4 STATEMENTS WITH NO WORK:", ks4_left); sys.exit(1)
+# And every key stage 3 mathematics statement
+ks3_left = sorted(x["id"] for x in nc if x["year"] == "7-9" and x["subject"] == "ma" and x["id"] not in mapped and not (bullets(x) and all(b["id"] in mapped for b in bullets(x))))
+if ks3_left:
+    print("KEY STAGE 3 MATHS STATEMENTS WITH NO WORK:", ks3_left); sys.exit(1)
 
 def text_of(x):
     t = FIX.get(x["id"], x["text"])

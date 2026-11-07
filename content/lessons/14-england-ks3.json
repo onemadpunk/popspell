@@ -1,0 +1,124 @@
+{
+  "section": "England: key stage 3 (Years 7 to 9), for the statements the Third and Fourth level lessons don't cover",
+  "lessons": [
+    {
+      "id": "lesson-england-algebraic-notation-and-expanding-double-brackets-years-7-to-9",
+      "england": true,
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [],
+      "title": "Algebraic notation and expanding double brackets (Years 7 to 9)",
+      "intention": "We are learning to read and write algebra the short way, and to multiply out two brackets.",
+      "criteria": [
+        "I can write ab for a × b, 3y for y + y + y and 3 × y, and a/b for a ÷ b.",
+        "I can write coefficients as fractions rather than decimals, such as ½x rather than 0.5x.",
+        "I can expand the product of two binomials, such as (x + 3)(x + 5), and simplify the result.",
+        "I can show an expansion as the area of a rectangle, linking the algebra to the picture."
+      ],
+      "steps": {
+        "start": "Which of these mean the same: 3 × y, y + y + y, y³, 3y, y × 3? Sort them into two groups.",
+        "teach": "Agree the short forms: ab means a × b, 3y means 3 × y (number first), a² means a × a, and a ÷ b is written as a fraction a/b. A coefficient is written as a fraction, so ½x, not 0.5x. Then draw a rectangle (x + 3) wide and (x + 5) tall, split into four parts: x², 5x, 3x and 15. Add the parts: (x + 3)(x + 5) = x² + 8x + 15. Do (x + 4)(x − 2) with a grid, taking care with the negative: x² − 2x + 4x − 8 = x² + 2x − 8. Point out the pattern: the two numbers add to give the x term and multiply to give the number.",
+        "practise": "The \"Algebra the short way\" sheet.",
+        "check": "Ask them to write m × n ÷ 4 the short way, and to expand (x + 6)(x + 1) and (x − 3)(x + 7)."
+      },
+      "use": [
+        "t-expressions",
+        "f-brackets"
+      ],
+      "home": "Find the area of a rectangular room or garden with measurements like (x + 2) metres, by drawing it split into parts.",
+      "vocab": "term, coefficient, expression, expand, bracket, binomial, simplify",
+      "understand": "Why is (x + 3)² not the same as x² + 9?",
+      "lookFor": "Draws or describes the square split into four parts, showing the two 3x pieces that x² + 9 leaves out, so (x + 3)² = x² + 6x + 9."
+    },
+    {
+      "id": "lesson-england-using-graphs-to-estimate-and-solve-and-geometric-sequences-years-7-to-9",
+      "england": true,
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Patterns and missing numbers",
+      "codes": [],
+      "title": "Using graphs to estimate and solve, and geometric sequences (Years 7 to 9)",
+      "intention": "We are learning to read values and solutions from graphs, and to recognise sequences that multiply each time.",
+      "criteria": [
+        "I can read y for a given x, and x for a given y, from a straight-line or curved graph.",
+        "I can estimate the solution of two simultaneous linear equations from where their lines cross.",
+        "I can use a real-life graph, such as a taxi fare, a cooling drink or a growing population, to estimate an answer.",
+        "I can recognise a geometric sequence, find its multiplier and continue it, and spot other sequences such as square and Fibonacci-type numbers."
+      ],
+      "steps": {
+        "start": "1, 2, 4, 8, … and 2, 4, 6, 8, … What comes next in each? How are they different?",
+        "teach": "Show the graph of y = x² and read across and down: when x = 2.5, y is about 6.2; when y = 5, x is about 2.2 (or −2.2). Draw y = x + 1 and y = 5 − x on the same axes: they cross at (2, 3), so x = 2, y = 3 solves both. Read a taxi fare graph that is flat then steep (piece-wise), and a cooling-cup curve that falls fast then slowly, and use them to answer 'how much?' and 'when?' questions, saying it's an estimate. Then compare sequences: in 3, 6, 12, 24 you multiply by 2 each time (geometric); in 3, 6, 9, 12 you add 3 (arithmetic). Find the multiplier by dividing a term by the one before. Mention square numbers and 1, 1, 2, 3, 5, 8 as other sequences.",
+        "practise": "The \"Read it from the graph\" sheet.",
+        "check": "Ask for the next two terms of 2, 6, 18, … and 80, 40, 20, …, and where y = 2x and y = 6 − x cross on a sketch."
+      },
+      "use": [
+        "t-sequences",
+        "f-nth-term"
+      ],
+      "home": "Find a graph in the news or on a phone bill, and use it to estimate one value that isn't printed.",
+      "vocab": "estimate, intersection, simultaneous, piece-wise, geometric, arithmetic, multiplier, term",
+      "understand": "Why is an answer read from a graph an estimate rather than exact?",
+      "lookFor": "Explains that you can only read the scale to the nearest small square, and the line or curve has thickness, so the answer is close but may be slightly out."
+    },
+    {
+      "id": "lesson-england-one-quantity-as-a-fraction-of-another-and-ratios-as-fractions-years-7-to-9",
+      "england": true,
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Fractions, decimals and percentages",
+      "codes": [],
+      "title": "One quantity as a fraction of another, and ratios as fractions (Years 7 to 9)",
+      "intention": "We are learning to write one amount as a fraction of another, and to see a ratio as fractions and as a straight-line graph.",
+      "criteria": [
+        "I can write one quantity as a fraction of another, less than 1 or greater than 1, using the same units.",
+        "I can turn a ratio into fractions of the whole, so in 2 : 3 the first part is ⅖ of the total.",
+        "I can say how many times bigger one part of a ratio is than the other, as a fraction.",
+        "I can show a ratio as a straight-line graph through (0, 0), such as y = 3/2 x for the ratio 2 : 3."
+      ],
+      "steps": {
+        "start": "Mia is 120 cm tall and her dad is 180 cm. What fraction of her dad's height is Mia? What fraction of Mia's height is her dad?",
+        "teach": "Write 'this out of that' as a fraction and simplify: 120/180 = ⅔, and 180/120 = 3/2, which is greater than 1, so it's 1½ times. Units must match first: 45 minutes as a fraction of 2 hours is 45/120 = 3/8. Then link to ratio: orange and lemon in the ratio 2 : 3 means 5 parts, so orange is ⅖ of the drink and lemon is ⅗; there is ⅔ as much orange as lemon, and 3/2 as much lemon as orange. Make a table of orange and lemon for 2 : 3 (2 and 3, 4 and 6, 6 and 9) and plot it: the points make a straight line through (0, 0), and lemon = 3/2 × orange.",
+        "practise": "The \"What fraction of?\" sheet.",
+        "check": "Ask for 40p as a fraction of £1, 15 kg as a fraction of 10 kg, and what fraction of the class are girls if boys : girls is 4 : 5."
+      },
+      "use": [
+        "t-ratio",
+        "t-fractions-ops"
+      ],
+      "home": "Mix a drink or a recipe in a ratio, and say what fraction of the whole each ingredient is.",
+      "vocab": "fraction, quantity, ratio, part, whole, proportion, improper fraction",
+      "understand": "In the ratio 2 : 3, why is the first part ⅖ of the whole and not ⅔?",
+      "lookFor": "Explains that ⅔ compares the two parts with each other, but there are 2 + 3 = 5 parts in total, so as a fraction of the whole it is 2 out of 5."
+    },
+    {
+      "id": "lesson-england-sets-of-numbers-and-venn-diagrams-years-7-to-9",
+      "england": true,
+      "level": "Third",
+      "subject": "Maths",
+      "strand": "Data and chance",
+      "codes": [],
+      "title": "Sets of numbers and Venn diagrams (Years 7 to 9)",
+      "intention": "We are learning to sort things into sets systematically, using tables, grids and Venn diagrams, and to find probabilities from them.",
+      "criteria": [
+        "I can list all the outcomes systematically, using a list, a table or a grid.",
+        "I can sort items into a Venn diagram with two sets, including the overlap (intersection) and the region outside both.",
+        "I can read a union (A or B or both) and an intersection (A and B) from a Venn diagram, and use them to find a probability.",
+        "I can explain that the integers, and the fractions between any two numbers, go on for ever."
+      ],
+      "steps": {
+        "start": "Name a number that is even and bigger than 10. Now one that is even but not bigger than 10. Now one that is neither.",
+        "teach": "Draw a rectangle for all the numbers 1 to 15, with two overlapping circles: A = even numbers, B = multiples of 3. Place each number, starting with the overlap (6 and 12). Read off A ∩ B (in both), A ∪ B (in either or both) and the numbers outside both circles. Turn counts into probabilities: if a number from 1 to 15 is picked at random, P(A ∩ B) = 2/15. Fill a Venn diagram from survey numbers by starting with the overlap and taking it away. Show a sample-space grid for two dice as another systematic way to list outcomes. Finish by asking: how many whole numbers are there? How many fractions between 0 and 1? Halve the gap again and again to show there is no end.",
+        "practise": "The \"Sort it in a Venn\" sheet.",
+        "check": "Give a Venn diagram of pupils who play football and tennis. Ask how many play both, how many play only tennis, and P(plays football or tennis)."
+      },
+      "use": [
+        "t-probability"
+      ],
+      "home": "Ask family members which of two things they like (such as tea and coffee) and draw a Venn diagram of the answers.",
+      "vocab": "set, element, Venn diagram, intersection, union, outcome, sample space, infinite",
+      "understand": "In a Venn diagram, why do you fill in the overlap first?",
+      "lookFor": "Explains that the totals for each set include the overlap, so you need to know the overlap before you can work out how many are only in one set."
+    }
+  ]
+}
