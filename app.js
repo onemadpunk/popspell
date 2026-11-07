@@ -2254,7 +2254,7 @@
   /* ---------- Activities: writing, reading, listening and numeracy (content in activities.js) ---------- */
 
   const ACTIVITY_TRIES = 2;
-  const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
+  const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[−–]/g, "-").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
 
   const WORD_GAME_HOWTO = {
     code: ["Guess the hidden word. After each guess, green letters are in the right place, amber letters are in the word but somewhere else, and grey letters are not in it.", "The first letter is given. You have six tries, and a word we don't know doesn't use one up."],

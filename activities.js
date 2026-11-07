@@ -1964,6 +1964,237 @@ window.PopActivities = (() => {
       make: gridGame(5, 4) }
   );
 
+  /* ---------- Third and Fourth level numeracy and maths (S1 to S3): practice for the secondary lessons ---------- */
+  // In the Numbers area with everything else, so S1 to S3 pupils find work at their level. They are
+  // left out of the numbers starting check (check: false), which places pupils up to Second level.
+  const MONEY = "Numeracy · Money";
+  const sup = n => String(n).replace(/-/g, "⁻").replace(/\d/g, d => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d]);
+  const fracW = (n, d) => { const g = gcd(n, d); return d / g === 1 ? String(n / g) : `${n / g}/${d / g}`; };
+  const signed = n => (n < 0 ? `− ${-n}` : `+ ${n}`);
+  const negAccept = n => (n < 0 ? [`−${-n}`] : []);
+  const sf = (n, s) => Number(n.toPrecision(s));
+  const termText = (a, v) => (a === 1 ? v : a === -1 ? `−${v}` : `${minus(a)}${v}`);
+  const linear = (a, b, v = "x") => (b ? `${termText(a, v)} ${b < 0 ? "−" : "+"} ${Math.abs(b)}` : termText(a, v));
+  const spaced = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+  // Two wrong options, never the same as each other
+  const others2u = (answer, pool) => others2(answer, [...new Set(pool.map(String))]);
+  const numeracyUpper = [
+    { id: "t-negative-calc", title: "Negative numbers in calculations", level: "Third", organiser: NUM, check: false,
+      blurb: "Add, subtract, multiply and divide with negative numbers, in context and on their own.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const a = -(rand(9) + 2), b = rand(15) + 2, r = a + b; return typed(`${minus(a)} + ${b} = ?`, r, { accept: negAccept(r), label: `${a}+${b}`, skill: "adding with negative numbers", explain: `Start at ${minus(a)} and go up ${b}: ${minus(r)}.` }); }
+        if (k === 1) { const a = rand(9) + 1, b = a + rand(9) + 2, r = a - b; return typed(`${a} − ${b} = ?`, r, { accept: negAccept(r), label: `${a}-${b}`, skill: "subtracting past zero", explain: `${a} − ${b} goes ${b - a} below zero: ${minus(r)}.` }); }
+        if (k === 2) { const a = rand(8) + 1, b = -(rand(8) + 1), r = a - b; return typed(`${a} − (${minus(b)}) = ?`, r, { label: `${a}-(${b})`, skill: "subtracting a negative", explain: `Taking away a negative is the same as adding: ${a} + ${-b} = ${r}.` }); }
+        if (k === 3) { const a = -(rand(7) + 2), b = rand(2) ? -(rand(7) + 2) : rand(7) + 2, r = a * b; return typed(`${minus(a)} × ${b < 0 ? `(${minus(b)})` : b} = ?`, r, { accept: negAccept(r), label: `${a}x${b}`, skill: "multiplying with negative numbers", explain: `${b < 0 ? "Negative × negative is positive" : "Negative × positive is negative"}: ${minus(r)}.` }); }
+        const night = -(rand(8) + 1), rise = rand(12) + 3, r = night + rise;
+        return typed(`At midnight it was ${minus(night)}°C. By noon it had risen by ${rise} degrees. What was the temperature at noon? (°C)`, r, { accept: negAccept(r), label: `temp ${night}+${rise}`, skill: "negative numbers in context", explain: `${minus(night)} + ${rise} = ${minus(r)}°C.` });
+      }) },
+    { id: "t-rounding-dp", title: "Rounding to decimal places", level: "Third", organiser: ROUND, check: false,
+      blurb: "Round to 1 or 2 decimal places, and estimate answers by rounding first.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k < 2) {
+          const dp = k + 1, n = Number(((rand(9000) + 1000) / 1000 + rand(20)).toFixed(3)), ans = Number(n.toFixed(dp));
+          if (Math.abs(n * 10 ** dp - Math.round(n * 10 ** dp)) < 1e-9 || Math.abs((n * 10 ** dp) % 1 - 0.5) < 1e-9) return { label: "skip" };
+          return typed(`Round ${n} to ${dp} decimal place${dp > 1 ? "s" : ""}.`, n.toFixed(dp), { input: "decimal", accept: [String(ans)], label: `${n} to ${dp}dp`, skill: "rounding to decimal places", explain: `Look at the next digit along: it rounds to ${n.toFixed(dp)}.` });
+        }
+        const a = rand(40) + 11 + rand(9) / 10, b = rand(8) + 2 + rand(9) / 10, est = Math.round(a) * Math.round(b);
+        return choice(`Estimate ${a} × ${b} by rounding each number to the nearest whole number.`, est, others2u(est, [est + Math.round(b), est - Math.round(a), est * 10, Math.round(est / 10)]),
+          { label: `est ${a}x${b}`, skill: "estimating by rounding", explain: `${Math.round(a)} × ${Math.round(b)} = ${est}.` });
+      }) },
+    { id: "t-powers", title: "Powers and roots", level: "Third", organiser: MFP, check: false,
+      blurb: "Work out squares, cubes and other powers, and square and cube roots.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const b = rand(11) + 2; return typed(`What is ${b}² (${b} squared)?`, b * b, { label: `${b}^2`, skill: "squares", explain: `${b} × ${b} = ${b * b}.` }); }
+        if (k === 1) { const b = rand(5) + 2; return typed(`What is ${b}³ (${b} cubed)?`, b ** 3, { label: `${b}^3`, skill: "cubes", explain: `${b} × ${b} × ${b} = ${b ** 3}.` }); }
+        if (k === 2) { const [b, e] = pick([[2, 4], [2, 5], [2, 6], [3, 4], [10, 4], [10, 5], [5, 3], [2, 7]]); return typed(`What is ${b}${sup(e)}?`, b ** e, { label: `${b}^${e}`, skill: "powers", explain: `${b} multiplied by itself ${e} times: ${Array(e).fill(b).join(" × ")} = ${b ** e}.` }); }
+        const cube = rand(2), r = cube ? rand(5) + 2 : rand(11) + 2;
+        return typed(cube ? `What is the cube root of ${r ** 3}?` : `What is √${r * r}?`, r, { label: cube ? `cbrt ${r ** 3}` : `sqrt ${r * r}`, skill: "square and cube roots", explain: cube ? `${r} × ${r} × ${r} = ${r ** 3}.` : `${r} × ${r} = ${r * r}.` });
+      }) },
+    { id: "t-fractions-ops", title: "Adding and subtracting fractions", level: "Third", organiser: FDP, check: false,
+      blurb: "Add and subtract fractions with different denominators, answers in simplest form.",
+      make: () => distinct(10, () => {
+        const [d1, d2] = pick([[2, 3], [2, 5], [3, 4], [4, 6], [3, 5], [2, 7], [4, 5], [6, 8], [3, 6], [5, 10]]);
+        const n1 = rand(d1 - 1) + 1, n2 = rand(d2 - 1) + 1, add = rand(2), L = (d1 * d2) / gcd(d1, d2);
+        const top = add ? n1 * (L / d1) + n2 * (L / d2) : n1 * (L / d1) - n2 * (L / d2);
+        if (top <= 0 || fracW(n1, d1) !== `${n1}/${d1}` || fracW(n2, d2) !== `${n2}/${d2}`) return { label: "skip" };
+        const ans = fracW(top, L), wrong1 = fracW(add ? n1 + n2 : Math.abs(n1 - n2) || 1, add ? d1 + d2 : Math.max(1, Math.abs(d1 - d2)) + d1), wrong2 = fracW(top + 1, L);
+        return choice(`${n1}/${d1} ${add ? "+" : "−"} ${n2}/${d2} = ?`, ans, others2u(ans, [wrong1, wrong2, fracW(top, L * 2)]),
+          { label: `${n1}/${d1}${add ? "+" : "-"}${n2}/${d2}`, skill: "adding and subtracting fractions", explain: `Use ${L} as the denominator: ${n1 * (L / d1)}/${L} ${add ? "+" : "−"} ${n2 * (L / d2)}/${L} = ${top}/${L}${ans !== `${top}/${L}` ? ` = ${ans}` : ""}.` });
+      }) },
+    { id: "t-ratio", title: "Ratio and sharing", level: "Third", organiser: FDP, check: false,
+      blurb: "Simplify ratios, share amounts in a ratio, and scale recipes up and down.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const a = rand(5) + 1, b = rand(6) + 2, m = rand(5) + 2; if (a === b || gcd(a, b) !== 1) return { label: "skip" };
+          return choice(`Write ${a * m} : ${b * m} in its simplest form.`, `${a} : ${b}`, others2u(`${a} : ${b}`, [`${b} : ${a}`, `${a + 1} : ${b + 1}`, `${a * m - a} : ${b * m - b}`]),
+            { label: `${a * m}:${b * m}`, skill: "simplifying ratios", explain: `Divide both by ${m}: ${a} : ${b}.` }); }
+        if (k === 1) { const a = rand(4) + 1, b = rand(4) + 1, part = (rand(9) + 2) * 5, total = (a + b) * part; if (a === b || gcd(a, b) !== 1) return { label: "skip" };
+          return typed(`Share £${total} in the ratio ${a} : ${b}. How much is the bigger share? (£)`, Math.max(a, b) * part, { label: `share ${total} ${a}:${b}`, skill: "sharing in a ratio",
+            explain: `${a} + ${b} = ${a + b} parts. £${total} ÷ ${a + b} = £${part} a part, so ${Math.max(a, b)} parts = £${Math.max(a, b) * part}.` }); }
+        const serves = pick([2, 4, 6]), want = serves * pick([2, 3]) / pick([1, 2]), g = (rand(8) + 2) * 25, need = (g / serves) * want;
+        if (want === serves || !Number.isInteger(need)) return { label: "skip" };
+        return typed(`A recipe for ${serves} people uses ${g} g of flour. How much flour for ${want} people? (g)`, need, { label: `recipe ${serves} to ${want} ${g}`, skill: "direct proportion",
+          explain: `${want} people is ${want / serves} times as many as ${serves}, so ${g} g × ${want / serves} = ${need} g.` });
+      }) },
+    { id: "t-speed", title: "Speed, distance and time", level: "Third", organiser: TIME, check: false,
+      blurb: "Use speed = distance ÷ time to find speed, distance or time.",
+      make: () => distinct(10, () => {
+        const s = pick([4, 5, 6, 8, 12, 15, 20, 30, 40, 45, 50, 60, 70, 80]), t = pick([0.5, 1.5, 2, 2.5, 3, 4]), d = s * t, k = rand(3);
+        if (!Number.isInteger(d)) return { label: "skip" };
+        const hrs = t === 0.5 ? "30 minutes" : t % 1 ? `${Math.floor(t)} hour${t >= 2 ? "s" : ""} 30 minutes` : `${t} hours`;
+        if (k === 0) return typed(`A car travels ${d} km in ${hrs}. What is its average speed? (km/h)`, s, { label: `speed ${d}/${t}`, skill: "finding speed", explain: `Speed = distance ÷ time = ${d} ÷ ${t} = ${s} km/h.` });
+        if (k === 1) return typed(`A cyclist rides at ${s} km/h for ${hrs}. How far do they go? (km)`, d, { label: `dist ${s}x${t}`, skill: "finding distance", explain: `Distance = speed × time = ${s} × ${t} = ${d} km.` });
+        return typed(`How long does a ${d} km journey take at ${s} km/h? (hours, as a decimal)`, t, { input: "decimal", label: `time ${d}/${s}`, skill: "finding time", explain: `Time = distance ÷ speed = ${d} ÷ ${s} = ${t} hours (${hrs}).` });
+      }) },
+    { id: "t-sequences", title: "Sequences and their rules", level: "Third", organiser: PATTERN, check: false,
+      blurb: "Continue sequences, and use a rule like 3n + 2 to find any term.",
+      make: () => distinct(10, () => {
+        const a = rand(7) + 2, b = rand(11) - 4, seq = [1, 2, 3, 4].map(n => a * n + b), k = rand(3);
+        if (k === 0) return typed(`What comes next? ${seq.map(minus).join(", ")}, …`, a * 5 + b, { accept: negAccept(a * 5 + b), label: `next ${seq.join(",")}`, skill: "continuing sequences", explain: `It goes up by ${a} each time: ${seq[3]} + ${a} = ${a * 5 + b}.` });
+        if (k === 1) { const n = rand(15) + 10; return typed(`The rule for a sequence is ${linear(a, b, "n")}. What is term number ${n}?`, a * n + b, { label: `${a}n${b} t${n}`, skill: "using a rule", explain: `${a} × ${n} ${signed(b)} = ${a * n + b}.` }); }
+        const rule = linear(a, b, "n");
+        return choice(`Which rule gives ${seq.map(minus).join(", ")}, …?`, rule, others2u(rule, [linear(a, b + a, "n"), `n ${signed(a)}`, linear(b === 0 ? a + 1 : a, b === 0 ? 1 : 0, "n")].filter(r => r !== rule)),
+          { label: `rule ${seq.join(",")}`, skill: "finding the nth term", explain: `It goes up by ${a}, so it starts ${a}n. ${a} × 1 = ${a}, and the first term is ${minus(seq[0])}, so ${b ? signed(b) : "nothing more"}: ${rule}.` });
+      }) },
+    { id: "t-expressions", title: "Simplifying and evaluating expressions", level: "Third", organiser: EQUATION, check: false,
+      blurb: "Collect like terms, and substitute numbers into expressions.",
+      make: () => distinct(10, () => {
+        if (rand(2)) {
+          const a = rand(7) + 2, b = rand(6) + 1, c = rand(9) + 1, d = rand(5) + 1, x = a - b;
+          if (x === 0) return { label: "skip" };
+          const ans = `${termText(x, "x")} ${signed(c + d)}`.replace("+ ", "+ ");
+          return choice(`Simplify ${a}x + ${c} − ${b}x + ${d}.`, ans, others2u(ans, [`${termText(a + b, "x")} ${signed(c + d)}`, `${x + c + d}x`, `${termText(x, "x")} ${signed(c - d)}`]),
+            { label: `${a}x+${c}-${b}x+${d}`, skill: "collecting like terms", explain: `${a}x − ${b}x = ${termText(x, "x")}, and ${c} + ${d} = ${c + d}.` });
+        }
+        const p = rand(5) + 2, q = rand(5) + 1, x = rand(6) + 1, y = rand(5) - 2, val = p * x + q * y;
+        return typed(`Work out ${p}x + ${termText(q, "y")} when x = ${x} and y = ${minus(y)}.`, val, { accept: negAccept(val), label: `${p}x+${q}y x${x}y${y}`, skill: "substituting into expressions",
+          explain: `${p} × ${x} + ${q} × ${y < 0 ? `(${minus(y)})` : y} = ${p * x} ${signed(q * y)} = ${minus(val)}.` });
+      }) },
+    { id: "t-angles", title: "Angles in triangles, lines and shapes", level: "Third", organiser: ANGLE, check: false,
+      blurb: "Find missing angles using angles on a line, around a point, in triangles and in quadrilaterals.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const a = rand(50) + 40, b = rand(140 - a - 20) + 20; return typed(`A triangle has angles of ${a}° and ${b}°. What is the third angle? (°)`, 180 - a - b, { label: `tri ${a} ${b}`, skill: "angles in a triangle", explain: `Angles in a triangle add to 180°: 180 − ${a} − ${b} = ${180 - a - b}°.` }); }
+        if (k === 1) { const a = rand(150) + 15; return typed(`Two angles sit on a straight line. One is ${a}°. What is the other? (°)`, 180 - a, { label: `line ${a}`, skill: "angles on a straight line", explain: `Angles on a straight line add to 180°: 180 − ${a} = ${180 - a}°.` }); }
+        if (k === 2) { const a = rand(100) + 60, b = rand(90) + 50, c = 360 - a - b; if (c < 30 || c > 200) return { label: "skip" }; return typed(`Three angles meet at a point: ${a}°, ${b}° and one more. What is it? (°)`, c, { label: `point ${a} ${b}`, skill: "angles around a point", explain: `Angles around a point add to 360°: 360 − ${a} − ${b} = ${c}°.` }); }
+        const a = rand(60) + 60, b = rand(60) + 70, c = rand(50) + 60, d = 360 - a - b - c;
+        if (d < 40 || d > 170) return { label: "skip" };
+        return typed(`A quadrilateral has angles of ${a}°, ${b}° and ${c}°. What is the fourth angle? (°)`, d, { label: `quad ${a} ${b} ${c}`, skill: "angles in a quadrilateral", explain: `Angles in a quadrilateral add to 360°: 360 − ${a} − ${b} − ${c} = ${d}°.` });
+      }) },
+    { id: "t-probability", title: "Probability from 0 to 1", level: "Third", organiser: CHANCE, check: false,
+      blurb: "Write probabilities as fractions, and find the chance of something not happening.",
+      make: () => distinct(10, () => {
+        const r = rand(6) + 1, b = rand(6) + 2, g = rand(5) + 1, total = r + b + g, k = rand(3);
+        if (k === 0) { const ans = fracW(r, total); return choice(`A bag has ${r} red, ${b} blue and ${g} green counters. What is the probability of picking red?`, ans, others2u(ans, [fracW(r, b + g), `${r}/${total + 1}`, fracW(b, total)].filter(x => x !== ans)), { label: `bag ${r}${b}${g} red`, skill: "probability as a fraction", explain: `${r} red out of ${total} counters: ${r}/${total}${ans !== `${r}/${total}` ? ` = ${ans}` : ""}.` }); }
+        if (k === 1) { const ans = fracW(total - g, total); return choice(`A bag has ${r} red, ${b} blue and ${g} green counters. What is the probability of NOT picking green?`, ans, others2u(ans, [fracW(g, total), fracW(total - g, total + g), fracW(r, total)].filter(x => x !== ans)), { label: `bag ${r}${b}${g} not green`, skill: "probability of not happening", explain: `${total - g} of the ${total} counters are not green: ${total - g}/${total}${ans !== `${total - g}/${total}` ? ` = ${ans}` : ""}.` }); }
+        const p = pick([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.7, 0.85]), ans = Math.round((1 - p) * 100) / 100;
+        return typed(`The probability that it rains tomorrow is ${p}. What is the probability that it doesn't rain?`, ans, { input: "decimal", accept: decAccept(ans), label: `rain ${p}`, skill: "probability of not happening", explain: `The two add up to 1: 1 − ${p} = ${ans}.` });
+      }) },
+    { id: "t-best-buy", title: "Best value and money problems", level: "Third", organiser: MONEY, check: false,
+      blurb: "Compare unit prices, and work with discounts and simple interest.",
+      make: () => distinct(8, () => {
+        const k = rand(2);
+        if (k === 0) { const s1 = pick([200, 250, 400, 500]), p1 = (rand(20) + 10) / 10, s2 = s1 * 2, p2 = Math.round((p1 * 2 + (rand(2) ? 0.3 : -0.3)) * 100) / 100;
+          const ans = p2 / s2 < p1 / s1 ? `${s2} g for £${p2.toFixed(2)}` : `${s1} g for £${p1.toFixed(2)}`;
+          return choice(`Which is better value: ${s1} g for £${p1.toFixed(2)}, or ${s2} g for £${p2.toFixed(2)}?`, ans, [ans === `${s1} g for £${p1.toFixed(2)}` ? `${s2} g for £${p2.toFixed(2)}` : `${s1} g for £${p1.toFixed(2)}`],
+            { label: `best ${s1} ${p1} ${p2}`, skill: "comparing value", explain: `Twice as much for £${p2.toFixed(2)}: compare with 2 × £${p1.toFixed(2)} = £${(p1 * 2).toFixed(2)}.` }); }
+        const p = pick([2, 3, 4, 5]), y = pick([2, 3, 4]), amt = pick([200, 500, 800, 1000, 1500]), i = (amt * p * y) / 100;
+        return typed(`£${amt} is saved at ${p}% simple interest a year. How much interest after ${y} years? (£)`, i, { label: `interest ${amt} ${p} ${y}`, skill: "simple interest", explain: `${p}% of £${amt} is £${(amt * p) / 100} a year; × ${y} = £${i}.` });
+      }) },
+
+    { id: "f-sci-notation", title: "Scientific notation", level: "Fourth", organiser: MFP, check: false,
+      blurb: "Write large and small numbers in scientific notation, and back again.",
+      make: () => distinct(10, () => {
+        const m = (rand(89) + 11) / 10, e = rand(2) ? rand(5) + 3 : -(rand(4) + 2);
+        // The ordinary number, written out with its digits (no rounding errors), shifted by `by` places
+        const plainOf = by => { const p = e + by, digits = String(m).replace(".", ""), point = 1 + p;
+          return point >= digits.length ? spaced(digits + "0".repeat(point - digits.length)) : point > 0 ? `${digits.slice(0, point)}.${digits.slice(point)}` : `0.${"0".repeat(-point)}${digits}`; };
+        const plain = plainOf(0), sci = `${m} × 10${sup(e)}`;
+        if (rand(2)) return choice(`Write ${plain} in scientific notation.`, sci, others2u(sci, [`${m} × 10${sup(e + 1)}`, `${m} × 10${sup(e - 1)}`, `${m} × 10${sup(-e)}`]),
+          { label: `to sci ${plain}`, skill: "writing in scientific notation", explain: `Move the decimal point ${Math.abs(e)} places to get ${m}: ${sci}.` });
+        return choice(`Write ${sci} as an ordinary number.`, plain, others2u(plain, [plainOf(1), plainOf(-1)]),
+          { label: `from sci ${sci}`, skill: "reading scientific notation", explain: `10${sup(e)} moves the point ${Math.abs(e)} places ${e > 0 ? "right" : "left"}: ${plain}.` });
+      }) },
+    { id: "f-sig-figs", title: "Significant figures", level: "Fourth", organiser: ROUND, check: false,
+      blurb: "Round whole numbers and decimals to 1, 2 or 3 significant figures.",
+      make: () => distinct(10, () => {
+        const s = rand(3) + 1, big = rand(2), n = big ? rand(890000) + 10000 : Number(((rand(9000) + 1000) / 10 ** (rand(3) + 4)).toPrecision(4));
+        const ans = sf(n, s);
+        if (ans === n) return { label: "skip" };
+        const show = x => (big ? String(x) : String(x));
+        return typed(`Round ${big ? spaced(n) : n} to ${s} significant figure${s > 1 ? "s" : ""}.`, show(ans), { input: "decimal", accept: big ? [spaced(ans)] : [], label: `${n} ${s}sf`, skill: "rounding to significant figures",
+          explain: `The first ${s} significant figure${s > 1 ? "s" : ""}, rounded by the next digit: ${show(ans)}.${big ? " The zeros keep the number its size." : ""}` });
+      }) },
+    { id: "f-percent-change", title: "Percentage increase and decrease", level: "Fourth", organiser: FDP, check: false,
+      blurb: "Increase and decrease by a percentage, and find a percentage change.",
+      make: () => distinct(10, () => {
+        const k = rand(3), amt = pick([40, 60, 80, 120, 150, 200, 240, 300, 450]), p = pick([5, 10, 12, 15, 20, 25, 30, 35]);
+        const inc = amt * (1 + p / 100), dec2 = amt * (1 - p / 100);
+        if (k === 0 && Number.isInteger(inc * 100)) return typed(`Increase £${amt} by ${p}%. (£)`, dec(inc), { input: "decimal", label: `inc ${amt} ${p}`, skill: "percentage increase", explain: `${p}% of £${amt} is £${dec((amt * p) / 100)}; £${amt} + £${dec((amt * p) / 100)} = £${dec(inc)}. Or × ${1 + p / 100}.` });
+        if (k === 1 && Number.isInteger(dec2 * 100)) return typed(`A £${amt} coat is reduced by ${p}%. What is the sale price? (£)`, dec(dec2), { input: "decimal", label: `dec ${amt} ${p}`, skill: "percentage decrease", explain: `${p}% of £${amt} is £${dec((amt * p) / 100)}; £${amt} − £${dec((amt * p) / 100)} = £${dec(dec2)}. Or × ${dec(1 - p / 100)}.` });
+        const old = pick([20, 40, 50, 80, 120, 200, 250]), pc = pick([10, 15, 20, 25, 30, 40, 50]) * (rand(3) ? 1 : -1), now = old * (1 + pc / 100);
+        if (!Number.isInteger(now)) return { label: "skip" };
+        return typed(`A price changed from £${old} to £${now}. What was the percentage ${pc > 0 ? "increase" : "decrease"}? (%)`, Math.abs(pc), { label: `change ${old} ${now}`, skill: "percentage change",
+          explain: `The change is £${Math.abs(now - old)}. £${Math.abs(now - old)} ÷ £${old} = ${Math.abs(pc) / 100} = ${Math.abs(pc)}%.` });
+      }) },
+    { id: "f-brackets", title: "Expanding brackets and factorising", level: "Fourth", organiser: EQUATION, check: false,
+      blurb: "Multiply out brackets, including two brackets, and factorise expressions.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const a = rand(6) + 2, b = rand(9) - 4 || 3, ans = linear(a, a * b); return choice(`Expand ${a}(x ${signed(b)}).`, ans, others2u(ans, [linear(a, b), linear(a, a + b), linear(1, a * b)].filter(r => r !== ans)), { label: `${a}(x${b})`, skill: "expanding a bracket", explain: `${a} × x = ${a}x and ${a} × ${minus(b)} = ${minus(a * b)}: ${ans}.` }); }
+        if (k === 1) { const p = rand(7) - 3 || 2, q = rand(7) - 3 || -1, s = p + q, pr = p * q;
+          const quad = (b, c) => `x² ${b === 0 ? "" : `${b < 0 ? "−" : "+"} ${Math.abs(b) === 1 ? "" : Math.abs(b)}x `}${c < 0 ? "−" : "+"} ${Math.abs(c)}`.replace(/\s+/g, " ");
+          const ans = quad(s, pr);
+          return choice(`Expand (x ${signed(p)})(x ${signed(q)}).`, ans, others2u(ans, [quad(s, -pr), quad(pr, s), `x² ${signed(pr)}`].filter(r => r !== ans)), { label: `(x${p})(x${q})`, skill: "expanding two brackets", explain: `x × x = x², the x terms make ${minus(s)}x, and ${minus(p)} × ${minus(q)} = ${minus(pr)}: ${ans}.` }); }
+        const f = pick([2, 3, 4, 5, 6]), a = rand(4) + 1, b = rand(6) + 1;
+        if (gcd(a, b) !== 1) return { label: "skip" };
+        const expr = `${f * a}x + ${f * b}`, ans = `${f}(${termText(a, "x")} + ${b})`;
+        return choice(`Factorise ${expr} fully.`, ans, others2u(ans, [`${f * a}(x + ${b})`, `x(${f * a} + ${f * b})`, `${f}(${termText(a, "x")} + ${f * b})`].filter(r => r !== ans)), { label: `fac ${expr}`, skill: "factorising", explain: `${f} goes into both terms: ${ans}. Check by expanding.` });
+      }) },
+    { id: "f-pythagoras", title: "Pythagoras' theorem", level: "Fourth", organiser: SHAPE, check: false,
+      blurb: "Find the longest side, or a shorter side, of a right-angled triangle.",
+      make: () => distinct(10, () => {
+        const [a, b, c] = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25], [20, 21, 29], [9, 40, 41]]), m = pick([1, 1, 2, 3]);
+        if (rand(2)) return typed(`A right-angled triangle has shorter sides ${a * m} cm and ${b * m} cm. How long is the hypotenuse? (cm)`, c * m, { label: `hyp ${a * m} ${b * m}`, skill: "finding the hypotenuse",
+          explain: `${a * m}² + ${b * m}² = ${(a * m) ** 2} + ${(b * m) ** 2} = ${(c * m) ** 2}, and √${(c * m) ** 2} = ${c * m}.` });
+        return typed(`A right-angled triangle has hypotenuse ${c * m} cm and one shorter side ${b * m} cm. How long is the other shorter side? (cm)`, a * m, { label: `leg ${c * m} ${b * m}`, skill: "finding a shorter side",
+          explain: `${c * m}² − ${b * m}² = ${(c * m) ** 2} − ${(b * m) ** 2} = ${(a * m) ** 2}, and √${(a * m) ** 2} = ${a * m}.` });
+      }) },
+    { id: "f-circles", title: "Circumference and area of a circle", level: "Fourth", organiser: MEAS, check: false,
+      blurb: "Use π (take π as 3.14) to find the circumference and area of circles.",
+      make: () => distinct(10, () => {
+        const r = rand(9) + 2, k = rand(3);
+        if (k === 0) { const c = dec(2 * 3.14 * r); return typed(`A circle has radius ${r} cm. What is its circumference? Use π = 3.14. (cm)`, c, { input: "decimal", label: `C r${r}`, skill: "circumference", explain: `C = 2πr = 2 × 3.14 × ${r} = ${c} cm.` }); }
+        if (k === 1) { const d = r * 2, c = dec(3.14 * d); return typed(`A circle has diameter ${d} cm. What is its circumference? Use π = 3.14. (cm)`, c, { input: "decimal", label: `C d${d}`, skill: "circumference", explain: `C = πd = 3.14 × ${d} = ${c} cm.` }); }
+        const area = dec(3.14 * r * r);
+        return typed(`A circle has radius ${r} cm. What is its area? Use π = 3.14. (cm²)`, area, { input: "decimal", label: `A r${r}`, skill: "area of a circle", explain: `A = πr² = 3.14 × ${r} × ${r} = ${area} cm².` });
+      }) },
+    { id: "f-averages", title: "Averages and spread", level: "Fourth", organiser: DATA, check: false,
+      blurb: "Find the mean, median, mode and range, and compare two sets of data.",
+      make: () => distinct(10, () => {
+        const n = pick([5, 6, 7]), data = Array.from({ length: n }, () => rand(20) + 2), sorted = data.slice().sort((a, b) => a - b), k = rand(3);
+        const list = data.join(", ");
+        if (k === 0) { const sum = data.reduce((a, b) => a + b, 0); if (sum % n) return { label: "skip" }; return typed(`Find the mean of ${list}.`, sum / n, { label: `mean ${list}`, skill: "the mean", explain: `Total ${sum} ÷ ${n} numbers = ${sum / n}.` }); }
+        if (k === 1) { const med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2; return typed(`Find the median of ${list}.`, med, { input: "decimal", label: `median ${list}`, skill: "the median", explain: `In order: ${sorted.join(", ")}. The middle ${n % 2 ? "one is" : "two average to"} ${med}.` }); }
+        return typed(`Find the range of ${list}.`, sorted[n - 1] - sorted[0], { label: `range ${list}`, skill: "the range", explain: `Biggest − smallest: ${sorted[n - 1]} − ${sorted[0]} = ${sorted[n - 1] - sorted[0]}.` });
+      }) },
+    { id: "f-nth-term", title: "The nth term", level: "Fourth", organiser: PATTERN, check: false,
+      blurb: "Find the nth term of a linear sequence, and decide whether a number is in it.",
+      make: () => distinct(10, () => {
+        const a = rand(9) - 4 || 3, b = rand(13) - 6, seq = [1, 2, 3, 4].map(n => a * n + b), rule = linear(a, b, "n");
+        if (rand(2)) return choice(`Find the nth term of ${seq.map(minus).join(", ")}, …`, rule, others2u(rule, [linear(a, b + a, "n"), linear(-a, b, "n"), linear(a, -b || 1, "n")].filter(r => r !== rule)),
+          { label: `nth ${seq.join(",")}`, skill: "finding the nth term", explain: `The difference is ${minus(a)}, so ${termText(a, "n")}. When n = 1 that gives ${minus(a)}, and the first term is ${minus(seq[0])}: ${rule}.` });
+        const n = rand(30) + 20, inSeq = rand(2), x = a * n + b + (inSeq ? 0 : (a > 0 ? 1 : -1));
+        if (Math.abs(a) === 1) return { label: "skip" };
+        return choice(`The nth term of a sequence is ${rule}. Is ${minus(x)} in the sequence?`, inSeq ? "Yes" : "No", [inSeq ? "No" : "Yes"], { label: `in ${rule} ${x}`, skill: "testing a term",
+          explain: inSeq ? `${rule} = ${minus(x)} when n = ${n}, a whole number.` : `${rule} = ${minus(x)} doesn't give a whole number for n.` });
+      }) }
+  ];
+
   /* ---------- Number games for older pupils: Make the Target, Equal Pairs and Number Line ---------- */
   // Plain screens like the word games (no mascot), for P5 to S3. Each round is one result.
 
@@ -2134,11 +2365,11 @@ window.PopActivities = (() => {
     // More of England's curriculum, beyond what the CfE activities reach: set by the teacher, like the grammar
     { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
-    { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary, assignedOnly: true },
+    { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary.filter(a => !/^Numeracy/.test(a.organiser)), assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -2219,6 +2450,11 @@ window.PopActivities = (() => {
     "w-sort-types": ["LIT 2-22a"], "w-sort-meaning": ["LIT 2-13a", "ENG 2-12a"], "w-sort-spelling": ["LIT 3-21a"],
     "w-cross-second": ["LIT 2-21a", "LIT 2-13a"], "w-cross-third": ["LIT 3-21a", "LIT 3-13a"],
     "w-grid-4": ["LIT 2-21a"], "w-grid-5": ["LIT 3-21a"],
+    "t-negative-calc": ["MNU 3-04a"], "t-rounding-dp": ["MNU 3-01a"], "t-powers": ["MTH 3-06a"], "t-fractions-ops": ["MTH 3-07b"],
+    "t-ratio": ["MNU 3-08a"], "t-speed": ["MNU 3-10a"], "t-sequences": ["MTH 3-13a"], "t-expressions": ["MTH 3-14a"], "t-angles": ["MTH 3-17a"],
+    "t-probability": ["MNU 3-22a"], "t-best-buy": ["MNU 3-09a"], "f-sci-notation": ["MTH 4-06b"], "f-sig-figs": ["MNU 4-01a"],
+    "f-percent-change": ["MNU 4-07a"], "f-brackets": ["MTH 4-14a", "MTH 4-14b"], "f-pythagoras": ["MTH 4-16a"], "f-circles": ["MTH 4-16b"],
+    "f-averages": ["MTH 4-20b"], "f-nth-term": ["MTH 4-13a"],
     "ng-target-second": ["MNU 2-03a"], "ng-target-third": ["MNU 3-03a"],
     "ng-pairs-second": ["MNU 2-07a", "MNU 2-07b", "MNU 2-11b"], "ng-pairs-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-08a", "MNU 3-07a"],
     "ng-line-second": ["MNU 2-02a", "MNU 2-04a", "MTH 2-07c"], "ng-line-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-07a"]

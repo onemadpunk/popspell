@@ -23,7 +23,7 @@
         "check": "Round 7·0459 to 2 decimal places. Estimate 61·8 ÷ 2·9: how does the estimate tell you a calculator answer is sensible?"
       },
       "use": [
-        "n-round-100",
+        "t-rounding-dp",
         "n-estimate"
       ],
       "home": "Estimate the shopping bill before you reach the till, then compare.",
@@ -86,6 +86,7 @@
         "check": "Work out −6 − 4, 5 − (−3) and −20 ÷ 5. A diver is 12 m below the surface and rises 7 m: where are they now?"
       },
       "use": [
+        "t-negative-calc",
         "n-negative"
       ],
       "home": "Look up temperatures in cold places around the world and find the differences.",
@@ -146,7 +147,9 @@
         "practise": "The \"Powers\" sheet, then check the answers with a calculator.",
         "check": "Work out 5³ and 10⁴. Write 81 as a power of 3, and as a power of 9."
       },
-      "use": [],
+      "use": [
+        "t-powers"
+      ],
       "home": "Work out how many great-great-grandparents you have, using powers of 2.",
       "vocab": "power, index, exponent, base, squared, cubed",
       "understand": "Why is 3² not the same as 3 × 2?",
@@ -207,7 +210,7 @@
         "check": "Work out ⅖ + ⅓ and 3¼ − 1⅔."
       },
       "use": [
-        "en-fractions-y5",
+        "t-fractions-ops",
         "n-equivalent"
       ],
       "home": "Follow a recipe with fractions of a cup or spoon, and add up the total.",
@@ -237,6 +240,7 @@
         "check": "5 pens cost £3·60. What do 8 cost? Simplify 18 : 24."
       },
       "use": [
+        "t-ratio",
         "en-ratio"
       ],
       "home": "Scale a family recipe up or down for a different number of people.",
@@ -268,6 +272,7 @@
         "check": "Explain the difference between a direct debit and a standing order. At €1·16 to £1, how many euros do you get for £250?"
       },
       "use": [
+        "t-best-buy",
         "n-best-value"
       ],
       "home": "Compare two phone or streaming deals at home and work out the yearly cost of each.",
@@ -297,8 +302,8 @@
         "check": "A cyclist rides 36 km in 1 hour 30 minutes. What is their average speed? How long is it from 21:50 on Friday to 07:20 on Saturday?"
       },
       "use": [
-        "n-time-24",
-        "n-durations"
+        "t-speed",
+        "n-time-24"
       ],
       "home": "Plan a real journey with a timetable or map: distance, time and average speed.",
       "vocab": "speed, distance, time, average speed, km/h, mph, duration",
@@ -389,6 +394,7 @@
         "check": "Find the rule for 5, 9, 13, 17 … and use it to find the 20th term."
       },
       "use": [
+        "t-sequences",
         "m-patterns"
       ],
       "home": "Find a pattern at home (stairs, tiles, fence posts) and write its rule.",
@@ -416,7 +422,9 @@
         "practise": "The \"Simplify and substitute\" sheet.",
         "check": "Simplify 6p − 2q + p + 5q. Find 2x² − y when x = −3 and y = 4."
       },
-      "use": [],
+      "use": [
+        "t-expressions"
+      ],
       "home": "Write an expression for a family shop (a apples, b loaves) and work it out with real prices.",
       "vocab": "term, like terms, expression, simplify, variable, substitute, evaluate",
       "understand": "Why can't 3x² + 4x be simplified to 7x³?",
@@ -506,6 +514,7 @@
         "check": "Find the missing angles and give a reason for each: which fact did you use?"
       },
       "use": [
+        "t-angles",
         "m-angles"
       ],
       "home": "Spot parallel lines and their angles on a gate, a window or road markings.",
@@ -632,6 +641,7 @@
         "check": "A bag has 3 red, 5 blue and 2 green counters. Find the probability of blue as a fraction and as a decimal. In 50 picks (putting it back each time), about how many blues?"
       },
       "use": [
+        "t-probability",
         "n-chance"
       ],
       "home": "Look at the forecast's chance of rain and decide what to plan.",
