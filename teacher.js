@@ -131,7 +131,7 @@
     const visible = visibleClasses();
     current = visible.find(c => c.id === saved) || visible.find(c => c.teacher === me.uid) || visible[0] || null;
     // A teacher with no class yet starts on Classes, where the first class is made, not on Quick trial
-    if (!classes.length && !["teachers", "trials", "library", "classes"].includes(tab)) tab = "classes";
+    if (!classes.length && !["teachers", "trials", "games", "library", "classes"].includes(tab)) tab = "classes";
     await uploadTrials();
     draw();
   }
@@ -164,13 +164,14 @@
   /* ---------- The dashboard frame ---------- */
 
   // The help.html section for each tab
-  const HELP_SECTIONS = { class: "class", trials: "trials", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
+  const HELP_SECTIONS = { class: "class", trials: "trials", games: "games", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
     diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
 
   // Line icons for the teacher area's menu (24×24, drawn with the text colour)
   const ICON = {
     class: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5.5 16.5a3.5 3.5 0 0 1 7 0M14 9h4M14 13h4"/>',
     trials: '<path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7 15h10"/>',
+    games: '<rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4M15 11.5v.01M17.5 13.5v.01"/>',
     today: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 12"/>',
     live: '<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/>',
     next: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
@@ -197,7 +198,7 @@
     if (current && !shownClasses.some(c => c.id === current.id)) current = shownClasses[0] || null;
     // The menu: the class page and quick trials first; the planning and record pages fold under More
     const MORE = "More tools";
-    const groups = [["Teach", [["class", "Class"], ["trials", "Quick trial"], ["library", "Library"]]],
+    const groups = [["Teach", [["class", "Class"], ["trials", "Quick trial"], ["games", "Games"], ["library", "Library"]]],
       [MORE, [["today", "Today"], ["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"],
         ["assign", "Assign"], ["pupils", "Pupils"], ["diary", "Diary"]]],
       ["Manage", [["classes", "Classes"]].concat(canAdmin() ? [["teachers", "Teachers"]] : [])]];
@@ -274,7 +275,7 @@
       body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
       return;
     }
-    ({ class: drawClass, trials: drawTrials, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ class: drawClass, trials: drawTrials, games: drawGames, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -1571,7 +1572,7 @@
         <ol>${[
           ["Add your pupils", "Type a first name below and press <b>Add pupil</b>."],
           ["Choose the work", "Press <b>🧭 Plan next lesson</b> on a pupil's card. It sets their online work and prints a practice sheet on the same sounds."],
-          ["Start the lesson", "Press <b>▶ Start lesson</b>. A new tab opens with only that child's work. The other child does the sheet, then they swap. <b>⏱ Lesson timer</b> tells you when."],
+          ["Start the lesson", "Press <b>▶ Start lesson</b>. A new tab opens with only that child's work. The other child does the sheet, then they swap. <b>⏱ Lesson timer</b> tells you when. Finished early? <b>🎮 Fill time</b> opens a game that suits them."],
           ["Write it up", "Afterwards, press <b>📝 Lesson summary</b> to save a note for the end-of-term report, or copy a message for home."]
         ].map(([head, text], i) => `<li class="${stepDone[i] ? "done" : ""}"><b>${stepDone[i] ? "✓ " : ""}${head}.</b> ${text}</li>`).join("")}</ol>
         <p class="hint">At home, pupils go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name. <a href="quick-guide.html" target="_blank" rel="noopener">Printable quick guide</a></p>
@@ -1592,7 +1593,8 @@
         const w = workOf(name), done = resultsOf(name), onRoster = roster.some(r => sameName(r.name, name));
         return `<article class="pcard class-card">
           <div class="class-card-head"><h2>${esc(name)}</h2>
-            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener" aria-label="${hasWork(name) ? "Start lesson for" : "Open the pupil screen for"} ${esc(name)}" title="Opens a new tab with ${esc(name)}'s work, without your teacher menu">▶ ${hasWork(name) ? "Start lesson" : "Open pupil screen"}</a></div>
+            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener" aria-label="${hasWork(name) ? "Start lesson for" : "Open the pupil screen for"} ${esc(name)}" title="Opens a new tab with ${esc(name)}'s work, without your teacher menu">▶ ${hasWork(name) ? "Start lesson" : "Open pupil screen"}</a>
+            <button class="btn small" type="button" data-fill-time="${esc(name)}" title="Finished early? Choose a game that suits ${esc(name)}">🎮 Fill time</button></div>
           <h3 class="class-sub">Work set</h3>
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
@@ -1656,6 +1658,10 @@
       setTimeout(() => { const card = r && document.querySelector(`[data-roster="${CSS.escape(r.key)}"]`); if (card) card.scrollIntoView({ block: "start" }); }, 600);
     }; });
     body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => lessonSummaryDialog(b.dataset.lessonSummary, resultsOf(b.dataset.lessonSummary)); });
+    body.querySelectorAll("[data-fill-time]").forEach(b => { b.onclick = () => {
+      const name = b.dataset.fillTime, w = workOf(name);
+      fillTimeDialog(name, classId, w.row, resultsOf(name), w.lists.concat(w.dated), roster.find(r => sameName(r.name, name)));
+    }; });
     body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
       const name = b.dataset.planLesson;
       planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body), roster.find(r => sameName(r.name, name)));
@@ -1805,6 +1811,86 @@
 
   // The next lesson for one child: what last time showed, the online work and a practice sheet on
   // the same focus, so one child can work online while the other does the sheet, then swap
+  /* ---------- Games: Fill time for one pupil, and every game for the teacher to try ---------- */
+
+  // The age each CfE level usually suits, so a teacher can tell at a glance
+  const GAME_AGE = { Early: "P1", First: "P2 to P4", Second: "P5 to P7", Third: "S1 to S3" };
+  const gameAge = act => `${act.level} level${GAME_AGE[act.level] ? ` · ${GAME_AGE[act.level]}` : ""}`;
+  const gameAreas = () => (A_()?.AREAS || []).filter(area => area.game);
+  const pipGames = () => gameAreas().filter(area => !area.older).flatMap(area => area.activities);
+  const wordGamesList = () => gameAreas().filter(area => area.older).flatMap(area => area.activities);
+  // The kind of game (Sound Hopper, Code Word...), so three suggestions are three different games
+  const gameFamily = id => String(id).split("-").slice(0, 2).join("-");
+
+  // Three games that suit a pupil: Pip's games for the younger look (on the sounds they are working on,
+  // plus a number game), word games for the older look (at their level). Games played lately go last.
+  function fillTimeGames(band, pupil, results, setLists) {
+    const A = A_();
+    if (!A) return [];
+    const recent = new Set(results.slice(0, 6).map(s => s.listId));
+    let pool;
+    if (band === "older") {
+      const third = /^S\d|^Y(8|9|1[01])$|Year (8|9|1[01])/i.test(String(pupil?.yearGroup || ""));
+      const games = wordGamesList();
+      pool = games.filter(g => g.level === (third ? "Third" : "Second")).concat(games.filter(g => g.level !== (third ? "Third" : "Second")));
+    } else {
+      const spelling = results.map(s => s.listId).concat(setLists).find(id => catalogueList(id));
+      const stage = spelling ? phonicsStageOf(spelling) : 0;
+      const ids = (STAGE_GAMES[stage] || []).concat(STAGE_GAMES.flat(), band === "middle" ? CANOPY_GAMES.First : CANOPY_GAMES.Early);
+      pool = ids.map(id => A.get(id)).filter(Boolean).concat(pipGames());
+    }
+    pool = pool.filter((g, i) => pool.findIndex(x => x.id === g.id) === i);
+    pool = pool.filter(g => !recent.has(g.id)).concat(pool.filter(g => recent.has(g.id)));
+    const picked = [];
+    pool.forEach(g => { if (picked.length < 3 && !picked.some(p => gameFamily(p.id) === gameFamily(g.id))) picked.push(g); });
+    pool.forEach(g => { if (picked.length < 3 && !picked.includes(g)) picked.push(g); });
+    return picked;
+  }
+
+  const gameCard = (act, href, label, extra = "") => `<article class="game-pick" style="--accent:${esc(act.colour || "#0f766e")}">
+      <h3><span aria-hidden="true">${act.icon || "🎮"}</span> ${esc(act.title)}</h3>
+      <p class="game-age">${esc(gameAge(act))}</p>
+      <p class="hint">${esc(act.blurb || "")}</p>
+      <a class="btn small primary" href="${esc(href)}" target="_blank" rel="noopener" ${extra}>${label}</a>
+    </article>`;
+
+  function fillTimeDialog(name, classId, row, results, setLists, pupil = null) {
+    const band = row?.look === "older" ? "older" : bandFor(pupil?.yearGroup);
+    const older = band === "older";
+    const playHref = id => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}&play=${encodeURIComponent(id)}`;
+    const picks = fillTimeGames(band, pupil, results, setLists);
+    const all = older ? wordGamesList() : pipGames();
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview fill-time";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🎮 Fill time for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="plan-body">
+        <p class="hint">${older ? "Word games, because" : "Pip's games, because"} ${esc(name)} ${older ? "has the older look" : "has the younger look"}. Press <b>Play</b>: ${esc(name)}'s tab opens straight in the game, and how they do is saved with their work.</p>
+        <div class="game-picks">${picks.map(g => gameCard(g, playHref(g.id), `▶ Play`, "data-play")).join("")}</div>
+        <details class="game-more"><summary>All ${older ? "word games" : "of Pip's games"} (${all.length})</summary>
+          <ul>${all.map(g => `<li><a href="${esc(playHref(g.id))}" target="_blank" rel="noopener" data-play>▶ ${esc(g.title)}</a> <span class="meta">${esc(gameAge(g))}</span></li>`).join("")}</ul>
+        </details>
+        <p class="hint">${older ? "Pip's games" : "Word games"} are on the <button type="button" class="linklike" data-go-games>Games</button> page.</p>
+      </div>`;
+    document.body.append(dialog);
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    // The game opens in the pupil's tab; this dialog has done its job
+    dialog.querySelectorAll("[data-play]").forEach(a => a.addEventListener("click", () => setTimeout(() => dialog.close(), 0)));
+    dialog.querySelector("[data-go-games]").onclick = () => { dialog.close(); tab = "games"; draw(); };
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.showModal();
+  }
+
+  // Every game, for the teacher to try before a lesson. Test tabs save nothing to a pupil.
+  function drawGames(body) {
+    const section = (title, hint, games) => `<section class="games-section"><h2 class="t-h2">${title}</h2><p class="hint">${hint}</p>
+      <div class="game-picks">${games.map(g => gameCard(g, previewHref(g.id), "▶ Try it")).join("")}</div></section>`;
+    body.innerHTML = `<p class="hint games-intro">Try any game here. It opens in a new tab as a test, so nothing is saved to a pupil.
+        To give a pupil a game now, press <b>🎮 Fill time</b> on their card on the ${current ? `<button type="button" class="linklike" data-go-tab="class">Class</button>` : "Class"} page.</p>
+      ${section("🎮 Pip's games", "For pupils with the younger look, usually P1 to P4: sounds, reading and numbers, with Pip.", pipGames())}
+      ${section("🧩 Word games", "For pupils with the older look, usually P5 and up: plain screens, no mascot.", wordGamesList())}`;
+    body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
+  }
+
   function planLessonDialog(name, row, results, done, pupil = null) {
     const spelling = results.filter(s => catalogueList(s.listId) && !s.source);
     const latest = spelling[0] || null;

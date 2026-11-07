@@ -1055,7 +1055,9 @@
     else if (parts[0] === "join") {
       // The Class page's Start lesson button adds start=1: go straight to the first work set, once, in this tab
       if (params.get("start") === "1") { try { sessionStorage.setItem(START_LESSON_KEY, "1"); } catch { /* private mode */ } }
-      joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), then);
+      // The Class page's Fill time button adds play=ID: go straight into that game for this pupil
+      const play = window.PopActivities && params.get("play") ? window.PopActivities.get(params.get("play")) : null;
+      joinClass(decodeURIComponent(parts[1] || ""), null, cleanName(params.get("pupil") || ""), play ? `#/activity/${encodeURIComponent(play.id)}` : then);
     }
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
@@ -1096,7 +1098,9 @@
     if (!onDone) history.replaceState(null, "", then);
     if (reloadForAccent()) return; // the class uses the other accent
     if (onDone) return onDone(true);
-    if (then === "#/assess") showQuest(); else if (then === "#/phonics") showPhonicsLive(); else showHome();
+    if (then === "#/assess") showQuest(); else if (then === "#/phonics") showPhonicsLive();
+    else if (then.startsWith("#/activity/")) route(); // a game from the Class page's Fill time
+    else showHome();
   }
 
   /* ---------- Phonics check practice, marked live: the word the teacher has put on screen ---------- */
