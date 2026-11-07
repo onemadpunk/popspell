@@ -2319,3 +2319,13 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .sheet-preview-page .pack-cap { margin: 0 0 8px; font-weight: 800; color: var(--primary, #1d4ed8); scroll-margin-top: 90px; }
 .sheet-preview-page .ws-page + .pack-cap { margin-top: 28px; padding-top: 16px; border-top: 3px dashed #999; }
 @media print { .pack-cap { display: none; } }
+.lesson-nav { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin: 10px 18px 0; }
+.lesson-sheets { margin: 12px 18px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.lesson-sheets h3 { margin: 0 0 2px; }
+.lesson-sheets .hint { margin: 0 0 8px; }
+.sheet-thumbs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+.sheet-thumb { display: grid; gap: 4px; width: 160px; padding: 0; border: 0; background: none; text-align: left; cursor: zoom-in; font: inherit; color: inherit; }
+.sheet-thumb-frame { display: block; width: 160px; height: 226px; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #fff; box-shadow: 0 2px 8px #001a4a1f; }
+.sheet-thumb:hover .sheet-thumb-frame, .sheet-thumb:focus-visible .sheet-thumb-frame { outline: 3px solid var(--primary, #1d4ed8); }
+.sheet-thumb-frame > .sheet-preview-page { width: 794px; min-height: 1123px; margin: 0; transform: scale(.2015); transform-origin: 0 0; box-shadow: none; pointer-events: none; }
+.sheet-thumb-label { font-size: .85rem; font-weight: 700; line-height: 1.25; }

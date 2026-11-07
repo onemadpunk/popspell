@@ -866,7 +866,10 @@
         saveFavs(); render(); return;
       }
       const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
-      if (button.dataset.lesson) lessonDialog(entry.lesson, prefs.cur);
+      if (button.dataset.lesson) {
+        const shown = [...$("#libResults").querySelectorAll("[data-lesson]")].map(b => entries.find(x => x.id === b.dataset.lesson)?.lesson).filter(Boolean);
+        lessonDialog(entry.lesson, prefs.cur, shown);
+      }
       else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", range: "exact", pupil: "", pupilClass: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; drawLibrary(body); }
       else if (button.dataset.assign) assignDialog(entry);
       else if (button.dataset.trial) { trialWork = button.dataset.trial; tab = "trials"; draw(); }
@@ -929,23 +932,71 @@
         : l.understand ? `<div class="lesson-kdu"><p><b>Check understanding:</b> ask “${esc(l.understand)}”</p><p class="hint">Look for: ${esc(l.lookFor)}</p></div>` : ""}
       ${l.home ? `<p><b>At home:</b> ${esc(l.home)}</p>` : ""}`;
   }
-  function lessonDialog(l, cur = "") {
+  // A small picture of a sheet, drawn from its real page
+  const thumbHTML = (pg, i) => `<button type="button" class="sheet-thumb" data-thumb="${i}" title="See ${esc(pg.label)} full size">
+      <span class="sheet-thumb-frame" aria-hidden="true"><section class="sheet-preview-page ${sheetClass("ws-activity")}"><div class="ws-page">${pg.html()}</div></section></span>
+      <span class="sheet-thumb-label">${esc(pg.label)}</span></button>`;
+  // One sheet full size, with arrows to the others
+  function sheetViewer(pages, start, heading) {
+    let at = start;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2 data-title></h2>
+        ${pages.length > 1 ? `<button class="btn small" type="button" data-prev>← Previous sheet</button><button class="btn small" type="button" data-next>Next sheet →</button>` : ""}
+        <button class="btn small primary" type="button" data-close>Back to ${esc(heading)}</button></div>
+      <section class="sheet-preview-page ws-activity"></section>`;
+    document.body.append(dialog);
+    const show = () => {
+      dialog.querySelector("[data-title]").textContent = `${at + 1} of ${pages.length}: ${pages[at].label}`;
+      const page = dialog.querySelector(".sheet-preview-page");
+      page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
+      page.innerHTML = `<div class="ws-page">${pages[at].html()}</div>`;
+      fitPages(page, sheetClass("ws-activity"));
+      dialog.scrollTop = 0;
+    };
+    if (pages.length > 1) {
+      dialog.querySelector("[data-prev]").onclick = () => { at = (at + pages.length - 1) % pages.length; show(); };
+      dialog.querySelector("[data-next]").onclick = () => { at = (at + 1) % pages.length; show(); };
+    }
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    show();
+    dialog.showModal();
+  }
+  // others: the lessons around this one (the Library's results, in order), for Previous and Next
+  function lessonDialog(l, cur = "", others = []) {
     l = viewOf(l, cur);
+    const made = lessonPages(l, "", cur);
+    const sheets = made.pupil;
+    const at = others.findIndex(o => o.id === l.id);
+    const prev = at > 0 ? others[at - 1] : null, next = at >= 0 && at < others.length - 1 ? others[at + 1] : null;
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog lesson-dialog";
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
-        <button class="btn small primary" type="button" data-print-top>🖨️ See and print the sheets</button>
-        <button class="btn small" type="button" data-close>Close</button></div>
+        <button class="btn small" type="button" data-close>← Back to the Library</button></div>
+      ${prev || next ? `<div class="lesson-nav">${prev ? `<button class="btn small" type="button" data-go="prev">← ${esc(viewOf(prev, cur).title)}</button>` : "<span></span>"}
+        ${next ? `<button class="btn small" type="button" data-go="next">${esc(viewOf(next, cur).title)} →</button>` : ""}</div>` : ""}
+      <section class="lesson-sheets">
+        <h3>${sheets.length ? `The pupil's ${sheets.length === 1 ? "sheet" : `${sheets.length} sheets`}` : "No pupil sheet"}</h3>
+        ${sheets.length ? `<p class="hint">Press a sheet to see it full size.</p><div class="sheet-thumbs">${sheets.map(thumbHTML).join("")}</div>`
+          : `<p class="hint">This lesson's practice is online or with you. You can still print the lesson plan.</p>`}
+        <div class="row"><button class="btn primary" type="button" data-print-top>🖨️ Print…</button>
+          ${lessonOnline(l).length ? `<button class="btn" type="button" data-assign-top>📌 Assign the online work</button>` : ""}</div>
+      </section>
       <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">England</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
-      <div class="row end"><button class="btn small" type="button" data-print>🖨️ See and print the sheets</button>
+      <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print…</button>
         <button class="btn small" type="button" data-paper>Record paper result</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = dialog.querySelector("[data-print-top]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
+    dialog.querySelector("[data-print]").onclick = dialog.querySelector("[data-print-top]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur, made); };
+    dialog.querySelectorAll("[data-thumb]").forEach(b => { b.onclick = () => sheetViewer(sheets, Number(b.dataset.thumb), "the lesson"); });
+    dialog.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => { dialog.close(); lessonDialog(b.dataset.go === "prev" ? prev : next, cur, others); }; });
+    const assignTop = dialog.querySelector("[data-assign-top]");
+    if (assignTop) assignTop.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.querySelector("[data-paper]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
     const assign = dialog.querySelector("[data-assign]");
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
@@ -1012,8 +1063,14 @@
   const sheetCode = () => `${todayKey().slice(2).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const withCode = (html, code) => (html ? html.replace("</header>", `</header><p class="ws-code">Sheet ${code}</p>`) : html);
   // The lesson plan, then a sheet for each piece of work it uses (games are online only)
-  function lessonPrintDialog(l, who = "", cur = "") {
+  function lessonPrintDialog(l, who = "", cur = "", made = null) {
     l = viewOf(l, cur);
+    const { pupil, adult } = made || lessonPages(l, who, cur);
+    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.", who);
+  }
+  // Every page a lesson can print: the pupil's sheets, and the adult's (answers, words to say, the plan).
+  // Each page is made once, so a sheet seen in the lesson's preview is the one that prints.
+  function lessonPages(l, who = "", cur = "") {
     const A = window.PopActivities;
     const goal = goalHTML(l);
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
@@ -1043,7 +1100,9 @@
     adult.push({ label: "Lesson plan", adult: true, checked: !pupil.length,
       html: () => `${brandHead(l.title, `<b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}`)}
       ${lessonBodyHTML(l, true, cur)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` });
-    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.", who);
+    // A page's html() is kept after its first call, so previews and the print match
+    [...pupil, ...adult].forEach(pg => { const make = pg.html; let kept = null; pg.html = () => (kept = kept ?? make()); });
+    return { pupil, adult };
   }
   // Preview sheets, choose which to print, and print them together: the pupil's sheets, then any
   // pages for the tutor (answers, lesson plan), each on its own page
