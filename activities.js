@@ -1854,7 +1854,8 @@ window.PopActivities = (() => {
   // Clue Crossword: 6 words that cross, with their meanings as clues. Every word is one result.
   function crossword(entries, want = 6, tries = 60) {
     let best = null;
-    for (let t = 0; t < tries && (!best || best.length < want); t++) {
+    // Very rarely every try is too big for a phone, so it keeps trying until one fits
+    for (let t = 0; (t < tries || (!best && t < tries * 20)) && (!best || best.length < want); t++) {
       const pool = shuffle(entries);
       const placed = [];
       const cells = new Map(); // "r,c" → letter

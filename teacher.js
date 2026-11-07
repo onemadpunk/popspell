@@ -131,7 +131,7 @@
     const visible = visibleClasses();
     current = visible.find(c => c.id === saved) || visible.find(c => c.teacher === me.uid) || visible[0] || null;
     // A teacher with no class yet starts on Classes, where the first class is made, not on Quick trial
-    if (!classes.length && !["teachers", "trials", "library", "classes"].includes(tab)) tab = "classes";
+    if (!classes.length && !["teachers", "trials", "games", "library", "classes"].includes(tab)) tab = "classes";
     await uploadTrials();
     draw();
   }
@@ -164,13 +164,14 @@
   /* ---------- The dashboard frame ---------- */
 
   // The help.html section for each tab
-  const HELP_SECTIONS = { class: "class", trials: "trials", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
+  const HELP_SECTIONS = { class: "class", trials: "trials", games: "games", today: "today", library: "assign", live: "live", next: "next", programme: "programme", assign: "assign", plans: "plans",
     diary: "diary", pupils: "pupils", classes: "classes", teachers: "start" };
 
   // Line icons for the teacher area's menu (24×24, drawn with the text colour)
   const ICON = {
     class: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5.5 16.5a3.5 3.5 0 0 1 7 0M14 9h4M14 13h4"/>',
     trials: '<path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7 15h10"/>',
+    games: '<rect x="2.5" y="7" width="19" height="11" rx="5"/><path d="M7.5 10.5v4M5.5 12.5h4M15 11.5v.01M17.5 13.5v.01"/>',
     today: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 12"/>',
     live: '<circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 0 0 0 11.4M17.7 6.3a8 8 0 0 1 0 11.4M3.5 3.5a12 12 0 0 0 0 17M20.5 3.5a12 12 0 0 1 0 17"/>',
     next: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
@@ -197,16 +198,16 @@
     if (current && !shownClasses.some(c => c.id === current.id)) current = shownClasses[0] || null;
     // The menu: the class page and quick trials first; the planning and record pages fold under More
     const MORE = "More tools";
-    const groups = [["Teach", [["class", "Class"], ["trials", "Quick trial"], ["library", "Library"]]],
+    const groups = [["Teach", [["class", "Class"], ["trials", "Quick trial"], ["games", "Games"], ["library", "Library"]]],
       [MORE, [["today", "Today"], ["live", "Live"], ["next", "Next steps"], ["programme", "Programme"], ["plans", "Plans & sheets"],
         ["assign", "Assign"], ["pupils", "Pupils"], ["diary", "Diary"]]],
       ["Manage", [["classes", "Classes"]].concat(canAdmin() ? [["teachers", "Teachers"]] : [])]];
     const tabs = groups.flatMap(([, items]) => items);
     const [, tabName] = tabs.find(([k]) => k === tab) || tabs[0];
     const tabButtons = items => items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("");
-    // Open unless the teacher has folded it away themselves
-    let moreOpen = true;
-    try { moreOpen = localStorage.getItem("popspell-teacher-more") !== "0"; } catch { /* open */ }
+    // Folded away until the teacher opens it, so the menu starts with the three pages a lesson needs
+    let moreOpen = false;
+    try { moreOpen = localStorage.getItem("popspell-teacher-more") === "1"; } catch { /* folded */ }
     if (groups[1][1].some(([k]) => k === tab)) moreOpen = true;
     const initial = (shortName(me.name) || "?").slice(0, 1).toUpperCase();
     root.innerHTML = `
@@ -227,6 +228,7 @@
           <div class="t-side-foot">
             <a class="t-sidelink" href="#/make">${icon("make")}<span>Make a list</span></a>
             <button class="t-sidelink" type="button" id="tSettings">${icon("settings")}<span>Settings</span></button>
+            <a class="t-sidelink" href="quick-guide.html" target="_blank" rel="noopener">${icon("help")}<span>Quick guide</span></a>
             <a class="t-sidelink" href="help.html" target="_blank" rel="noopener">${icon("help")}<span>Help</span></a>
             <div class="t-me"><span class="t-avatar" aria-hidden="true">${esc(initial)}</span>
               <span class="t-me-text"><b>${esc(me.name || shortName(me.name))}</b><small>${canAdmin() ? `${roleLabel(me.role)} · ` : ""}${esc(me.email)}</small></span>
@@ -238,7 +240,7 @@
             <div><p class="t-crumb">${current ? esc(current.name) : "No class yet"}</p><h1>${esc(tabName)}</h1></div>
             <div class="t-headacts">
               <a class="btn small" href="help.html#${HELP_SECTIONS[tab] || "start"}" target="_blank" rel="noopener">${icon("help")} Help with ${esc(tabName)}</a>
-              <a class="btn small" href="#/">${icon("back")} Pupil screen</a>
+              <a class="btn small" href="#/" title="PopSpell's home page, as pupils see it">${icon("back")} Pupil home page</a>
             </div>
           </header>
           <div class="t-error" id="tError" hidden></div>
@@ -273,7 +275,7 @@
       body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
       return;
     }
-    ({ class: drawClass, trials: drawTrials, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
+    ({ class: drawClass, trials: drawTrials, games: drawGames, today: drawToday, library: drawLibrary, live: drawLive, next: drawNext, programme: drawProgramme, assign: drawAssign, plans: drawPlans, diary: drawDiary, pupils: drawPupils,
       classes: drawClasses, teachers: drawTeachers })[tab](body);
   }
 
@@ -865,7 +867,10 @@
         saveFavs(); render(); return;
       }
       const entry = entries.find(x => x.id === (button.dataset.assign || button.dataset.print || button.dataset.lesson));
-      if (button.dataset.lesson) lessonDialog(entry.lesson, prefs.cur);
+      if (button.dataset.lesson) {
+        const shown = [...$("#libResults").querySelectorAll("[data-lesson]")].map(b => entries.find(x => x.id === b.dataset.lesson)?.lesson).filter(Boolean);
+        lessonDialog(entry.lesson, prefs.cur, shown);
+      }
       else if (button.dataset.clear !== undefined) { Object.assign(prefs, { level: "", range: "exact", pupil: "", pupilClass: "", subject: "", strand: "", type: "" }); $("#librarySearch").value = ""; drawLibrary(body); }
       else if (button.dataset.assign) assignDialog(entry);
       else if (button.dataset.trial) { trialWork = button.dataset.trial; tab = "trials"; draw(); }
@@ -928,22 +933,73 @@
         : l.understand ? `<div class="lesson-kdu"><p><b>Check understanding:</b> ask “${esc(l.understand)}”</p><p class="hint">Look for: ${esc(l.lookFor)}</p></div>` : ""}
       ${l.home ? `<p><b>At home:</b> ${esc(l.home)}</p>` : ""}`;
   }
-  function lessonDialog(l, cur = "") {
+  // A small picture of a sheet, drawn from its real page
+  const thumbHTML = (pg, i) => `<button type="button" class="sheet-thumb" data-thumb="${i}" title="See ${esc(pg.label)} full size">
+      <span class="sheet-thumb-frame" aria-hidden="true"><section class="sheet-preview-page ${sheetClass("ws-activity")}"><div class="ws-page">${pg.html()}</div></section></span>
+      <span class="sheet-thumb-label">${esc(pg.label)}</span></button>`;
+  // One sheet full size, with arrows to the others
+  function sheetViewer(pages, start, heading) {
+    let at = start;
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2 data-title></h2>
+        ${pages.length > 1 ? `<button class="btn small" type="button" data-prev>← Previous sheet</button><button class="btn small" type="button" data-next>Next sheet →</button>` : ""}
+        <button class="btn small primary" type="button" data-close>Back to ${esc(heading)}</button></div>
+      <section class="sheet-preview-page ws-activity"></section>`;
+    document.body.append(dialog);
+    const show = () => {
+      dialog.querySelector("[data-title]").textContent = `${at + 1} of ${pages.length}: ${pages[at].label}`;
+      const page = dialog.querySelector(".sheet-preview-page");
+      page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
+      page.innerHTML = `<div class="ws-page">${pages[at].html()}</div>`;
+      fitPages(page, sheetClass("ws-activity"));
+      dialog.scrollTop = 0;
+    };
+    if (pages.length > 1) {
+      dialog.querySelector("[data-prev]").onclick = () => { at = (at + pages.length - 1) % pages.length; show(); };
+      dialog.querySelector("[data-next]").onclick = () => { at = (at + 1) % pages.length; show(); };
+    }
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    show();
+    dialog.showModal();
+  }
+  // others: the lessons around this one (the Library's results, in order), for Previous and Next
+  function lessonDialog(l, cur = "", others = []) {
     l = viewOf(l, cur);
+    const made = lessonPages(l, "", cur);
+    const sheets = made.pupil;
+    const at = others.findIndex(o => o.id === l.id);
+    const prev = at > 0 ? others[at - 1] : null, next = at >= 0 && at < others.length - 1 ? others[at + 1] : null;
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview cal-dialog lesson-dialog";
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📖 ${esc(l.title)}</h2>
-        <button class="btn small" type="button" data-close>Close</button></div>
+        <button class="btn small" type="button" data-close>← Back to the Library</button></div>
+      ${prev || next ? `<div class="lesson-nav">${prev ? `<button class="btn small" type="button" data-go="prev">← ${esc(viewOf(prev, cur).title)}</button>` : "<span></span>"}
+        ${next ? `<button class="btn small" type="button" data-go="next">${esc(viewOf(next, cur).title)} →</button>` : ""}</div>` : ""}
+      <section class="lesson-sheets">
+        <h3>${sheets.length ? `The pupil's ${sheets.length === 1 ? "sheet" : `${sheets.length} sheets`}` : "No pupil sheet"}</h3>
+        ${sheets.length ? `<p class="hint">Press a sheet to see it full size.</p><div class="sheet-thumbs">${sheets.map(thumbHTML).join("")}</div>`
+          : `<p class="hint">This lesson's practice is online or with you. You can still print the lesson plan.</p>`}
+        <div class="row"><button class="btn primary" type="button" data-print-top>🖨️ Print…</button>
+          ${lessonOnline(l).length ? `<button class="btn" type="button" data-assign-top>📌 Assign the online work</button>` : ""}
+          <button class="btn" type="button" data-paper-top>✍️ Record paper result</button></div>
+      </section>
       <p class="lib-tags"><span class="lib-level lv-${lessonBand(l, cur)}">${esc(lessonLevel(l, cur))}</span><span class="lib-type">${esc(l.subject)}</span><span class="lib-type">${esc(strand)}</span><span class="lib-type">About 30 minutes</span>${l.england && cur !== "england" ? `<span class="lib-type lib-from-en">England</span>` : ""}</p>
       ${lessonBodyHTML(l, false, cur)}
-      <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print the pupil's worksheet</button>
+      <div class="row end"><button class="btn small" type="button" data-print>🖨️ Print…</button>
         <button class="btn small" type="button" data-paper>Record paper result</button>
         ${lessonOnline(l).length ? `<button class="btn small primary" type="button" data-assign>📌 Assign the online work</button>` : ""}</div>`;
     document.body.append(dialog);
     dialog.addEventListener("close", () => dialog.remove(), { once: true });
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
-    dialog.querySelector("[data-print]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur); };
+    dialog.querySelector("[data-print]").onclick = dialog.querySelector("[data-print-top]").onclick = () => { dialog.close(); lessonPrintDialog(l, "", cur, made); };
+    dialog.querySelectorAll("[data-thumb]").forEach(b => { b.onclick = () => sheetViewer(sheets, Number(b.dataset.thumb), "the lesson"); });
+    dialog.querySelectorAll("[data-go]").forEach(b => { b.onclick = () => { dialog.close(); lessonDialog(b.dataset.go === "prev" ? prev : next, cur, others); }; });
+    dialog.querySelector("[data-paper-top]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
+    const assignTop = dialog.querySelector("[data-assign-top]");
+    if (assignTop) assignTop.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
     dialog.querySelector("[data-paper]").onclick = () => { dialog.close(); paperEvidenceDialog(l); };
     const assign = dialog.querySelector("[data-assign]");
     if (assign) assign.onclick = () => { dialog.close(); assignDialog({ title: l.title, ids: lessonOnline(l) }); };
@@ -1010,8 +1066,14 @@
   const sheetCode = () => `${todayKey().slice(2).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
   const withCode = (html, code) => (html ? html.replace("</header>", `</header><p class="ws-code">Sheet ${code}</p>`) : html);
   // The lesson plan, then a sheet for each piece of work it uses (games are online only)
-  function lessonPrintDialog(l, who = "", cur = "") {
+  function lessonPrintDialog(l, who = "", cur = "", made = null) {
     l = viewOf(l, cur);
+    const { pupil, adult } = made || lessonPages(l, who, cur);
+    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.", who);
+  }
+  // Every page a lesson can print: the pupil's sheets, and the adult's (answers, words to say, the plan).
+  // Each page is made once, so a sheet seen in the lesson's preview is the one that prints.
+  function lessonPages(l, who = "", cur = "") {
     const A = window.PopActivities;
     const goal = goalHTML(l);
     const strand = cur === "england" ? (enWork(l.id) || {}).strand || l.strand : l.strand;
@@ -1041,7 +1103,9 @@
     adult.push({ label: "Lesson plan", adult: true, checked: !pupil.length,
       html: () => `${brandHead(l.title, `<b>${esc(lessonLevel(l, cur))}</b> · ${esc(l.subject)} · ${esc(strand)} · about 30 minutes${who ? ` · ${esc(who)}` : ""}`)}
       ${lessonBodyHTML(l, true, cur)}<p><b>Notes</b> (what went well, what to revisit):</p><div class="ws-comment"></div>` });
-    packDialog(l.title, pupil, adult, pupil.length ? "" : "This lesson's practice is online or with you, so there's no pupil worksheet to print. You can print the lesson plan.", who);
+    // A page's html() is kept after its first call, so previews and the print match
+    [...pupil, ...adult].forEach(pg => { const make = pg.html; let kept = null; pg.html = () => (kept = kept ?? make()); });
+    return { pupil, adult };
   }
   // Preview sheets, choose which to print, and print them together: the pupil's sheets, then any
   // pages for the tutor (answers, lesson plan), each on its own page
@@ -1061,16 +1125,26 @@
         ${adultPages.length ? `<div><b>For you</b>${adultPages.map((pg, i) => box(pg, i + pupilPages.length)).join("")}</div>` : ""}
         ${note ? `<p class="hint">${esc(note)}</p>` : ""}
       </div>
+      <p class="hint pack-how">Only the ticked sheets print, each on its own page, so there's no need to choose pages in the printer settings.</p>
+      <nav class="pack-jump" aria-label="Go to a sheet in the preview"></nav>
       <section class="sheet-preview-page ws-activity"></section>`;
     document.body.append(dialog);
     const html = (all = false) => pages.filter((pg, i) => all || dialog.querySelector(`[data-page="${i}"]`).checked)
       .map(pg => `<div class="ws-page${pg.adult ? " ws-adult" : ""}">${pg.html()}</div>`).join("");
     const render = () => {
       const page = dialog.querySelector(".sheet-preview-page");
-      const h = html();
-      page.innerHTML = h || `<p class="hint">Tick something to print.</p>`;
+      const ticked = pages.map((pg, i) => ({ pg, i })).filter(({ i }) => dialog.querySelector(`[data-page="${i}"]`).checked);
+      // In the preview each sheet has its name above it, and the buttons above jump straight to it
+      page.innerHTML = ticked.length ? ticked.map(({ pg }, n) => `<p class="pack-cap" id="packSheet${n}">${n + 1}. ${esc(pg.label)}</p><div class="ws-page${pg.adult ? " ws-adult" : ""}">${pg.html()}</div>`).join("")
+        : `<p class="hint">Tick something to print.</p>`;
       page.className = `sheet-preview-page ${sheetClass("ws-activity")}`;
-      if (h) fitPages(page, sheetClass("ws-activity"));
+      if (ticked.length) fitPages(page, sheetClass("ws-activity"));
+      const jump = dialog.querySelector(".pack-jump");
+      jump.innerHTML = ticked.length > 1 ? `<span>Go to:</span>${ticked.map(({ pg }, n) => `<button class="btn small" type="button" data-jump="${n}">${n + 1}. ${esc(pg.label)}</button>`).join("")}` : "";
+      jump.querySelectorAll("[data-jump]").forEach(b => { b.onclick = () => dialog.querySelector(`#packSheet${b.dataset.jump}`).scrollIntoView({ behavior: "smooth", block: "start" }); });
+      const go = dialog.querySelector("[data-print]");
+      go.textContent = ticked.length ? `🖨️ Print ${ticked.length === 1 ? "1 page" : `${ticked.length} pages`}` : "Print";
+      go.disabled = !ticked.length;
     };
     dialog.querySelectorAll("[data-page]").forEach(el => { el.onchange = render; });
     wireHideLevel(dialog, render);
@@ -1445,6 +1519,14 @@
 
   // Each pupil's card: the work set, a button to open it for them in a new tab on this device,
   // and their recent results, each opening to show every word.
+  const STEPS_KEY = "popspell-class-steps-hidden";
+  // Coming back from a pupil's tab shows their new results without pressing anything
+  let classShownAt = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || tab !== "class" || !current || document.querySelector("dialog[open]")) return;
+    const body = document.getElementById("tBody");
+    if (body && Date.now() - classShownAt > 5000) drawClass(body);
+  });
   async function drawClass(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
     const classId = current.id;
@@ -1452,6 +1534,7 @@
     try { [rows, roster, sessions] = await Promise.all([cloud.assignments(classId), cloud.pupils(classId), cloud.sessions(classId, 90)]); }
     catch (err) { return showError(err); }
     if (tab !== "class" || !current || current.id !== classId || !body.isConnected) return;
+    classShownAt = Date.now();
     const today = todayKey();
     const workOf = name => {
       const row = rows.find(a => a.key !== "everyone" && sameName(a.who, name));
@@ -1479,13 +1562,29 @@
       return `<tr><td><b>${esc(w.word || "")}</b>${w.sounds ? `<br><span class="meta">${esc(w.sounds)}</span>` : ""}</td><td>${how}</td>
         <td>${tried.length ? esc(tried.join(", ")) : "—"}</td><td>${(w.missed || []).length ? esc(w.missed.join(", ")) : "—"}</td></tr>`;
     };
+    // The four steps of a lesson, ticked off as they happen, until the teacher hides them
+    let stepsHidden = false;
+    try { stepsHidden = localStorage.getItem(STEPS_KEY) === "1"; } catch { /* shown */ }
+    const stepDone = [names.length > 0, names.some(hasWork), sessions.length > 0, false];
+    const stepsCard = `<section class="pcard class-steps" aria-labelledby="classStepsHead">
+        <div class="class-steps-head"><h2 class="t-h2" id="classStepsHead">A lesson in four steps</h2>
+          <button class="btn small" type="button" id="hideSteps">Hide these steps</button></div>
+        <ol>${[
+          ["Add your pupils", "Type a first name below and press <b>Add pupil</b>."],
+          ["Choose the work", "Press <b>🧭 Plan next lesson</b> on a pupil's card. It sets their online work and prints a practice sheet on the same sounds."],
+          ["Start the lesson", "Press <b>▶ Start lesson</b>. A new tab opens with only that child's work. The other child does the sheet, then they swap. <b>⏱ Lesson timer</b> tells you when. Finished early? <b>🎮 Fill time</b> opens a game that suits them."],
+          ["Write it up", "Afterwards, press <b>📝 Lesson summary</b> to save a note for the end-of-term report, or copy a message for home."]
+        ].map(([head, text], i) => `<li class="${stepDone[i] ? "done" : ""}"><b>${stepDone[i] ? "✓ " : ""}${head}.</b> ${text}</li>`).join("")}</ol>
+        <p class="hint">At home, pupils go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name. <a href="quick-guide.html" target="_blank" rel="noopener">Printable quick guide</a></p>
+      </section>`;
     const chip = (name, l, removable) => `<span class="t-chip">${esc(listTitle(l))}${removable ? `<button type="button" title="Remove" aria-label="Remove ${esc(listTitle(l))} from ${esc(name)}" data-unset="${esc(name)}" data-list="${esc(l)}">×</button>` : ""}</span>`;
-    body.innerHTML = `
+    body.innerHTML = `${stepsHidden ? "" : stepsCard}
       <section class="pcard class-intro">
-        <p><b>How pupils get their work:</b> on this computer, press <b>▶ Start lesson</b> on a pupil's card and a new tab opens straight on their first piece of work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
+        ${stepsHidden ? "" : `<p><b>Class link</b> for another device, or to send home:</p>`}<p${stepsHidden ? "" : " hidden"}><b>How pupils get their work:</b> on this computer, press <b>▶ Start lesson</b> on a pupil's card and a new tab opens straight on their first piece of work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(classId))}" class="t-link" aria-label="Class link">
           <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button>
-          <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button></div>
+          <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button>
+          ${stepsHidden ? `<button class="btn small" type="button" id="showSteps">Show the lesson steps</button>` : ""}</div>
       </section>
       ${everyone && (everyone.lists || []).length ? `<p class="hint">Set for <b>everyone</b> in the class: ${everyone.lists.map(l => chip("Everyone", l, true)).join(" ")}</p>` : ""}
       <form class="add-row" id="classAddPupil"><input type="text" id="classNewName" maxlength="40" aria-label="New pupil's first name" placeholder="Add a pupil: first name (and initial)" required>
@@ -1494,13 +1593,15 @@
         const w = workOf(name), done = resultsOf(name), onRoster = roster.some(r => sameName(r.name, name));
         return `<article class="pcard class-card">
           <div class="class-card-head"><h2>${esc(name)}</h2>
-            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener">▶ ${hasWork(name) ? "Start lesson for" : "Open for"} ${esc(name)}</a></div>
+            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener" aria-label="${hasWork(name) ? "Start lesson for" : "Open the pupil screen for"} ${esc(name)}" title="Opens a new tab with ${esc(name)}'s work, without your teacher menu">▶ ${hasWork(name) ? "Start lesson" : "Open pupil screen"}</a>
+            <button class="btn small" type="button" data-fill-time="${esc(name)}" title="Finished early? Choose a game that suits ${esc(name)}">🎮 Fill time</button></div>
           <h3 class="class-sub">Work set</h3>
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
-          <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}">🧭 Plan next lesson</button>
-            <button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button>
-            <button class="btn small" type="button" data-lesson-summary="${esc(name)}">📝 Lesson summary</button></div>
+          <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}" title="Set the online work and print a practice sheet on the same sounds">🧭 Plan next lesson</button>
+            <button class="btn small" type="button" data-add-work="${esc(name)}" title="Add any piece of online work from the Library">＋ Add work</button>
+            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: a note for the Diary or a message for home">📝 Lesson summary</button>
+            ${(() => { const l = w.lists.concat(w.dated).find(id => catalogueList(id)); return l ? `<button class="btn small" type="button" data-mark-sheet="${esc(name)}" data-list="${esc(l)}" title="Enter how ${esc(name)} did on the paper sheet for ${esc(listTitle(l))}">✍️ Mark the sheet</button>` : ""; })()}</div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
               <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
@@ -1509,11 +1610,16 @@
             </details>`).join("")}</div>
             ${done.length > 6 ? `<p class="hint">${done.length - 6} older result${done.length === 7 ? "" : "s"} from the last 90 days are on the <button type="button" class="linklike" data-go-tab="pupils">Pupils</button> page.</p>` : ""}`
           : `<p class="hint">No work saved yet in the last 90 days.</p>`}
+          ${onRoster ? `<p class="class-links">Reports: <button type="button" class="linklike" data-term-report="${esc(name)}">📅 End-of-term report</button> ·
+            <button type="button" class="linklike" data-pupil-page="${esc(name)}">📄 Progress, PIN and parent page</button></p>` : ""}
           ${onRoster ? "" : `<p class="hint">Not on the class list yet. <button type="button" class="linklike" data-roster-add="${esc(name)}">Add ${esc(name)}</button></p>`}
         </article>`;
       }).join("")}</div>` : `<div class="empty">No pupils yet. Add the first one above.</div>`}`;
 
     $("#lessonTimer").onclick = () => lessonTimerDialog(names);
+    const setSteps = hidden => { try { localStorage.setItem(STEPS_KEY, hidden ? "1" : "0"); } catch { /* not remembered */ } drawClass(body); };
+    if ($("#hideSteps")) $("#hideSteps").onclick = () => setSteps(true);
+    if ($("#showSteps")) $("#showSteps").onclick = () => setSteps(false);
     $("#copyClassLink").onclick = async e => {
       try { await navigator.clipboard.writeText(joinLink(classId)); e.target.textContent = "✓ Copied"; } catch { body.querySelector(".t-link").select(); }
     };
@@ -1543,7 +1649,19 @@
       catch (err) { b.disabled = false; showError(err); }
     }; });
     body.querySelectorAll("[data-add-work]").forEach(b => { b.onclick = () => addWorkDialog(b.dataset.addWork, workOf(b.dataset.addWork).row, () => drawClass(body)); });
+    body.querySelectorAll("[data-mark-sheet]").forEach(b => { b.onclick = () => { marking = { who: b.dataset.markSheet, list: b.dataset.list, back: "class" }; tab = "plans"; draw(); }; });
+    body.querySelectorAll("[data-term-report]").forEach(b => { b.onclick = () => parentsNight([roster.find(r => sameName(r.name, b.dataset.termReport))]); });
+    body.querySelectorAll("[data-pupil-page]").forEach(b => { b.onclick = () => {
+      const r = roster.find(x => sameName(x.name, b.dataset.pupilPage));
+      if (r) openRoster.add(r.key);
+      tab = "pupils"; draw();
+      setTimeout(() => { const card = r && document.querySelector(`[data-roster="${CSS.escape(r.key)}"]`); if (card) card.scrollIntoView({ block: "start" }); }, 600);
+    }; });
     body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => lessonSummaryDialog(b.dataset.lessonSummary, resultsOf(b.dataset.lessonSummary)); });
+    body.querySelectorAll("[data-fill-time]").forEach(b => { b.onclick = () => {
+      const name = b.dataset.fillTime, w = workOf(name);
+      fillTimeDialog(name, classId, w.row, resultsOf(name), w.lists.concat(w.dated), roster.find(r => sameName(r.name, name)));
+    }; });
     body.querySelectorAll("[data-plan-lesson]").forEach(b => { b.onclick = () => {
       const name = b.dataset.planLesson;
       planLessonDialog(name, workOf(name).row, resultsOf(name), () => drawClass(body), roster.find(r => sameName(r.name, name)));
@@ -1693,6 +1811,86 @@
 
   // The next lesson for one child: what last time showed, the online work and a practice sheet on
   // the same focus, so one child can work online while the other does the sheet, then swap
+  /* ---------- Games: Fill time for one pupil, and every game for the teacher to try ---------- */
+
+  // The age each CfE level usually suits, so a teacher can tell at a glance
+  const GAME_AGE = { Early: "P1", First: "P2 to P4", Second: "P5 to P7", Third: "S1 to S3" };
+  const gameAge = act => `${act.level} level${GAME_AGE[act.level] ? ` · ${GAME_AGE[act.level]}` : ""}`;
+  const gameAreas = () => (A_()?.AREAS || []).filter(area => area.game);
+  const pipGames = () => gameAreas().filter(area => !area.older).flatMap(area => area.activities);
+  const wordGamesList = () => gameAreas().filter(area => area.older).flatMap(area => area.activities);
+  // The kind of game (Sound Hopper, Code Word...), so three suggestions are three different games
+  const gameFamily = id => String(id).split("-").slice(0, 2).join("-");
+
+  // Three games that suit a pupil: Pip's games for the younger look (on the sounds they are working on,
+  // plus a number game), word games for the older look (at their level). Games played lately go last.
+  function fillTimeGames(band, pupil, results, setLists) {
+    const A = A_();
+    if (!A) return [];
+    const recent = new Set(results.slice(0, 6).map(s => s.listId));
+    let pool;
+    if (band === "older") {
+      const third = /^S\d|^Y(8|9|1[01])$|Year (8|9|1[01])/i.test(String(pupil?.yearGroup || ""));
+      const games = wordGamesList();
+      pool = games.filter(g => g.level === (third ? "Third" : "Second")).concat(games.filter(g => g.level !== (third ? "Third" : "Second")));
+    } else {
+      const spelling = results.map(s => s.listId).concat(setLists).find(id => catalogueList(id));
+      const stage = spelling ? phonicsStageOf(spelling) : 0;
+      const ids = (STAGE_GAMES[stage] || []).concat(STAGE_GAMES.flat(), band === "middle" ? CANOPY_GAMES.First : CANOPY_GAMES.Early);
+      pool = ids.map(id => A.get(id)).filter(Boolean).concat(pipGames());
+    }
+    pool = pool.filter((g, i) => pool.findIndex(x => x.id === g.id) === i);
+    pool = pool.filter(g => !recent.has(g.id)).concat(pool.filter(g => recent.has(g.id)));
+    const picked = [];
+    pool.forEach(g => { if (picked.length < 3 && !picked.some(p => gameFamily(p.id) === gameFamily(g.id))) picked.push(g); });
+    pool.forEach(g => { if (picked.length < 3 && !picked.includes(g)) picked.push(g); });
+    return picked;
+  }
+
+  const gameCard = (act, href, label, extra = "") => `<article class="game-pick" style="--accent:${esc(act.colour || "#0f766e")}">
+      <h3><span aria-hidden="true">${act.icon || "🎮"}</span> ${esc(act.title)}</h3>
+      <p class="game-age">${esc(gameAge(act))}</p>
+      <p class="hint">${esc(act.blurb || "")}</p>
+      <a class="btn small primary" href="${esc(href)}" target="_blank" rel="noopener" ${extra}>${label}</a>
+    </article>`;
+
+  function fillTimeDialog(name, classId, row, results, setLists, pupil = null) {
+    const band = row?.look === "older" ? "older" : bandFor(pupil?.yearGroup);
+    const older = band === "older";
+    const playHref = id => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}&play=${encodeURIComponent(id)}`;
+    const picks = fillTimeGames(band, pupil, results, setLists);
+    const all = older ? wordGamesList() : pipGames();
+    const dialog = document.createElement("dialog");
+    dialog.className = "worksheet-preview fill-time";
+    dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🎮 Fill time for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
+      <div class="plan-body">
+        <p class="hint">${older ? "Word games, because" : "Pip's games, because"} ${esc(name)} ${older ? "has the older look" : "has the younger look"}. Press <b>Play</b>: ${esc(name)}'s tab opens straight in the game, and how they do is saved with their work.</p>
+        <div class="game-picks">${picks.map(g => gameCard(g, playHref(g.id), `▶ Play`, "data-play")).join("")}</div>
+        <details class="game-more"><summary>All ${older ? "word games" : "of Pip's games"} (${all.length})</summary>
+          <ul>${all.map(g => `<li><a href="${esc(playHref(g.id))}" target="_blank" rel="noopener" data-play>▶ ${esc(g.title)}</a> <span class="meta">${esc(gameAge(g))}</span></li>`).join("")}</ul>
+        </details>
+        <p class="hint">${older ? "Pip's games" : "Word games"} are on the <button type="button" class="linklike" data-go-games>Games</button> page.</p>
+      </div>`;
+    document.body.append(dialog);
+    dialog.querySelector("[data-close]").onclick = () => dialog.close();
+    // The game opens in the pupil's tab; this dialog has done its job
+    dialog.querySelectorAll("[data-play]").forEach(a => a.addEventListener("click", () => setTimeout(() => dialog.close(), 0)));
+    dialog.querySelector("[data-go-games]").onclick = () => { dialog.close(); tab = "games"; draw(); };
+    dialog.addEventListener("close", () => dialog.remove(), { once: true });
+    dialog.showModal();
+  }
+
+  // Every game, for the teacher to try before a lesson. Test tabs save nothing to a pupil.
+  function drawGames(body) {
+    const section = (title, hint, games) => `<section class="games-section"><h2 class="t-h2">${title}</h2><p class="hint">${hint}</p>
+      <div class="game-picks">${games.map(g => gameCard(g, previewHref(g.id), "▶ Try it")).join("")}</div></section>`;
+    body.innerHTML = `<p class="hint games-intro">Try any game here. It opens in a new tab as a test, so nothing is saved to a pupil.
+        To give a pupil a game now, press <b>🎮 Fill time</b> on their card on the ${current ? `<button type="button" class="linklike" data-go-tab="class">Class</button>` : "Class"} page.</p>
+      ${section("🎮 Pip's games", "For pupils with the younger look, usually P1 to P4: sounds, reading and numbers, with Pip.", pipGames())}
+      ${section("🧩 Word games", "For pupils with the older look, usually P5 and up: plain screens, no mascot.", wordGamesList())}`;
+    body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
+  }
+
   function planLessonDialog(name, row, results, done, pupil = null) {
     const spelling = results.filter(s => catalogueList(s.listId) && !s.source);
     const latest = spelling[0] || null;
@@ -2664,7 +2862,7 @@
     const list = catalogueList(marking.list);
     if (!list) { marking = null; return drawPlans(body); }
     body.innerHTML = `<div class="row t-row"><h2 class="t-h2">Mark ${esc(list.title)} · ${esc(marking.who)}</h2>
-      <button class="btn" id="cancelMark">Back to plans</button></div>
+      <button class="btn" id="cancelMark">${marking.back ? "Back to the Class page" : "Back to plans"}</button></div>
       <p class="hint">Mark every word. “Right with help” counts as correct, but not first time. Tick any sound-to-spelling choices that need practice; they will appear in the pupil's progress summary.</p>
       <form id="markForm"><table class="t-table"><thead><tr><th>Word</th><th>Result</th><th>Sounds to revisit</th></tr></thead>
         <tbody>${list.items.map((item, i) => `<tr><td class="who">${esc(item.spelling)}</td>
@@ -2672,7 +2870,9 @@
             <option value="help">Right with help</option><option value="miss">Missed</option></select></td>
           <td><div class="sound-choices">${[...new Set(item.tokens)].map(tok => `<label><input type="checkbox" data-sound="${i}" value="${esc(tok)}"> ${esc(tok)}</label>`).join("")}</div></td></tr>`).join("")}</tbody></table>
         <div class="row end"><button class="btn primary" type="submit">Save worksheet results</button></div></form>`;
-    $("#cancelMark").onclick = () => { marking = null; drawPlans(body); };
+    // Marking started from the Class page goes back there
+    const done = () => { const back = marking.back; marking = null; if (back) { tab = back; draw(); } else drawPlans(body); };
+    $("#cancelMark").onclick = done;
     $("#markForm").onsubmit = async e => {
       e.preventDefault();
       const words = list.items.map((item, i) => {
@@ -2682,7 +2882,7 @@
           triesUsed: status === "first" ? 1 : status === "help" ? 2 : 3, wrong: [], missed };
       });
       try { await cloud.recordWorksheet(current.id, marking.who, marking.list, list.title, words);
-        marking = null; drawPlans(body); } catch (err) { showError(err); }
+        done(); } catch (err) { showError(err); }
     };
   }
 
@@ -4692,7 +4892,7 @@
         <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
         ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
-      <p class="hint">Add each pupil, then issue their personal link and four-digit PIN. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
+      <p class="hint">Pupils can already sign in with the class code and their first name: nothing more is needed. A personal link and four-digit PIN (<b>Issue pupil login</b>) is optional, for families who want extra privacy at home. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" aria-label="Pupil's first name" placeholder="Pupil's first name (and initial)" required>
         <input type="email" id="rosterParent" aria-label="Parent email (optional)" placeholder="Parent email (optional)">
