@@ -2306,3 +2306,10 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .grid-found li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 4px; break-inside: avoid; }
 .grid-found small { color: var(--wg-hit); font-weight: 700; }
 @media (max-width: 720px) { .grid-play { grid-template-columns: 1fr; } .grid-board { grid-template-columns: repeat(var(--size), minmax(0, 60px)); } }
+.class-steps { max-width: 900px; padding: 14px 18px; margin-bottom: 14px; border-left: 4px solid var(--primary, #1d4ed8); }
+.class-steps-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.class-steps-head h2 { margin: 0; }
+.class-steps ol { margin: 10px 0; padding-left: 1.4em; display: grid; gap: 6px; }
+.class-steps li.done { color: var(--muted); }
+.class-steps li.done > b:first-child { color: #15803d; }
+.class-steps .hint { margin: 0; }

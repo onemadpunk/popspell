@@ -204,9 +204,9 @@
     const tabs = groups.flatMap(([, items]) => items);
     const [, tabName] = tabs.find(([k]) => k === tab) || tabs[0];
     const tabButtons = items => items.map(([k, t]) => `<button class="t-tab" type="button" data-tab="${k}"${k === tab ? ' aria-current="page"' : ""}>${icon(k)}<span>${t}</span></button>`).join("");
-    // Open unless the teacher has folded it away themselves
-    let moreOpen = true;
-    try { moreOpen = localStorage.getItem("popspell-teacher-more") !== "0"; } catch { /* open */ }
+    // Folded away until the teacher opens it, so the menu starts with the three pages a lesson needs
+    let moreOpen = false;
+    try { moreOpen = localStorage.getItem("popspell-teacher-more") === "1"; } catch { /* folded */ }
     if (groups[1][1].some(([k]) => k === tab)) moreOpen = true;
     const initial = (shortName(me.name) || "?").slice(0, 1).toUpperCase();
     root.innerHTML = `
@@ -227,6 +227,7 @@
           <div class="t-side-foot">
             <a class="t-sidelink" href="#/make">${icon("make")}<span>Make a list</span></a>
             <button class="t-sidelink" type="button" id="tSettings">${icon("settings")}<span>Settings</span></button>
+            <a class="t-sidelink" href="quick-guide.html" target="_blank" rel="noopener">${icon("help")}<span>Quick guide</span></a>
             <a class="t-sidelink" href="help.html" target="_blank" rel="noopener">${icon("help")}<span>Help</span></a>
             <div class="t-me"><span class="t-avatar" aria-hidden="true">${esc(initial)}</span>
               <span class="t-me-text"><b>${esc(me.name || shortName(me.name))}</b><small>${canAdmin() ? `${roleLabel(me.role)} · ` : ""}${esc(me.email)}</small></span>
@@ -238,7 +239,7 @@
             <div><p class="t-crumb">${current ? esc(current.name) : "No class yet"}</p><h1>${esc(tabName)}</h1></div>
             <div class="t-headacts">
               <a class="btn small" href="help.html#${HELP_SECTIONS[tab] || "start"}" target="_blank" rel="noopener">${icon("help")} Help with ${esc(tabName)}</a>
-              <a class="btn small" href="#/">${icon("back")} Pupil screen</a>
+              <a class="btn small" href="#/" title="PopSpell's home page, as pupils see it">${icon("back")} Pupil home page</a>
             </div>
           </header>
           <div class="t-error" id="tError" hidden></div>
@@ -1445,6 +1446,7 @@
 
   // Each pupil's card: the work set, a button to open it for them in a new tab on this device,
   // and their recent results, each opening to show every word.
+  const STEPS_KEY = "popspell-class-steps-hidden";
   async function drawClass(body) {
     body.innerHTML = `<div class="empty">Loading…</div>`;
     const classId = current.id;
@@ -1479,13 +1481,29 @@
       return `<tr><td><b>${esc(w.word || "")}</b>${w.sounds ? `<br><span class="meta">${esc(w.sounds)}</span>` : ""}</td><td>${how}</td>
         <td>${tried.length ? esc(tried.join(", ")) : "—"}</td><td>${(w.missed || []).length ? esc(w.missed.join(", ")) : "—"}</td></tr>`;
     };
+    // The four steps of a lesson, ticked off as they happen, until the teacher hides them
+    let stepsHidden = false;
+    try { stepsHidden = localStorage.getItem(STEPS_KEY) === "1"; } catch { /* shown */ }
+    const stepDone = [names.length > 0, names.some(hasWork), sessions.length > 0, false];
+    const stepsCard = `<section class="pcard class-steps" aria-labelledby="classStepsHead">
+        <div class="class-steps-head"><h2 class="t-h2" id="classStepsHead">A lesson in four steps</h2>
+          <button class="btn small" type="button" id="hideSteps">Hide these steps</button></div>
+        <ol>${[
+          ["Add your pupils", "Type a first name below and press <b>Add pupil</b>."],
+          ["Choose the work", "Press <b>🧭 Plan next lesson</b> on a pupil's card. It sets their online work and prints a practice sheet on the same sounds."],
+          ["Start the lesson", "Press <b>▶ Start lesson</b>. A new tab opens with only that child's work. The other child does the sheet, then they swap. <b>⏱ Lesson timer</b> tells you when."],
+          ["Write it up", "Afterwards, press <b>📝 Lesson summary</b> to save a note for the end-of-term report, or copy a message for home."]
+        ].map(([head, text], i) => `<li class="${stepDone[i] ? "done" : ""}"><b>${stepDone[i] ? "✓ " : ""}${head}.</b> ${text}</li>`).join("")}</ol>
+        <p class="hint">At home, pupils go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name. <a href="quick-guide.html" target="_blank" rel="noopener">Printable quick guide</a></p>
+      </section>`;
     const chip = (name, l, removable) => `<span class="t-chip">${esc(listTitle(l))}${removable ? `<button type="button" title="Remove" aria-label="Remove ${esc(listTitle(l))} from ${esc(name)}" data-unset="${esc(name)}" data-list="${esc(l)}">×</button>` : ""}</span>`;
-    body.innerHTML = `
+    body.innerHTML = `${stepsHidden ? "" : stepsCard}
       <section class="pcard class-intro">
-        <p><b>How pupils get their work:</b> on this computer, press <b>▶ Start lesson</b> on a pupil's card and a new tab opens straight on their first piece of work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
+        ${stepsHidden ? "" : `<p><b>Class link</b> for another device, or to send home:</p>`}<p${stepsHidden ? "" : " hidden"}><b>How pupils get their work:</b> on this computer, press <b>▶ Start lesson</b> on a pupil's card and a new tab opens straight on their first piece of work. On another device, they go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name.</p>
         <div class="add-row"><input type="text" readonly value="${esc(joinLink(classId))}" class="t-link" aria-label="Class link">
           <button class="btn small" type="button" id="copyClassLink">📋 Copy class link</button>
-          <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button></div>
+          <button class="btn small" type="button" id="lessonTimer">⏱ Lesson timer</button>
+          ${stepsHidden ? `<button class="btn small" type="button" id="showSteps">Show the lesson steps</button>` : ""}</div>
       </section>
       ${everyone && (everyone.lists || []).length ? `<p class="hint">Set for <b>everyone</b> in the class: ${everyone.lists.map(l => chip("Everyone", l, true)).join(" ")}</p>` : ""}
       <form class="add-row" id="classAddPupil"><input type="text" id="classNewName" maxlength="40" aria-label="New pupil's first name" placeholder="Add a pupil: first name (and initial)" required>
@@ -1494,13 +1512,13 @@
         const w = workOf(name), done = resultsOf(name), onRoster = roster.some(r => sameName(r.name, name));
         return `<article class="pcard class-card">
           <div class="class-card-head"><h2>${esc(name)}</h2>
-            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener">▶ ${hasWork(name) ? "Start lesson for" : "Open for"} ${esc(name)}</a></div>
+            <a class="btn small primary" href="${esc(openHref(name))}" target="_blank" rel="noopener" aria-label="${hasWork(name) ? "Start lesson for" : "Open the pupil screen for"} ${esc(name)}" title="Opens a new tab with ${esc(name)}'s work, without your teacher menu">▶ ${hasWork(name) ? "Start lesson" : "Open pupil screen"}</a></div>
           <h3 class="class-sub">Work set</h3>
           <div class="chips">${w.lists.map(l => chip(name, l, true)).join("")}${w.dated.map(l => chip(name, l, false)).join("")}
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
-          <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}">🧭 Plan next lesson</button>
-            <button class="btn small" type="button" data-add-work="${esc(name)}">＋ Add work</button>
-            <button class="btn small" type="button" data-lesson-summary="${esc(name)}">📝 Lesson summary</button></div>
+          <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}" title="Set the online work and print a practice sheet on the same sounds">🧭 Plan next lesson</button>
+            <button class="btn small" type="button" data-add-work="${esc(name)}" title="Add any piece of online work from the Library">＋ Add work</button>
+            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: a note for the Diary or a message for home">📝 Lesson summary</button></div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
               <summary><span>${esc(when(s.at))}</span> <b>${esc(s.list || listTitle(s.listId))}</b> <span class="meta">${esc(score(s))}</span></summary>
@@ -1514,6 +1532,9 @@
       }).join("")}</div>` : `<div class="empty">No pupils yet. Add the first one above.</div>`}`;
 
     $("#lessonTimer").onclick = () => lessonTimerDialog(names);
+    const setSteps = hidden => { try { localStorage.setItem(STEPS_KEY, hidden ? "1" : "0"); } catch { /* not remembered */ } drawClass(body); };
+    if ($("#hideSteps")) $("#hideSteps").onclick = () => setSteps(true);
+    if ($("#showSteps")) $("#showSteps").onclick = () => setSteps(false);
     $("#copyClassLink").onclick = async e => {
       try { await navigator.clipboard.writeText(joinLink(classId)); e.target.textContent = "✓ Copied"; } catch { body.querySelector(".t-link").select(); }
     };
@@ -4692,7 +4713,7 @@
         <button class="btn" id="pnAll">📅 Parents' night reports (whole class)</button>
         ${roster.some(r => nextYear(r.yearGroup)) ? `<button class="btn" id="newYear">🎓 New school year</button>` : ""}
         <button class="btn primary" id="newPupil">🌟 New pupil: profile and assessment</button></div></div>
-      <p class="hint">Add each pupil, then issue their personal link and four-digit PIN. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
+      <p class="hint">Pupils can already sign in with the class code and their first name: nothing more is needed. A personal link and four-digit PIN (<b>Issue pupil login</b>) is optional, for families who want extra privacy at home. On a shared tablet, set up name tiles here once; children then tap their own tile and enter the PIN. Parent contact details stay in the teacher area.</p>
       <p class="pill">${dueTomorrow} reminder${dueTomorrow === 1 ? "" : "s"} due tomorrow</p>
       <form class="add-row" id="addPupil"><input type="text" id="rosterName" maxlength="40" aria-label="Pupil's first name" placeholder="Pupil's first name (and initial)" required>
         <input type="email" id="rosterParent" aria-label="Parent email (optional)" placeholder="Parent email (optional)">
