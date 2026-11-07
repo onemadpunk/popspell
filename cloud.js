@@ -631,6 +631,10 @@ async function start() {
         lessonTime: String(pupil.lessonTime || "").slice(0, 5),
         homeworkList: String(pupil.homeworkList || "").slice(0, 100),
         ...(pupil.parentNote !== undefined ? { parentNote: String(pupil.parentNote).trim().slice(0, 1000) } : {}),
+        // The latest lesson notes and practice the teacher sent to the family (shown on the parent page)
+        ...(pupil.parentLesson ? { parentLesson: { date: String(pupil.parentLesson.date || "").slice(0, 10),
+          notes: String(pupil.parentLesson.notes || "").trim().slice(0, 2000),
+          practice: String(pupil.parentLesson.practice || "").trim().slice(0, 1000), at: Number(pupil.parentLesson.at) || Date.now() } } : {}),
         // The New pupil profile (teacher-only, like the rest of the roster)
         ...(pupil.yearGroup !== undefined ? { yearGroup: String(pupil.yearGroup).slice(0, 10) } : {}),
         ...(pupil.needs !== undefined ? { needs: String(pupil.needs).trim().slice(0, 500) } : {}),

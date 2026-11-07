@@ -1573,7 +1573,7 @@
           ["Add your pupils", "Type a first name below and press <b>Add pupil</b>."],
           ["Choose the work", "Press <b>🧭 Plan next lesson</b> on a pupil's card. It sets their online work and prints a practice sheet on the same sounds."],
           ["Start the lesson", "Press <b>▶ Start lesson</b>. A new tab opens with only that child's work. The other child does the sheet, then they swap. <b>⏱ Lesson timer</b> tells you when. Finished early? <b>🎮 Fill time</b> opens a game that suits them."],
-          ["Write it up", "Afterwards, press <b>📝 Lesson summary</b> to save a note for the end-of-term report, or copy a message for home."]
+          ["Write it up", "Afterwards, press <b>📝 Lesson summary</b>. Check the notes and practice, then <b>📨 Send to family</b>: they go on the child's parent page and into an email ready for you to send."]
         ].map(([head, text], i) => `<li class="${stepDone[i] ? "done" : ""}"><b>${stepDone[i] ? "✓ " : ""}${head}.</b> ${text}</li>`).join("")}</ol>
         <p class="hint">At home, pupils go to popspell.com, type the class code <b class="t-code-inline">${esc(classId)}</b> and their first name. <a href="quick-guide.html" target="_blank" rel="noopener">Printable quick guide</a></p>
       </section>`;
@@ -1600,7 +1600,7 @@
             ${!w.lists.length && !w.dated.length ? `<span class="hint">Nothing set yet${everyone && everyone.lists.length ? " (they still see the class's work)" : ""}.</span>` : ""}</div>
           <div class="row"><button class="btn small primary" type="button" data-plan-lesson="${esc(name)}" title="Set the online work and print a practice sheet on the same sounds">🧭 Plan next lesson</button>
             <button class="btn small" type="button" data-add-work="${esc(name)}" title="Add any piece of online work from the Library">＋ Add work</button>
-            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: a note for the Diary or a message for home">📝 Lesson summary</button>
+            <button class="btn small" type="button" data-lesson-summary="${esc(name)}" title="After the lesson: notes and practice for the family, kept in your Diary too">📝 Lesson summary</button>
             ${(() => { const l = w.lists.concat(w.dated).find(id => catalogueList(id)); return l ? `<button class="btn small" type="button" data-mark-sheet="${esc(name)}" data-list="${esc(l)}" title="Enter how ${esc(name)} did on the paper sheet for ${esc(listTitle(l))}">✍️ Mark the sheet</button>` : ""; })()}</div>
           <h3 class="class-sub">What they did</h3>
           ${done.length ? `<div class="class-results">${done.slice(0, 6).map(s => `<details class="class-result">
@@ -1657,7 +1657,10 @@
       tab = "pupils"; draw();
       setTimeout(() => { const card = r && document.querySelector(`[data-roster="${CSS.escape(r.key)}"]`); if (card) card.scrollIntoView({ block: "start" }); }, 600);
     }; });
-    body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => lessonSummaryDialog(b.dataset.lessonSummary, resultsOf(b.dataset.lessonSummary)); });
+    body.querySelectorAll("[data-lesson-summary]").forEach(b => { b.onclick = () => {
+      const name = b.dataset.lessonSummary;
+      lessonSummaryDialog(name, resultsOf(name), null, roster.find(r => sameName(r.name, name)));
+    }; });
     body.querySelectorAll("[data-fill-time]").forEach(b => { b.onclick = () => {
       const name = b.dataset.fillTime, w = workOf(name);
       fillTimeDialog(name, classId, w.row, resultsOf(name), w.lists.concat(w.dated), roster.find(r => sameName(r.name, name)));
@@ -1669,8 +1672,9 @@
   }
 
   // A short note about today's lesson for one child: drafted from what they did online, edited by the teacher,
-  // saved to the Diary (which the end-of-term report can include) and copied as a message for home.
-  function lessonSummaryDialog(name, results, done) {
+  // saved to the Diary (which the end-of-term report can include) and, with "Send to family", put on the
+  // child's parent page with the practice for home and handed to the teacher's own email app to send.
+  function lessonSummaryDialog(name, results, done, r) {
     const since = Date.now() - 20 * 3600000;
     let recent = results.filter(s => s.at >= since && !s.source);
     const fromToday = recent.length > 0;
@@ -1686,16 +1690,29 @@
     const suggestion = latest ? suggestFor(latest, null).text.replace(/\s—\s.*$/, "") : "";
     const draftLast = [...lines, ...(missed.length ? [`Words to go over: ${missed.slice(0, 5).map(m => m.word).join(", ")}${sounds.length ? ` (sounds: ${sounds.join(", ")})` : ""}.`] : []),
       ...(!lines.length ? [`No online work was recorded for ${first} ${fromToday ? "today" : "recently"}. Add what you did together.`] : [])].join(" ");
+    const draftPractice = [r && r.homeworkList ? `Homework: ${titleOf(r.homeworkList)} on PopSpell.` : "",
+      missed.length ? `Practise saying and spelling: ${missed.slice(0, 5).map(m => m.word).join(", ")}.` : ""].filter(Boolean).join(" ");
+    const teacher = shortName(current.teacherName || (me && me.name) || "");
+    const canSend = !!r;
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview lesson-summary";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>📝 Lesson summary for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
       <div class="plan-body">
-        <p class="hint">A draft from ${esc(first)}'s online results. Change it so it says what you saw. Saving puts it in the Diary, and you can include your diary notes in the end-of-term report.</p>
+        <p class="hint">A draft from ${esc(first)}'s online results. Change it so it says what you saw, and add a word of encouragement.</p>
         <label>Lesson date <input type="date" data-date value="${todayKey()}"></label>
-        <label>How the lesson went <textarea data-last rows="5" maxlength="2000">${esc(draftLast)}</textarea></label>
-        <label>Next lesson <textarea data-next rows="3" maxlength="2000">${esc(suggestion)}</textarea></label>
-        <div class="row"><button class="btn primary" type="button" data-save>💾 Save to diary</button>
-          <button class="btn" type="button" data-copy>📋 Copy a message for home</button></div>
+        <label>Lesson notes <span class="meta">(the family sees these)</span><textarea data-last rows="5" maxlength="2000">${esc(draftLast)}</textarea></label>
+        <label>Practice at home <span class="meta">(the family sees this)</span><textarea data-practice rows="2" maxlength="1000">${esc(draftPractice)}</textarea></label>
+        <label>Your plan for next time <span class="meta">(only for you, in the Diary)</span><textarea data-next rows="2" maxlength="2000">${esc(suggestion)}</textarea></label>
+        <div class="row">${canSend ? `<button class="btn primary" type="button" data-send>📨 Send to family</button>` : ""}
+          <button class="btn${canSend ? "" : " primary"}" type="button" data-save>💾 Save to diary only</button></div>
+        ${canSend ? "" : `<p class="hint">${esc(name)} isn't on the class list yet, so there's no parent page to send to. Add them on the Class page first.</p>`}
+        <div class="send-home" data-sent hidden>
+          <p><b>✓ On ${esc(first)}'s parent page.</b> Now let the family know:</p>
+          <div class="row"><a class="btn primary" data-email href="#">✉️ Email the family</a>
+            <button class="btn" type="button" data-share hidden>📱 Share</button>
+            <button class="btn" type="button" data-copy>📋 Copy the message</button></div>
+          <p class="hint" data-email-hint></p>
+        </div>
         <p class="hint" data-status role="status"></p>
       </div>`;
     document.body.append(dialog);
@@ -1703,19 +1720,54 @@
     dialog.querySelector("[data-close]").onclick = () => dialog.close();
     const q = s => dialog.querySelector(s);
     const status = text => { q("[data-status]").textContent = text; };
+    const entry = () => ({ pupil: name, lessonDate: q("[data-date]").value || todayKey(), lastWork: q("[data-last]").value.trim(),
+      nextLesson: q("[data-next]").value.trim(), nextList: "", nextDate: "" });
+    let link = "";
+    const message = () => {
+      const notes = q("[data-last]").value.trim(), practice = q("[data-practice]").value.trim();
+      return [`Here are ${first}'s lesson notes and practice${teacher ? ` from ${teacher}` : ""}.`,
+        notes ? `Lesson notes\n${notes}` : "", practice ? `Practice at home\n${practice}` : "",
+        link ? `See ${first}'s progress: ${parentURL(link)}` : "", teacher].filter(Boolean).join("\n\n");
+    };
+    const subject = () => `${first}'s lesson notes and practice`;
     q("[data-save]").onclick = async e => {
       const button = e.currentTarget; button.disabled = true;
       try {
-        await cloud.saveDiary(current.id, { pupil: name, lessonDate: q("[data-date]").value || todayKey(), lastWork: q("[data-last]").value.trim(),
-          nextLesson: q("[data-next]").value.trim(), nextList: "", nextDate: "" });
+        await cloud.saveDiary(current.id, entry());
         status("✓ Saved to the Diary. It will be there when you write the end-of-term report.");
         if (done) done();
       } catch (err) { button.disabled = false; showError(err); }
     };
+    if (canSend) q("[data-send]").onclick = async e => {
+      const button = e.currentTarget; button.disabled = true;
+      status("Sending to the parent page…");
+      try {
+        const lessonDate = q("[data-date]").value || todayKey();
+        const parentLesson = { date: lessonDate, notes: q("[data-last]").value.trim(), practice: q("[data-practice]").value.trim(), at: Date.now() };
+        await cloud.saveDiary(current.id, entry());
+        const updated = Object.assign({}, r, { parentLesson });
+        await cloud.savePupil(current.id, updated);
+        const [s, a] = await parentData();
+        link = await publishParent(updated, s, a);
+        Object.assign(r, { parentLesson, parentLink: link });
+        status("");
+        q("[data-sent]").hidden = false;
+        q("[data-sent]").scrollIntoView({ block: "nearest", behavior: "smooth" });
+        const email = String(r.parentEmail || "").trim();
+        q("[data-email]").href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject())}&body=${encodeURIComponent(message())}`;
+        q("[data-email-hint]").textContent = email ? `Opens your own email, addressed to ${email}, with the notes and the link written in. Check it, then press Send.`
+          : `No parent email is saved for ${first}, so you'll need to type it in. You can save it on the Pupils page.`;
+        if (navigator.share) {
+          q("[data-share]").hidden = false;
+          q("[data-share]").onclick = () => navigator.share({ title: subject(), text: message() }).catch(() => {});
+        }
+        button.textContent = "✓ Sent to the parent page";
+        if (done) done();
+      } catch (err) { button.disabled = false; status(""); showError(err); }
+    };
     q("[data-copy]").onclick = async () => {
-      const text = `Hi, a quick note from today's lesson with ${first}.\n\n${q("[data-last]").value.trim()}${q("[data-next]").value.trim() ? `\n\nNext time: ${q("[data-next]").value.trim()}` : ""}\n\n${current.teacherName ? shortName(current.teacherName) : ""}`.trim();
-      try { await navigator.clipboard.writeText(text); status("✓ Copied. Paste it into your message to the family."); }
-      catch { status("Couldn't copy automatically: select the text above and copy it."); }
+      try { await navigator.clipboard.writeText(message()); status("✓ Copied. Paste it into a text or email to the family."); }
+      catch { status("Couldn't copy automatically. Use Email the family instead."); }
     };
     dialog.showModal();
   }
@@ -4795,7 +4847,6 @@
     const weekAgo = Date.now() - 7 * 86400000;
     const thisWeek = mine.filter(s => s.at >= weekAgo);
     const firstTime = s => (s.words || []).filter(w => w.correct && w.triesUsed === 1).length;
-    const today = todayKey();
     return {
       teacher: shortName(current.teacherName || (me && me.name) || ""),
       days: PARENT_DAYS,
@@ -4804,9 +4855,10 @@
       recent: mine.slice(-8).reverse().map(s => ({ title: s.list, at: s.at, worksheet: s.source === "worksheet",
         score: P().isAssessment(s.listId) ? "" : `${firstTime(s)} of ${(s.words || []).length} right first time` })),
       homework: r && r.homeworkList ? titleOf(r.homeworkList) : "",
-      nextLesson: r && r.nextLessonDate >= today ? r.nextLessonDate : "",
-      upcoming: (assignment ? assignment.plans : []).filter(p => p.until >= today)
-        .sort((a, b) => a.from.localeCompare(b.from)).slice(0, 3).map(p => ({ title: titleOf(p.list), from: p.from })),
+      // The lesson notes and practice the teacher last sent home. Plans and next lesson dates stay off
+      // this page: the teacher may change them after thinking about how the lesson went.
+      lesson: r && r.parentLesson && (r.parentLesson.notes || r.parentLesson.practice)
+        ? { date: r.parentLesson.date || "", notes: r.parentLesson.notes || "", practice: r.parentLesson.practice || "" } : null,
       curriculum: inEngland(r) ? "england" : "scotland",
       cfe: cfeRows(sessions, name, inEngland(r)).filter(x => x.status.key !== "none")
         .map(x => ({ organiser: x.organiser, level: x.levelText, status: x.status.text, evidence: evidence(x) }))
