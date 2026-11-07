@@ -553,6 +553,7 @@
 
   const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"], ["Third", "S1–S3"], ["Fourth", "S3"]];
   const LIB_SUBJECTS = ["Literacy", "Maths"];
+  const SUBJECT_ALSO = { Literacy: "Reading, writing, spelling", Maths: "Numeracy and number" };
   const LIB_TYPES = { lesson: "Ready lesson", check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
     game: "Game", dictation: "Dictation", paper: "Paper sheet" };
   const FIND_LEVEL = "Find their level";
@@ -619,7 +620,7 @@
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = fold(`${e.title} ${e.enTitle || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+      e.search = fold(`${e.title} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
         ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
       SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
     });
@@ -668,6 +669,8 @@
     if (l.subject !== "Literacy") return "";
     return ((l.level === "Early" || l.level === "First") ? KDU_LIT_YOUNG : KDU_LIT_OLDER)[l.strand] || "";
   };
+  // A subject's other names, so "maths", "numeracy", "number" or "English" all find it
+  const SUBJECT_WORDS = { Maths: "maths math mathematics numeracy number", Literacy: "literacy english" };
   // Everyday names for things the Library calls something else
   const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"]];
   const CFE_YEARS = { nursery: "Early", p1: "Early", p2: "First", p3: "First", p4: "First", p5: "Second", p6: "Second", p7: "Second", s1: "Third", s2: "Third", s3: "Third" };
@@ -756,11 +759,11 @@
         <button type="button" data-cur="" aria-pressed="${!en}"><span>Scotland</span><small>CfE levels</small></button>
         <button type="button" data-cur="england" aria-pressed="${en}"><span>England</span><small>National curriculum</small></button></div>` : ""}
       ${segment("level", prefs.range === "upto" ? (en ? "Up to year" : "Up to level") : (en ? "Year" : "Level"), [["", en ? "All years" : "All levels"]].concat(levels), " lib-years")}
-      ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s])))}
+      ${segment("subject", "Subject", [["", "All subjects"]].concat(LIB_SUBJECTS.map(s => [s, s, SUBJECT_ALSO[s]])))}
       <div class="add-row lib-more">
         <label>Strand <select id="libStrand"></select></label>
         <label>Type <select id="libType"><option value="">All types</option>${Object.entries(LIB_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join("")}</select></label>
-        <label>Search <input id="librarySearch" type="search" placeholder="Words, skills or a year (P5, Year 4)"></label>
+        <label>Search <input id="librarySearch" type="search" placeholder="Words, skills or a year (maths P5, Year 4)"></label>
         <button class="btn small" type="button" id="libFolder" aria-pressed="false">⭐ My folder (<span id="favCount">0</span>)</button>
       </div>
       <p class="hint" id="libraryCount"></p></div>
@@ -1870,12 +1873,15 @@
   const gameAge = act => `${act.level} level${GAME_AGE[act.level] ? ` · ${GAME_AGE[act.level]}` : ""}`;
   const gameAreas = () => (A_()?.AREAS || []).filter(area => area.game);
   const pipGames = () => gameAreas().filter(area => !area.older).flatMap(area => area.activities);
-  const wordGamesList = () => gameAreas().filter(area => area.older).flatMap(area => area.activities);
+  const wordGamesList = () => gameAreas().filter(area => area.id === "word-games").flatMap(area => area.activities);
+  const numberGamesList = () => gameAreas().filter(area => area.id === "number-games").flatMap(area => area.activities);
+  const isNumberGame = g => /^(g-canopy|ng)-/.test(g.id);
   // The kind of game (Sound Hopper, Code Word...), so three suggestions are three different games
   const gameFamily = id => String(id).split("-").slice(0, 2).join("-");
 
   // Three games that suit a pupil: Pip's games for the younger look (on the sounds they are working on,
-  // plus a number game), word games for the older look (at their level). Games played lately go last.
+  // plus a number game: Counting Canopy for P1 to P4, the plain number games for P5 to P7), word games and
+  // a number game for the older look (at their level). Games played lately go last.
   function fillTimeGames(band, pupil, results, setLists) {
     const A = A_();
     if (!A) return [];
@@ -1883,12 +1889,13 @@
     let pool;
     if (band === "older") {
       const third = /^S\d|^Y(8|9|1[01])$|Year (8|9|1[01])/i.test(String(pupil?.yearGroup || ""));
-      const games = wordGamesList();
-      pool = games.filter(g => g.level === (third ? "Third" : "Second")).concat(games.filter(g => g.level !== (third ? "Third" : "Second")));
+      const level = third ? "Third" : "Second";
+      const games = wordGamesList().concat(numberGamesList());
+      pool = games.filter(g => g.level === level).concat(games.filter(g => g.level !== level));
     } else {
       const spelling = results.map(s => s.listId).concat(setLists).find(id => catalogueList(id));
       const stage = spelling ? phonicsStageOf(spelling) : 0;
-      const ids = (STAGE_GAMES[stage] || []).concat(STAGE_GAMES.flat(), band === "middle" ? CANOPY_GAMES.First : CANOPY_GAMES.Early);
+      const ids = (STAGE_GAMES[stage] || []).concat(STAGE_GAMES.flat(), band === "middle" ? numberGamesList().filter(g => g.level === "Second").map(g => g.id) : CANOPY_GAMES.Early);
       pool = ids.map(id => A.get(id)).filter(Boolean).concat(pipGames());
     }
     pool = pool.filter((g, i) => pool.findIndex(x => x.id === g.id) === i);
@@ -1896,6 +1903,9 @@
     const picked = [];
     pool.forEach(g => { if (picked.length < 3 && !picked.some(p => gameFamily(p.id) === gameFamily(g.id))) picked.push(g); });
     pool.forEach(g => { if (picked.length < 3 && !picked.includes(g)) picked.push(g); });
+    // Always one number game among the three
+    const numberGame = pool.find(isNumberGame);
+    if (numberGame && !picked.some(isNumberGame)) picked[Math.min(2, picked.length)] = numberGame;
     return picked;
   }
 
@@ -1911,14 +1921,14 @@
     const older = band === "older";
     const playHref = id => `${location.pathname}#/join/${encodeURIComponent(classId)}?pupil=${encodeURIComponent(name)}&play=${encodeURIComponent(id)}`;
     const picks = fillTimeGames(band, pupil, results, setLists);
-    const all = older ? wordGamesList() : pipGames();
+    const all = older ? wordGamesList().concat(numberGamesList()) : band === "middle" ? pipGames().concat(numberGamesList()) : pipGames();
     const dialog = document.createElement("dialog");
     dialog.className = "worksheet-preview fill-time";
     dialog.innerHTML = `<div class="worksheet-preview-actions"><h2>🎮 Fill time for ${esc(name)}</h2><button class="btn small" type="button" data-close>Close</button></div>
       <div class="plan-body">
-        <p class="hint">${older ? "Word games, because" : "Pip's games, because"} ${esc(name)} ${older ? "has the older look" : "has the younger look"}. Press <b>Play</b>: ${esc(name)}'s tab opens straight in the game, and how they do is saved with their work.</p>
+        <p class="hint">${older ? "Word and number games, because" : band === "middle" ? "Pip's games and a number game for P5 to P7, because" : "Pip's games, because"} ${esc(name)} ${older ? "has the older look" : "has the younger look"}. Press <b>Play</b>: ${esc(name)}'s tab opens straight in the game, and how they do is saved with their work.</p>
         <div class="game-picks">${picks.map(g => gameCard(g, playHref(g.id), `▶ Play`, "data-play")).join("")}</div>
-        <details class="game-more"><summary>All ${older ? "word games" : "of Pip's games"} (${all.length})</summary>
+        <details class="game-more"><summary>All ${older ? "word and number games" : band === "middle" ? "of Pip's games and the number games" : "of Pip's games"} (${all.length})</summary>
           <ul>${all.map(g => `<li><a href="${esc(playHref(g.id))}" target="_blank" rel="noopener" data-play>▶ ${esc(g.title)}</a> <span class="meta">${esc(gameAge(g))}</span></li>`).join("")}</ul>
         </details>
         <p class="hint">${older ? "Pip's games" : "Word games"} are on the <button type="button" class="linklike" data-go-games>Games</button> page.</p>
@@ -1939,7 +1949,8 @@
     body.innerHTML = `<p class="hint games-intro">Try any game here. It opens in a new tab as a test, so nothing is saved to a pupil.
         To give a pupil a game now, press <b>🎮 Fill time</b> on their card on the ${current ? `<button type="button" class="linklike" data-go-tab="class">Class</button>` : "Class"} page.</p>
       ${section("🎮 Pip's games", "For pupils with the younger look, usually P1 to P4: sounds, reading and numbers, with Pip.", pipGames())}
-      ${section("🧩 Word games", "For pupils with the older look, usually P5 and up: plain screens, no mascot.", wordGamesList())}`;
+      ${section("🧩 Word games", "For pupils with the older look, usually P5 and up: plain screens, no mascot.", wordGamesList())}
+      ${section("🎯 Number games", "For P5 to S3, whatever their look: calculating, fractions, decimals and percentages, and placing numbers on a line. Plain screens, no mascot.", numberGamesList())}`;
     body.querySelectorAll("[data-go-tab]").forEach(b => { b.onclick = () => { tab = b.dataset.goTab; draw(); }; });
   }
 

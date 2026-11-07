@@ -450,7 +450,7 @@
         sounds: r.item.tokens.map(label).join("·"),
         correct: r.correct,
         challenge: !!r.item.challenge,
-        triesUsed: r.correct ? (["map", "switch", "canopy", "build", "codeword", "hunt", "sort", "crossword", "grid"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
+        triesUsed: r.correct ? (["map", "switch", "canopy", "build", "codeword", "hunt", "sort", "crossword", "grid", "target", "pairs", "numline"].includes(r.item.kind) ? (r.wrong.length ? 2 : 1) : r.wrong.length + 1) : null,
         wrong: r.wrong,
         missed: r.missed.map(label),
         ...(Number.isFinite(r.seconds) ? { seconds: r.seconds } : {}),
@@ -1366,10 +1366,10 @@
   function exploreAreas() {
     const A = window.PopActivities;
     // Short tab names, so the tabs fit on a phone
-    const SHORT = { games: "Games", "word-games": "Word games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
+    const SHORT = { games: "Games", "word-games": "Word games", "number-games": "Number games", writing: "Writing", reading: "Reading", listening: "Listening", numeracy: "Numbers" };
     // The older look has no mascot, so its games are the word games; the younger look keeps Pip's games
     // (a teacher can still set a word game for a P5 to P7 pupil)
-    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly && (a.id === "games" ? !isOlder() : a.older ? isOlder() : true)).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
+    const areas = A ? A.AREAS.filter(a => a.id !== "stories" && !a.assignedOnly && (a.id === "games" ? !isOlder() : a.older ? isOlder() || a.allLooks : true)).map(a => ({ id: a.id, icon: a.icon, title: SHORT[a.id] || a.title.replace(/:.*$/, ""), colour: a.colour, items: a.activities })) : [];
     areas.push({ id: "checks", icon: "🧭", title: "Checks", colour: "#0f766e",
       items: Object.entries(CHECKS).filter(([k]) => k === "spelling" || A).map(([k, c]) => ({ id: `check:${k}`, href: `#/check/${k}`, title: c.title.replace("Starting check: ", ""), icon: c.icon, level: "About 10 minutes", colour: c.accent })) });
     return areas;
@@ -1531,7 +1531,8 @@
       ${locked || older ? "" : tile("#/activity/g-hopper-short", "🎮", "Sound Hopper", "Build Pip's bridge")}
       ${locked || older ? "" : tile("#/activity/g-switch-first", "🔑", "Sound Switch", "Open Pip's doors")}
       ${locked || older ? "" : tile("#/activity/g-canopy-run", "✨", "Counting Canopy", "Explore numbers with Pip")}
-      ${locked || !older ? "" : tile("#/activity/w-build-prefixes", "🧩", "Word Builder", "Build words from their parts")}`;
+      ${locked || !older ? "" : tile("#/activity/w-build-prefixes", "🧩", "Word Builder", "Build words from their parts")}
+      ${locked || !older ? "" : tile("#/activity/ng-target-second", "🎯", "Make the Target", "Reach the number with + − × ÷")}`;
     // Pip says what's most useful right now (and changes if the teacher has set work)
     const say = text => { const bubble = app.querySelector(".welcome .speech") || (() => {
       const p = document.createElement("p"); p.className = "speech"; p.setAttribute("aria-live", "polite");
@@ -1905,7 +1906,8 @@
 
   // How the progress line names each word game's step
   const WORD_GAME_STEP = { build: (i, n) => `Word ${i + 1} of ${n}`, codeword: (i, n) => `Code word ${i + 1} of ${n}`, hunt: (i, n) => `Word ${i + 1} of ${n}`,
-    sort: (i, n) => `Set ${i + 1} of ${n}`, crossword: (i, n) => `Crossword: ${n} words`, grid: () => "Letter grid" };
+    sort: (i, n) => `Set ${i + 1} of ${n}`, crossword: (i, n) => `Crossword: ${n} words`, grid: () => "Letter grid",
+    target: (i, n) => `Target ${i + 1} of ${n}`, pairs: (i, n) => `Set ${i + 1} of ${n}`, numline: (i, n) => `Number ${i + 1} of ${n}` };
   function progressHTML() {
     const n = session.items.length;
     const earned = session.results.reduce((t, r) => t + r.stars, 0);
@@ -2259,10 +2261,13 @@
     hunt: ["Guess the hidden word one letter at a time.", "Each miss unlocks a clue: what it means, a sentence, the word read aloud, then a spelling tip. Eight misses and the word is shown."],
     sort: ["Tap a word, then tap the group it belongs in. You can drag words too.", "After two tries, the right group glows."],
     cross: ["Read each clue and type the word into the crossword.", "Press Check to see which letters to fix. Show a letter if you're stuck."],
-    grid: ["Join letters that touch to make words. Longer words score more points.", "There's no clock: finish when you're ready and try to beat your best."]
+    grid: ["Join letters that touch to make words. Longer words score more points.", "There's no clock: finish when you're ready and try to beat your best."],
+    target: ["Tap a number, a sign (+ − × ÷), then another number. The answer becomes a new tile. Keep going until you make the target.", "There's always a way. Undo or start again as often as you like, or ask for a step."],
+    pairs: ["Twelve cards, six pairs. Tap two cards that are worth the same, like 1/2 and 0.5.", "Miss a card twice and its partner glows."],
+    line: ["Tap where the number goes on the line, then press Check. Arrow keys move the marker too.", "Very close earns two stars, close earns one."]
   };
   // Word games for older pupils: a plain look with no mascot, whichever look the pupil has
-  const plainGame = act => !!act && act.area === "word-games";
+  const plainGame = act => !!act && (act.area === "word-games" || act.area === "number-games");
   function showActivityStart(act) {
     document.title = `${act.title} · ${SITE.title}`;
     // Seconds per question when the activity is timed (the times tables check), so it can be lengthened or switched off
@@ -2281,8 +2286,8 @@
           <small>Every answer opens the forest. Take your time; replay or use a clue whenever you need one.</small></div>`
           : /^g-canopy-/.test(act.id) ? `<div class="canopy-mission"><strong>🌟 Focused number practice with Pip</strong>
           <small>Six quick challenges for one skill. Replay or use a clue whenever you need one.</small></div>`
-          : WORD_GAME_HOWTO[(act.id.match(/^w-([a-z]+)/) || [])[1]] ? `<div class="wb-howto"><strong>How to play</strong>
-          <span>${WORD_GAME_HOWTO[act.id.match(/^w-([a-z]+)/)[1]][0]}</span><small>${WORD_GAME_HOWTO[act.id.match(/^w-([a-z]+)/)[1]][1]}</small></div>`
+          : WORD_GAME_HOWTO[(act.id.match(/^(?:w|ng)-([a-z]+)/) || [])[1]] ? `<div class="wb-howto"><strong>How to play</strong>
+          <span>${WORD_GAME_HOWTO[act.id.match(/^(?:w|ng)-([a-z]+)/)[1]][0]}</span><small>${WORD_GAME_HOWTO[act.id.match(/^(?:w|ng)-([a-z]+)/)[1]][1]}</small></div>`
           : /^w-build-/.test(act.id) ? `<div class="wb-howto"><strong>How to play</strong>
           <span>Read the meaning. Tap the parts in order to build the word, then press Check.</span>
           <small>Prefixes go at the start, suffixes at the end. Some words change their spelling where the parts join.</small></div>` : ""}
@@ -2452,6 +2457,9 @@
     if (q.kind === "sort") return showWordSort(q);
     if (q.kind === "crossword") return showCrossword(q);
     if (q.kind === "grid") return showLetterGrid(q);
+    if (q.kind === "target") return showMakeTarget(q);
+    if (q.kind === "pairs") return showEqualPairs(q);
+    if (q.kind === "numline") return showNumberLine(q);
     if (!q.say) q.say = questionSay(q);
     // Answers made of words can be heard too (not bare numbers or punctuation)
     const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
@@ -3620,6 +3628,210 @@
       wireNextRound();
     };
     draw();
+  }
+
+  /* ---------- Number games for older pupils: Make the Target, Equal Pairs, Number Line ---------- */
+
+  // Shows maths the way it's written: 3/4 as a stacked fraction, 2^5 as a power, minus signs as −
+  const mathHTML = text => esc(String(text))
+    .replace(/(\d+)\/(\d+)/g, '<span class="ng-frac"><span>$1</span><span>$2</span></span>')
+    .replace(/\^(\d+)/g, "<sup>$1</sup>")
+    .replace(/-(?=\d)/g, "−");
+  const mathSay = text => String(text).replace(/(\d+)\/(\d+)/g, "$1 over $2").replace(/\^(\d+)/g, " to the power $1").replace(/√/g, "square root of ");
+
+  /* Make the Target: join two tiles with an operation; the answer becomes a new tile. Make the target to win. */
+  function showMakeTarget(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    let nextId = 0;
+    const start = () => q.tiles.map(v => ({ v, id: nextId++ }));
+    let tiles = start();
+    const history = []; // earlier tile sets, for Undo
+    const work = [];    // the steps made so far, as text
+    const wrong = [];
+    let first = null, op = null, hints = 0, done = false;
+    app.innerHTML = gameShell("make-target", `
+      <p class="wb-kicker">Make the Target</p>
+      <div class="ng-target"><span>Target</span><b>${q.target}</b></div>
+      <p class="wg-lead">Tap a number, then + − × or ÷, then another number. Your answer becomes a new tile. You don't have to use them all.</p>
+      <div class="ng-tiles" id="ngTiles" role="group" aria-label="Number tiles"></div>
+      <div class="ng-ops" id="ngOps" role="group" aria-label="Operations">${q.ops.map(o => `<button type="button" class="ng-op" data-op="${o}" aria-label="${{ "+": "add", "−": "subtract", "×": "multiply", "÷": "divide" }[o]}">${o}</button>`).join("")}</div>
+      <ol class="ng-work" id="ngWork" aria-live="polite"></ol>
+      <div class="row center wb-actions"><button type="button" class="btn" id="ngUndo">↶ Undo</button><button type="button" class="btn" id="ngReset">Start again</button><button type="button" class="btn" id="ngHint">💡 Show a step</button></div>`);
+    wireStop();
+    const draw = () => {
+      $("#ngTiles").innerHTML = tiles.map(t => `<button type="button" class="ng-tile${first === t.id ? " selected" : ""}${t.v === q.target ? " hit" : ""}" data-tile="${t.id}" aria-pressed="${first === t.id}"${done ? " disabled" : ""}>${t.v}</button>`).join("");
+      app.querySelectorAll("#ngOps [data-op]").forEach(b => { b.classList.toggle("selected", op === b.dataset.op); b.disabled = done; });
+      $("#ngWork").innerHTML = work.map(w => `<li>${esc(w)}</li>`).join("");
+      $("#ngUndo").disabled = done || !history.length;
+      $("#ngReset").disabled = done || !history.length;
+      $("#ngHint").disabled = done;
+      $("#ngHint").textContent = hints ? "Show the whole way" : "💡 Show a step";
+      app.querySelectorAll("#ngTiles [data-tile]").forEach(b => { b.onclick = () => tap(Number(b.dataset.tile)); });
+    };
+    const finish = solved => {
+      done = true;
+      const earned = !solved ? 0 : hints ? 1 : 2;
+      wordGameResult(q, { correct: solved, wrong, stars: earned, missed: solved && !hints ? [] : [q.skill], startedAt });
+      draw();
+      if (solved) chimeRight(); else oopsTone();
+      feedbackSay(solved ? "good" : "", solved ? `You made ${q.target}! <span class="stars-inline">${stars(earned)}</span>` : `Here's one way to make ${q.target}.`);
+      $("#wgDone").innerHTML = `<div class="wb-rule"><b>${solved ? "Another way" : "One way"}:</b> ${q.steps.map(([a, o, b, r]) => `${a} ${o} ${b} = ${r}`).join(", then ")}</div>
+        <div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    const tap = id => {
+      if (done) return;
+      if (first === null || op === null) { first = first === id ? null : id; feedbackSay("", ""); draw(); return; }
+      if (first === id) { first = null; op = null; draw(); return; }
+      const a = tiles.find(t => t.id === first), b = tiles.find(t => t.id === id);
+      const r = op === "+" ? a.v + b.v : op === "−" ? a.v - b.v : op === "×" ? a.v * b.v : a.v / b.v;
+      if (op === "−" && r < 0) { feedbackSay("oops", `${a.v} − ${b.v} goes below zero. Try the bigger number first.`); oopsTone(); return; }
+      if (op === "÷" && !Number.isInteger(r)) { feedbackSay("oops", `${a.v} ÷ ${b.v} doesn't give a whole number. Try another pair.`); oopsTone(); if (wrong.length < 8) wrong.push(`${a.v} ÷ ${b.v}`); return; }
+      history.push({ tiles: tiles.slice(), work: work.slice() });
+      work.push(`${a.v} ${op} ${b.v} = ${r}`);
+      tiles = tiles.filter(t => t.id !== a.id && t.id !== b.id).concat({ v: r, id: nextId++ });
+      first = null; op = null;
+      if (r === q.target) { draw(); return finish(true); }
+      if (tiles.length === 1) feedbackSay("oops", `That makes ${r}, not ${q.target}. Undo, or start again.`);
+      else feedbackSay("", `${r}${Math.abs(q.target - r) <= 10 ? `: only ${Math.abs(q.target - r)} away!` : ""}`);
+      draw();
+    };
+    app.querySelectorAll("#ngOps [data-op]").forEach(b => {
+      b.onclick = () => {
+        if (done) return;
+        if (first === null) { feedbackSay("oops", "Tap a number first, then the sign."); return; }
+        op = op === b.dataset.op ? null : b.dataset.op;
+        draw();
+      };
+    });
+    $("#ngUndo").onclick = () => { const h = history.pop(); if (!h) return; tiles = h.tiles; work.length = 0; work.push(...h.work); first = null; op = null; feedbackSay("", ""); draw(); };
+    $("#ngReset").onclick = () => { if (work.length && wrong.length < 8) wrong.push(work[work.length - 1]); tiles = start(); history.length = 0; work.length = 0; first = null; op = null; feedbackSay("", ""); draw(); };
+    $("#ngHint").onclick = () => {
+      if (done) return;
+      if (hints) return finish(false);
+      hints++;
+      const [a, o, b, r] = q.steps[0];
+      feedbackSay("", `Try starting with <b>${a} ${o} ${b} = ${r}</b>. Start again first if you've used those tiles.`);
+      draw();
+    };
+    draw();
+  }
+
+  /* Equal Pairs: twelve cards face up; tap two that are worth the same */
+  function showEqualPairs(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const cards = shuffle(q.pairs.flatMap(([a, b], i) => [{ text: a, pair: i }, { text: b, pair: i }])).map((c, id) => Object.assign(c, { id }));
+    const matched = new Set();
+    const misses = {};
+    const wrong = [], missed = [];
+    let selected = null;
+    let done = false;
+    app.innerHTML = gameShell("equal-pairs", `
+      <p class="wb-kicker">Equal Pairs</p>
+      <h1 class="wb-clue">${esc(q.title)}</h1>
+      <p class="wg-lead">Tap two cards that are worth the same. Match all six pairs.</p>
+      <div class="ng-cards" id="ngCards" role="group" aria-label="Cards"></div>`);
+    wireStop();
+    const draw = () => {
+      const glow = selected !== null && (misses[selected] || 0) >= 2 ? cards.find(c => c.pair === cards[selected].pair && c.id !== selected).id : -1;
+      $("#ngCards").innerHTML = cards.map(c => `<button type="button" class="ng-card${matched.has(c.pair) ? " matched" : ""}${selected === c.id ? " selected" : ""}${glow === c.id ? " hinted" : ""}"
+        data-card="${c.id}" aria-pressed="${selected === c.id}" aria-label="${esc(mathSay(c.text))}"${matched.has(c.pair) || done ? " disabled" : ""}>${mathHTML(c.text)}</button>`).join("");
+      app.querySelectorAll("#ngCards [data-card]").forEach(b => { b.onclick = () => tap(Number(b.dataset.card)); });
+    };
+    const tap = id => {
+      if (done || matched.has(cards[id].pair)) return;
+      if (selected === null || selected === id) { selected = selected === id ? null : id; draw(); return; }
+      const a = cards[selected], b = cards[id];
+      if (a.pair === b.pair) {
+        matched.add(a.pair);
+        selected = null;
+        feedbackSay("good", `${mathHTML(a.text)} = ${mathHTML(b.text)}`);
+        if (matched.size === q.pairs.length) return finish();
+      } else {
+        misses[a.id] = (misses[a.id] || 0) + 1;
+        misses[b.id] = (misses[b.id] || 0) + 1;
+        if (wrong.length < 8) wrong.push(`${a.text} ≠ ${b.text}`);
+        missed.push(q.skill);
+        oopsTone();
+        feedbackSay("oops", `${mathHTML(a.text)} and ${mathHTML(b.text)} aren't worth the same.${misses[b.id] >= 2 ? " Tap a card again and its partner will glow." : ""}`);
+        selected = id;
+      }
+      draw();
+    };
+    const finish = () => {
+      done = true;
+      const earned = wrong.length ? 1 : 2;
+      wordGameResult(q, { correct: true, wrong, stars: earned, missed, startedAt });
+      chimeRight();
+      draw();
+      feedbackSay("good", `All six pairs${wrong.length ? "" : " first time"}! <span class="stars-inline">${stars(earned)}</span>`);
+      $("#wgDone").innerHTML = `<div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    draw();
+  }
+
+  /* Number Line: tap where the number goes, then check. Arrow keys move the marker too. */
+  function showNumberLine(q) {
+    document.body.classList.add("playing-game");
+    const startedAt = Date.now();
+    const span = q.max - q.min;
+    const at = v => ((v - q.min) / span) * 100;
+    const tidy = v => mathHTML(String(Math.round(v * 1000) / 1000));
+    const ticks = [];
+    for (let v = q.min, i = 0; v <= q.max + span / 1e6 && i < 60; v = q.min + (++i) * q.step) ticks.push(v);
+    const labelled = v => Math.abs(v - q.min) < 1e-9 || Math.abs(v - q.max) < 1e-9 || (Math.abs(v) < 1e-9 && q.min < 0);
+    let mark = null, done = false;
+    app.innerHTML = gameShell("number-line", `
+      <p class="wb-kicker">Number Line</p>
+      <p class="wg-lead">Where does this number go? Tap the line, then press Check.</p>
+      <div class="ng-show" aria-label="${esc(mathSay(q.show))}">${mathHTML(q.show)}</div>
+      <div class="ng-line" id="ngLine" role="slider" tabindex="0" aria-label="Number line from ${esc(String(q.min))} to ${esc(String(q.max))}" aria-valuemin="${q.min}" aria-valuemax="${q.max}">
+        <div class="ng-axis"></div>
+        ${ticks.map(v => `<span class="ng-tick${labelled(v) ? " major" : ""}" style="left:${at(v)}%">${labelled(v) ? `<small>${tidy(v)}</small>` : ""}</span>`).join("")}
+        <span class="ng-mark" id="ngMark" hidden></span><span class="ng-true" id="ngTrue" hidden></span>
+      </div>
+      <div class="row center wb-actions"><button type="button" class="btn primary" id="ngCheck" disabled>Check</button></div>`);
+    wireStop();
+    const line = $("#ngLine");
+    const place = pct => {
+      if (done) return;
+      mark = Math.max(0, Math.min(100, pct));
+      const m = $("#ngMark");
+      m.hidden = false;
+      m.style.left = `${mark}%`;
+      line.setAttribute("aria-valuenow", String(Math.round((q.min + (mark / 100) * span) * 1000) / 1000));
+      $("#ngCheck").disabled = false;
+    };
+    line.onclick = e => { const r = line.getBoundingClientRect(); place(((e.clientX - r.left) / r.width) * 100); };
+    listenKeys(e => {
+      if (done) return;
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); place((mark === null ? 50 : mark) + (e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 0.2 : 1)); }
+      else if (e.key === "Enter" && mark !== null) { e.preventDefault(); check(); }
+    });
+    const check = () => {
+      if (done || mark === null) return;
+      done = true;
+      stopKeys && stopKeys();
+      const err = Math.abs(mark - at(q.value)) / 100;
+      const earned = err <= 0.02 ? 2 : err <= 0.05 ? 1 : 0;
+      const t = $("#ngTrue");
+      t.hidden = false;
+      t.style.left = `${at(q.value)}%`;
+      t.innerHTML = `<small>${mathHTML(q.show)}</small>`;
+      $("#ngCheck").disabled = true;
+      const guess = q.min + (mark / 100) * span;
+      wordGameResult(q, { correct: earned > 0, wrong: earned === 2 ? [] : [`about ${Math.round(guess * 100) / 100}`], stars: earned, missed: earned ? [] : [q.skill], startedAt });
+      if (earned) chimeRight(); else oopsTone();
+      const exact = /[/√%]/.test(q.show) ? ` (about ${Math.round(q.value * 100) / 100})` : "";
+      feedbackSay(earned ? "good" : "", `${earned === 2 ? "Spot on!" : earned ? "Close!" : "Not quite."} ${mathHTML(q.show)}${exact} goes at the green mark. <span class="stars-inline">${stars(earned)}</span>`);
+      $("#wgDone").innerHTML = `<div class="row center">${nextRoundHTML()}</div>`;
+      wireNextRound();
+    };
+    $("#ngCheck").onclick = check;
+    line.focus();
   }
 
   /* ---------- Counting Canopy: four ways to think about number ---------- */

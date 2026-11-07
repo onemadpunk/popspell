@@ -1964,9 +1964,169 @@ window.PopActivities = (() => {
       make: gridGame(5, 4) }
   );
 
+  /* ---------- Number games for older pupils: Make the Target, Equal Pairs and Number Line ---------- */
+  // Plain screens like the word games (no mascot), for P5 to S3. Each round is one result.
+
+  // Make the Target: join number tiles with + − × ÷ to make the target. Every target is made by
+  // joining the tiles at random first, so there is always a way (shown if the pupil asks)
+  const TARGET_SPEC = {
+    Second: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], big: [10, 20, 25], tiles: 4, use: [3, 3, 4, 4, 4], lo: 12, hi: 120, ops: ["+", "−", "×"] },
+    Third: { small: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], big: [25, 50, 75, 100], tiles: 5, use: [3, 4, 4, 5, 5], lo: 101, hi: 999, ops: ["+", "−", "×", "÷"] }
+  };
+  const applyOp = (a, op, b) => (op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a * b : b && a % b === 0 ? a / b : NaN);
+  function targetRound(level, use) {
+    const s = TARGET_SPEC[level];
+    for (let tries = 0; tries < 400; tries++) {
+      const tiles = shuffle(s.small).slice(0, s.tiles - 1).concat(pick(s.big)).sort((a, b) => a - b);
+      const order = shuffle(tiles).slice(0, use);
+      let value = order[0];
+      const steps = [];
+      let ok = true;
+      for (const t of order.slice(1)) {
+        const op = pick(s.ops);
+        // Keep each step a whole number that isn't negative, and never × 1 or ÷ 1 (they don't change anything)
+        let [a, b] = op === "−" || op === "÷" ? [Math.max(value, t), Math.min(value, t)] : [value, t];
+        if ((op === "×" || op === "÷") && Math.min(a, b) === 1) { ok = false; break; }
+        const r = applyOp(a, op, b);
+        if (!Number.isInteger(r) || r <= 0) { ok = false; break; }
+        steps.push([a, op, b, r]);
+        value = r;
+      }
+      if (!ok || value < s.lo || value > s.hi || tiles.includes(value)) continue;
+      return { kind: "target", tiles, target: value, steps, answer: String(value), label: `Make ${value} from ${tiles.join(", ")}`,
+        spelling: `Make ${value}`, tokens: [], skill: "calculating: choosing + − × ÷ to reach a target", ops: s.ops.length === 4 ? s.ops : ["+", "−", "×", "÷"],
+        diff: use * 1000 + value };
+    }
+    return null;
+  }
+  const targetGame = level => () => {
+    const rounds = [];
+    for (const use of TARGET_SPEC[level].use) {
+      for (let t = 0; t < 20; t++) { const r = targetRound(level, use); if (r && !rounds.some(x => x.target === r.target)) { rounds.push(r); break; } }
+    }
+    return rounds;
+  };
+
+  // Equal Pairs: twelve cards face up; pair each card with the one worth the same
+  const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ").replace("-", "−");
+  const PAIR_SETS = {
+    Second: [
+      { title: "Fractions and decimals", diff: 1, pairs: () => [["1/2", "0.5"], ["1/4", "0.25"], ["3/4", "0.75"], ["1/10", "0.1"], ["3/10", "0.3"], ["1/5", "0.2"],
+        ["2/5", "0.4"], ["7/10", "0.7"], ["1/100", "0.01"], ["3/5", "0.6"], ["9/10", "0.9"], ["4/5", "0.8"]] },
+      { title: "Fractions and percentages", diff: 2, pairs: () => [["1/2", "50%"], ["1/4", "25%"], ["3/4", "75%"], ["1/10", "10%"], ["1/5", "20%"], ["2/5", "40%"],
+        ["3/10", "30%"], ["1/100", "1%"], ["9/10", "90%"], ["3/5", "60%"], ["7/10", "70%"], ["4/5", "80%"]] },
+      { title: "Times tables and division", diff: 3, pairs: () => {
+        const out = [], seen = new Set();
+        for (let t = 0; t < 200 && out.length < 12; t++) {
+          const a = 3 + rand(7), b = 3 + rand(7), p = a * b;
+          if (seen.has(p)) continue;
+          seen.add(p);
+          out.push(rand(3) ? [`${a} × ${b}`, String(p)] : [`${p} ÷ ${a}`, String(b)]);
+        }
+        // A division's answer can't also be another card's answer
+        const vals = new Set();
+        return out.filter(([, v]) => !vals.has(v) && vals.add(v));
+      } },
+      { title: "Metric units", diff: 4, pairs: () => [["1.5 km", "1500 m"], ["250 cm", "2.5 m"], ["3 kg", "3000 g"], ["750 ml", "0.75 l"], ["0.5 kg", "500 g"],
+        ["42 mm", "4.2 cm"], ["2 l", "2000 ml"], ["3.25 km", "3250 m"], ["80 cm", "0.8 m"], ["1.2 kg", "1200 g"], ["5 cm", "50 mm"], ["0.1 l", "100 ml"]] }
+    ],
+    Third: [
+      { title: "Negative numbers", diff: 1, pairs: () => {
+        const out = [], vals = new Set();
+        const makers = [
+          () => { const a = -(2 + rand(9)), b = 2 + rand(12); return [`${nf(a)} + ${b}`, a + b]; },
+          () => { const a = 1 + rand(8), b = a + 2 + rand(8); return [`${a} − ${b}`, a - b]; },
+          () => { const a = -(2 + rand(6)), b = 2 + rand(6); return [`${nf(a)} × ${b}`, a * b]; },
+          () => { const a = -(2 + rand(6)), b = -(2 + rand(5)); return [`${nf(a)} × (${nf(b)})`, a * b]; },
+          () => { const b = 2 + rand(5), q = -(2 + rand(6)); return [`${nf(q * b)} ÷ ${b}`, q]; },
+          () => { const a = 1 + rand(9), b = 2 + rand(9); return [`${a} − (${nf(-b)})`, a + b]; }
+        ];
+        for (let t = 0; t < 300 && out.length < 12; t++) { const [e, v] = pick(makers)(); if (!vals.has(v)) { vals.add(v); out.push([e, nf(v)]); } }
+        return out;
+      } },
+      { title: "Powers and roots", diff: 2, pairs: () => [["2^5", "32"], ["3^3", "27"], ["10^4", "10 000"], ["5^2", "25"], ["4^3", "64"], ["√81", "9"],
+        ["√144", "12"], ["2^3", "8"], ["√49", "7"], ["6^2", "36"], ["10^3", "1000"], ["3^4", "81"], ["√400", "20"], ["2^7", "128"]] },
+      { title: "Ratios in simplest form", diff: 3, pairs: () => {
+        const out = [], seen = new Set();
+        for (let t = 0; t < 300 && out.length < 12; t++) {
+          const a = 1 + rand(6), b = 2 + rand(7), k = 2 + rand(5);
+          const g = (x, y) => (y ? g(y, x % y) : x);
+          if (a === b || g(a, b) !== 1 || seen.has(`${a}:${b}`)) continue;
+          seen.add(`${a}:${b}`);
+          out.push([`${a * k} : ${b * k}`, `${a} : ${b}`]);
+        }
+        return out;
+      } },
+      { title: "Percentages of amounts", diff: 4, pairs: () => {
+        const out = [], vals = new Set();
+        for (let t = 0; t < 300 && out.length < 12; t++) {
+          const p = pick([5, 10, 15, 20, 25, 30, 40, 75]), n = pick([20, 40, 60, 80, 120, 140, 160, 200, 240, 300, 360]);
+          const v = (p * n) / 100;
+          if (!Number.isInteger(v) || vals.has(v)) continue;
+          vals.add(v);
+          out.push([`${p}% of ${n}`, String(v)]);
+        }
+        return out;
+      } },
+      { title: "Fractions, decimals and percentages", diff: 5, pairs: () => [["3/8", "0.375"], ["5/8", "62.5%"], ["1/3", "0.333…"], ["2/3", "66.7%"], ["7/20", "35%"],
+        ["1/8", "0.125"], ["11/20", "0.55"], ["3/25", "12%"], ["0.04", "1/25"], ["1.5", "150%"], ["9/50", "18%"], ["2.25", "2 1/4"]] }
+    ]
+  };
+  const pairsGame = level => () => {
+    const sets = PAIR_SETS[level];
+    const chosen = level === "Third" ? shuffle(sets).slice(0, 4).sort((a, b) => a.diff - b.diff) : sets;
+    return chosen.map(set => {
+      const pairs = shuffle(set.pairs()).slice(0, 6);
+      return { kind: "pairs", title: set.title, pairs, answer: set.title, label: set.title, spelling: set.title, tokens: [],
+        skill: `equal values: ${set.title.toLowerCase()}`, diff: set.diff };
+    }).filter(r => r.pairs.length === 6);
+  };
+
+  // Number Line: tap where the number goes. Close (within 2% of the line) earns two stars, near (5%) one
+  const roundTo2 = n => Math.round(n * 1000) / 1000;
+  const LINE_ROUNDS = {
+    Second: [
+      () => { const v = 5 + rand(91); return { min: 0, max: 100, step: 10, value: v, show: String(v) }; },
+      () => { const v = (1 + rand(19)) * 50 - rand(2) * 20 + 10; return { min: 0, max: 1000, step: 100, value: v, show: String(v) }; },
+      () => { const v = roundTo2((1 + rand(98)) / 100); return { min: 0, max: 1, step: 0.1, value: v, show: String(v) }; },
+      () => { const [n, d] = pick([[1, 4], [3, 4], [2, 5], [3, 5], [1, 3], [2, 3], [7, 10], [3, 8], [5, 8], [1, 5], [4, 5], [5, 6]]); return { min: 0, max: 1, step: 0.1, value: n / d, show: `${n}/${d}` }; },
+      () => { let v = 0; while (!v) v = rand(39) - 19; return { min: -20, max: 20, step: 5, value: v, show: nf(v) }; },
+      () => { const v = roundTo2((1 + rand(98)) / 10); return { min: 0, max: 10, step: 1, value: v, show: String(v) }; }
+    ],
+    Third: [
+      () => { let v = 0; while (!v) v = roundTo2((rand(19) - 9) / 10 + (rand(2) ? 0.05 : 0)); return { min: -1, max: 1, step: 0.25, value: v, show: nf(v) }; },
+      () => { const w = rand(3), [n, d] = pick([[1, 4], [3, 4], [1, 3], [2, 3], [1, 2], [2, 5], [5, 8]]); return { min: 0, max: 3, step: 0.5, value: w + n / d, show: w ? `${w} ${n}/${d}` : `${n}/${d}` }; },
+      () => { const n = pick([2, 3, 5, 7, 10, 12, 18, 20, 30, 40, 50, 60, 70, 80, 90]); return { min: 0, max: 10, step: 1, value: Math.sqrt(n), show: `√${n}` }; },
+      () => { const v = roundTo2((5 + rand(91)) / 1000); return { min: 0, max: 0.1, step: 0.01, value: v, show: String(v) }; },
+      () => { let v = 0; while (!v) v = (rand(99) - 49) + (rand(2) ? 0.5 : 0); return { min: -50, max: 50, step: 10, value: v, show: nf(v) }; },
+      () => { const v = pick([[0.125, "12.5%"], [0.375, "37.5%"], [0.625, "62.5%"], [0.05, "5%"], [0.875, "87.5%"], [1 / 3, "1/3"], [2 / 3, "2/3"], [0.15, "15%"], [0.45, "45%"], [0.8, "80%"], [0.35, "35%"]]);
+        return { min: 0, max: 1, step: 0.1, value: v[0], show: v[1] }; }
+    ]
+  };
+  const lineGame = level => () => LINE_ROUNDS[level].map((make, i) => Object.assign(make(), { kind: "numline", tokens: [], diff: i + 1 }))
+    .map(q => Object.assign(q, { answer: q.show, label: `${q.show} on a line from ${nf(q.min)} to ${nf(q.max)}`, spelling: q.show,
+      skill: "placing numbers on a number line" }));
+
+  const numberGames = [
+    { id: "ng-target-second", title: "Make the Target", level: "Second", organiser: NUM,
+      blurb: "Join four number tiles with +, − and × to make the target number. There's always a way.", make: targetGame("Second") },
+    { id: "ng-target-third", title: "Make the Target: bigger numbers", level: "Third", organiser: NUM,
+      blurb: "Five tiles, a target in the hundreds and all four operations. Plan a few steps ahead.", make: targetGame("Third") },
+    { id: "ng-pairs-second", title: "Equal Pairs", level: "Second", organiser: FDP,
+      blurb: "Match cards worth the same: fractions and decimals, percentages, tables facts and metric units.", make: pairsGame("Second") },
+    { id: "ng-pairs-third", title: "Equal Pairs: ratios, powers and percentages", level: "Third", organiser: FDP,
+      blurb: "Match negative number sums, powers and roots, ratios in simplest form and percentages of amounts.", make: pairsGame("Third") },
+    { id: "ng-line-second", title: "Number Line", level: "Second", organiser: NUM,
+      blurb: "Tap where each number goes: whole numbers, decimals, fractions and negative numbers.", make: lineGame("Second") },
+    { id: "ng-line-third", title: "Number Line: roots, fractions and negatives", level: "Third", organiser: NUM,
+      blurb: "Place square roots, mixed numbers, thousandths and negative decimals on a line.", make: lineGame("Third") }
+  ];
+
   const AREAS = [
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames), game: true },
     { id: "word-games", title: "Word games", colour: "#334155", icon: "🧩", activities: wordGames, game: true, older: true },
+    // Number games: plain like the word games, for P5 to S3; on every pupil's home page, whatever their look
+    { id: "number-games", title: "Number games", colour: "#9D174D", icon: "🎯", activities: numberGames, game: true, older: true, allLooks: true },
     { id: "writing", title: "Writing: sentences and punctuation", colour: "#8B5CF6", icon: "✍️", activities: writing },
     // England's grammar by year: found by teachers in the Library and set as work, not shown on every pupil's home page
     { id: "grammar", title: "Grammar and punctuation by year (England)", colour: "#7C3AED", icon: "🔤", activities: grammarByYear, assignedOnly: true, england: true },
@@ -2058,7 +2218,10 @@ window.PopActivities = (() => {
     "w-hunt-second": ["LIT 2-21a", "LIT 2-13a"], "w-hunt-third": ["LIT 3-21a", "LIT 3-13a"],
     "w-sort-types": ["LIT 2-22a"], "w-sort-meaning": ["LIT 2-13a", "ENG 2-12a"], "w-sort-spelling": ["LIT 3-21a"],
     "w-cross-second": ["LIT 2-21a", "LIT 2-13a"], "w-cross-third": ["LIT 3-21a", "LIT 3-13a"],
-    "w-grid-4": ["LIT 2-21a"], "w-grid-5": ["LIT 3-21a"]
+    "w-grid-4": ["LIT 2-21a"], "w-grid-5": ["LIT 3-21a"],
+    "ng-target-second": ["MNU 2-03a"], "ng-target-third": ["MNU 3-03a"],
+    "ng-pairs-second": ["MNU 2-07a", "MNU 2-07b", "MNU 2-11b"], "ng-pairs-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-08a", "MNU 3-07a"],
+    "ng-line-second": ["MNU 2-02a", "MNU 2-04a", "MTH 2-07c"], "ng-line-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-07a"]
   };
   function eo(organiser, level, id) {
     if (EO_FOR_ID[id]) return EO_FOR_ID[id].slice();
