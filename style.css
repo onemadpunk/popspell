@@ -1341,6 +1341,22 @@ a.me-card:hover { border-color: var(--primary); }
 .passage summary { cursor: pointer; font-weight: 700; }
 .passage p { font-family: var(--reading-font); font-size: 1.25rem; line-height: 1.7; }
 .passage.listen { text-align: center; }
+/* A laptop or wider: the story above its question in a wider panel, with the question, its
+   Hear it button and the answers packed tight, so it all fits the window without scrolling */
+@media (min-width: 900px) and (orientation: landscape) {
+  .panel.with-story { max-width: 1080px; padding-top: 16px; padding-bottom: 18px; }
+  .with-story .bar { margin-bottom: 12px; }
+  .with-story .passage { margin: 0 0 10px; padding: 8px 18px; }
+  .with-story .passage p { margin: 6px 0; }
+  .with-story .q-side { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 16px; }
+  .with-story .q-side > * { flex-basis: 100%; }
+  .with-story .q-side > .q-prompt, .with-story .q-side > .row:has(#hearQ) { flex-basis: auto; margin: 0; }
+  .with-story .q-options { margin-top: 4px; }
+  .with-story .feedback:empty { display: none; }
+  /* A story read alone: wider, so it takes fewer lines */
+  .panel.story-read { max-width: 1080px; padding-top: 18px; padding-bottom: 22px; }
+  .story-read .hint { margin: 2px 0; }
+}
 
 /* Read along: the sentence being read lights up; pupils pick the speed */
 .ra-s { cursor: pointer; border-radius: 6px; transition: background .2s; }
