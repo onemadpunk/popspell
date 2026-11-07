@@ -24,8 +24,8 @@
         "check": "Round 0·060 49 to 3 significant figures. Is a 49·3 mm bolt acceptable at 50 mm ± 0·5 mm?"
       },
       "use": [
-        "n-round-100",
-        "n-estimate"
+        "f-sig-figs",
+        "t-rounding-dp"
       ],
       "home": "Look at the tolerance printed on a measuring jug, a bag of flour or a part's packaging.",
       "vocab": "significant figure, round, tolerance, error, accuracy, upper and lower limit",
@@ -85,7 +85,10 @@
         "practise": "The \"Big and small numbers\" sheet.",
         "check": "Write 0·000 46 and 3 200 000 in scientific notation. Evaluate ∛125. Why does √16 have two answers?"
       },
-      "use": [],
+      "use": [
+        "f-sci-notation",
+        "t-powers"
+      ],
       "home": "Find a very large or very small number in a science article and write it in scientific notation.",
       "vocab": "power, root, square root, cube root, inverse, scientific notation, standard form",
       "understand": "Why is 4·5 × 10⁶ written that way and not as 45 × 10⁵?",
@@ -113,6 +116,7 @@
         "check": "A phone falls from £450 to £378. What is the percentage decrease? Increase £80 by 12·5% using a multiplier."
       },
       "use": [
+        "f-percent-change",
         "n-percent"
       ],
       "home": "Track the price of something you buy often and work out the percentage change over a few months.",
@@ -382,7 +386,8 @@
         "check": "Find the nth term of 7, 11, 15, 19 … Which term is 123? Is 200 in the sequence?"
       },
       "use": [
-        "m-patterns"
+        "f-nth-term",
+        "t-sequences"
       ],
       "home": "Find a growing pattern in real life (fence panels, a staircase of blocks) and write its nth term.",
       "vocab": "sequence, nth term, general formula, linear, common difference",
@@ -444,7 +449,9 @@
         "practise": "The \"Expand and factorise\" sheet.",
         "check": "Expand and simplify 4(2x + 1) − 3(x − 2). Factorise 15a − 20. Find 5(2p − 3) when p = −1."
       },
-      "use": [],
+      "use": [
+        "f-brackets"
+      ],
       "home": "Make a puzzle for someone at home: give them a factorised expression and ask them to expand it.",
       "vocab": "expand, bracket, distributive law, factorise, common factor, simplify",
       "understand": "How can you check that 3(2x + 3) is the right factorisation of 6x + 9?",
@@ -473,7 +480,8 @@
         "check": "Solve 5x + 4 = 2x + 19 and 4(x + 1) = 2(x + 7). Solve 3x − 5 ≤ 16. When is the first phone plan cheaper?"
       },
       "use": [
-        "m-equations"
+        "sec-linear-equations",
+        "f-brackets"
       ],
       "home": "Compare two real price plans (phones, gyms, taxis) and find where they cost the same.",
       "vocab": "equation, inequation, inequality, balance, expand, solve, interval",
@@ -502,7 +510,9 @@
         "practise": "The \"Pythagoras and trigonometry\" sheet.",
         "check": "Find the hypotenuse when the other sides are 9 cm and 12 cm. A ramp rises 1·2 m over 6 m: find its angle with the ground."
       },
-      "use": [],
+      "use": [
+        "f-pythagoras"
+      ],
       "home": "Use a ruler and protractor to check a Pythagoras answer on a real triangle, such as a ladder's position or a slope.",
       "vocab": "hypotenuse, Pythagoras, opposite, adjacent, sine, cosine, tangent, inverse",
       "understand": "How do you decide between Pythagoras and trigonometry?",
@@ -529,7 +539,9 @@
         "practise": "The \"Round and round\" sheet.",
         "check": "Find the circumference and area of a circle of diameter 14 cm. A circular pond has area 50 m². What is its radius?"
       },
-      "use": [],
+      "use": [
+        "f-circles"
+      ],
       "home": "Measure round objects at home and check that circumference ÷ diameter is about 3·14 each time.",
       "vocab": "radius, diameter, circumference, area, pi, π",
       "understand": "Why must you use the radius, not the diameter, in A = πr²?",
@@ -618,6 +630,7 @@
         "check": "Find the mean, median, mode and range of 4, 7, 7, 9, 12, 15. A company says its 'average' pay is £46 200. Why could that mislead?"
       },
       "use": [
+        "f-averages",
         "en-mean"
       ],
       "home": "Collect a week of temperatures or bus journey times and find all four statistics.",

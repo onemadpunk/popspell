@@ -22,7 +22,10 @@
         "practise": "The \"Powers, roots and standard form\" sheet.",
         "check": "Ask for 5⁰, 4⁻², (2 × 10³) × (6 × 10⁴) in standard form, and y⁷ ÷ y² simplified."
       },
-      "use": [],
+      "use": [
+        "f-sci-notation",
+        "t-powers"
+      ],
       "home": "Find very large and very small numbers in science or the news (the distance to the Sun, the width of a hair) and write them in standard form.",
       "vocab": "power, index, indices, root, reciprocal, standard form, estimate",
       "understand": "Why is 2⁰ equal to 1, not 0?",
@@ -74,7 +77,9 @@
         "practise": "The \"How accurate?\" sheet.",
         "check": "A mass is 4.3 kg to 1 decimal place: write its error interval. A rectangle is 8 cm by 5 cm, both to the nearest centimetre: find the upper bound of its area."
       },
-      "use": [],
+      "use": [
+        "f-sig-figs"
+      ],
       "home": "Look at a food label. If the pack says 500 g, what range of masses might it really hold?",
       "vocab": "limit of accuracy, error interval, round, truncate, upper bound, lower bound",
       "understand": "To get the smallest possible answer to a ÷ b, which bounds of a and b do you use? Why?",
@@ -100,7 +105,9 @@
         "practise": "The \"Factorise it\" sheet.",
         "check": "Ask them to factorise x² + 5x + 6 and x² − 16 (and 3x² + 10x + 8, higher), checking each by expanding."
       },
-      "use": [],
+      "use": [
+        "f-brackets"
+      ],
       "home": "Make up a quadratic by expanding two brackets, and challenge someone at home to factorise it.",
       "vocab": "expand, factorise, quadratic, coefficient, difference of two squares, algebraic fraction",
       "understand": "How do you know (x + 3)(x + 4) is right for x² + 7x + 12, and not (x + 2)(x + 6)?",
@@ -234,7 +241,9 @@
         "practise": "The \"Sequence detective\" sheet.",
         "check": "Find the nth term of 7, 11, 15, 19. Is 2, 6, 12, 20, 30 arithmetic, geometric or quadratic? Find its nth term (higher)."
       },
-      "use": [],
+      "use": [
+        "f-nth-term"
+      ],
       "home": "Look for growing patterns in tiles, stacks of cans or bricks, and predict the 10th one.",
       "vocab": "sequence, term, nth term, arithmetic, geometric, common ratio, Fibonacci, quadratic, second difference",
       "understand": "How can you tell whether a sequence is arithmetic, geometric or quadratic?",
@@ -313,7 +322,9 @@
         "practise": "The \"Growing and shrinking\" sheet.",
         "check": "A town of 5000 people grows by 2% a year. Write an expression for its population after n years, and work it out for 3 years."
       },
-      "use": [],
+      "use": [
+        "f-percent-change"
+      ],
       "home": "Compare two savings accounts: which pays more over 5 years, and why?",
       "vocab": "multiplier, compound interest, simple interest, depreciation, growth, decay, iteration",
       "understand": "Why isn't a 10% rise followed by a 10% fall back to where you started?",
@@ -339,7 +350,9 @@
         "practise": "Direct and inverse proportion on PopSpell, then the \"Proportion and units\" sheet.",
         "check": "y is inversely proportional to x, and y = 6 when x = 4. Find y when x = 3. Convert 15 m/s to km/h."
       },
-      "use": ["sec-proportion"],
+      "use": [
+        "sec-proportion"
+      ],
       "home": "Scale a recipe up or down, and talk about what would be in inverse proportion if more people shared the cooking.",
       "vocab": "direct proportion, inverse proportion, constant of proportionality, compound unit, density, pressure, ratio",
       "understand": "If y is inversely proportional to x, what happens to y when x is multiplied by 3? Why?",
@@ -418,7 +431,9 @@
         "practise": "The \"Arcs and sectors\" sheet.",
         "check": "Find the perimeter of a sector with radius 9 cm and angle 40°, exactly and to 1 decimal place."
       },
-      "use": [],
+      "use": [
+        "f-circles"
+      ],
       "home": "Look at a slice of pizza or cake: estimate its angle and work out the length of its crust.",
       "vocab": "radius, diameter, chord, tangent, arc, sector, segment, circumference, π",
       "understand": "Why do we multiply by θ/360 to find an arc length?",
@@ -496,7 +511,9 @@
         "practise": "The \"Right-angled triangles\" sheet.",
         "check": "Without a calculator, find the side opposite a 30° angle when the hypotenuse is 12 cm. The bearing of B from A is 065°: what is the bearing of A from B?"
       },
-      "use": [],
+      "use": [
+        "f-pythagoras"
+      ],
       "home": "Use a compass app to find the bearing of a landmark from home, and estimate how far away it is.",
       "vocab": "hypotenuse, opposite, adjacent, sine, cosine, tangent, Pythagoras' Theorem, exact value, bearing",
       "understand": "How do you decide whether to use Pythagoras' Theorem or trigonometry?",
@@ -733,7 +750,9 @@
         "practise": "Evidence, inference and bias on PopSpell, then the \"Weighing the evidence\" sheet.",
         "check": "Ask for one claim with no evidence, one way evidence is misused, and an inference about the writer backed by a quotation."
       },
-      "use": ["sec-evidence-bias"],
+      "use": [
+        "sec-evidence-bias"
+      ],
       "home": "Find an advert or opinion piece and check one of its claims: what evidence is there?",
       "vocab": "claim, evidence, inference, bias, sample, generalisation, fact, opinion, counter-argument",
       "understand": "The writer gives a statistic. Does that make the argument reliable?",
