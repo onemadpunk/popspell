@@ -1273,15 +1273,15 @@ a.me-card:hover { border-color: var(--primary); }
 .worksheet-preview-actions { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--line); }
 .worksheet-preview-actions h2 { margin: 0 auto 0 0; color: var(--primary); font-size: 1.2rem; }
 .sheet-preview-page { width: min(100% - 32px, 794px); min-height: 900px; margin: 16px auto; padding: 40px; background: #fff; box-shadow: 0 4px 18px #001a4a26; font: 12pt Arial, sans-serif; }
-.sheet-preview-page h1 { font-size: 18pt; margin: 0 0 10px; }
-.sheet-preview-page p { margin: 8px 0 14px; }
-.sheet-preview-page table { width: 100%; border-collapse: collapse; }
-.sheet-preview-page th, .sheet-preview-page td { border: 1px solid #777; padding: 5px 8px; height: 28px; }
-.sheet-preview-page th { text-align: left; background: #eee; }
-.sheet-preview-page .write-line { width: 58%; }
-.sheet-preview-page .check-box { width: 10%; text-align: center; }
-.sheet-preview-page .sound-boxes { display: flex; gap: 4px; }
-.sheet-preview-page .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
+.sheet-preview-page h1, .worksheet-print h1 { font-size: 18pt; margin: 0 0 10px; }
+.sheet-preview-page p, .worksheet-print p { margin: 8px 0 14px; }
+.sheet-preview-page table, .worksheet-print table { width: 100%; border-collapse: collapse; }
+.sheet-preview-page th, .sheet-preview-page td, .worksheet-print th, .worksheet-print td { border: 1px solid #777; padding: 5px 8px; height: 28px; }
+.sheet-preview-page th, .worksheet-print th { text-align: left; background: #eee; }
+.sheet-preview-page .write-line, .worksheet-print .write-line { width: 58%; }
+.sheet-preview-page .check-box, .worksheet-print .check-box { width: 10%; text-align: center; }
+.sheet-preview-page .sound-boxes, .worksheet-print .sound-boxes { display: flex; gap: 4px; }
+.sheet-preview-page .sound-boxes span, .worksheet-print .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
 .sheet-preview-page.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
 .sheet-preview-page .ws-literacy h1, .sheet-preview-page.ws-literacy h1 { font-family: var(--font); }
 .sheet-preview-page .ws-row { display: block; width: 100%; height: auto; margin: 0 0 4px; }
@@ -1313,6 +1313,9 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-key li { margin-bottom: 6px; }
 .sheet-preview-page .ws-key { margin-top: 28px; padding-top: 16px; border-top: 2px dashed #999; }
 .ws-page + .ws-page { break-before: page; }
+/* A page shrunk to fit A4 (fitPages): one unbreakable box, so the printer keeps it on one page */
+.ws-page:has(> .ws-zoom) { text-align: center; }
+.ws-zoom { display: inline-block; vertical-align: top; text-align: left; }
 .sheet-preview-page .ws-page + .ws-page { margin-top: 28px; padding-top: 16px; border-top: 3px dashed #999; }
 .sheet-preview-page .ws-comment { height: 90px; border: 1px solid #777; border-radius: 6px; }
 .sheet-preview-page .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
@@ -1436,15 +1439,8 @@ a.me-card:hover { border-color: var(--primary); }
   .panel { box-shadow: none; border: 0; }
   body.printing-worksheet > :not(.worksheet-print) { display: none !important; }
   body.printing-worksheet .worksheet-print { display: block; color: #111; font: 12pt Arial, sans-serif; }
-  .worksheet-print h1 { font-size: 18pt; margin: 0 0 10px; }
-  .worksheet-print p { margin: 8px 0 14px; }
-  .worksheet-print table { width: 100%; border-collapse: collapse; }
-  .worksheet-print th, .worksheet-print td { border: 1px solid #777; padding: 5px 8px; height: 28px; }
-  .worksheet-print th { text-align: left; background: #eee; }
-  .worksheet-print .write-line { width: 58%; }
-  .worksheet-print .check-box { width: 10%; text-align: center; }
-  .worksheet-print .sound-boxes { display: flex; gap: 4px; }
-  .worksheet-print .sound-boxes span { display: block; flex: 1; min-width: 28px; height: 36px; border: 2px solid #222; }
+  /* The printed sheet's own styles sit with the preview's (.sheet-preview-page), in the same order,
+     so a sheet measured in the preview prints the same height */
 
   /* Handwriting, sentence and letter-formation sheets: in the reading font, on four-line ruling */
   body.printing-worksheet .worksheet-print.ws-literacy { font-family: var(--reading-font); font-size: 14pt; }
@@ -1967,7 +1963,10 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ps-tip { margin: 0 0 4px; padding: 4px 10px; }
 .ps-self { margin: 8px 0 0; }
 .ps-young { padding: 6px 12px; }
-.ps-draw { height: 70px; }
+/* Room to draw a picture: activities are only added while this still fits, and spare paper makes it taller */
+.ps-draw { height: 46mm; }
+/* Younger children write big: room between the lines for a sentence */
+.ps-young .ps-lines { gap: 34px; margin-top: 16px; }
 
 /* Age looks for every printed sheet (stand-alone paper sheets and activity sheets) */
 .ws-age { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -2091,6 +2090,8 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young > .pp-draw { height: auto; min-height: 110px; }
 .ws-age-young .pp-box > b { font-size: 13pt; }
 .ws-age-young:not(:has(.pp-box, .pp-grow, .ws-qs)) { justify-content: space-between; }
+/* A sheet's extra parts moved to a page of their own (fitPages): top to bottom, with fitPages giving them the spare room */
+.ws-age-young.ws-more { min-height: 0; justify-content: flex-start; }
 /* Question sheets: the header and intro stay together at the top, and the questions share out the spare room */
 .ws-age-young > .ws-qs:not(.ws-cols) { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-around; }
 .ws-age-young .pp-track { gap: 4px; }
@@ -2164,11 +2165,11 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .ws-age-young .ws-options i { border-color: #0eb5f2; }
 
 /* Younger question sheets: the cards share the page in a grid, so a short sheet is not left half empty */
-.ws-age-young > .ws-qs.ws-cols { columns: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; grid-auto-rows: minmax(min-content, 46mm); align-content: start; margin-top: 6px; }
+/* (fitPages then gives the cards any paper left at the bottom of the page) */
+.ws-age-young > .ws-qs.ws-cols { columns: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px 22px; grid-auto-rows: minmax(min-content, 34mm); align-content: start; margin-top: 6px; }
 .ws-age-young > .ws-qs.ws-cols .ws-q { display: flex; flex-direction: column; justify-content: center; margin: 0; }
 .ws-age-young > .ws-qs.ws-cols .ws-q > p { font-size: 17pt; }
 .ws-age-young > .ws-qs.ws-cols .ws-answer .ws-blank { height: 14mm; }
-.ws-age-young > .ws-qs.ws-cols:not(:has(.ws-q:nth-child(7))) { grid-auto-rows: minmax(min-content, 66mm); }
 
 /* Lesson timer: for the teacher's own screen only */
 .lesson-timer .timer-setup { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: end; margin: 8px 0 14px; }

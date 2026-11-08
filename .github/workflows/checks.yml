@@ -1,5 +1,6 @@
 # Runs PopSpell's checks on every push and pull request: the unit tests, the content checks
 # (every CfE outcome and England statement taught, every lesson printable, every sheet builds),
+# every worksheet printing on its own A4 page(s),
 # and the Firestore security rules tests on Firebase's local emulator. A red cross on GitHub
 # means something needs fixing before it goes live.
 name: Checks
@@ -31,6 +32,12 @@ jobs:
 
       - name: Content checks
         run: npm run check
+
+      - name: Worksheets fit A4 (prints every sheet to PDF in Chromium)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+          npm run sheet-check
 
       - uses: actions/setup-java@v4
         with:
