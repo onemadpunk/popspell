@@ -22,7 +22,7 @@
       box.innerHTML = p.innerHTML;
       Object.assign(box.style, { position: "absolute", left: "-10000px", top: "0", width: `${W}px`, padding: "0", margin: "0", minHeight: "0", boxShadow: "none" });
       document.body.append(box);
-      const h = box.scrollHeight * parseFloat(p.style.zoom || 1);
+      const h = box.scrollHeight; // a shrunk page carries its zoom inside (.ws-zoom)
       box.remove();
       return Math.round((h / H) * 100);
     });
