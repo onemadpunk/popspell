@@ -1433,7 +1433,7 @@ a.me-card:hover { border-color: var(--primary); }
 /* ---------- Print (results sheet or a child's worksheet) ---------- */
 
 @media print {
-  @page { size: A4; margin: 12mm; }
+  @page { size: A4 portrait; margin: 12mm; }
   body { background: #fff; }
   .topbar, .no-print { display: none !important; }
   .panel { box-shadow: none; border: 0; }
@@ -1459,6 +1459,14 @@ a.me-card:hover { border-color: var(--primary); }
   .ws-blank { display: inline-block; width: 7em; border-bottom: 2px solid #111; }
   .ws-report td, .ws-report th { font-size: 10.5pt; height: auto; }
   .ws-comment { height: 90px; border: 1px solid #777; }
+  /* Each page of a sheet is one A4 page: a box the height of the printed area (A4 less the 12 mm
+     margins, with 1 mm spare) that the printer can't split, so a sheet never runs onto a second page
+     with its instructions on one and the task on the next, and a border round the page is whole on
+     its page. fitPages sizes what's in it to fit. A page that's meant to run over (.ws-flow: letter
+     formation, long reports) keeps headings and instructions with what follows them. */
+  .worksheet-print > .ws-page:not(.ws-flow) { height: 272mm; overflow: hidden; break-inside: avoid; page-break-inside: avoid; }
+  .worksheet-print h2, .worksheet-print h3, .worksheet-print .ws-sub, .worksheet-print .ps-step, .worksheet-print .ps-how,
+  .worksheet-print .ws-q > p:first-child, .worksheet-print .ws-copy > p { break-after: avoid; page-break-after: avoid; }
   /* Print all: each pupil starts a new page */
   .pn-page + .pn-page { break-before: page; }
   .pn h2 { break-after: avoid; }
@@ -1554,6 +1562,11 @@ a.me-card:hover { border-color: var(--primary); }
 .ws-brand-text { flex: 1; min-width: 0; }
 .ws-brand h1, .worksheet-print .ws-brand h1, .sheet-preview-page .ws-brand h1 { margin: 0; font: 700 16pt var(--font); color: #0b2e6b; }
 .ws-brand p, .worksheet-print .ws-brand p, .sheet-preview-page .ws-brand p { margin: 3px 0 0; font: 10.5pt Arial, sans-serif; color: #111; }
+/* Name and Date with their write-on lines, all on the one line under the title */
+.ws-nd { display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; margin-right: 12px; }
+.ws-fill { display: inline-block; height: 1em; border-bottom: 1.2px solid #111; }
+.ws-fill-name { width: 50mm; }
+.ws-fill-date { width: 28mm; }
 .ws-foot, .worksheet-print .ws-foot, .sheet-preview-page .ws-foot { margin: 10px 0 0; padding-top: 4px; border-top: 1px solid #dde6f2; text-align: center; font: 8.5pt Arial, sans-serif; color: #5b6b8c; }
 .ws-answers { padding-left: 1.4em; font-size: 11pt; }
 .ws-answers li { margin-bottom: 6px; break-inside: avoid; }

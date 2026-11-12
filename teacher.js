@@ -2362,6 +2362,9 @@
       }
       // A pupil's page with paper to spare gives it to the places they draw and write
       else if (!part.classList.contains("ws-adult") && h < PAGE_H * 0.93) growSpaces(part, h, measure, className);
+      // A page that fits prints as one A4 page of its own, which the printer can't split (see .ws-page
+      // in style.css). One that still doesn't (letter formation, a long report) runs on over its pages.
+      part.classList.toggle("ws-flow", measure() > PAGE_H * 0.97);
     }
     return root;
   }
@@ -2430,6 +2433,8 @@
     const sheet = document.createElement("section");
     sheet.className = `worksheet-print ${className}`;
     sheet.innerHTML = html;
+    // Every sheet is printed as pages (.ws-page), each its own A4 page
+    if (!sheet.querySelector(":scope > .ws-page, :scope > .pn-page")) sheet.innerHTML = `<div class="ws-page">${html}</div>`;
     document.body.append(sheet);
     document.body.classList.add("printing-worksheet");
     // The logo and Pip have to be loaded before the page is printed
@@ -2444,6 +2449,24 @@
     window.addEventListener("afterprint", clean, { once: true });
     window.print();
   }
+
+  // Printing from the browser itself (Ctrl+P or its menu) while a sheet's preview is open prints the
+  // sheet as its Print button would, page by page, not the screen behind it
+  window.addEventListener("beforeprint", () => {
+    if (document.body.classList.contains("printing-worksheet")) return;
+    const previews = [...document.querySelectorAll("dialog.worksheet-preview[open] .sheet-preview-page")];
+    if (!previews.length) return;
+    const pages = previews.flatMap(p => (p.querySelector(":scope > .ws-page") ? [...p.querySelectorAll(":scope > .ws-page")] : p.children.length ? [p] : []));
+    if (!pages.length) return;
+    const className = [...previews[0].classList].filter(c => c !== "sheet-preview-page").join(" ");
+    const sheet = document.createElement("section");
+    sheet.className = `worksheet-print ${className}`;
+    sheet.innerHTML = pages.map(p => (p.classList.contains("ws-page") ? p.outerHTML : `<div class="ws-page">${p.innerHTML}</div>`)).join("");
+    document.body.append(sheet);
+    document.body.classList.add("printing-worksheet");
+    fitPages(sheet, className);
+    window.addEventListener("afterprint", () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); }, { once: true });
+  });
 
   /* ---------- Recently printed: sheets printed on this device, to print again exactly ---------- */
 
@@ -2561,8 +2584,11 @@
   const brandHead = (title, line = "") => `<header class="ws-brand"><img class="ws-logo" src="assets/brand/wordmark-print.webp" alt="PopSpell">
     <div class="ws-brand-text"><h1>${esc(title)}</h1>${line ? `<p>${line}</p>` : ""}</div>
     <img class="ws-pip" src="assets/brand/pip-mascot-small.webp" alt=""></header>`;
-  const sheetHead = (title, who, extra = "") => brandHead(title,
-    `<b>Name:</b> ${esc(!who || who === "Everyone" ? "____________________" : who)} &nbsp; <b>Date:</b> ____________ ${extra}`);
+  // Name and Date on one line with their write-on lines: each label stays with its line, so the
+  // Date line never drops under the Name and pushes the sheet down
+  const nameDate = (who = "") => `<span class="ws-nd"><b>Name:</b> ${who ? `<span class="ws-nd-who">${esc(who)}</span>` : '<span class="ws-fill ws-fill-name"></span>'}</span>
+    <span class="ws-nd"><b>Date:</b> <span class="ws-fill ws-fill-date"></span></span>`;
+  const sheetHead = (title, who, extra = "") => brandHead(title, `${nameDate(!who || who === "Everyone" ? "" : who)} ${extra}`);
 
   function handwritingHTML(who, list) {
     return `${dotPattern}${sheetHead(`${list.title} · handwriting`, who, englandOnly(list.id) ? EN_TAG : "")}
@@ -2785,9 +2811,8 @@
     const pool = Object.keys(SHEET_ACTIVITIES).filter(k => k !== "build" && SHEET_ACTIVITIES[k].bands.includes(band));
     const order = seededShuffle(pool, seedOf("mix"));
     // Always blank, so every printed copy matches the ones kept in the teacher's folder
-    const name = "____________________";
-    const head = band === "older" ? brandHead(list.title, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`)
-      : brandHead(`${theme[1]} ${theme[2]}: ${list.title}`, `<b>Name:</b> ${name} &nbsp; <b>Date:</b> ____________${englandOnly(list.id) ? EN_TAG : ""}`);
+    const line = `${nameDate()}${englandOnly(list.id) ? EN_TAG : ""}`;
+    const head = brandHead(band === "older" ? list.title : `${theme[1]} ${theme[2]}: ${list.title}`, line);
     const sheet = parts => {
       let n = 0;
       return `${head}<div class="ps-sheet ps-${band} ps-theme-${theme[0]}" style="--ps-accent:${theme[3]}">
