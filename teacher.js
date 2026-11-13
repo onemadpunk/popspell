@@ -2269,6 +2269,11 @@
     dialog.showModal();
   }
 
+  // The sheet fonts are fetched as soon as the teacher area opens. A font is only fetched once some
+  // text uses it, so without this a sheet built before then is measured in a stand-in font: its
+  // activities are chosen to fit one page, then it prints taller in the real font and gets shrunk
+  const sheetFonts = document.fonts ? Promise.all(["16px Nunito", "700 16px Nunito", "16px Andika", "700 16px Andika"]
+    .map(f => document.fonts.load(f).catch(() => null))) : Promise.resolve();
   // A4 with 12 mm margins (see @page in style.css), in CSS pixels
   const MM = 96 / 25.4, PAGE_W = 186 * MM, PAGE_H = 273 * MM;
   const FOOT = `<p class="ws-foot">PopSpell · free literacy and numeracy practice · popspell.com</p>`;
@@ -2361,7 +2366,7 @@
         for (let z = parseFloat(box.style.zoom); measure() > PAGE_H * 0.97 && z > 0.62;) box.style.zoom = String((z = Math.round((z - 0.02) * 100) / 100));
       }
       // A pupil's page with paper to spare gives it to the places they draw and write
-      else if (!part.classList.contains("ws-adult") && h < PAGE_H * 0.93) growSpaces(part, h, measure, className);
+      else if (!part.classList.contains("ws-adult") && h < PAGE_H * 0.965) growSpaces(part, h, measure, className);
       // A page that fits prints as one A4 page of its own, which the printer can't split (see .ws-page
       // in style.css). One that still doesn't (letter formation, a long report) runs on over its pages.
       part.classList.toggle("ws-flow", measure() > PAGE_H * 0.97);
@@ -2387,6 +2392,7 @@
     document.body.append(box);
     const copyDraws = [...box.querySelectorAll(GROW_DRAW)].filter(inUse), copyLines = [...box.querySelectorAll(GROW_LINES)].filter(inUse);
     const drawH = copyDraws.map(el => el.getBoundingClientRect().height);
+    const drawRow = copyDraws.map(el => Math.round(el.getBoundingClientRect().top / 8));
     const pitch = copyLines.map(el => {
       const spans = el.querySelectorAll(":scope > span");
       if (spans.length > 1) return spans[1].getBoundingClientRect().top - spans[0].getBoundingClientRect().top;
@@ -2408,11 +2414,24 @@
       draws.forEach(el => { el.style.height = el.style.minHeight = el.style.flex = ""; });
       lines.forEach(el => el.querySelectorAll(":scope > .ws-grown").forEach(x => x.remove()));
     };
-    let spare = PAGE_H * 0.96 - h;
+    const FULL = PAGE_H * 0.985;
+    let spare = FULL - h;
     for (let tries = 0; tries < 6 && spare > 10; tries++, spare *= 0.75) {
       apply(spare);
-      if (measure() <= PAGE_H * 0.96) return;
+      if (measure() <= FULL) break;
       undo();
+    }
+    // Paper still spare (lines only come whole, and the shares above are cautious) goes to the
+    // drawing boxes lowest on the page, so the box reaches down to the lines and footer below it
+    const lowest = Math.max(...drawRow, -Infinity);
+    const last = draws.filter((_, i) => drawRow[i] === lowest);
+    const heightOf = el => parseFloat(el.style.height) || drawH[draws.indexOf(el)];
+    for (let tries = 0; tries < 4 && last.length; tries++) {
+      const gap = FULL - measure();
+      if (gap < 3) break;
+      const before = last.map(heightOf);
+      last.forEach((el, i) => { el.style.height = `${Math.round(before[i] + gap)}px`; el.style.minHeight = "0"; el.style.flex = "none"; });
+      if (measure() > FULL) { last.forEach((el, i) => { el.style.height = `${before[i]}px`; }); break; }
     }
   }
   // How many questions a pupil's sheet keeps once it's fitted to one page, so its answers match
@@ -2440,10 +2459,8 @@
     // The logo and Pip have to be loaded before the page is printed
     await Promise.all([...sheet.querySelectorAll("img")].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
     // and the sheet fonts, or the page is measured in a stand-in font of another size and runs over
-    if (document.fonts) {
-      await Promise.all(["16px Nunito", "700 16px Nunito", "16px Andika", "700 16px Andika"].map(f => document.fonts.load(f).catch(() => null)));
-      await document.fonts.ready;
-    }
+    await sheetFonts;
+    if (document.fonts) await document.fonts.ready;
     fitPages(sheet, className);
     const clean = () => { sheet.remove(); document.body.classList.remove("printing-worksheet"); };
     window.addEventListener("afterprint", clean, { once: true });
