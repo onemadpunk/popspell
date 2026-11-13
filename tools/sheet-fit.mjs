@@ -9,8 +9,8 @@
    Letter formation is two pages on purpose.
 
    It needs Playwright and its Chromium:  npm install --no-save playwright && npx playwright install chromium
-   Options: --type spelling|paper|activity|dictation|story|lesson (one kind only), --limit N (first N of
-   each kind), --pdf folder (keeps a PDF of anything that doesn't fit). */
+   Options: --type spelling|paper|activity|dictation|story|lesson (one kind only), --id regex (matching entries only), --limit N (first N of
+   each kind), --pdf folder (keeps a PDF of anything that doesn't fit; add --keep-all to keep every PDF). */
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -21,6 +21,9 @@ const arg = name => { const i = process.argv.indexOf(`--${name}`); return i > 0 
 const TYPES = arg("type") ? [arg("type")] : ["spelling", "paper", "activity", "dictation", "story", "lesson"];
 const LIMIT = Number(arg("limit")) || Infinity;
 const KEEP = arg("pdf");
+const ONLY = arg("id") ? new RegExp(arg("id")) : null; // --id regex: only entries whose id matches
+const PAPER = arg("paper"); // --paper Letter: as if the printer were set to other paper than the sheet's A4
+const KEEP_ALL = process.argv.includes("--keep-all"); // with --pdf: keep every PDF, not just the ones that don't fit
 const TWO_PAGES = /^(letter-formation|lesson-early-forming-lowercase-letters)$/;
 
 let chromium;
@@ -91,10 +94,20 @@ async function printPages(id, settings) {
   }, { id, settings });
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 10000 });
   const sheets = await page.evaluate(() => document.querySelectorAll(".worksheet-print > .ws-page").length || 1);
-  const pdf = await page.pdf({ preferCSSPageSize: true, printBackground: true });
+  // Each page that fits is a box the size of the printed A4 area: anything cut off its bottom is counted
+  await page.emulateMedia({ media: "print" });
+  const clipped = await page.evaluate(() => {
+    const sheet = document.querySelector(".worksheet-print");
+    sheet.style.width = "186mm";
+    const n = [...sheet.querySelectorAll(":scope > .ws-page:not(.ws-flow)")].filter(p => p.scrollHeight > p.clientHeight + 1).length;
+    sheet.style.width = "";
+    return n;
+  });
+  await page.emulateMedia({ media: null });
+  const pdf = await page.pdf(PAPER ? { format: PAPER, printBackground: true } : { preferCSSPageSize: true, printBackground: true });
   await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
   const pages = (pdf.toString("latin1").match(/\/Type\s*\/Page[^s]/g) || []).length;
-  return { sheets, pages, pdf };
+  return { sheets, pages, pdf, clipped };
 }
 
 const SPELLING = [["practice, young", { "[data-mode]": "practice", "[data-band]": "young" }],
@@ -104,7 +117,7 @@ const SPELLING = [["practice, young", { "[data-mode]": "practice", "[data-band]"
 const bad = [];
 let checked = 0;
 for (const type of TYPES) {
-  const ids = (await setType(type)).slice(0, LIMIT);
+  const ids = (await setType(type)).filter(id => !ONLY || ONLY.test(id)).slice(0, LIMIT);
   for (const id of ids) {
     const runs = type === "spelling" ? SPELLING.map(([name, s]) => [name, Object.assign({ "[data-words]": false }, s)])
       : [["", { "[data-answers]": true, "[data-words]": true }]];
@@ -114,10 +127,9 @@ for (const type of TYPES) {
       try {
         const r = await printPages(id, settings);
         const expected = r.sheets + (TWO_PAGES.test(id) ? 1 : 0);
-        if (r.pages > expected) {
-          bad.push(`${label}: ${r.pages} A4 pages for ${r.sheets} sheet${r.sheets === 1 ? "" : "s"}`);
-          if (KEEP) { fs.mkdirSync(KEEP, { recursive: true }); fs.writeFileSync(path.join(KEEP, `${label.replace(/[^\w-]+/g, "_")}.pdf`), r.pdf); }
-        }
+        if (r.pages > expected) bad.push(`${label}: ${r.pages} A4 pages for ${r.sheets} sheet${r.sheets === 1 ? "" : "s"}`);
+        else if (r.clipped) bad.push(`${label}: the bottom of ${r.clipped} page${r.clipped === 1 ? " is" : "s are"} cut off`);
+        if (KEEP && (KEEP_ALL || r.pages > expected || r.clipped)) { fs.mkdirSync(KEEP, { recursive: true }); fs.writeFileSync(path.join(KEEP, `${label.replace(/[^\w-]+/g, "_")}.pdf`), r.pdf); }
       } catch (e) { bad.push(`${label}: couldn't print (${String(e.message || e).split("\n")[0]})`); }
     }
     process.stdout.write(".");
