@@ -1041,7 +1041,11 @@ window.PopActivities = (() => {
     oa: ["ow", "o_e"], ow: ["oa", "ou"], o_e: ["oa", "ow"], igh: ["i_e", "ie"], i_e: ["igh", "ie"],
     oo: ["ew", "ue"], ew: ["ue", "oo"], ue: ["ew", "oo"], u_e: ["ew", "oo"], ou: ["ow", "oo"],
     oi: ["oy", "o"], oy: ["oi", "y"], aw: ["au", "or"], au: ["aw", "or"],
-    air: ["are", "ear"], are: ["air", "ear"], ear: ["eer", "air"], eer: ["ear", "ere"]
+    air: ["are", "ear"], are: ["air", "ear"], ear: ["eer", "air"], eer: ["ear", "ere"],
+    // Stage 7, the EA Stage 3 sounds: other ways to write the same sound
+    ie: ["igh", "ee"], ey: ["ay", "ai"], oe: ["oa", "ow"], dge: ["ge", "j"], dg: ["g", "j"], gn: ["n", "kn"],
+    mb: ["m", "mm"], ture: ["cher", "chur"], ti: ["sh", "ch"], ough: ["or", "aw"], oul: ["oo", "u"],
+    se: ["s", "ss"], ve: ["v", "f"], ce: ["s", "se"], ge: ["j", "dge"]
   };
   const fallbackOptions = token => (/[aeiouy]/.test(token) ? ["a", "e"] : ["s", "t"]);
   const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || fallbackOptions(token))]
@@ -2471,7 +2475,11 @@ window.PopActivities = (() => {
 
   // The organiser for a spelling list, by its stage (spelling is Tools for writing)
   const SPELLING_ORGANISER = "Literacy · Writing · Tools for writing (spelling)";
-  function spellingLevel(stageIndex) { return stageIndex <= 1 ? "Early" : stageIndex <= 4 ? "First" : "Second"; }
+  // A stage can name its own level (Stage 7, the EA Stage 3 sounds, is First level); otherwise by its place
+  function spellingLevel(stageIndex) {
+    const own = ((window.SPELLING_LISTS || [])[stageIndex] || {}).level;
+    return own || (stageIndex <= 1 ? "Early" : stageIndex <= 4 ? "First" : "Second");
+  }
 
   return {
     AREAS,
@@ -2492,6 +2500,9 @@ window.PopActivities = (() => {
       if (s >= 0) return { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) };
       // England's statutory words: common exception words and the Year 1 days of the week are First level
       // spelling in CfE terms, the Years 3 to 6 word lists Second level (LIT 1-21a / 2-21a)
+      // Sara's EA Literacy Stage 1 and 2 lists: the level their stage names
+      const ea = (window.EA_LISTS || []).find(st => st.lists.some(l => l.id === id));
+      if (ea) return { level: ea.level, organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, ea.level, id) };
       const extra = (window.ENGLAND_LISTS || []).some(st => st.lists.some(l => l.id === id));
       if (!extra) return null;
       const level = /^(cew|y1)-/.test(id) ? "First" : "Second";

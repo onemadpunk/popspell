@@ -8,7 +8,8 @@
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
   // England's statutory spelling words (words.js), kept apart from the phonics stages
-  const EXTRA_STAGES = window.ENGLAND_LISTS || [];
+  // Lists kept out of the journey: England's statutory words and Sara's EA Literacy Stage 1 and 2 lists
+  const EXTRA_STAGES = (window.ENGLAND_LISTS || []).concat(window.EA_LISTS || []);
   const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
@@ -1469,7 +1470,7 @@
       ${!name ? "" : locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. Looking for today's work…</p>` : `
         <section class="home-section journey-section">
           <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
-          <p class="hint">${isOlder() ? "Six stages, from short vowels to tricky endings. Choose a stage to see its lists." : "Six stops, from short vowels to tricky endings. Tap a stop to see its lists."}</p>
+          <p class="hint">${isOlder() ? "Seven stages, from short vowels to more ways to write sounds. Choose a stage to see its lists." : "Seven stops, from short vowels to more ways to write sounds. Tap a stop to see its lists."}</p>
           <div id="journey"></div>
         </section>
         <section class="home-section">

@@ -3482,11 +3482,12 @@
   // Schools (reading for pleasure every lesson), and each part names its CfE outcomes.
   const LEVEL_ORDER = ["Early", "First", "Second", "Third", "Fourth"];
   const spellingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id));
-  const englandOrder = () => (P().EXTRA_STAGES || []).flatMap(st => st.lists.map(l => l.id));
-  // A pupil moves on within the sequence their list is in, never from one into the other
-  const orderFor = id => (englandOrder().includes(id) ? englandOrder() : spellingOrder());
+  const englandOrder = () => (P().EXTRA_STAGES || []).filter(st => !st.ea).flatMap(st => st.lists.map(l => l.id));
+  const eaOrder = () => (P().EXTRA_STAGES || []).filter(st => st.ea).flatMap(st => st.lists.map(l => l.id));
+  // A pupil moves on within the sequence their list is in, never from one into another
+  const orderFor = id => (englandOrder().includes(id) ? englandOrder() : eaOrder().includes(id) ? eaOrder() : spellingOrder());
   // Stories and games for an England list: the phonics stage its words are closest to
-  const phonicsStageOf = id => (stageOf(id) >= 0 ? stageOf(id) : /^cew-y1/.test(id) ? 2 : /^cew-y2/.test(id) ? 4 : P().STAGES.length - 1);
+  const phonicsStageOf = id => (stageOf(id) >= 0 ? stageOf(id) : /^cew-y1/.test(id) ? 2 : /^cew-y2/.test(id) ? 4 : /^ea1-/.test(id) ? 1 : /^ea2-/.test(id) ? 3 : 5); // EA Stage 1 and 2: blends and digraphs, vowel teams; the word lists: Stage 6
   const mathsOrder = () => {
     const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
     return area ? area.activities.slice().sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(a => a.id) : [];
@@ -4220,7 +4221,7 @@
   // The quest's link: joins the class, signs the device in as the child, and opens the quest
   const assessLink = name => homeLink(name) ? `${homeLink(name)}?then=assess` : "";
   const stageOf = listId => P().STAGES.findIndex(st => st.lists.some(l => l.id === listId));
-  const levelOfStage = i => (i <= 1 ? "Early" : i <= 4 ? "First" : "Second"); // as the lists' CfE labels
+  const levelOfStage = i => ((P().STAGES[i] || {}).level || (i <= 1 ? "Early" : i <= 4 ? "First" : "Second")); // as the lists' CfE labels
 
   // The latest go at each island, from the results the teacher already has
   function questSessions(name, sessions) {

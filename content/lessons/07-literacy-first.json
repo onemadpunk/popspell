@@ -95,6 +95,294 @@
       "lookFor": "Knows one sound can be written in more than one way, and learns which way each word uses."
     },
     {
+      "id": "lesson-first-ea-stage-3-block-1-wr-wa-all",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 1: wr, wa and a before ll",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with wr (write), wa (was) and all.",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Say wrong, was and ball. What sound do you hear at the start, and in the middle?",
+        "teach": "Say: we are learning more ways to write the r sound and the o and aw sounds. Show wr in write: these letters are one way we can write the r sound, and the w is silent. Show w-a in was and swan (two sounds, not a digraph), and a before ll in all and call. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The wr, wa and a before ll lists.",
+        "check": "Read and spell wrist, wash, swan, tall and talk."
+      },
+      "use": [
+        "wr",
+        "wa",
+        "all"
+      ],
+      "home": "Look for wr, wa and all words on signs and in books.",
+      "vocab": "silent letter, code, sound, grapheme",
+      "understand": "Here are words you haven't practised: wrench, want, stall. Which letters write the sound you've learned?",
+      "lookFor": "Points to wr, a or a…ll as the code for the sound, and spells the words with the right letters."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-2-ea-ie-u",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 2: ea (bread), ie (tried) and u (push, unit)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ea (head), ie (pie) and u (push, unit).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read tea, then head. Is the ea the same sound?",
+        "teach": "Show ea in head and bread: ea can be the code for the short e sound. Show ie in pie and tried (the long i sound). Show the letter u as the code for the oo in push and the yoo in unit and music. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ea (as in bread), ie (as in tried), u (as in push) and u (as in unit) lists.",
+        "check": "Read and spell bread, tried, full and music."
+      },
+      "use": [
+        "ea-bread",
+        "ie-tried",
+        "u-push",
+        "u-unit"
+      ],
+      "home": "Collect words with ea and sort them: ee sound (tea) or e sound (bread).",
+      "vocab": "code, grapheme, short vowel, long vowel",
+      "understand": "Here are words you haven't practised: breath, fried, pupil. Which letters write the sound?",
+      "lookFor": "Picks out ea, ie or u as the code for the sound, and knows ea can also write the ee sound (tea)."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-3-tch-se-ve",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 3: tch, se and ve",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with tch (itch), se (nurse) and ve (have).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Why do we write have with an e at the end when we can't hear it?",
+        "teach": "Show tch in itch and kitchen: tch is one way to write the ch sound, straight after a short vowel. Show se at the end of nurse and cheese (the s or z sound), and ve at the end of have and sleeve: English words don't end in v. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The tch, se at the end and ve at the end lists.",
+        "check": "Read and spell catch, house, please, give and sleeve."
+      },
+      "use": [
+        "tch-itch",
+        "se",
+        "ve"
+      ],
+      "home": "Find words that end in ve or se at home.",
+      "vocab": "short vowel, ending, code, grapheme",
+      "understand": "Here are words you haven't practised: fetch, goose, carve. How will you spell the end of each one?",
+      "lookFor": "Uses tch after a short vowel, and writes se or ve at the end instead of s or v."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-4-soft-c-and-g",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 4: soft c (city) and soft g (gem)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with soft c (city) and soft g (gem).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read cat, then city. Why does c sound different?",
+        "teach": "Show c in city, cell and face, and g in gem, cage and magic: when c or g comes before e, i or y, c is usually the code for the s sound and g often the code for the j sound. Sort cat, city, gap and gem. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The Soft c (as in city) and Soft g (as in gem) lists.",
+        "check": "Read and spell circle, place, stage and huge."
+      },
+      "use": [
+        "c-city",
+        "g-gem"
+      ],
+      "home": "Spot soft c and soft g words in the shops: rice, juice, orange.",
+      "vocab": "soft c, soft g, code, pattern",
+      "understand": "Here are words you haven't practised: pencil, giant. How would you say each one, and why?",
+      "lookFor": "Says the soft sound before e, i or y, and knows some words, such as get and girl, break the pattern."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-5-ea-ey-ie",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 5: ea (break), ey (they) and ie (field)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ea (break), ey (they) and ie (field).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read pie, then field. Is the ie the same sound?",
+        "teach": "Show ea in break, great and steak: in a few words ea is the code for the ay sound. Show ey in they and grey (and, in some accents, turkey and valley). Show ie in field and chief, the code for the ee sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ea (as in break), ey (as in they) and ie (as in field) lists.",
+        "check": "Read and spell great, grey, obey, piece and thief."
+      },
+      "use": [
+        "ea-break",
+        "ey",
+        "ie-field"
+      ],
+      "home": "Make a family list of ay-sound words: ai, ay, a–e, ey and ea.",
+      "vocab": "code, grapheme, ay sound, ee sound",
+      "understand": "Here are words you haven't practised: hey, brief. Which letters write the sound?",
+      "lookFor": "Knows ea, ey and ie can each be the code for more than one sound, and checks which one a word uses."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-6-ou-oe",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 6: ou (four, you) and oe (toe)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ou (four, you) and oe (toe).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read out, four and you. Are the ou sounds the same?",
+        "teach": "Show ou in four, pour and course, and in soul and shoulder. Then ou in you, soup and group (the oo sound), and oul in could, would and should. Show oe in toe and goes, the code for the long o sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ou (as in four), oe (as in toe) and ou (as in you) lists.",
+        "check": "Read and spell pour, shoulder, toe, soup and should."
+      },
+      "use": [
+        "ou-four",
+        "oe",
+        "ou-you"
+      ],
+      "home": "Sort ou words you find into out, four and you groups.",
+      "vocab": "code, grapheme, long o, oo sound",
+      "understand": "Here are words you haven't practised: court, tiptoe, coupon. Which sound does the ou or oe write?",
+      "lookFor": "Reads each ou word with the right sound and knows ou has several sounds (out, four, you)."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-7-ch-y-gn",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 7: ch (school), y (gym) and gn (sign)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ch (school), y (gym) and gn (sign).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read chip, then school. Is the ch the same sound?",
+        "teach": "Show ch in school, echo and chorus, the code for the k sound. Show y in gym and myth, the code for the short i sound. Show gn in sign and gnat: one way to write the n sound, with a silent g. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ch (as in school), y (as in gym) and gn (as in sign) lists.",
+        "check": "Read and spell echo, chorus, myth, sign and gnome."
+      },
+      "use": [
+        "ch-school",
+        "y-gym",
+        "gn"
+      ],
+      "home": "Look for ch words that sound like k: school, Christmas, stomach.",
+      "vocab": "silent letter, code, grapheme",
+      "understand": "Here are words you haven't practised: anchor, crystal, gnash. Which sound do ch, y and gn write?",
+      "lookFor": "Reads ch as k, y as short i and gn as n in these words, and spells them with the right letters."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-8-ture-dge-o",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 8: ture (picture), dge (edge) and o (some)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ture (picture), dge (edge) and o (some).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Say edge and page. Why does edge need a d?",
+        "teach": "Show ture at the end of picture and nature, said like 'cher', and the t in century. Show dge in edge and bridge: one way to write the j sound straight after a short vowel. Show o as the code for the short u sound in son, come and mother. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ture, dge and o (as in some) lists.",
+        "check": "Read and spell nature, bridge, judge, month and love."
+      },
+      "use": [
+        "ture",
+        "dge",
+        "o-some"
+      ],
+      "home": "Find ture and dge words in a reading book.",
+      "vocab": "ending, code, short vowel, grapheme",
+      "understand": "Here are words you haven't practised: future, badge, oven. How will you spell each one?",
+      "lookFor": "Uses dge after a short vowel and ture at the end, and remembers o for the u sound in common words."
+    },
+    {
+      "id": "lesson-first-ea-stage-3-block-9-ough-ch-ti",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 3 Block 9: ough (thought), ch (chef) and ti (nation)",
+      "intention": "We are learning more ways to write sounds we already know.",
+      "criteria": [
+        "I can read and spell words with ough (thought), ch (chef) and ti (nation).",
+        "I can say which letters are the code for the sound in a word."
+      ],
+      "steps": {
+        "start": "Read chip, school and chef. Is the ch the same in each?",
+        "teach": "Show ough in thought, bought and fought, and in through and dough, where it writes different sounds. Show ch in chef and machine, the code for the sh sound in words from French. Show ti in station and action, the code for the sh sound before on. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ough, ch (as in chef) and ti (as in nation) lists.",
+        "check": "Read and spell bought, through, chef, station and fraction."
+      },
+      "use": [
+        "ough",
+        "ch-chef",
+        "ti"
+      ],
+      "home": "Collect tion words at home: station, action, potion.",
+      "vocab": "code, grapheme, word ending",
+      "understand": "Here are words you haven't practised: brought, motion. How would you say and spell them?",
+      "lookFor": "Spells tion endings with ti, knows ch can be the code for sh, and learns each ough word."
+    },
+    {
       "id": "lesson-first-common-words-and-spelling-strategies",
       "level": "First",
       "subject": "Literacy",
