@@ -224,7 +224,7 @@ pip install pocket-tts lameenc
 python tools/make_audio.py
 ```
 
-**Activities are read out by Eponine too.** Every question, answer choice and explanation is recorded: lines without numbers whole, and lines with numbers joined from recorded pieces and number words (583 is *five · hundred · and · eighty · three*), following the rules in [`speech-text.js`](speech-text.js). `tools/activity_lines.mjs` lists every piece the activities can say into `tools/lines.json`, and `make_audio.py` records them; the action does both whenever `activities.js` changes. To do it by hand:
+**Activities are read out by Eponine too.** Every question, answer choice and explanation is recorded: lines without numbers whole, and lines with numbers joined from recorded pieces and number words (583 is *five · hundred · and · eighty · three*), following the rules in [`speech-text.js`](speech-text.js). Big numbers written with spaces (*4 764 092*) are read as one number, and Roman numerals letter by letter from the letter recordings. `tools/activity_lines.mjs` lists every piece the site can say into `tools/lines.json` (it makes each activity until no new lines turn up, and also covers the Sound Quest story questions, words tapped in a story and the word games' words; [`tools/spoken.mjs`](tools/spoken.mjs) works out what's said), and `make_audio.py` records them; the action does both whenever the content changes. To do it by hand:
 
 ```
 node tools/activity_lines.mjs
@@ -232,6 +232,8 @@ python tools/make_audio.py
 ```
 
 The device's own voice is only used for what can't be recorded in advance: a child's name, and words in **Make a list** links that aren't in any list.
+
+**Nothing missing:** `npm run audio-check` lists anything the site would have to say in the device voice (a line with an unrecorded piece, a word or sentence without its recording, a missing or empty file, or a recording made from older wording). The action runs it after recording and shows a red cross if anything is still missing.
 
 **Checking the recordings:** open **popspell.com/listen.html** (also linked from Settings). Play each word, sentence and letter, mark any that sound wrong with a note, then copy the list. Those words get fixed in `tools/make_audio.py`: either a new take (`--only crash`), or a different way of writing it for the voice in `WORD_FIXES`. Takes approved by ear go in `APPROVED`, so they're never replaced.
 
