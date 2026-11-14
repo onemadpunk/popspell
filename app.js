@@ -1459,7 +1459,7 @@
       ${!name ? "" : locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. Looking for today's work…</p>` : `
         <section class="home-section journey-section">
           <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
-          <p class="hint">${isOlder() ? "Six stages, from short vowels to tricky endings. Choose a stage to see its lists." : "Six stops, from short vowels to tricky endings. Tap a stop to see its lists."}</p>
+          <p class="hint">${isOlder() ? "Seven stages, from short vowels to more ways to write sounds. Choose a stage to see its lists." : "Seven stops, from short vowels to more ways to write sounds. Tap a stop to see its lists."}</p>
           <div id="journey"></div>
         </section>
         <section class="home-section">

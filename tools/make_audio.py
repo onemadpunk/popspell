@@ -27,6 +27,10 @@ WORD_TEXT = "{Word}."  # how single words are given to the voice
 
 # Words that sound better said another way: a different spelling or punctuation for the voice
 WORD_FIXES = {
+    # Words spelled the same as another word: say the one the list teaches (its sentence shows which)
+    "read": "Red.",       # ea as in bread: "I read that book last week."
+    "live": "Liv.",       # ve as in have: "We live in a flat."
+    "wound": "Woond.",    # ou as in you: "The nurse cleaned the wound."
 }
 
 # Names the voice says wrongly, written the way they sound (Isla is "EYE-la"). The words on screen
