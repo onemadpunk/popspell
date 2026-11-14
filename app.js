@@ -296,7 +296,13 @@
     for (const step of steps) {
       if (token !== playToken) return null;
       if (typeof step === "number") { await new Promise(r => setTimeout(r, step)); continue; }
-      const ok = await playClip(step, token, speed);
+      let ok = await playClip(step, token, speed);
+      // A slow school network can drop one download: try the recording again before Pip
+      // switches to the device voice, which pupils hear as a different person
+      if (ok === false && token === playToken) {
+        await new Promise(r => setTimeout(r, 400));
+        if (token === playToken) ok = await playClip(step, token, speed);
+      }
       if (ok !== true) return token === playToken ? ok : null;
     }
     return token === playToken ? true : null;
@@ -321,6 +327,10 @@
         const clip = recLines.has(part.key) ? `lines/${part.key}` : RECORDED.aliases[part.key];
         if (!clip) return null;
         steps.push(`audio/${clip}.mp3`);
+      } else if (part.letters) {
+        // A Roman numeral, letter by letter (XLII: X · L · I · I)
+        if (!RECORDED.letters) return null;
+        steps.push(...letterSteps(part.letters));
       } else {
         for (const [i, n] of part.number.entries()) {
           if (!recNumbers.has(n)) return null;

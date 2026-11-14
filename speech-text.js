@@ -18,7 +18,10 @@
     .replace(/\bkm\b/g, "kilometres").replace(/\bml\b/g, "millilitres").replace(/(\d)p\b/g, "$1 pence").replace(/(\d)\s?%/g, "$1 percent")
     .replace(/°C/g, " degrees").replace(/(\d)\s?cm\b/g, "$1 centimetres").replace(/(\d)\s?mm\b/g, "$1 millimetres")
     .replace(/(\d)\s?km\b/g, "$1 kilometres").replace(/(\d)\s?kg\b/g, "$1 kilograms").replace(/(\d)\s?ml\b/g, "$1 millilitres")
-    .replace(/(\d)\s?m\b/g, "$1 metres").replace(/(\d)\s?g\b/g, "$1 grams").replace(/(\d)\s?l\b/g, "$1 litres"));
+    .replace(/(\d)\s?m\b/g, "$1 metres").replace(/(\d)\s?g\b/g, "$1 grams").replace(/(\d)\s?l\b/g, "$1 litres")
+    // Powers after a number: 5² is "5 squared", 10⁴ is "10 to the power 4", 10⁻³ is "10 to the power minus 3"
+    .replace(/(\d)\s?([⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (m, d, p) => `${d} ${p === "²" ? "squared" : p === "³" ? "cubed"
+      : `to the power ${p[0] === "⁻" ? "minus " : ""}${[...p.replace("⁻", "")].map(c => "⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(c)).join("")}`}`));
 
   // Names the voice says wrongly, written the way they sound. The words on screen don't change.
   // Keep in step with SAY_AS in tools/make_audio.py
@@ -42,14 +45,22 @@
     return h.toString(16).padStart(8, "0");
   };
 
-  // A number as recorded number words: 4755 → 4 thousand 7 hundred and 50 5; 0.25 → 0 point 2 5
+  // A number as recorded number words: 4755 → 4 thousand 7 hundred and 50 5; 0.25 → 0 point 2 5;
+  // 2 500 000 (written with spaces, as the site writes big numbers) → 2 million 5 hundred thousand
   function numberParts(str) {
+    str = str.replace(/ /g, "");
     if (str.includes(".")) {
       const [whole, decimals] = str.split(".");
-      return numberParts(whole).concat("point", decimals.split(""));
+      const first = numberParts(whole);
+      return first && first.concat("point", decimals.split(""));
     }
     let n = Number(str);
-    if (!Number.isInteger(n) || n > 999999) return null;
+    if (!Number.isInteger(n) || n > 999999999) return null;
+    if (n >= 1000000) {
+      const rest = n % 1000000;
+      const millions = numberParts(String(Math.floor(n / 1000000))).concat("million");
+      return rest ? millions.concat(rest < 100 ? ["and"] : [], numberParts(String(rest))) : millions;
+    }
     const upTo999 = m => {
       const p = [];
       if (m >= 100) { p.push(String(Math.floor(m / 100)), "hundred"); m %= 100; if (m) p.push("and"); }
@@ -70,9 +81,10 @@
     Object.fromEntries(["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
       "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"].map((w, i) => [String(i), w])),
     Object.fromEntries(["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"].map((w, i) => [String((i + 2) * 10), w])),
-    { hundred: "hundred", thousand: "thousand", and: "and", point: "point" });
+    { hundred: "hundred", thousand: "thousand", million: "million", and: "and", point: "point" });
 
-  // The pieces of a line, in order: { text, key } for words, { number: [parts] } for numbers.
+  // The pieces of a line, in order: { text, key } for words, { number: [parts] } for numbers,
+  // { letters } for a Roman numeral.
   // Each sentence is its own piece (so an explanation is recorded once, not after every answer),
   // and so is "The answer is". Pieces that are only punctuation aren't said.
   function pieces(line) {
@@ -86,16 +98,20 @@
     }
     return out;
   }
+  // A number, with its thousands spaced as the site writes them (9 168, 4 764 092), or a Roman
+  // numeral of two or more letters (XLII), which is said letter by letter from the letter recordings
+  const NUMBER_OR_ROMAN = /\d{1,3}(?: \d{3})+(?:\.\d+)?(?!\d)|\d+(?:\.\d+)?|\b(?=[MDCLXVI]{2,}\b)M{0,3}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})\b/g;
   function numberedPieces(text) {
     const out = [];
     let last = 0;
-    for (const m of text.matchAll(/\d+(?:\.\d+)?/g)) {
+    for (const m of text.matchAll(NUMBER_OR_ROMAN)) {
       const before = text.slice(last, m.index).trim();
       if (/[a-z]/i.test(before)) out.push({ text: before, key: keyOf(said(before)) });
+      last = m.index + m[0].length;
+      if (/^[A-Z]/.test(m[0])) { out.push({ letters: m[0].toLowerCase() }); continue; }
       const parts = numberParts(m[0]);
       if (!parts) return null; // too big to build: the device voice says it
       out.push({ number: parts });
-      last = m.index + m[0].length;
     }
     const rest = text.slice(last).trim();
     if (/[a-z]/i.test(rest)) out.push({ text: rest, key: keyOf(said(rest)) });
