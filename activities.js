@@ -2498,6 +2498,9 @@ window.PopActivities = (() => {
       if (s >= 0) return { level: spellingLevel(s), organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, spellingLevel(s), id) };
       // England's statutory words: common exception words and the Year 1 days of the week are First level
       // spelling in CfE terms, the Years 3 to 6 word lists Second level (LIT 1-21a / 2-21a)
+      // Sara's EA Literacy Stage 1 and 2 lists: the level their stage names
+      const ea = (window.EA_LISTS || []).find(st => st.lists.some(l => l.id === id));
+      if (ea) return { level: ea.level, organiser: SPELLING_ORGANISER, area: "spelling", eo: eo(SPELLING_ORGANISER, ea.level, id) };
       const extra = (window.ENGLAND_LISTS || []).some(st => st.lists.some(l => l.id === id));
       if (!extra) return null;
       const level = /^(cew|y1)-/.test(id) ? "First" : "Second";

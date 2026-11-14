@@ -8,7 +8,8 @@
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
   // England's statutory spelling words (words.js), kept apart from the phonics stages
-  const EXTRA_STAGES = window.ENGLAND_LISTS || [];
+  // Lists kept out of the journey: England's statutory words and Sara's EA Literacy Stage 1 and 2 lists
+  const EXTRA_STAGES = (window.ENGLAND_LISTS || []).concat(window.EA_LISTS || []);
   const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);

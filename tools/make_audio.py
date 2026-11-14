@@ -31,6 +31,8 @@ WORD_FIXES = {
     "read": "Red.",       # ea as in bread: "I read that book last week."
     "live": "Liv.",       # ve as in have: "We live in a flat."
     "wound": "Woond.",    # ou as in you: "The nurse cleaned the wound."
+    "row": "Roe.",        # ow as in snow: "We row the boat."
+    "bow": "Beau.",       # ow as in snow: "She tied a bow in her hair."
 }
 
 # Names the voice says wrongly, written the way they sound (Isla is "EYE-la"). The words on screen
