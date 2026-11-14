@@ -123,8 +123,8 @@ window.STORIES = [
       { q: "Why did Ken say he took the phone?", a: "To keep it safe", others: ["To play a game", "He did not take it"], skill: "inference", why: "Ken said: I was keeping it safe." }
     ]
   },
+  // Stage 7: the EA Stage 3 sounds (soft c and g, dge, tch, ti, ie, ea, ey, ough and more)
   {
-    // Stage 7: the EA Stage 3 sounds (soft c and g, dge, tch, ti, ie, ea, ey, ough and more)
     id: "d-trip", title: "The class trip", stage: 7, tricky: [],
     text: "The class went on a trip to the city. They walked over a bridge to the station and got on a train. Kai sat by the window and watched the fields go by. \"Look, a palace!\" he cried. At the palace, a lady showed them a huge kitchen and a great hall. Ella tried on a helmet, but it was too heavy for her head. For lunch they had bread, cheese and a piece of fudge. On the way home, the train went through a tunnel, and they all felt sleepy.",
     questions: [
