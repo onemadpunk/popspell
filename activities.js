@@ -1386,7 +1386,8 @@ window.PopActivities = (() => {
         const k = rand(3);
         if (k === 0) { const n = rand(99) + 1; return typed(`What number is ${roman(n)}?`, n, { label: `read ${n}`, skill: "reading Roman numerals",
           explain: `${roman(n)}: I = 1, V = 5, X = 10, L = 50, C = 100. A smaller numeral before a bigger one is taken away. So ${roman(n)} = ${n}.` }); }
-        if (k === 1) { const n = rand(900) + 100; return choice(`Which is ${n} in Roman numerals?`, roman(n), three(roman(n), [roman(n + 10), roman(n - 9 > 0 ? n - 9 : n + 1), roman(n + 100 > 999 ? n - 100 : n + 100)]),
+        if (k === 1) { const n0 = rand(900) + 100, n = n0 === 100 || n0 === 500 ? n0 + 1 : n0; // C and D on their own would be said as words, not letters
+          return choice(`Which is ${n} in Roman numerals?`, roman(n), three(roman(n), [roman(n + 10), roman(n - 9 > 0 ? n - 9 : n + 1), roman(n + 100 > 999 ? n - 100 : n + 100)]),
           { label: `write ${n}`, skill: "writing Roman numerals", explain: `${n} = ${roman(n)}. D = 500, M = 1000.` }); }
         const y = rand(80) + 1950; return typed(`A building has the year ${roman(y)} carved on it. What year is that?`, y, { label: `year ${y}`, skill: "years in Roman numerals",
           explain: `M = 1000, CM = 900, then the rest: ${roman(y)} = ${y}.` });
