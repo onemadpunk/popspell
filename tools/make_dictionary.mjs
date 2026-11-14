@@ -12,7 +12,7 @@ if (!source) { console.error("Usage: node tools/make_dictionary.mjs path/to/enab
 const root = new URL("../", import.meta.url);
 const page = {}; page.window = page;
 runInNewContext(readFileSync(new URL("words.js", root), "utf8"), page);
-const own = (page.SPELLING_LISTS || []).concat(page.ENGLAND_LISTS || [], page.EA_LISTS || [])
+const own = (page.SPELLING_LISTS || []).concat(page.ENGLAND_LISTS || [], page.MORE_LISTS || [])
   .flatMap(st => st.lists.flatMap(l => l.words.concat(l.checks || [])))
   .map(w => String(w).replace(/-$/, "")).filter(w => /^[a-z]+$/.test(w));
 

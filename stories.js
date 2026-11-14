@@ -5,7 +5,7 @@
   which sounds every story needs, and shows each pupil the stories that only use sounds they
   have already practised ("My stories"). So a new story is matched to pupils automatically.
 
-   • stage: the spelling stage it is written for (1–7, as in words.js; Stage 7 is the EA Stage 3 sounds).
+   • stage: the EA Literacy stage it is written for (1, 2 or 3, as in words.js).
    • tricky: words in the story that can't be sounded out, beyond the early tricky words
      every pupil learns (the, a, I, to, no, go, so, into, he, she, we, me, be, was, my, you, they,
      said, of). Pupils need to have practised these before the story counts as ready.
@@ -34,7 +34,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-ship", title: "Josh and the ship", stage: 2, tricky: [],
+    id: "d-ship", title: "Josh and the ship", stage: 1, tricky: [],
     text: "Josh has a ship. It is red and black, and it has a big mast. Josh sets the ship in the bath. Splash! The ship bobs on the top. Then Josh gets a duck and a fish. The duck tips up and sinks. The ship and the fish bob on. Josh grins. \"This is the best bath,\" he said.",
     questions: [
       { q: "What did Josh set in the bath first?", a: "His ship", others: ["His dog", "His bike"], skill: "finding information", why: "It says: Josh sets the ship in the bath." },
@@ -43,7 +43,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-frog", title: "Fred the frog", stage: 2, tricky: [],
+    id: "d-frog", title: "Fred the frog", stage: 1, tricky: [],
     text: "Fred the frog sat on a rock in the pond. He had not had his lunch. A big moth went past. Fred did a long jump and got the moth! Then a fish swam up to the rock. Fred got such a shock that he fell in with a splash. He swam back to his rock and had a rest.",
     questions: [
       { q: "Where did Fred sit?", a: "On a rock", others: ["On a log", "On a bench"], skill: "finding information", why: "It says: Fred the frog sat on a rock in the pond." },
@@ -52,7 +52,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-gull", title: "Mike, Duke and the gull", stage: 3, tricky: [],
+    id: "d-gull", title: "Mike, Duke and the gull", stage: 2, tricky: [],
     text: "Mike rode his bike to the lake. His dog Duke sat in the basket on the back. At the lake, Mike and Duke ate a bit of cake. Then a big gull came and stole the cake! Duke did not like that. \"Yap! Yap!\" he went. The gull went home with the cake. Mike had to smile.",
     questions: [
       { q: "Where did Duke sit on the bike?", a: "In the basket", others: ["On the seat", "On Mike's lap"], skill: "finding information", why: "It says: Duke sat in the basket on the back." },
@@ -61,7 +61,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-flute", title: "Jane's flute", stage: 3, tricky: [],
+    id: "d-flute", title: "Jane's flute", stage: 2, tricky: [],
     text: "Jane has a flute. She likes to make up a tune. She can make a tune that is cute, and a tune that is rude! Jane's cat, Pete, hates the rude tune. When Jane makes the rude tune, Pete hides in a box. When she makes the cute tune, Pete pokes his nose from the box and sits next to Jane. Then he has a nap.",
     questions: [
       { q: "What does Jane have?", a: "A flute", others: ["A drum", "A bike"], skill: "finding information", why: "It says: Jane has a flute." },
@@ -70,7 +70,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-boat", title: "Kay and the seal", stage: 4, tricky: [],
+    id: "d-boat", title: "Kay and the seal", stage: 2, tricky: [],
     text: "Kay and Grandad sail out to sea in Grandad's boat. The sea is flat and the sun is out. They take a flask of tea and lots of toast. Kay sees a seal pop up next to the boat. It looks at Kay, and Kay looks at it. Then the seal dives deep. Grandad points to a black cloud. \"Rain is on the way!\" he said. They float back to the beach just in time.",
     questions: [
       { q: "Who goes out in the boat with Kay?", a: "Grandad", others: ["Mum", "Her sister"], skill: "finding information", why: "It says: Kay and Grandad sail out to sea." },
@@ -79,7 +79,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-mouse", title: "The mouse and the cheese", stage: 4, tricky: [],
+    id: "d-mouse", title: "The mouse and the cheese", stage: 2, tricky: [],
     text: "A mouse hid in a crack next to the sink. When the house is still at night, the mouse creeps out to get food. It sees a bit of cheese on the ground. The mouse is about to eat it when it spots our cat, Coal. Coal leaps up, but the mouse zooms back to its crack with the cheese. Coal sits by the crack till it is light, but the mouse stays in and eats its cheese.",
     questions: [
       { q: "Where does the mouse hide?", a: "In a crack next to the sink", others: ["In a box", "Under the bed"], skill: "finding information", why: "It says: A mouse hid in a crack next to the sink." },
@@ -88,7 +88,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-star", title: "The first star", stage: 5, tricky: [],
+    id: "d-star", title: "The first star", stage: 2, tricky: [],
     text: "Carl and Bea sat in the garden after dark. They looked up for the first star. Bea saw it first, next to the fir tree in the corner. Then lots of stars came out. Carl saw stars in the shape of a cart. Bea saw stars in the shape of a bird. Then the wind got sharp and they started to shiver. So they went in for a hot drink.",
     questions: [
       { q: "Who saw the first star?", a: "Bea", others: ["Carl", "Mum"], skill: "finding information", why: "It says: Bea saw it first." },
@@ -97,7 +97,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-fair", title: "The fair", stage: 5, tricky: [],
+    id: "d-fair", title: "The fair", stage: 2, tricky: [],
     text: "The fair is in the park next to the church. Mark is keen to go on the big wheel. Kirsten is scared of the big wheel, so she has a turn on the horses. Then they share a bag of popcorn. From the top of the wheel, Mark can see the church, the park and his own street. He waves to Kirsten, and she waves back from her horse.",
     questions: [
       { q: "Where is the fair?", a: "In the park", others: ["On the beach", "On a farm"], skill: "finding information", why: "It says: The fair is in the park next to the church." },
@@ -106,7 +106,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-puddle", title: "The huge puddle", stage: 6, tricky: [],
+    id: "d-puddle", title: "The huge puddle", stage: 3, tricky: [],
     text: "It rained and rained. When it stopped, Dan and Molly got boots and raincoats on. Next to the gate was a huge puddle. Dan jumped in, and muddy splashes went shooting up the fence. Molly giggled. Then she jumped in too, and the splashes went up higher. Mum came out with a towel and a cross face. Then she smiled, and she jumped in as well!",
     questions: [
       { q: "What did Dan and Molly have on?", a: "Boots and raincoats", others: ["Hats and scarves", "Shorts and sandals"], skill: "finding information", why: "It says: Dan and Molly got boots and raincoats on." },
@@ -115,7 +115,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-phone", title: "The missing phone", stage: 6, tricky: [],
+    id: "d-phone", title: "The missing phone", stage: 3, tricky: [],
     text: "Grace was frantic. Her phone was missing! She looked under the pillows and in the kitchen sink. Her twin, Ken, was giggling on the stairs. Grace knelt next to him and looked at his knapsack. She unzipped it. Inside, wrapped in a sock, was the phone! \"I was keeping it safe,\" said Ken, with a cheeky grin.",
     questions: [
       { q: "What was missing?", a: "Grace's phone", others: ["Ken's knapsack", "A sock"], skill: "finding information", why: "It says: Her phone was missing!" },
@@ -123,9 +123,9 @@ window.STORIES = [
       { q: "Why did Ken say he took the phone?", a: "To keep it safe", others: ["To play a game", "He did not take it"], skill: "inference", why: "Ken said: I was keeping it safe." }
     ]
   },
-  // Stage 7: the EA Stage 3 sounds (soft c and g, dge, tch, ti, ie, ea, ey, ough and more)
+  // The EA Stage 3 sounds (soft c and g, dge, tch, ti, ie, ea, ey, ough and more)
   {
-    id: "d-trip", title: "The class trip", stage: 7, tricky: [],
+    id: "d-trip", title: "The class trip", stage: 3, tricky: [],
     text: "The class went on a trip to the city. They walked over a bridge to the station and got on a train. Kai sat by the window and watched the fields go by. \"Look, a palace!\" he cried. At the palace, a lady showed them a huge kitchen and a great hall. Ella tried on a helmet, but it was too heavy for her head. For lunch they had bread, cheese and a piece of fudge. On the way home, the train went through a tunnel, and they all felt sleepy.",
     questions: [
       { q: "How did the class get to the city?", a: "By train", others: ["By bus", "By boat"], skill: "finding information", why: "It says: They walked over a bridge to the station and got on a train." },
@@ -134,7 +134,7 @@ window.STORIES = [
     ]
   },
   {
-    id: "d-potion", title: "Gwen's potion", stage: 7, tricky: [],
+    id: "d-potion", title: "Gwen's potion", stage: 3, tricky: [],
     text: "Gwen the witch had a big pot in her kitchen. \"I will make a magic potion,\" she said. She put in four frog legs, some soup and a pinch of ice. Then she added the wing of a wren and a lump of dough. The potion began to bubble and fizz, and it turned grey. Gwen tried a drop. Her nose went bright blue! \"Oh no,\" she said. \"I ought to write my potions down!\" Her cat could not stop giggling.",
     questions: [
       { q: "What did Gwen want to make?", a: "A magic potion", others: ["A cake", "Some soup"], skill: "finding information", why: "Gwen said: I will make a magic potion." },

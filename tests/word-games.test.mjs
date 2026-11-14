@@ -9,7 +9,7 @@ page.window = page;
 runInNewContext(["words.js", "word-clues.js", "activities.js"].map(read).join("\n"), page);
 const A = page.PopActivities;
 const dictionary = new Set(read("assets/words/dictionary.txt").split("\n").filter(Boolean));
-const listWords = new Set(page.SPELLING_LISTS.concat(page.ENGLAND_LISTS).flatMap(st => st.lists.flatMap(l => l.words.map(w => w.replace(/-$/, "")))));
+const listWords = new Set(page.SPELLING_LISTS.concat(page.ENGLAND_LISTS, page.MORE_LISTS || []).flatMap(st => st.lists.flatMap(l => l.words.map(w => w.replace(/-$/, "")))));
 const runs = (id, n = 40) => Array.from({ length: n }, () => A.get(id).make());
 
 test("every word game is in the plain word-games area with CfE outcomes", () => {

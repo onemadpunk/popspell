@@ -39,7 +39,7 @@ if (unknown.length) fail("CfE", `codes that aren't official outcomes: ${unknown.
 
 // 2. Lessons
 const activityIds = new Set(A.AREAS.flatMap(a => a.activities.map(x => x.id)));
-const listIds = new Set([...window.SPELLING_LISTS, ...(window.ENGLAND_LISTS || []), ...(window.EA_LISTS || [])].flatMap(s => s.lists.map(l => l.id)));
+const listIds = new Set([...window.SPELLING_LISTS, ...(window.ENGLAND_LISTS || []), ...(window.MORE_LISTS || [])].flatMap(s => s.lists.map(l => l.id)));
 // Sheets made in teacher.js itself (letter formation and handwriting)
 const builtIn = id => /^(letter-formation|letter-family-.+|handwriting-spacing|handwriting-joins)$/.test(id);
 const exists = id => activityIds.has(id.replace(/^dictate:/, "")) || listIds.has(id.replace(/^dictate:/, "")) || Boolean(P.get(id)) || builtIn(id);

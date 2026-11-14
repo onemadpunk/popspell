@@ -8,8 +8,8 @@
   const STAGES = window.SPELLING_LISTS || [];
   const SENTENCES = window.SENTENCES || {};
   // England's statutory spelling words (words.js), kept apart from the phonics stages
-  // Lists kept out of the journey: England's statutory words and Sara's EA Literacy Stage 1 and 2 lists
-  const EXTRA_STAGES = (window.ENGLAND_LISTS || []).concat(window.EA_LISTS || []);
+  // Lists kept out of the journey: England's statutory words and PopSpell's own first lists (the journey is the EA stages)
+  const EXTRA_STAGES = (window.ENGLAND_LISTS || []).concat(window.MORE_LISTS || []);
   const FOREST = window.PopForest;
   const app = document.getElementById("app");
   const $ = (sel, el = document) => el.querySelector(sel);
@@ -1370,6 +1370,7 @@
   });
 
   let homeStage = null; // the journey stop being looked at (this visit)
+  let homeBlock = null; // the EA block being looked at in that stop (0: more practice)
   let homeArea = "games"; // the "More to explore" tab
   const stageDone = (stage, b) => stage.lists.filter(l => b.lists[l.id]).length;
   // The child's current stop: the first stage they haven't finished every list of
@@ -1406,6 +1407,12 @@
     if (!box) return;
     const here = currentStage(b);
     if (homeStage === null) homeStage = here;
+    // An EA stage is shown a block at a time, as on Sara's sheets: the first block with a list still to do
+    const open = STAGES[homeStage];
+    const blocks = [...new Set(open.lists.map(l => l.block || 0))];
+    const blockDone = k => open.lists.filter(l => (l.block || 0) === k).every(l => b.lists[l.id]);
+    if (homeBlock === null || !blocks.includes(homeBlock)) homeBlock = blocks.find(k => !blockDone(k)) ?? blocks[0];
+    const shown = blocks.length > 1 ? open.lists.filter(l => (l.block || 0) === homeBlock) : open.lists;
     box.innerHTML = `
       <ol class="journey-map">${STAGES.map((st, i) => {
         const done = stageDone(st, b);
@@ -1413,20 +1420,23 @@
           ${i === here ? `<img class="stop-pip hop" src="assets/brand/pip-hop-small.webp" alt="" width="44" height="44">` : ""}
           <button type="button" class="stop-btn" data-stage="${i}" aria-expanded="${i === homeStage}">
             <span class="stop-num">${done === st.lists.length ? "★" : i + 1}</span>
-            <span class="stop-name">${esc(st.stage.replace(/^Stage \d+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
+            <span class="stop-name">${esc(st.stage.replace(/^(EA )?Stage \d+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
             <span class="stop-count">${done} of ${st.lists.length} done</span>
           </button></li>`;
       }).join("")}</ol>
       <div class="stop-lists" style="--accent:${esc(STAGES[homeStage].colour)}">
         <h3>${esc(STAGES[homeStage].stage)}</h3>
-        <div class="grid">${STAGES[homeStage].lists.map(l => `
+        ${blocks.length > 1 ? `<div class="block-tabs">${blocks.map(k => `<button type="button" class="block-tab${k === homeBlock ? " open" : ""}${blockDone(k) ? " done" : ""}"
+          data-block="${k}" aria-pressed="${k === homeBlock}">${k ? `Block ${k}` : "More practice"}${blockDone(k) ? " ✓" : ""}</button>`).join("")}</div>` : ""}
+        <div class="grid">${shown.map(l => `
           <a class="list-card${b.lists[l.id] ? " done" : ""}" href="#/list/${encodeURIComponent(l.id)}">
             <span class="lc-example">${esc(LISTS[l.id].items[0]?.spelling || "")}</span>
             <span class="lc-title">${esc(l.title)}</span>
             <span class="lc-count">${b.lists[l.id] ? `✓ Best: ${b.lists[l.id].best} of ${b.lists[l.id].of}` : `${l.words.length} words`}</span>
           </a>`).join("")}</div>
       </div>`;
-    box.querySelectorAll("[data-stage]").forEach(btn => { btn.onclick = () => { homeStage = Number(btn.dataset.stage); drawJourney(b); }; });
+    box.querySelectorAll("[data-stage]").forEach(btn => { btn.onclick = () => { homeStage = Number(btn.dataset.stage); homeBlock = null; drawJourney(b); }; });
+    box.querySelectorAll("[data-block]").forEach(btn => { btn.onclick = () => { homeBlock = Number(btn.dataset.block); drawJourney(b); }; });
   }
 
   function drawExplore() {
@@ -1470,7 +1480,7 @@
       ${!name ? "" : locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. Looking for today's work…</p>` : `
         <section class="home-section journey-section">
           <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
-          <p class="hint">${isOlder() ? "Seven stages, from short vowels to more ways to write sounds. Choose a stage to see its lists." : "Seven stops, from short vowels to more ways to write sounds. Tap a stop to see its lists."}</p>
+          <p class="hint">${isOlder() ? "The three EA Literacy stages, block by block. Choose a stage, then a block, to see its lists." : "Three stops, block by block. Tap a stop, then a block, to see its lists."}</p>
           <div id="journey"></div>
         </section>
         <section class="home-section">
