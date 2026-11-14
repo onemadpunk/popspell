@@ -237,7 +237,7 @@ body {
 .assigned.home-section h2 { text-align: left; }
 
 /* Pip's sound journey */
-.journey-map { position: relative; list-style: none; margin: 14px 0 6px; padding: 40px 0 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.journey-map { position: relative; list-style: none; margin: 14px 0 6px; padding: 40px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .journey-map::before { content: ""; position: absolute; left: 8%; right: 8%; top: 71px; border-top: 5px dashed #bcd6f3; }
 .stop { position: relative; display: flex; flex-direction: column; align-items: center; }
 .stop-btn { font: inherit; color: var(--ink); background: none; border: 0; padding: 4px; border-radius: 16px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 12px; }
@@ -257,6 +257,12 @@ body {
 .stop-pip { position: absolute; top: -40px; width: 46px; height: 46px; filter: drop-shadow(0 4px 4px rgba(11, 46, 107, .2)); }
 .stop-lists { margin-top: 12px; padding: 16px; border-radius: 22px; background: #f7fbff; border: 2px solid var(--line); border-top: 6px solid var(--accent); }
 .stop-lists h3 { margin: 0 0 10px; }
+/* EA blocks, as on Sara's sheets: one block's lists at a time */
+.block-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.block-tab { font: inherit; font-weight: 800; font-size: .95rem; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; min-height: 40px; cursor: pointer; }
+.block-tab.open { background: var(--accent); border-color: var(--accent); color: #fff; }
+.block-tab.done:not(.open) { border-color: var(--good); color: var(--good); }
+.block-tab:focus-visible { outline: 4px solid var(--primary); outline-offset: 2px; }
 .list-card.done { border-top-color: var(--good); }
 .list-card.done .lc-count { color: var(--good); font-weight: 800; }
 @media (max-width: 720px) {

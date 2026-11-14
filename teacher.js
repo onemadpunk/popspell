@@ -592,8 +592,12 @@
       .map(c => Object.assign(c, { type: "check", strand: FIND_LEVEL, level: "" }));
     const spelling = ALL_STAGES().flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
+      // EA Literacy lists are found by the teacher's own names too: "EA Stage 3 Block 2", "EA Stage 1 Block 4"
+      const eaStage = stage.stage.split(" · ")[0];
+      const eaBlock = item.block ? `${eaStage} · Block ${item.block}` : item.more ? `${eaStage} · More practice` : "";
+      const eaName = item.block ? `${eaStage} Block ${item.block}` : "";
       return { id: item.id, title: list.title, type: "spelling", level: tag(item.id).level, subject: "Literacy", strand: "Spelling",
-        stage: stage.england ? "England statutory words" : stage.stage.split(" · ")[0], england: !!stage.england && !cfeUsed(item.id), detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
+        stage: stage.england ? "England statutory words" : eaBlock || stage.stage.split(" · ")[0], also: eaName, england: !!stage.england && !cfeUsed(item.id), detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
     }));
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
@@ -620,9 +624,11 @@
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = fold(`${e.title} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
         ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
       SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
+      // Teachers' other names for tricky words, found from the title so the whole phonics strand doesn't match
+      if (/tricky|red word|common word|exception word/i.test(e.title)) e.search += " tricky words red words high frequency words hfw sight words common exception words heart words";
     });
     return all;
   }
@@ -672,7 +678,8 @@
   // A subject's other names, so "maths", "numeracy", "number" or "English" all find it
   const SUBJECT_WORDS = { Maths: "maths math mathematics numeracy number", Literacy: "literacy english" };
   // Everyday names for things the Library calls something else
-  const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"]];
+  const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"],
+    [/ea stage/, "ea literacy phoneme word lists magnetic letters reciprocal teaching"]];
   const CFE_YEARS = { nursery: "Early", p1: "Early", p2: "First", p3: "First", p4: "First", p5: "Second", p6: "Second", p7: "Second", s1: "Third", s2: "Third", s3: "Third" };
   const EN_YEARS = { reception: "Reception", 1: "Year 1", 2: "Year 2", 3: "Years 3–4", 4: "Years 3–4", 5: "Years 5–6", 6: "Years 5–6", 7: "Key stage 3", 8: "Key stage 3", 9: "Key stage 3" };
   function librarySearch(query, entries) {
@@ -3482,12 +3489,14 @@
   // Schools (reading for pleasure every lesson), and each part names its CfE outcomes.
   const LEVEL_ORDER = ["Early", "First", "Second", "Third", "Fourth"];
   const spellingOrder = () => P().STAGES.flatMap(st => st.lists.map(l => l.id));
-  const englandOrder = () => (P().EXTRA_STAGES || []).filter(st => !st.ea).flatMap(st => st.lists.map(l => l.id));
-  const eaOrder = () => (P().EXTRA_STAGES || []).filter(st => st.ea).flatMap(st => st.lists.map(l => l.id));
+  const englandOrder = () => (P().EXTRA_STAGES || []).filter(st => !st.more).flatMap(st => st.lists.map(l => l.id));
+  const eaOrder = () => (P().EXTRA_STAGES || []).filter(st => st.more).flatMap(st => st.lists.map(l => l.id)); // PopSpell's own first lists
   // A pupil moves on within the sequence their list is in, never from one into another
   const orderFor = id => (englandOrder().includes(id) ? englandOrder() : eaOrder().includes(id) ? eaOrder() : spellingOrder());
   // Stories and games for an England list: the phonics stage its words are closest to
-  const phonicsStageOf = id => (stageOf(id) >= 0 ? stageOf(id) : /^cew-y1/.test(id) ? 2 : /^cew-y2/.test(id) ? 4 : /^ea1-/.test(id) ? 1 : /^ea2-/.test(id) ? 3 : 5); // EA Stage 1 and 2: blends and digraphs, vowel teams; the word lists: Stage 6
+  // (PopSpell's own first lists go with the EA stage that teaches the same sounds)
+  const moreStage = id => { const g = (window.MORE_LISTS || []).findIndex(st => st.lists.some(l => l.id === id)); return g < 0 ? -1 : Math.min(g, 2); };
+  const phonicsStageOf = id => (stageOf(id) >= 0 ? stageOf(id) : moreStage(id) >= 0 ? moreStage(id) : /^cew-y1/.test(id) ? 0 : /^cew-y2/.test(id) ? 1 : 2); // the word lists: EA Stage 3
   const mathsOrder = () => {
     const area = window.PopActivities && window.PopActivities.AREAS.find(a => a.id === "numeracy");
     return area ? area.activities.slice().sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)).map(a => a.id) : [];
@@ -3553,8 +3562,8 @@
   const LEVEL_EVIDENCE = `<p class="hint">This comes from PopSpell work only. Before you decide a level, add your own evidence in the Diary:
     what you see in lessons, how the pupil explains their thinking, and whether they can use it in a new context.</p>`;
   // Sound games that practise each spelling stage (stage 1 is short vowels)
-  const STAGE_GAMES = [["g-hopper-short", "g-switch-first"], ["g-hopper-digraphs", "g-switch-digraphs", "g-switch-build"],
-    ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"]];
+  const STAGE_GAMES = [["g-hopper-short", "g-switch-first", "g-hopper-digraphs", "g-switch-digraphs"],
+    ["g-hopper-long-a", "g-switch-build", "g-hopper-r"], ["g-hopper-ea3", "g-switch-build"]]; // EA Stages 1, 2 and 3
   const CANOPY_GAMES = { Early: ["g-canopy-flash", "g-canopy-make", "g-canopy-hidden", "g-canopy-compare", "g-canopy-run"], First: ["g-canopy-twenty", "g-canopy-run-20"] };
 
   // Where a pupil's programme starts: the newest of Pip's Sound Quest, a starting check or their
@@ -3625,7 +3634,7 @@
       const stories = A ? A.AREAS.find(a => a.id === "stories").activities : [];
       const passages = A ? A.AREAS.find(a => a.id === "reading").activities.filter(a => a.passage) : [];
       const fits = stories.filter(s => s.stage === stage + 1);
-      const story = rotate(fits.length ? fits.concat(stage >= 4 ? passages.filter(p => p.level === level) : [])
+      const story = rotate(fits.length ? fits.concat(stage >= 1 ? passages.filter(p => p.level === level) : [])
         : stories.filter(s => s.stage <= stage + 1).concat(passages.filter(p => p.level === level)));
       if (story) parts.push({ key: "read", icon: "📖", where: "device", weight: 2, title: `Read: ${story.title}`, id: story.id, sheet: { kind: "activity", id: story.id },
         how: "Read it together or alone, on screen or on paper, then answer the questions. Ask: what did you like? What might happen next?",
@@ -4221,7 +4230,7 @@
   // The quest's link: joins the class, signs the device in as the child, and opens the quest
   const assessLink = name => homeLink(name) ? `${homeLink(name)}?then=assess` : "";
   const stageOf = listId => P().STAGES.findIndex(st => st.lists.some(l => l.id === listId));
-  const levelOfStage = i => ((P().STAGES[i] || {}).level || (i <= 1 ? "Early" : i <= 4 ? "First" : "Second")); // as the lists' CfE labels
+  const levelOfStage = i => ((P().STAGES[i] || {}).level || (i <= 0 ? "Early" : "First")); // as the lists' CfE labels
 
   // The latest go at each island, from the results the teacher already has
   function questSessions(name, sessions) {
@@ -4250,7 +4259,7 @@
       if (!s) return null;
       const gaps = P().checkGaps(s.words || []);
       if (!gaps.length) return { area, level: "Second", top: "kn-wr", status: "Secure", gap: null,
-        detail: `${verb} every stage tested, through Stage 6 (endings and tricky words).`,
+        detail: `${verb} every stage tested, through EA Stage 3 (more ways to write sounds).`,
         next: en ? "Move on to the Years 3–4 spelling rules and word list, and longer texts." : "Move on to Second-level spelling rules and longer texts." };
       const g = stageOf(gaps[0]);
       const st = P().STAGES[g];
@@ -4362,7 +4371,7 @@
       .map(it => it.spelling))]);
     const section = (n, real, pseudo) => shuffle(real.slice(0, 10).map(word => ({ word, alien: false }))
       .concat(shuffle(pseudo).slice(0, 10).map(word => ({ word, alien: true })))).map(w => Object.assign(w, { section: n }));
-    return section(1, realFrom([0, 1]), PSEUDO_1).concat(section(2, realFrom([2, 3, 4]), PSEUDO_2));
+    return section(1, realFrom([0]), PSEUDO_1).concat(section(2, realFrom([1]), PSEUDO_2));
   }
   const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 

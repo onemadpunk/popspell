@@ -41,7 +41,7 @@ const spelling = entry => {
   return out + (pendingE ? "e" : "");
 };
 const listWords = new Set();
-for (const stage of (page.SPELLING_LISTS || []).concat(page.ENGLAND_LISTS || []))
+for (const stage of (page.SPELLING_LISTS || []).concat(page.ENGLAND_LISTS || [], page.MORE_LISTS || []))
   for (const list of stage.lists) for (const entry of (list.words || []).concat(list.check || [])) {
     const w = spelling(entry);
     if (/^[a-z]+$/.test(w)) listWords.add(w); else problem("Spelling words", `"${entry}" in ${list.id} can't be recorded as written`);

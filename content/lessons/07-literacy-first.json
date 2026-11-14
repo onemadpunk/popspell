@@ -95,6 +95,262 @@
       "lookFor": "Knows one sound can be written in more than one way, and learns which way each word uses."
     },
     {
+      "id": "lesson-first-ea-stage-2-block-1-ay-ea-tea-and-y-happy",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 1: ay, ea (tea) and y (happy)",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with ay, ea (tea) and y (happy).",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say day, tea and happy. Where is the long sound in each word?",
+        "teach": "Say: we are learning to read and write the sound /ai/. Show ay in day and play: these letters are one of the ways we can write the /ai/ sound, usually at the end of a word (ai is another way). Show ea in tea and y at the end of happy: two of the ways we can write the /ee/ sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ay, ea (as in tea) and y (as in happy) lists.",
+        "check": "Read and spell play, crayon, leaf, beach, funny and party."
+      },
+      "use": [
+        "ea2-ay",
+        "ea2-ea",
+        "ea2-y-ee"
+      ],
+      "home": "Collect ay and ai words. Where in the word does each one come?",
+      "vocab": "vowel team, code, long vowel",
+      "understand": "Here are words you haven't practised: spray, cream, windy. Which letters write the long sound?",
+      "lookFor": "Chooses ay at the end of a word and ai in the middle, and reads y at the end as the /ee/ sound."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-2-ss-ll-and-ff",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 2: ss, ll and ff",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with ss, ll and ff.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say miss, bell and puff. What sound is at the end?",
+        "teach": "Say: we are learning to write the sounds /s/, /l/ and /f/ at the end of a short word. Show ss, ll and ff: after a short vowel at the end of a word, we often double the letter (miss, bell, off). Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ss, ll and ff lists.",
+        "check": "Read and spell dress, class, hill, still, stuff and fluffy."
+      },
+      "use": [
+        "ea2-ss",
+        "ea2-ll",
+        "ea2-ff"
+      ],
+      "home": "Find ss, ll and ff words on signs and labels.",
+      "vocab": "double letter, short vowel, ending",
+      "understand": "Here are words you haven't practised: cross, spell, sniff. How will you spell the end of each word?",
+      "lookFor": "Doubles s, l and f after a short vowel at the end of a word."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-3-ow-owl-ou-out-and-oi",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 3: ow (owl), ou (out) and oi",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with ow (owl), ou (out) and oi.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say owl and out. Is the vowel sound the same?",
+        "teach": "Say: we are learning to read and write the sound /ow/. Show ow in cow and ou in out: these are two of the ways we can write the /ow/ sound. Show oi in coin and point, one of the ways we can write the /oi/ sound (oy in toy is another). Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ow (as in owl), ou (as in out) and oi lists.",
+        "check": "Read and spell crown, clown, mouth, ground, coin and toilet."
+      },
+      "use": [
+        "ea2-ow-owl",
+        "ea2-ou",
+        "ea2-oi"
+      ],
+      "home": "Make a family list of ow and ou words and sort them into two groups.",
+      "vocab": "vowel team, code, sort",
+      "understand": "Here are words you haven't practised: frown, cloud, avoid. Which letters write the vowel sound?",
+      "lookFor": "Knows ow and ou can both be the code for the /ow/ sound, and checks which spelling looks right."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-4-igh-y-sky-and-i-e",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 4: igh, y (sky) and i–e",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with igh, y (sky) and i–e.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say night, sky and bike. What sound do they share?",
+        "teach": "Say: we are learning to read and write the sound /igh/. Show igh in night, y at the end of sky and i–e in bike: these are three of the ways we can write the /igh/ sound. Show how the e in i–e works with the i across the consonant. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The igh, y (as in sky) and i–e lists.",
+        "check": "Read and spell bright, high, cry, flying, smile and white."
+      },
+      "use": [
+        "ea2-igh",
+        "ea2-y-sky",
+        "ea2-i-e"
+      ],
+      "home": "Find words with the /igh/ sound and sort them by spelling: igh, y or i–e.",
+      "vocab": "split digraph, vowel team, code",
+      "understand": "Here are words you haven't practised: might, reply, prize. Which spelling of the /igh/ sound does each use?",
+      "lookFor": "Chooses between igh, y and i–e, and knows y comes at the end of a short word."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-5-o-e-a-e-and-e-e",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 5: o–e, a–e and e–e",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with o–e, a–e and e–e.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Read hop, then hope. What did the e do to the word?",
+        "teach": "Say: we are learning to read and write split digraphs. Show o–e in home, a–e in cake and e–e in these: the two letters work together across a consonant and are one of the ways we can write the long vowel sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The o–e, a–e and e–e lists.",
+        "check": "Read and spell joke, froze, game, plate, these and complete."
+      },
+      "use": [
+        "ea2-o-e",
+        "ea2-a-e",
+        "ea2-e-e"
+      ],
+      "home": "Turn short words into long ones by adding e: hop and hope, can and cane.",
+      "vocab": "split digraph, long vowel, code",
+      "understand": "Here are words you haven't practised: stone, snake, compete. Which letters write the long vowel sound?",
+      "lookFor": "Spots the split digraph and reads the long vowel sound across the consonant."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-6-u-e-ew-and-ue",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 6: u–e, ew and ue",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with u–e, ew and ue.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say tube, new and blue. What sound do they share?",
+        "teach": "Say: we are learning to read and write the sounds /oo/ and /yoo/. Show u–e in tube and cube, ew in new and grew, and ue in blue and glue: these are three of the ways we can write the sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The u–e, ew and ue lists.",
+        "check": "Read and spell flute, June, chew, crew, glue and true."
+      },
+      "use": [
+        "ea2-u-e",
+        "ea2-ew",
+        "ea2-ue"
+      ],
+      "home": "Look for ew and ue words in a story book and read them to your family.",
+      "vocab": "split digraph, vowel team, code",
+      "understand": "Here are words you haven't practised: cute, drew, rescue. Which letters write the sound?",
+      "lookFor": "Chooses between u–e, ew and ue, and reads both the /oo/ and /yoo/ sounds."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-7-ow-snow-mb-and-kn",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 7: ow (snow), mb and kn",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with ow (snow), mb and kn.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say cow, then snow. Is the ow the same sound?",
+        "teach": "Say: we are learning more ways to write sounds. Show ow in snow and grow: one of the ways we can write the /oa/ sound (ow in cow writes a different sound). Show mb in lamb, one of the ways we can write the /m/ sound, and kn in knee, one of the ways we can write the /n/ sound. The b and k are silent. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ow (as in snow), mb and kn lists.",
+        "check": "Read and spell throw, bowl, thumb, crumb, knock and knight."
+      },
+      "use": [
+        "ea2-ow-snow",
+        "ea2-mb",
+        "ea2-kn"
+      ],
+      "home": "Find words with a silent letter at home: lamb, knife, thumb.",
+      "vocab": "silent letter, code, vowel team",
+      "understand": "Here are words you haven't practised: slow, climb, knob. Which letters write each sound?",
+      "lookFor": "Reads ow both ways and checks which makes sense, and spells mb and kn words with the silent letter."
+    },
+    {
+      "id": "lesson-first-ea-stage-2-block-8-aw-au-and-i-kind",
+      "level": "First",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 1-12a",
+        "LIT 1-13a",
+        "LIT 1-21a"
+      ],
+      "title": "EA Stage 2 Block 8: aw, au and i (kind)",
+      "intention": "We are learning to read and write more sounds.",
+      "criteria": [
+        "I can read and spell words with aw, au and i (kind).",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say saw and Paul. What sound do they share?",
+        "teach": "Say: we are learning to read and write the sound /aw/. Show aw in paw and au in pause: these are two of the ways we can write the /aw/ sound. Then show i in kind, find and child: here the letter i is the code for the /igh/ sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The aw, au and i (as in kind) lists.",
+        "check": "Read and spell claw, straw, haunt, because, find and wild."
+      },
+      "use": [
+        "ea2-aw",
+        "ea2-au",
+        "ea2-i-kind"
+      ],
+      "home": "Make a family list of aw and au words.",
+      "vocab": "vowel team, code, long vowel",
+      "understand": "Here are words you haven't practised: yawn, launch, behind. Which letters write the vowel sound?",
+      "lookFor": "Chooses between aw and au, and reads i as the /igh/ sound in kind and find."
+    },
+    {
       "id": "lesson-first-ea-stage-3-block-1-wr-wa-all",
       "level": "First",
       "subject": "Literacy",
