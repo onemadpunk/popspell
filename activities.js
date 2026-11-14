@@ -1050,10 +1050,10 @@ window.PopActivities = (() => {
   const fallbackOptions = token => (/[aeiouy]/.test(token) ? ["a", "e"] : ["s", "t"]);
   const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || fallbackOptions(token))]
     .filter((v, i, a) => a.indexOf(v) === i)).slice(0, 3);
-  const trailWords = ids => {
+  const trailWords = (ids, keep = () => true) => {
     const lists = (window.PopSpell || {}).LISTS || {};
     return shuffle(ids.flatMap(id => (lists[id] || {}).items || [])
-      .filter(it => !it.whole && it.tokens.length >= 2 && it.tokens.length <= 5))
+      .filter(it => !it.whole && it.tokens.length >= 2 && it.tokens.length <= 5 && keep(it)))
       .slice(0, 6).map(it => ({
         kind: "map", prompt: "Listen. Say each sound. Build the word, one sound at a time.",
         answer: it.spelling, spelling: it.spelling, tokens: it.tokens,
@@ -1074,7 +1074,12 @@ window.PopActivities = (() => {
       make: () => trailWords(["ai", "ay", "a-e"]) },
     { id: "g-hopper-r", title: "Sound Hopper: r sounds", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
       blurb: "In Scottish mode, hear the vowel then r as two sounds. Try the same words in English mode to compare.",
-      make: () => trailWords(["ar", "or", "er-ir-ur"]) }
+      make: () => trailWords(["ar", "or", "er-ir-ur"]) },
+    { id: "g-hopper-ea3", title: "Sound Hopper: more ways to write sounds", level: "First", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "EA Stage 3 sounds. Count the sounds, then choose the right spelling for each one: ie or igh, ey or ay, dge or j, ti or sh.",
+      // Only the lists whose words are split into sounds by hand, so every bridge has the right number of sounds
+      // (not turkey and valley, whose ey is an ee sound, or badger, whose list splits e-r)
+      make: () => trailWords(["ie-tried", "ea-break", "ey", "ie-field", "oe", "gn", "ture", "dge", "ough", "ti"], it => !/^(turkey|valley|badger)$/i.test(it.spelling)) }
   ];
 
   /* ---------- Sound Switch: change one phoneme to open Pip's next door ---------- */

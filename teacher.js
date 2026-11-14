@@ -592,8 +592,11 @@
       .map(c => Object.assign(c, { type: "check", strand: FIND_LEVEL, level: "" }));
     const spelling = ALL_STAGES().flatMap(stage => stage.lists.map(item => {
       const list = catalogueList(item.id);
+      // EA Literacy lists are found by the teacher's own names too: "EA Stage 3 Block 2", "EA Stage 1 Block 4"
+      const eaBlock = stage.eaStage ? `${stage.eaStage} · Block ${item.block}` : "";
+      const eaName = stage.eaStage ? `${stage.eaStage} Block ${item.block}` : (stage.ea ? `${stage.stage.split(" · ")[0]} ${(/Blocks? ([\d and]+)/.exec(item.title) || [])[0] || ""}` : "");
       return { id: item.id, title: list.title, type: "spelling", level: tag(item.id).level, subject: "Literacy", strand: "Spelling",
-        stage: stage.england ? "England statutory words" : stage.stage.split(" · ")[0], england: !!stage.england && !cfeUsed(item.id), detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
+        stage: stage.england ? "England statutory words" : eaBlock || stage.stage.split(" · ")[0], also: eaName, england: !!stage.england && !cfeUsed(item.id), detail: list.tip || `${list.items.length} words to hear, segment and spell`, list, print: true };
     }));
     const activities = (A ? A.AREAS : []).flatMap(area => area.activities.map(act => ({
       id: act.id, title: act.title, level: act.level, subject: /^Literacy/.test(act.organiser) ? "Literacy" : "Maths",
@@ -620,9 +623,11 @@
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = fold(`${e.title} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
         ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
       SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
+      // Teachers' other names for tricky words, found from the title so the whole phonics strand doesn't match
+      if (/tricky|red word|common word|exception word/i.test(e.title)) e.search += " tricky words red words high frequency words hfw sight words common exception words heart words";
     });
     return all;
   }
@@ -672,7 +677,8 @@
   // A subject's other names, so "maths", "numeracy", "number" or "English" all find it
   const SUBJECT_WORDS = { Maths: "maths math mathematics numeracy number", Literacy: "literacy english" };
   // Everyday names for things the Library calls something else
-  const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"]];
+  const SEARCH_ALSO = [[/times tables check/, "multiplication tables check mtc"], [/silent e/, "split digraph magic e"],
+    [/ea stage/, "ea literacy phoneme word lists magnetic letters reciprocal teaching"]];
   const CFE_YEARS = { nursery: "Early", p1: "Early", p2: "First", p3: "First", p4: "First", p5: "Second", p6: "Second", p7: "Second", s1: "Third", s2: "Third", s3: "Third" };
   const EN_YEARS = { reception: "Reception", 1: "Year 1", 2: "Year 2", 3: "Years 3–4", 4: "Years 3–4", 5: "Years 5–6", 6: "Years 5–6", 7: "Key stage 3", 8: "Key stage 3", 9: "Key stage 3" };
   function librarySearch(query, entries) {
@@ -3554,7 +3560,8 @@
     what you see in lessons, how the pupil explains their thinking, and whether they can use it in a new context.</p>`;
   // Sound games that practise each spelling stage (stage 1 is short vowels)
   const STAGE_GAMES = [["g-hopper-short", "g-switch-first"], ["g-hopper-digraphs", "g-switch-digraphs", "g-switch-build"],
-    ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"]];
+    ["g-switch-build", "g-hopper-short"], ["g-hopper-long-a", "g-switch-build"], ["g-hopper-r"], ["g-hopper-r", "g-switch-build"],
+    ["g-hopper-ea3", "g-switch-build"]]; // Stage 7: the EA Stage 3 sounds
   const CANOPY_GAMES = { Early: ["g-canopy-flash", "g-canopy-make", "g-canopy-hidden", "g-canopy-compare", "g-canopy-run"], First: ["g-canopy-twenty", "g-canopy-run-20"] };
 
   // Where a pupil's programme starts: the newest of Pip's Sound Quest, a starting check or their

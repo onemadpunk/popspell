@@ -5,7 +5,7 @@
   which sounds every story needs, and shows each pupil the stories that only use sounds they
   have already practised ("My stories"). So a new story is matched to pupils automatically.
 
-   • stage: the spelling stage it is written for (1–6, as in words.js).
+   • stage: the spelling stage it is written for (1–7, as in words.js; Stage 7 is the EA Stage 3 sounds).
    • tricky: words in the story that can't be sounded out, beyond the early tricky words
      every pupil learns (the, a, I, to, no, go, so, into, he, she, we, me, be, was, my, you, they,
      said, of). Pupils need to have practised these before the story counts as ready.
@@ -121,6 +121,25 @@ window.STORIES = [
       { q: "What was missing?", a: "Grace's phone", others: ["Ken's knapsack", "A sock"], skill: "finding information", why: "It says: Her phone was missing!" },
       { q: "Where was the phone?", a: "In Ken's knapsack", others: ["Under the pillows", "In the sink"], skill: "finding information", why: "It says: Inside, wrapped in a sock, was the phone!" },
       { q: "Why did Ken say he took the phone?", a: "To keep it safe", others: ["To play a game", "He did not take it"], skill: "inference", why: "Ken said: I was keeping it safe." }
+    ]
+  },
+  {
+    // Stage 7: the EA Stage 3 sounds (soft c and g, dge, tch, ti, ie, ea, ey, ough and more)
+    id: "d-trip", title: "The class trip", stage: 7, tricky: [],
+    text: "The class went on a trip to the city. They walked over a bridge to the station and got on a train. Kai sat by the window and watched the fields go by. \"Look, a palace!\" he cried. At the palace, a lady showed them a huge kitchen and a great hall. Ella tried on a helmet, but it was too heavy for her head. For lunch they had bread, cheese and a piece of fudge. On the way home, the train went through a tunnel, and they all felt sleepy.",
+    questions: [
+      { q: "How did the class get to the city?", a: "By train", others: ["By bus", "By boat"], skill: "finding information", why: "It says: They walked over a bridge to the station and got on a train." },
+      { q: "Why did Ella not keep the helmet on?", a: "It was too heavy", others: ["It was too small", "It was broken"], skill: "cause and effect", why: "It says: it was too heavy for her head." },
+      { q: "How did they feel on the way home?", a: "Sleepy", others: ["Cross", "Scared"], skill: "finding information", why: "It says: they all felt sleepy." }
+    ]
+  },
+  {
+    id: "d-potion", title: "Gwen's potion", stage: 7, tricky: [],
+    text: "Gwen the witch had a big pot in her kitchen. \"I will make a magic potion,\" she said. She put in four frog legs, some soup and a pinch of ice. Then she added the wing of a wren and a lump of dough. The potion began to bubble and fizz, and it turned grey. Gwen tried a drop. Her nose went bright blue! \"Oh no,\" she said. \"I ought to write my potions down!\" Her cat could not stop giggling.",
+    questions: [
+      { q: "What did Gwen want to make?", a: "A magic potion", others: ["A cake", "Some soup"], skill: "finding information", why: "Gwen said: I will make a magic potion." },
+      { q: "What happened when Gwen tried the potion?", a: "Her nose went blue", others: ["She fell asleep", "Her cat went blue"], skill: "cause and effect", why: "It says: Gwen tried a drop. Her nose went bright blue!" },
+      { q: "Why do you think the cat was giggling?", a: "Gwen's nose looked funny", others: ["The cat had a drink too", "The soup was hot"], skill: "inference", why: "Gwen's nose had just gone bright blue, so she looked funny." }
     ]
   }
 ];

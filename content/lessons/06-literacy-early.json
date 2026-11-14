@@ -126,6 +126,313 @@
       "lookFor": "Knows the two letters work together to make one sound."
     },
     {
+      "id": "lesson-early-ea-stage-1-block-1-s-a-t-i-p-n",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 1: s, a, t, i, p, n",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with s, a, t, i, p and n.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say sat, tap and pin slowly. How many sounds can you hear in each one?",
+        "teach": "Say: we are learning to read and write the sound /s/. Show the letter: this letter is one of the ways we can write the /s/ sound. Do the same for a, t, i, p and n. Blend s-a-t and p-i-n, then segment tap and nip into sounds. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The a (as in ant), t, s, i (as in it), p and n lists.",
+        "check": "Read and spell sat, tip, pan and spin."
+      },
+      "use": [
+        "ea1-a",
+        "ea1-t",
+        "ea1-s",
+        "ea1-i",
+        "ea1-p",
+        "ea1-n"
+      ],
+      "home": "Play I spy with the sounds s, a, t, i, p and n.",
+      "vocab": "sound, letter, blend, word",
+      "understand": "Here are words you haven't practised: pans, tips, spat. Say each sound, then build the word.",
+      "lookFor": "Says each sound in order, then picks the right letter for it without help."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-2-r-m-d-e-c-k-and-ck",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 2: r, m, d, e, c, k and ck",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with r, m, d, e, c, k and ck.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say cat, kit and back. What sound do you hear at the start or the end?",
+        "teach": "Say: we are learning to read and write the sounds /r/, /m/, /d/ and /e/. Show each letter: this letter is one of the ways we can write the sound. Then show c, k and ck: these are three ways we can write the /k/ sound (ck comes straight after a short vowel, as in back and neck). Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The r, m, d, e (as in egg), c (as in cat), k and ck lists.",
+        "check": "Read and spell ram, red, cap, kit and sack."
+      },
+      "use": [
+        "ea1-r",
+        "ea1-m",
+        "ea1-d",
+        "ea1-e",
+        "ea1-c",
+        "ea1-k",
+        "ea1-ck"
+      ],
+      "home": "Find things at home that start with the /k/ sound. Is it written c or k?",
+      "vocab": "sound, letter, code, short vowel",
+      "understand": "Here are words you haven't practised: mend, track, skid. Which letters write each sound?",
+      "lookFor": "Knows c, k and ck can all be the code for the /k/ sound, and uses ck after a short vowel."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-3-g-l-f-o-b-u",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 3: g, l, f, o, b, u",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with g, l, f, o, b and u.",
+        "I can say which letters are the code for each sound in a word.",
+        "I can read the red words from Blocks 1 to 3."
+      ],
+      "steps": {
+        "start": "Say dog, bug and fan. Which sound is in the middle?",
+        "teach": "Say: we are learning to read and write the sounds /g/, /l/, /f/, /o/, /b/ and /u/. Show each letter as one of the ways we can write the sound. Blend f-r-o-g and b-u-d. Then show the red words from Blocks 1 to 3 (the, I, is, are, of, be, me): read them as whole words and spot the tricky part. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The g (as in gap), l, f, o (as in on), b, u (as in up) and tricky words (Blocks 1 to 3) lists.",
+        "check": "Read and spell frog, lip, bud and gasp. Read the, are and of."
+      },
+      "use": [
+        "ea1-g",
+        "ea1-l",
+        "ea1-f",
+        "ea1-o",
+        "ea1-b",
+        "ea1-u",
+        "ea1-tricky-1-3"
+      ],
+      "home": "Make cards for the red words the, is, are and of, and read them every day.",
+      "vocab": "sound, blend, red word, tricky word",
+      "understand": "Here are words you haven't practised: plum, gold, flag. Say each sound, then build the word.",
+      "lookFor": "Blends sounds all through the word, and reads the red words on sight."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-4-h-w-j-v-y-z-and-zz",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 4: h, w, j, v, y, z and zz",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with h, w, j, v, y, z and zz.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say jam, van and yes. Can you feel how your mouth moves for the first sound?",
+        "teach": "Say: we are learning to read and write the sounds /h/, /w/, /j/, /v/, /y/ and /z/. Show each letter as one of the ways we can write the sound. Show zz in buzz and fizz: two letters, one sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The h, w, j, v, y (as in yes) and z and zz lists.",
+        "check": "Read and spell hen, web, jump, vest, yes and buzz."
+      },
+      "use": [
+        "ea1-h",
+        "ea1-w",
+        "ea1-j",
+        "ea1-v",
+        "ea1-y",
+        "ea1-z"
+      ],
+      "home": "Look for words that start with j, v, y or z in a story book.",
+      "vocab": "sound, letter, double letter",
+      "understand": "Here are words you haven't practised: hug, jog, zest. Which letters write each sound?",
+      "lookFor": "Writes each sound with the right letter, including zz at the end of buzz."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-5-x-qu-and-sh",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 5: x, qu and sh",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with x, qu and sh.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say ship and quick. How many sounds can you hear?",
+        "teach": "Say: we are learning to read and write the sound /sh/. Show sh: these letters are one of the ways we can write the /sh/ sound. Two letters, one sound. Show qu in quick (the /k/ /w/ sounds, always written qu) and x in box (the /k/ /s/ sounds). Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The x, qu and sh lists.",
+        "check": "Read and spell fox, quiz, shop and fish."
+      },
+      "use": [
+        "ea1-x",
+        "ea1-qu",
+        "ea1-sh"
+      ],
+      "home": "Hunt for sh words at home: fish, shoes, shampoo.",
+      "vocab": "digraph, sound, code",
+      "understand": "Here are words you haven't practised: mix, shelf, squint. Which letters write each sound?",
+      "lookFor": "Keeps s and h together as one sound in sh, and always writes qu with a u."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-6-th-thin-and-that-and-ch",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 6: th (thin and that) and ch",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with th (as in thin and that) and ch.",
+        "I can say which letters are the code for each sound in a word.",
+        "I can read the red words from Blocks 4 to 6."
+      ],
+      "steps": {
+        "start": "Say thin, then that. Put your hand on your throat. Do they feel the same?",
+        "teach": "Say: we are learning to read and write the sound /th/. Show th: these letters are one of the ways we can write the /th/ sound in thin, and the /th/ sound in that. Show ch in chip and much. Then show the red words from Blocks 4 to 6 (we, he, have, you, was, to, do, so, go, no, her, she, said, my, by): read them as whole words and spot the tricky part. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The th (as in thin), th (as in that), ch (as in chip) and tricky words (Blocks 4 to 6) lists.",
+        "check": "Read and spell thin, moth, this, chop and much. Read was, said and you."
+      },
+      "use": [
+        "ea1-th",
+        "ea1-th2",
+        "ea1-ch",
+        "ea1-tricky-4-6"
+      ],
+      "home": "Make cards for the red words was, said, you and she, and play snap.",
+      "vocab": "digraph, sound, red word, tricky word",
+      "understand": "Here are words you haven't practised: chimp, thump, than. Which letters write each sound?",
+      "lookFor": "Reads th and ch as one sound each, and reads the red words on sight."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-7-ng-wh-and-ph",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 7: ng, wh and ph",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with ng, wh and ph.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say ring and sing. What sound do you hear at the end?",
+        "teach": "Say: we are learning to read and write the sound /ng/. Show ng: these letters are one of the ways we can write the /ng/ sound. Show wh in when and what, one of the ways we can write the /w/ sound, and ph in dolphin, one of the ways we can write the /f/ sound. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ng, wh and ph lists.",
+        "check": "Read and spell sing, strong, when, whisk and graph."
+      },
+      "use": [
+        "ea1-ng",
+        "ea1-wh",
+        "ea1-ph"
+      ],
+      "home": "Look for wh question words: what, when, which. Ask your family a wh question.",
+      "vocab": "digraph, sound, code",
+      "understand": "Here are words you haven't practised: swing, clung, whim. Which letters write each sound?",
+      "lookFor": "Knows wh and w, and ph and f, can be the code for the same sound."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-8-ee-oo-and-ck",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 8: ee, oo and ck",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with ee, oo and ck.",
+        "I can say which letters are the code for each sound in a word."
+      ],
+      "steps": {
+        "start": "Say see, moon and book. Which part of each word is the long sound?",
+        "teach": "Say: we are learning to read and write the sound /ee/. Show ee: these letters are one of the ways we can write the /ee/ sound. Show oo in moon and in book: oo can be the code for both sounds. Go back over ck after a short vowel, as in back and ticket. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ee, oo and ck lists.",
+        "check": "Read and spell feel, sleep, cook, spoon and stick."
+      },
+      "use": [
+        "ea1-ee",
+        "ea1-oo",
+        "ea1-ck"
+      ],
+      "home": "Find ee and oo words in a story book. Which oo sound does each one have?",
+      "vocab": "digraph, long vowel, code",
+      "understand": "Here are words you haven't practised: speed, hook, broom. Which letters write each sound?",
+      "lookFor": "Reads ee and oo as one sound each, and tries both oo sounds to see which makes a real word."
+    },
+    {
+      "id": "lesson-early-ea-stage-1-block-9-ai-oy-and-oa",
+      "level": "Early",
+      "subject": "Literacy",
+      "strand": "Reading: phonics and tricky words",
+      "codes": [
+        "ENG 0-12a",
+        "LIT 0-13a",
+        "LIT 0-21a"
+      ],
+      "title": "EA Stage 1 Block 9: ai, oy and oa",
+      "intention": "We are learning to read and write new sounds.",
+      "criteria": [
+        "I can read and spell words with ai, oy and oa.",
+        "I can say which letters are the code for each sound in a word.",
+        "I can read the red words from Blocks 7 to 9."
+      ],
+      "steps": {
+        "start": "Say rain, boy and boat. What vowel sound do you hear?",
+        "teach": "Say: we are learning to read and write the sound /ai/. Show ai: these letters are one of the ways we can write the /ai/ sound. Do the same for oy in toy and oa in boat. Then show the red words from Blocks 7 to 9 (his, they, what, one, come, some, if, came, into, like, all, here, there, were): read them as whole words and spot the tricky part. Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together.",
+        "practise": "The ai, oy, oa and tricky words (Blocks 7 to 9) lists.",
+        "check": "Read and spell rain, train, boy, enjoy, coat and toast. Read they, one and were."
+      },
+      "use": [
+        "ea1-ai",
+        "ea1-oy",
+        "ea1-oa",
+        "ea1-tricky-7-9"
+      ],
+      "home": "Make cards for the red words they, there, were and some, and read them every day.",
+      "vocab": "vowel team, digraph, red word, tricky word",
+      "understand": "Here are words you haven't practised: paint, toys, coach. Which letters write each sound?",
+      "lookFor": "Keeps vowel teams together as one sound, and reads the red words on sight."
+    },
+    {
       "id": "lesson-early-reading-tricky-words",
       "level": "Early",
       "subject": "Literacy",
