@@ -2207,6 +2207,553 @@ window.PopActivities = (() => {
       }) }
   ];
 
+  /* ---------- England key stage 4 (Years 10 and 11): GCSE maths practice ---------- */
+  // One activity for each Years 10 and 11 maths lesson that had no online practice of its own. They sit
+  // in the Numbers area in their own group, out of the starting check. Questions that need a calculator
+  // say so, and accept an answer one in the last place either side, so rounding part-way doesn't count
+  // against a pupil. The subject content is the national curriculum's (GCSE Foundation and Higher).
+  const GCSE = "Mathematics · GCSE maths (Years 10 and 11)";
+  // An expression from [coefficient, variable] terms: expr([2, "x²"], [-1, "x"], [3, ""]) is 2x² − x + 3
+  const expr = (...terms) => {
+    const t = terms.filter(([k]) => k !== 0);
+    if (!t.length) return "0";
+    return t.map(([k, v], i) => { const mag = Math.abs(k) === 1 && v ? v : `${Math.abs(k)}${v}`; return i === 0 ? (k < 0 ? `−${mag}` : mag) : `${k < 0 ? " − " : " + "}${mag}`; }).join("");
+  };
+  // A fraction in its simplest form, with its sign in front
+  const sfrac = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; n /= g; d /= g; return d === 1 ? minus(n) : `${n < 0 ? "−" : ""}${Math.abs(n)}/${d}`; };
+  // A rounded answer, and the answers one in the last place either side
+  const fixed = (x, p = 1) => (Math.round(x * 10 ** p) / 10 ** p).toFixed(p);
+  const near = (x, p = 1) => { const b = Math.round(x * 10 ** p), out = new Set();
+    for (const k of [b - 1, b, b + 1]) { const v = k / 10 ** p; out.add(v.toFixed(p)); out.add(String(v)); }
+    out.delete(fixed(x, p)); return [...out]; };
+  const bracket = n => (n < 0 ? `(${minus(n)})` : String(n));
+  const rad = d => d * Math.PI / 180;
+  const piOf = k => (k === 1 ? "π" : `${k}π`);
+  // A small sketch of a graph, for naming its shape
+  const sketch = (f, label) => {
+    const P = (x, y) => `${(80 + x * 22).toFixed(1)},${(80 - y * 22).toFixed(1)}`;
+    const pts = Array.from({ length: 121 }, (_, i) => -3.4 + i * 6.8 / 120).map(x => [x, f(x)]).filter(([, y]) => Number.isFinite(y) && Math.abs(y) <= 3.4);
+    // Break the line where it jumps (the reciprocal graph has two parts)
+    const parts = [[]];
+    pts.forEach(([x, y], i) => { if (i && Math.abs(y - pts[i - 1][1]) > 1.5) parts.push([]); parts[parts.length - 1].push(P(x, y)); });
+    return `<svg class="q-pic" viewBox="0 0 160 160" width="170" height="170" role="img" aria-label="${label}">
+      <line x1="4" y1="80" x2="156" y2="80" stroke="#64748b" stroke-width="2"/><line x1="80" y1="4" x2="80" y2="156" stroke="#64748b" stroke-width="2"/>
+      <text x="150" y="94" font-size="12" fill="#334155">x</text><text x="86" y="14" font-size="12" fill="#334155">y</text>
+      ${parts.filter(p => p.length > 1).map(p => `<polyline points="${p.join(" ")}" fill="none" stroke="#2563A6" stroke-width="3"/>`).join("")}</svg>`;
+  };
+  const GRAPH_SHAPES = [
+    ["linear", x => x + 1, () => `y = ${rand(4) + 2}x ${signed(rand(7) - 3 || 1)}`, "y = x + 1"],
+    ["quadratic", x => x * x - 2, () => `y = x² ${signed(-(rand(5) + 1))}`, "y = x² − 2"],
+    ["cubic", x => x * x * x, () => `y = x³ ${signed(rand(5) + 1)}`, "y = x³"],
+    ["reciprocal", x => (Math.abs(x) < 0.05 ? NaN : 1 / x), () => `y = ${rand(8) + 2}/x`, "y = 1/x"],
+    ["exponential", x => 2 ** x, () => `y = ${pick([2, 3, 5])}ˣ`, "y = 2ˣ"]
+  ];
+  const numeracyGCSE = [
+    { id: "k4-indices", title: "Laws of indices and standard form (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Use the laws of indices, zero, negative and fractional powers, and calculate in standard form.",
+      make: () => distinct(10, () => {
+        const k = rand(6), m = rand(6) + 2, n = rand(5) + 2;
+        if (k === 0) { const ans = `x${sup(m + n)}`; return choice(`Simplify x${sup(m)} × x${sup(n)}.`, ans, others2u(ans, [`x${sup(m * n)}`, `2x${sup(m + n)}`, `x${sup(m + n + 1)}`]), { label: `x${m}*x${n}`, skill: "multiplying powers", explain: `Same base, so add the indices: ${m} + ${n} = ${m + n}.` }); }
+        if (k === 1) { const ans = `y${sup(m - n)}`; if (m === n) return { label: "skip" }; return choice(`Simplify y${sup(m)} ÷ y${sup(n)}.`, ans, others2u(ans, [`y${sup(n - m)}`, `y${sup(m + n)}`, `1/y${sup(m - n)}`]), { label: `y${m}/y${n}`, skill: "dividing powers", explain: `Same base, so subtract the indices: ${m} − ${n} = ${m - n}.${m < n ? ` A negative index means 1 over: y${sup(m - n)} = 1/y${sup(n - m)}.` : ""}` }); }
+        if (k === 2) { const a = rand(3) + 2, ans = `${a ** n}a${sup(m * n)}`; return choice(`Simplify (${a}a${sup(m)})${sup(n)}.`, ans, others2u(ans, [`${a * n}a${sup(m * n)}`, `${a ** n}a${sup(m + n)}`, `${a}a${sup(m * n)}`]), { label: `(${a}a${m})^${n}`, skill: "a power of a power", explain: `${a}${sup(n)} = ${a ** n}, and (a${sup(m)})${sup(n)} = a${sup(m * n)}: multiply the indices.` }); }
+        if (k === 3) { const [b, e] = pick([[2, 3], [2, 4], [3, 2], [4, 2], [5, 2], [10, 3], [2, 5], [6, 2]]), ans = `1/${b ** e}`;
+          return choice(`What is ${b}${sup(-e)}?`, ans, others2u(ans, [`−${b ** e}`, `−${b * e}`, `1/${b * e}`]), { label: `${b}^-${e}`, skill: "negative indices", explain: `A negative index means the reciprocal: ${b}${sup(-e)} = 1/${b}${sup(e)} = 1/${b ** e}.` }); }
+        if (k === 4) { const [b, top, bot, ans] = pick([[16, 1, 2, 4], [25, 1, 2, 5], [27, 1, 3, 3], [8, 1, 3, 2], [64, 1, 3, 4], [8, 2, 3, 4], [27, 2, 3, 9], [4, 3, 2, 8], [9, 3, 2, 27], [16, 3, 4, 8], [100, 3, 2, 1000], [125, 2, 3, 25]]);
+          const f = `${top}/${bot}`;
+          return typed(`What is ${b} to the power ${f}? (no calculator)`, ans, { label: `${b}^${f}`, skill: "fractional indices", explain: `The bottom of the power is a root and the top is a power: the ${bot === 2 ? "square" : bot === 3 ? "cube" : `${bot}th`} root of ${b} is ${Math.round(b ** (1 / bot))}${top > 1 ? `, then to the power ${top}: ${ans}` : ""}.` }); }
+        const a = rand(8) + 2, b = rand(8) + 2, p = rand(5) + 2, q = rand(6) + 2, prod = a * b, big = prod >= 10;
+        const ans = `${big ? prod / 10 : prod} × 10${sup(p + q + (big ? 1 : 0))}`;
+        return choice(`Work out (${a} × 10${sup(p)}) × (${b} × 10${sup(q)}). Give your answer in standard form.`, ans,
+          others2u(ans, [`${prod} × 10${sup(p + q)}`, `${big ? prod / 10 : prod} × 10${sup(p * q)}`, `${big ? prod / 10 : prod} × 10${sup(p + q + (big ? 0 : 1))}`]),
+          { label: `sf ${a}e${p}*${b}e${q}`, skill: "standard form", explain: `${a} × ${b} = ${prod}, and 10${sup(p)} × 10${sup(q)} = 10${sup(p + q)}.${big ? ` ${prod} isn't between 1 and 10, so it becomes ${prod / 10} × 10, and the power goes up by 1.` : ""}` });
+      }) },
+    { id: "k4-surds", title: "Surds and recurring decimals (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Simplify surds, rationalise denominators, and change recurring decimals into fractions.",
+      make: () => distinct(10, () => {
+        const k = rand(5), s = pick([2, 3, 5, 6, 7]), c = rand(5) + 2;
+        if (k === 0) { const ans = `${c}√${s}`; return choice(`Simplify √${c * c * s}.`, ans, others2u(ans, [`${s}√${c}`, `${c * c}√${s}`, `${c + 1}√${s}`]), { label: `sqrt${c * c * s}`, skill: "simplifying surds", explain: `${c * c * s} = ${c * c} × ${s}, and √${c * c} = ${c}: ${ans}.` }); }
+        if (k === 1) { const a = rand(4) + 1, ans = `${a + c}√${s}`; return choice(`Simplify ${a === 1 ? "" : a}√${s} + √${c * c * s}.`, ans, others2u(ans, [`${a + 1}√${s + c * c * s}`, `${a * c}√${s}`, `${a + c * c}√${s}`]), { label: `${a}r${s}+r${c * c * s}`, skill: "adding surds", explain: `√${c * c * s} = ${c}√${s}, so ${a === 1 ? "" : a}√${s} + ${c}√${s} = ${ans}.` }); }
+        if (k === 2) { const t = rand(4) + 2, ans = `${t}√${s}`; return choice(`Rationalise the denominator: ${t * s}/√${s}.`, ans, others2u(ans, [`${t * s}√${s}`, `${t}/√${s}`, `√${t * s}`]), { label: `${t * s}/r${s}`, skill: "rationalising the denominator", explain: `Multiply top and bottom by √${s}: ${t * s}√${s}/${s} = ${ans}.` }); }
+        if (k === 3) { const a = pick([2, 3, 5, 6]), m = rand(3) + 2; return typed(`Work out √${a} × √${a * m * m}.`, a * m, { label: `r${a}*r${a * m * m}`, skill: "multiplying surds", explain: `√${a} × √${a * m * m} = √${a * a * m * m} = ${a * m}.` }); }
+        if (rand(2)) { const d = rand(8) + 1, ans = fracW(d, 9); return choice(`Write 0.${String(d).repeat(4)}… (${d} recurring) as a fraction in its simplest form.`, ans, others2u(ans, [`${d}/10`, `${d}/99`, `1/${d + 1}`]), { label: `0.${d}rec`, skill: "recurring decimals to fractions", explain: `Call it x. 10x = ${d}.${d}${d}…, so 10x − x = ${d}: 9x = ${d}, x = ${d}/9${ans !== `${d}/9` ? ` = ${ans}` : ""}.` }); }
+        const two = rand(89) + 10; if (two % 11 === 0) return { label: "skip" };
+        const ans = fracW(two, 99);
+        return choice(`Write 0.${String(two).repeat(3)}… (${two} recurring) as a fraction in its simplest form.`, ans, others2u(ans, [`${two}/100`, fracW(two, 90), `${two}/999`]), { label: `0.${two}rec`, skill: "recurring decimals to fractions", explain: `Two digits repeat, so use 100x: 100x − x = ${two}, 99x = ${two}, x = ${two}/99${ans !== `${two}/99` ? ` = ${ans}` : ""}.` });
+      }) },
+    { id: "k4-bounds", title: "Bounds and error intervals (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Find upper and lower bounds, write error intervals, and use bounds in a calculation.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const t = rand(90) + 10, x = t / 10, up = rand(2), b = (t * 10 + (up ? 5 : -5)) / 100;
+          return typed(`A length is ${x.toFixed(1)} cm, to 1 decimal place. What is its ${up ? "upper" : "lower"} bound? (cm)`, b.toFixed(2), { input: "decimal", accept: [String(b)], label: `${x} 1dp ${up}`, skill: "upper and lower bounds", explain: `Half of 0.1 is 0.05, so the length is between ${((t * 10 - 5) / 100).toFixed(2)} and ${((t * 10 + 5) / 100).toFixed(2)} cm.` }); }
+        if (k === 1) { const unit = pick([10, 100]), x = (rand(80) + 12) * unit, up = rand(2), b = x + (up ? unit / 2 : -unit / 2);
+          return typed(`${x} people came to a match, to the nearest ${unit}. What is the ${up ? "upper" : "lower"} bound?`, b, { label: `${x} n${unit} ${up}`, skill: "upper and lower bounds", explain: `Half of ${unit} is ${unit / 2}: from ${x - unit / 2} up to ${x + unit / 2}.` }); }
+        if (k === 2) { const t = rand(80) + 11, lo = ((t * 10 - 5) / 100).toFixed(2), hi = ((t * 10 + 5) / 100).toFixed(2), x = (t / 10).toFixed(1), ans = `${lo} ≤ x < ${hi}`;
+          return choice(`x = ${x}, rounded to 1 decimal place. What is the error interval for x?`, ans, others2u(ans, [`${lo} < x ≤ ${hi}`, `${x} ≤ x < ${((t + 1) / 10).toFixed(1)}`, `${((t - 1) / 10).toFixed(1)} ≤ x < ${((t + 1) / 10).toFixed(1)}`]), { label: `err ${x}`, skill: "error intervals", explain: `It could be as low as ${lo} (which rounds up to ${x}) but must be less than ${hi} (which would round up to ${((t + 1) / 10).toFixed(1)}).` }); }
+        if (k === 3) { const t = rand(80) + 11, x = (t / 10).toFixed(1), ans = `${x} ≤ x < ${((t + 1) / 10).toFixed(1)}`;
+          return choice(`x = ${x}, truncated to 1 decimal place. What is the error interval for x?`, ans, others2u(ans, [`${((t * 10 - 5) / 100).toFixed(2)} ≤ x < ${((t * 10 + 5) / 100).toFixed(2)}`, `${((t - 1) / 10).toFixed(1)} < x ≤ ${x}`, `${x} < x ≤ ${((t + 1) / 10).toFixed(1)}`]), { label: `trunc ${x}`, skill: "truncation", explain: `Truncating chops off the later digits, so x could be anything from ${x} up to (but not including) ${((t + 1) / 10).toFixed(1)}.` }); }
+        const a = rand(9) + 4, b = rand(9) + 3, up = rand(2), area = up ? (a + 0.5) * (b + 0.5) : (a - 0.5) * (b - 0.5);
+        return typed(`A rectangle is ${a} cm by ${b} cm, each to the nearest centimetre. What is the ${up ? "upper" : "lower"} bound of its area? (cm²)`, String(area), { input: "decimal", label: `rect ${a}x${b} ${up}`, skill: "calculating with bounds", explain: `Use the ${up ? "upper" : "lower"} bound of each side: ${a + (up ? 0.5 : -0.5)} × ${b + (up ? 0.5 : -0.5)} = ${area} cm².` });
+      }) },
+    { id: "k4-factorise", title: "Factorising quadratics (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Factorise x² + bx + c, the difference of two squares and (higher) ax² + bx + c, and simplify algebraic fractions.",
+      make: () => distinct(10, () => {
+        const k = rand(4), p = (rand(7) + 1) * (rand(2) ? 1 : -1), q = (rand(7) + 1) * (rand(2) ? 1 : -1);
+        const br = (a, c) => `(${expr([a, "x"], [c, ""])})`;
+        if (k === 0) { if (p + q === 0 || p === q) return { label: "skip" }; const ans = `${br(1, p)}${br(1, q)}`;
+          return choice(`Factorise ${expr([1, "x²"], [p + q, "x"], [p * q, ""])}.`, ans, others2u(ans, [`${br(1, -p)}${br(1, -q)}`, `${br(1, p)}${br(1, -q)}`, `${br(1, -p)}${br(1, q)}`, `${br(1, p + q)}${br(1, 1)}`]),
+            { label: `fac ${p},${q}`, skill: "factorising x² + bx + c", explain: `Find two numbers that multiply to ${minus(p * q)} and add to ${minus(p + q)}: ${minus(p)} and ${minus(q)}.` }); }
+        if (k === 1) { const a = pick([1, 1, 2, 3]), c = rand(9) + 2, ans = `${br(a, c)}${br(a, -c)}`;
+          return choice(`Factorise ${expr([a * a, "x²"], [-c * c, ""])}.`, ans, others2u(ans, [`${br(a, -c)}²`, `${br(a, c)}²`, `${br(a, -c * c)}${br(a, 1)}`]), { label: `dots ${a} ${c}`, skill: "the difference of two squares", explain: `${a === 1 ? "x² is x squared" : `${a * a}x² is (${a}x)²`} and ${c * c} is ${c}²: a difference of two squares, ${ans}.` }); }
+        if (k === 2) { const a = pick([2, 3]); if (gcd(Math.abs(p), a) !== 1 || p === q) return { label: "skip" }; const ans = `${br(a, p)}${br(1, q)}`;
+          return choice(`Factorise ${expr([a, "x²"], [a * q + p, "x"], [p * q, ""])}. (higher)`, ans, others2u(ans, [`${br(a, q)}${br(1, p)}`, `${br(a, -p)}${br(1, -q)}`, `${br(1, p)}${br(a, -q)}`]),
+            { label: `fac${a} ${p},${q}`, skill: "factorising ax² + bx + c", explain: `Check by expanding: ${br(a, p)}${br(1, q)} = ${expr([a, "x²"], [a * q, "x"], [p, "x"], [p * q, ""])} = ${expr([a, "x²"], [a * q + p, "x"], [p * q, ""])}.` }); }
+        if (p + q === 0) return { label: "skip" };
+        const ans = expr([1, "x"], [q, ""]);
+        return choice(`Simplify (${expr([1, "x²"], [p + q, "x"], [p * q, ""])}) ÷ (${expr([1, "x"], [p, ""])}).`, ans, others2u(ans, [expr([1, "x"], [-q, ""]), expr([1, "x"], [p + q, ""]), expr([1, "x"], [p * q, ""])]),
+          { label: `alg frac ${p},${q}`, skill: "simplifying algebraic fractions", explain: `Factorise the top: ${br(1, p)}${br(1, q)}. Cancel ${br(1, p)} to leave ${ans}.` });
+      }) },
+    { id: "k4-functions", title: "Functions and identities (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Use function notation, inverse and composite functions, and tell an identity from an equation.",
+      make: () => distinct(10, () => {
+        const k = rand(5), a = rand(5) + 2, b = (rand(9) + 1) * (rand(2) ? 1 : -1), n = rand(13) - 4, f = expr([a, "x"], [b, ""]);
+        if (k === 0) { const v = a * n + b; return typed(`f(x) = ${f}. Work out f(${minus(n)}).`, v, { accept: negAccept(v), label: `f ${a},${b} at ${n}`, skill: "function notation", explain: `Put ${minus(n)} in for x: ${a} × ${bracket(n)} ${signed(b)} = ${minus(v)}.` }); }
+        if (k === 1) { const v = a * n + b; return typed(`f(x) = ${f}. Solve f(x) = ${minus(v)}. What is x?`, n, { accept: negAccept(n), label: `solve f ${a},${b}=${v}`, skill: "solving with functions", explain: `${f} = ${minus(v)}, so ${a}x = ${minus(v - b)} and x = ${minus(n)}.` }); }
+        if (k === 2) { const ans = `(x ${signed(-b)})/${a}`; return choice(`f(x) = ${f}. What is the inverse function, f⁻¹(x)?`, ans, others2u(ans, [`(x ${signed(b)})/${a}`, `${a}x ${signed(-b)}`, `x/${a} ${signed(-b)}`]), { label: `inv ${a},${b}`, skill: "inverse functions", explain: `Undo the steps in reverse order: ${b < 0 ? `add ${-b}` : `take away ${b}`}, then divide by ${a}.` }); }
+        if (k === 3) { const c = rand(6) + 1, g = `x² ${signed(-c)}`, gx = n * n - c, v = a * gx + b;
+          return typed(`f(x) = ${f} and g(x) = ${g}. Work out fg(${minus(n)}).`, v, { accept: negAccept(v), label: `fg ${a},${b},${c} at ${n}`, skill: "composite functions", explain: `Do g first: g(${minus(n)}) = ${n * n} ${signed(-c)} = ${minus(gx)}. Then f(${minus(gx)}) = ${a} × ${bracket(gx)} ${signed(b)} = ${minus(v)}.` }); }
+        const m = rand(6) + 2, isId = rand(2), left = `${a}(x ${signed(m)})`, right = isId ? expr([a, "x"], [a * m, ""]) : expr([a, "x"], [m, ""]);
+        const ans = isId ? "An identity: true for every value of x" : "An equation: true for only some values of x";
+        return choice(`Is ${left} = ${right} an identity or an equation?`, ans, [isId ? "An equation: true for only some values of x" : "An identity: true for every value of x"],
+          { label: `id ${a} ${m} ${isId}`, skill: "identities and equations", explain: isId ? `${left} expands to ${right}, so the two sides are always equal: write ≡.` : `${left} expands to ${expr([a, "x"], [a * m, ""])}, which isn't the same as ${right} for every x.` });
+      }) },
+    { id: "k4-lines", title: "Straight-line graphs: y = mx + c (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Find gradients and intercepts, the equation of a line, and parallel and perpendicular lines.",
+      make: () => distinct(10, () => {
+        const k = rand(6), m = (rand(5) + 1) * (rand(3) ? 1 : -1), c = (rand(6) + 1) * (rand(2) ? 1 : -1), line = `y = ${expr([m, "x"], [c, ""])}`;
+        if (k === 0) { const x1 = rand(7) - 3, dx = rand(4) + 1, dy = (rand(9) + 1) * (rand(2) ? 1 : -1), y1 = rand(9) - 4, ans = sfrac(dy, dx);
+          return choice(`What is the gradient of the line through (${minus(x1)}, ${minus(y1)}) and (${minus(x1 + dx)}, ${minus(y1 + dy)})?`, ans, others2u(ans, [sfrac(dx, dy), sfrac(-dy, dx), sfrac(dy + dx, dx)]),
+            { label: `grad ${x1},${y1},${dx},${dy}`, skill: "gradient from two points", explain: `Gradient = change in y ÷ change in x = ${minus(dy)} ÷ ${dx} = ${ans}.` }); }
+        if (k === 1) { const t = rand(2); return typed(`What is the ${t ? "gradient" : "y-intercept"} of ${line}?`, t ? m : c, { accept: negAccept(t ? m : c), label: `${t ? "m" : "c"} ${m},${c}`, skill: "reading y = mx + c", explain: `In y = mx + c, m is the gradient and c is where the line crosses the y-axis: ${t ? `m = ${minus(m)}` : `c = ${minus(c)}`}.` }); }
+        if (k === 2) { const d = pick([2, 3, 4]); return typed(`What is the gradient of the line ${d}y = ${expr([d * m, "x"], [d * c, ""])}?`, m, { accept: negAccept(m), label: `${d}y ${m},${c}`, skill: "rearranging to y = mx + c", explain: `Divide everything by ${d}: ${line}, so the gradient is ${minus(m)}.` }); }
+        if (k === 3) { if (c === m) return { label: "skip" }; const c2 = c + rand(5) + 1, ans = `y = ${expr([m, "x"], [c2, ""])}`;
+          return choice(`Which line is parallel to ${line}?`, ans, others2u(ans, [`y = ${expr([-m, "x"], [c, ""])}`, `y = ${expr([c || 1, "x"], [m, ""])}`, `y = ${expr([m + 1, "x"], [c, ""])}`]), { label: `par ${m},${c}`, skill: "parallel lines", explain: `Parallel lines have the same gradient, ${minus(m)}.` }); }
+        if (k === 4) { const ans = sfrac(-1, m); return choice(`A line has gradient ${minus(m)}. What is the gradient of a line perpendicular to it? (higher)`, ans, others2u(ans, [minus(-m), sfrac(1, m), minus(m)]), { label: `perp ${m}`, skill: "perpendicular lines", explain: `Perpendicular gradients multiply to −1, so it's the negative reciprocal: ${ans}.` }); }
+        const x1 = rand(5) - 1, x2 = x1 + rand(3) + 1, ans = line;
+        return choice(`Which is the equation of the line through (${minus(x1)}, ${minus(m * x1 + c)}) and (${x2}, ${minus(m * x2 + c)})?`, ans, others2u(ans, [`y = ${expr([-m, "x"], [c, ""])}`, `y = ${expr([m, "x"], [c + m, ""])}`, `y = ${expr([m * 2, "x"], [c, ""])}`]),
+          { label: `eq ${m},${c},${x1}`, skill: "the equation of a line", explain: `Gradient = ${minus(m * (x2 - x1))} ÷ ${x2 - x1} = ${minus(m)}. Then ${minus(m * x1 + c)} = ${minus(m)} × ${bracket(x1)} + c gives c = ${minus(c)}.` });
+      }) },
+    { id: "k4-quadratics", title: "Solving quadratic equations (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Solve quadratics by factorising and (higher) by the formula, and find turning points and intercepts.",
+      make: () => distinct(10, () => {
+        const k = rand(4), p = (rand(7) + 1) * (rand(2) ? 1 : -1), q = (rand(7) + 1) * (rand(2) ? 1 : -1);
+        const roots = (a, b) => `x = ${minus(Math.min(a, b))} or x = ${minus(Math.max(a, b))}`;
+        if (k === 0) { if (p === q || p + q === 0) return { label: "skip" }; const ans = roots(-p, -q);
+          return choice(`Solve ${expr([1, "x²"], [p + q, "x"], [p * q, ""])} = 0.`, ans, others2u(ans, [roots(p, q), roots(-p, q), roots(p, -q)]), { label: `solve ${p},${q}`, skill: "solving by factorising", explain: `It factorises to (${expr([1, "x"], [p, ""])})(${expr([1, "x"], [q, ""])}) = 0, so one bracket is 0: ${ans}.` }); }
+        if (k === 1) { const r = rand(10) + 2, ans = roots(-r, r);
+          return choice(`Solve x² = ${r * r}.`, ans, others2u(ans, [`x = ${r}`, `x = ${r * r / 2}`, roots(-(r * r), r * r)]), { label: `sq ${r}`, skill: "solving x² = k", explain: `Both ${r} × ${r} and −${r} × −${r} make ${r * r}, so there are two answers.` }); }
+        if (k === 2) { const a = rand(9) - 4, b = rand(13) - 6, ans = `(${minus(a)}, ${minus(b)})`;
+          if (a === 0 || b === 0) return { label: "skip" };
+          return choice(`What is the turning point of y = (x ${signed(-a)})² ${signed(b)}?`, ans, others2u(ans, [`(${minus(-a)}, ${minus(b)})`, `(${minus(a)}, ${minus(-b)})`, `(${minus(b)}, ${minus(a)})`]), { label: `tp ${a},${b}`, skill: "turning points from completed square form", explain: `The bracket is smallest (0) when x = ${minus(a)}, and then y = ${minus(b)}.` }); }
+        const a = pick([1, 2, 3]), b = rand(9) - 4, c = -(rand(8) + 1), disc = b * b - 4 * a * c, r = Math.sqrt(disc);
+        if (Number.isInteger(r)) return { label: "skip" };
+        const big = (-b + r) / (2 * a);
+        return typed(`Use the quadratic formula to solve ${expr([a, "x²"], [b, "x"], [c, ""])} = 0. Give the larger solution to 2 decimal places. (higher, calculator)`, fixed(big, 2),
+          { input: "decimal", accept: near(big, 2), label: `qf ${a},${b},${c}`, skill: "the quadratic formula",
+            explain: `x = (−b ± √(b² − 4ac)) ÷ 2a = (${minus(-b)} ± √${disc}) ÷ ${2 * a}. The larger uses +: ${fixed(big, 2)}.` });
+      }) },
+    { id: "k4-simultaneous", title: "Simultaneous equations and inequalities (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Solve a pair of equations together, solve inequalities, and count the whole numbers that fit.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k < 2) { const x = rand(11) - 4 || 3, y = rand(11) - 4, a1 = rand(4) + 1, b1 = rand(4) + 1, a2 = rand(4) + 1, b2 = -(rand(4) + 1);
+          if (a1 * b2 - a2 * b1 === 0) return { label: "skip" };
+          const eq = (a, b) => `${expr([a, "x"], [b, "y"])} = ${minus(a * x + b * y)}`, ans = `x = ${minus(x)}, y = ${minus(y)}`;
+          return choice(`Solve together: ${eq(a1, b1)} and ${eq(a2, b2)}.`, ans, others2u(ans, [`x = ${minus(y)}, y = ${minus(x)}`, `x = ${minus(x)}, y = ${minus(-y || 1)}`, `x = ${minus(-x || 2)}, y = ${minus(y)}`]),
+            { label: `sim ${a1}${b1}${a2}${b2} ${x},${y}`, skill: "simultaneous equations", explain: `Make the x or y numbers match and add or subtract to get rid of one letter. Check: ${a1} × ${bracket(x)} ${signed(b1)} × ${bracket(y)} = ${minus(a1 * x + b1 * y)}.` }); }
+        if (k === 2) { const a = rand(5) + 2, b = rand(9) - 4, x = rand(9) - 2, gt = rand(2), sym = gt ? ">" : "≤", ans = `x ${sym} ${minus(x)}`;
+          return choice(`Solve ${expr([a, "x"], [b, ""])} ${sym} ${minus(a * x + b)}.`, ans, others2u(ans, [`x ${gt ? "<" : "≥"} ${minus(x)}`, `x ${sym} ${minus(x + 1)}`, `x ${sym} ${minus(a * x)}`]),
+            { label: `ineq ${a},${b},${x},${gt}`, skill: "solving inequalities", explain: `Solve it like an equation: ${b < 0 ? `add ${-b}` : `take away ${b}`} on both sides, then divide by ${a}. The sign stays the same because ${a} is positive.` }); }
+        const a = pick([2, 3]), b = rand(7) - 3, lo = rand(5) - 6, hi = rand(6) + 4;
+        const n = range(-30, 30).filter(v => lo < a * v + b && a * v + b <= hi);
+        return typed(`How many whole numbers n satisfy ${minus(lo)} < ${expr([a, "n"], [b, ""])} ≤ ${hi}?`, n.length, { label: `count ${a},${b},${lo},${hi}`, skill: "integers that satisfy an inequality", explain: `${b ? `${b < 0 ? "Add" : "Take away"} ${Math.abs(b)} and ` : ""}divide by ${a}: ${sfrac(lo - b, a)} < n ≤ ${sfrac(hi - b, a)}. That's n = ${n.map(minus).join(", ")}.` });
+      }) },
+    { id: "k4-sequences", title: "Quadratic and geometric sequences (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Continue quadratic, geometric and Fibonacci-type sequences, and find the nth term of a quadratic sequence.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k < 2) { const a = pick([1, 1, 2, 3]), b = rand(9) - 4, c = rand(11) - 5, t = n => a * n * n + b * n + c, seq = [1, 2, 3, 4].map(t), rule = `${expr([a, "n²"], [b, "n"], [c, ""])}`;
+          if (k === 0) return typed(`What comes next? ${seq.map(minus).join(", ")}, …`, t(5), { accept: negAccept(t(5)), label: `quad next ${a},${b},${c}`, skill: "quadratic sequences", explain: `The differences go ${[1, 2, 3].map(i => minus(seq[i] - seq[i - 1])).join(", ")}, going up by ${2 * a} each time, so the next difference is ${minus(t(5) - seq[3])}.` });
+          return choice(`Find the nth term of ${seq.map(minus).join(", ")}, …`, rule, others2u(rule, [expr([a, "n²"], [b + 1, "n"], [c - 1, ""]), expr([2 * a, "n²"], [b, "n"], [c, ""]), expr([a, "n²"], [c, "n"], [b, ""])].filter(r => r !== rule)),
+            { label: `quad nth ${a},${b},${c}`, skill: "the nth term of a quadratic sequence", explain: `The second difference is ${2 * a}, so it starts ${a === 1 ? "" : a}n². Take ${a === 1 ? "" : a}n² away and what's left (${[1, 2, 3, 4].map(n => minus(t(n) - a * n * n)).join(", ")}) is ${expr([b, "n"], [c, ""])}.` }); }
+        if (k === 2) { const a = rand(5) + 1, r = pick([2, 3, -2, 5]), seq = [0, 1, 2, 3].map(i => a * r ** i);
+          return typed(`What comes next? ${seq.map(minus).join(", ")}, …`, a * r ** 4, { accept: negAccept(a * r ** 4), label: `geo ${a},${r}`, skill: "geometric sequences", explain: `Each term is the one before × ${minus(r)}: ${minus(seq[3])} × ${bracket(r)} = ${minus(a * r ** 4)}.` }); }
+        if (k === 3) { const a = rand(6) + 1, b = rand(6) + 1, s = [a, b]; while (s.length < 6) s.push(s[s.length - 1] + s[s.length - 2]);
+          return typed(`This is a Fibonacci-type sequence. What comes next? ${s.slice(0, 5).join(", ")}, …`, s[5], { label: `fib ${a},${b}`, skill: "Fibonacci-type sequences", explain: `Each term is the two before added: ${s[3]} + ${s[4]} = ${s[5]}.` }); }
+        const n = rand(10) + 5, kind = pick(["triangular", "square", "cube"]), v = kind === "triangular" ? n * (n + 1) / 2 : kind === "square" ? n * n : n ** 3;
+        return typed(`What is the ${n}th ${kind} number?`, v, { label: `${kind} ${n}`, skill: "special sequences", explain: kind === "triangular" ? `Add 1 + 2 + … + ${n}, or use n(n + 1) ÷ 2: ${n} × ${n + 1} ÷ 2 = ${v}.` : `${n}${kind === "square" ? "²" : "³"} = ${v}.` });
+      }) },
+    { id: "k4-graph-shapes", title: "Graph shapes and transformations (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Recognise linear, quadratic, cubic, reciprocal and exponential graphs, and how y = f(x) moves.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const [name, f, , eq] = pick(GRAPH_SHAPES), others = GRAPH_SHAPES.filter(s => s[0] !== name);
+          return choice(`Which equation could this graph have?`, eq, shuffle(others).slice(0, 2).map(s => s[3]), { html: sketch(f, `A ${name} graph`), label: `which eq ${name}`, skill: "recognising graph shapes", explain: `This is ${name === "exponential" ? "an" : "a"} ${name} graph.` }); }
+        if (k === 1) { const [name, , eqf] = pick(GRAPH_SHAPES), eq = eqf();
+          return choice(`What kind of graph is ${eq}?`, name, others2u(name, GRAPH_SHAPES.map(s => s[0])), { label: `kind ${eq}`, skill: "recognising graph shapes", explain: name === "linear" ? "x to the power 1 gives a straight line." : name === "quadratic" ? "An x² term gives a U-shaped (or ∩-shaped) curve." : name === "cubic" ? "An x³ term gives an S-shaped curve." : name === "reciprocal" ? "A number over x gives two curves that never touch the axes." : "x in the power gives a curve that grows faster and faster." }); }
+        const a = rand(5) + 1, moves = [
+          [`y = f(x) ${signed(a)}`, `a translation ${a} up`, [`a translation ${a} to the right`, `a translation ${a} to the left`, `a stretch by ${a}`]],
+          [`y = f(x) − ${a}`, `a translation ${a} down`, [`a translation ${a} to the right`, `a translation ${a} up`]],
+          [`y = f(x + ${a})`, `a translation ${a} to the left`, [`a translation ${a} to the right`, `a translation ${a} up`]],
+          [`y = f(x − ${a})`, `a translation ${a} to the right`, [`a translation ${a} to the left`, `a translation ${a} down`]],
+          ["y = −f(x)", "a reflection in the x-axis", ["a reflection in the y-axis", "a translation 1 down"]],
+          ["y = f(−x)", "a reflection in the y-axis", ["a reflection in the x-axis", "a translation 1 to the left"]]
+        ], [g, ans, wrong] = pick(moves);
+        return choice(`How does the graph of y = f(x) move to give ${g}? (higher)`, ans, others2u(ans, wrong), { label: `move ${g}`, skill: "transforming graphs", explain: /x[+−] |x − |x \+ /.test(g) ? "A change inside the bracket moves the graph sideways, the opposite way to the sign." : /−f|f\(−/.test(g) ? "A minus outside flips the y values (x-axis); inside flips the x values (y-axis)." : "Adding outside the bracket moves every y value up or down." });
+      }) },
+    { id: "k4-rates", title: "Real-life graphs and rates of change (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Gradients as speeds and accelerations, distance from the area under a graph, and the kinematics formulae.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const s = pick([3, 4, 5, 6, 8, 10, 12]), t = pick([0.5, 1.5, 2, 2.5, 3]), d = s * t; if (!Number.isInteger(d * 2)) return { label: "skip" };
+          return typed(`A distance–time graph is a straight line from (0, 0) to (${t} hours, ${d} km). What is the speed? (km/h)`, s, { label: `dt ${d}/${t}`, skill: "gradient as a speed", explain: `The gradient of a distance–time graph is the speed: ${d} ÷ ${t} = ${s} km/h.` }); }
+        if (k === 1) { const a = pick([2, 3, 4, 5]), t = rand(6) + 2, u = pick([0, 0, 2, 4, 5]); const v = u + a * t;
+          return typed(`On a speed–time graph, the speed goes in a straight line from ${u} m/s to ${v} m/s in ${t} seconds. What is the acceleration? (m/s²)`, a, { label: `acc ${u},${v},${t}`, skill: "gradient as an acceleration", explain: `Acceleration = change in speed ÷ time = ${v - u} ÷ ${t} = ${a} m/s².` }); }
+        if (k === 2) { const u = pick([0, 2, 4, 6]), v = u + pick([4, 6, 8, 10]), t = rand(8) + 2, d = (u + v) / 2 * t;
+          return typed(`A speed–time graph goes in a straight line from ${u} m/s to ${v} m/s over ${t} seconds. How far does the object travel? (m)`, d, { label: `area ${u},${v},${t}`, skill: "the area under a graph", explain: `Distance is the area under the graph, a ${u ? "trapezium" : "triangle"}: (${u} + ${v}) ÷ 2 × ${t} = ${d} m.` }); }
+        if (k === 3) { const u = rand(10), a = rand(4) + 1, t = rand(8) + 2;
+          return typed(`Use v = u + at. u = ${u} m/s, a = ${a} m/s², t = ${t} s. What is v? (m/s)`, u + a * t, { label: `v=u+at ${u},${a},${t}`, skill: "kinematics formulae", explain: `v = ${u} + ${a} × ${t} = ${u + a * t} m/s.` }); }
+        const u = rand(6), a = pick([2, 4, 6]), t = rand(5) + 2, s = u * t + a * t * t / 2;
+        return typed(`Use s = ut + ½at². u = ${u} m/s, a = ${a} m/s², t = ${t} s. What is s? (m)`, s, { label: `s ${u},${a},${t}`, skill: "kinematics formulae", explain: `s = ${u} × ${t} + ½ × ${a} × ${t}² = ${u * t} + ${a * t * t / 2} = ${s} m.` });
+      }) },
+    { id: "k4-growth", title: "Growth, decay and compound interest (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Multipliers, compound interest, depreciation, reverse percentages and iteration.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const p = pick([3, 4, 5, 8, 12, 15, 20, 35]), up = rand(2), m = up ? 1 + p / 100 : 1 - p / 100, ans = String(Math.round(m * 100) / 100);
+          return choice(`What do you multiply by to ${up ? "increase" : "decrease"} an amount by ${p}%?`, ans, others2u(ans, [String(Math.round((up ? 1 - p / 100 : 1 + p / 100) * 100) / 100), String(p / 100), String(p)]), { label: `mult ${p} ${up}`, skill: "percentage multipliers", explain: `${up ? "100% + " : "100% − "}${p}% = ${Math.round(m * 100)}%, which is × ${ans}.` }); }
+        if (k === 1) { const P = pick([500, 800, 1000, 1200, 2000, 2500, 5000]), r = pick([2, 3, 4, 5]), n = rand(4) + 2, A = P * (1 + r / 100) ** n;
+          return typed(`£${P} is invested at ${r}% compound interest a year. How much is it worth after ${n} years? (£, to the nearest penny; calculator)`, A.toFixed(2), { input: "decimal", accept: near(A, 2), label: `ci ${P},${r},${n}`, skill: "compound interest", explain: `£${P} × ${1 + r / 100}${sup(n)} = £${A.toFixed(2)}.` }); }
+        if (k === 2) { const P = pick([8000, 12000, 15000, 20000]), r = pick([10, 15, 20, 25]), n = rand(3) + 2, A = P * (1 - r / 100) ** n;
+          return typed(`A car costs £${P}. It loses ${r}% of its value each year. What is it worth after ${n} years? (£, to the nearest pound; calculator)`, Math.round(A), { accept: [String(Math.round(A) - 1), String(Math.round(A) + 1)], label: `dep ${P},${r},${n}`, skill: "depreciation", explain: `£${P} × ${1 - r / 100}${sup(n)} = £${A.toFixed(2)}, about £${Math.round(A)}.` }); }
+        if (k === 3) { const p = pick([10, 20, 25, 40, 50]), up = rand(2), old = (rand(30) + 4) * 10, now = old * (up ? 100 + p : 100 - p) / 100;
+          if (!Number.isInteger(now)) return { label: "skip" };
+          return typed(`After a ${p}% ${up ? "increase" : "decrease"}, a price is £${now}. What was it before? (£)`, old, { label: `rev ${p},${up},${now}`, skill: "reverse percentages", explain: `£${now} is ${up ? 100 + p : 100 - p}% of the old price, so divide by ${(up ? 100 + p : 100 - p) / 100}: £${old}. (Not ${p}% of £${now}!)` }); }
+        const c = pick([2, 3, 4, 5]), x0 = pick([1, 2, 3]), x1 = c + 1 / x0;
+        return typed(`Use xₙ₊₁ = ${c} + 1/xₙ with x₀ = ${x0}. What is x₁? (higher; give it as a decimal, to 2 decimal places if needed)`, String(Math.round(x1 * 100) / 100), { input: "decimal", accept: [x1.toFixed(2)], label: `iter ${c},${x0}`, skill: "iteration", explain: `Put x₀ = ${x0} in: ${c} + 1/${x0} = ${Math.round(x1 * 100) / 100}.` });
+      }) },
+    { id: "k4-proportion", title: "Proportion and compound units (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Proportion to x² and 1/x², density and pressure, and fractions in ratio problems.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const c = rand(4) + 1, a = rand(3) + 2, b = rand(4) + 3; if (a === b) return { label: "skip" };
+          return typed(`y is directly proportional to x². When x = ${a}, y = ${c * a * a}. What is y when x = ${b}?`, c * b * b, { label: `x2 ${c},${a},${b}`, skill: "proportion to a square", explain: `y = kx²: ${c * a * a} = k × ${a * a}, so k = ${c}. Then y = ${c} × ${b * b} = ${c * b * b}.` }); }
+        if (k === 1) { const a = pick([1, 2, 3]), b = pick([2, 4, 6]), y = pick([36, 72, 144]); const kk = y * a * a, ans = kk / (b * b); if (a === b || !Number.isInteger(ans)) return { label: "skip" };
+          return typed(`y is inversely proportional to x². When x = ${a}, y = ${y}. What is y when x = ${b}? (higher)`, ans, { label: `inv2 ${a},${b},${y}`, skill: "inverse proportion to a square", explain: `y = k ÷ x²: k = ${y} × ${a * a} = ${kk}. Then y = ${kk} ÷ ${b * b} = ${ans}.` }); }
+        if (k === 2) { const d = pick([2, 2.5, 7.8, 8, 11.3, 0.8, 1.2]), v = pick([10, 20, 25, 50, 100]), m = Math.round(d * v * 100) / 100, findM = rand(2);
+          return findM ? typed(`A metal has a density of ${d} g/cm³. What is the mass of ${v} cm³ of it? (g)`, String(m), { input: "decimal", label: `mass ${d},${v}`, skill: "density", explain: `Mass = density × volume = ${d} × ${v} = ${m} g.` })
+            : typed(`A ${v} cm³ block has a mass of ${m} g. What is its density? (g/cm³)`, String(d), { input: "decimal", label: `dens ${m},${v}`, skill: "density", explain: `Density = mass ÷ volume = ${m} ÷ ${v} = ${d} g/cm³.` }); }
+        if (k === 3) { const A = pick([0.5, 2, 4, 5, 10]), F = A * (rand(20) + 5) * 10;
+          return typed(`A force of ${F} N acts on an area of ${A} m². What is the pressure? (N/m²)`, F / A, { label: `pres ${F},${A}`, skill: "pressure", explain: `Pressure = force ÷ area = ${F} ÷ ${A} = ${F / A} N/m².` }); }
+        const a = rand(6) + 1, b = rand(6) + 2; if (gcd(a, b) !== 1) return { label: "skip" };
+        const ans = `${a}/${a + b}`;
+        return choice(`Red and blue counters are in the ratio ${a} : ${b}. What fraction of the counters are red?`, ans, others2u(ans, [`${a}/${b}`, `${b}/${a + b}`, `${b}/${a}`]), { label: `frac ratio ${a}:${b}`, skill: "fractions in ratio problems", explain: `There are ${a} + ${b} = ${a + b} parts, and ${a} of them are red: ${ans}.` });
+      }) },
+    { id: "k4-similarity", title: "Similar shapes and enlargement (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Scale factors for lengths, areas and volumes, and fractional enlargements.",
+      make: () => distinct(10, () => {
+        const k = rand(4), s = pick([2, 3, 4, 5, 1.5, 2.5]);
+        if (k === 0) { const a = pick([4, 6, 8, 10]), b = pick([3, 5, 7, 9]), big = a * s, ans = b * s;
+          return typed(`Two triangles are similar. A side of ${a} cm in the small one matches a side of ${big} cm in the large one. Another side of the small one is ${b} cm. How long is the matching side? (cm)`, String(ans), { input: "decimal", label: `sim ${a},${b},${s}`, skill: "lengths in similar shapes", explain: `Scale factor = ${big} ÷ ${a} = ${s}. ${b} × ${s} = ${ans} cm.` }); }
+        if (k === 1) { const n = pick([2, 3, 4, 5]), A = pick([5, 6, 8, 10, 12]);
+          return typed(`A shape has an area of ${A} cm². It is enlarged by scale factor ${n}. What is the new area? (cm²)`, A * n * n, { label: `area sf ${A},${n}`, skill: "area scale factor", explain: `Areas grow by the scale factor squared: ${A} × ${n}² = ${A * n * n} cm².` }); }
+        if (k === 2) { const n = pick([2, 3, 4]), V = pick([5, 8, 10, 12]);
+          return typed(`Two cylinders are similar. The larger is ${n} times as tall. The smaller holds ${V} cm³. How much does the larger hold? (cm³) (higher)`, V * n ** 3, { label: `vol sf ${V},${n}`, skill: "volume scale factor", explain: `Volumes grow by the scale factor cubed: ${V} × ${n}³ = ${V * n ** 3} cm³.` }); }
+        const a = rand(4) + 1, b = a + rand(4) + 1; if (gcd(a, b) !== 1) return { label: "skip" };
+        const ans = `${a} : ${b}`;
+        return choice(`Two similar shapes have areas in the ratio ${a * a} : ${b * b}. What is the ratio of their lengths? (higher)`, ans, others2u(ans, [`${a * a} : ${b * b}`, `${a ** 3} : ${b ** 3}`, `${a * 2} : ${b * 2 + 1}`]), { label: `ratio ${a}:${b}`, skill: "from area ratio to length ratio", explain: `Area ratio = length ratio squared, so square root both: √${a * a} : √${b * b} = ${ans}.` });
+      }) },
+    { id: "k4-vectors", title: "Vectors (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Add, subtract and multiply column vectors, and translate shapes by a vector. Vectors are shown across the page as (x, y).",
+      make: () => distinct(10, () => {
+        const k = rand(5), v = () => [rand(11) - 5 || 2, rand(11) - 5 || -3], a = v(), b = v(), V = ([x, y]) => `(${minus(x)}, ${minus(y)})`;
+        const res = (p, q) => [p * a[0] + q * b[0], p * a[1] + q * b[1]];
+        if (k < 3) { const [p, q] = [[1, 1], [1, -1], [2, 1], [3, -1], [2, -3]][k === 0 ? 0 : k === 1 ? 1 : 2 + rand(3)], r = res(p, q), ans = V(r);
+          const name = expr([p, "a"], [q, "b"]);
+          return choice(`a = ${V(a)} and b = ${V(b)}. Work out ${name}.`, ans, others2u(ans, [V(res(q, p)), V(res(p, -q)), V([r[1], r[0]])]), { label: `vec ${a},${b},${p},${q}`, skill: "column vectors", explain: `Do the top numbers and the bottom numbers separately: ${name} = (${minus(p * a[0])} ${signed(q * b[0])}, ${minus(p * a[1])} ${signed(q * b[1])}) = ${ans}.` }); }
+        if (k === 3) { const [x, y, m] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 6, 10], [12, 5, 13]]), sx = rand(2) ? 1 : -1, sy = rand(2) ? 1 : -1;
+          return typed(`What is the magnitude (length) of the vector (${minus(sx * x)}, ${minus(sy * y)})?`, m, { label: `mag ${x},${y}`, skill: "the length of a vector", explain: `Use Pythagoras: √(${x}² + ${y}²) = √${m * m} = ${m}.` }); }
+        const P = v(), ans = V([P[0] + a[0], P[1] + a[1]]);
+        return choice(`The point (${minus(P[0])}, ${minus(P[1])}) is translated by the vector ${V(a)}. Where does it end up?`, ans, others2u(ans, [V([P[0] - a[0], P[1] - a[1]]), V([P[0] + a[1], P[1] + a[0]]), V([P[0] + a[0], P[1] - a[1]])]), { label: `trans ${P},${a}`, skill: "translation by a vector", explain: `Move ${minus(a[0])} across and ${minus(a[1])} up: (${minus(P[0])} ${signed(a[0])}, ${minus(P[1])} ${signed(a[1])}) = ${ans}.` });
+      }) },
+    { id: "k4-sectors", title: "Arcs and sectors (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Arc lengths and sector areas, exactly in terms of π and rounded with a calculator.",
+      make: () => distinct(10, () => {
+        const k = rand(3), th = pick([30, 45, 60, 90, 120, 135, 150, 180, 240, 270]), r = pick([2, 3, 4, 6, 8, 9, 10, 12]);
+        const arcK = th * 2 * r / 360, areaK = th * r * r / 360;
+        if (k === 0) { if (!Number.isInteger(arcK)) return { label: "skip" }; const ans = piOf(arcK);
+          return choice(`A sector has radius ${r} cm and angle ${th}°. What is its arc length? Give an exact answer.`, ans, others2u(ans, [piOf(areaK), piOf(arcK * 2), piOf(2 * r)].filter(x => x !== ans)), { label: `arc ${r},${th}`, skill: "arc length", explain: `Arc = ${th}/360 × 2π × ${r} = ${ans} cm.` }); }
+        if (k === 1) { if (!Number.isInteger(areaK)) return { label: "skip" }; const ans = piOf(areaK);
+          return choice(`A sector has radius ${r} cm and angle ${th}°. What is its area? Give an exact answer.`, ans, others2u(ans, [piOf(2 * r), piOf(areaK * 2), piOf(r * r)].filter(x => x !== ans)), { label: `sec ${r},${th}`, skill: "sector area", explain: `Area = ${th}/360 × π × ${r}² = ${ans} cm².` }); }
+        const th2 = rand(140) + 20, r2 = rand(12) + 3, A = th2 / 360 * Math.PI * r2 * r2;
+        return typed(`A sector has radius ${r2} cm and angle ${th2}°. What is its area, to 1 decimal place? (cm²; calculator)`, fixed(A), { input: "decimal", accept: near(A), label: `secc ${r2},${th2}`, skill: "sector area", explain: `${th2}/360 × π × ${r2}² = ${fixed(A, 3)}… ≈ ${fixed(A)} cm².` });
+      }) },
+    { id: "k4-circle-theorems", title: "Circle theorems (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Use the circle theorems to find missing angles, and name the theorem each time. (Higher)",
+      make: () => distinct(10, () => {
+        const k = rand(7), a = rand(50) + 20;
+        const Q = [
+          [`Points A, B and C are on a circle with centre O. Angle ACB = ${a}°. What is angle AOB?`, 2 * a, "The angle at the centre is twice the angle at the circumference."],
+          [`AB is a diameter of a circle and C is on the circle. Angle CAB = ${a}°. What is angle CBA?`, 90 - a, "The angle in a semicircle is 90°, so 180 − 90 − " + a + "."],
+          [`ABCD is a cyclic quadrilateral. Angle ABC = ${a + 50}°. What is angle ADC?`, 130 - a, "Opposite angles in a cyclic quadrilateral add to 180°."],
+          [`A tangent touches a circle with centre O at T. A is a point on the tangent. Angle TOA = ${a}°. What is angle TAO?`, 90 - a, "A tangent meets a radius at 90°, so 180 − 90 − " + a + "."],
+          [`A, B, C and D are on a circle. Angle ACB = ${a}°. D is on the same side of AB as C. What is angle ADB?`, a, "Angles in the same segment are equal."],
+          [`Two tangents from P touch a circle with centre O at A and B. Angle APB = ${a * 2}°. What is angle AOB?`, 180 - a * 2, "Each tangent meets its radius at 90°, and the angles of OAPB add to 360°."],
+          [`O is the centre of a circle, and A and B are on it. Angle AOB = ${a * 2}°. What is angle OAB?`, 90 - a, "OA and OB are both radii, so triangle OAB is isosceles: (180 − " + a * 2 + ") ÷ 2."]
+        ][k];
+        return typed(`${Q[0]} (°)`, Q[1], { label: `ct ${k},${a}`, skill: "circle theorems", explain: `${Q[2]} The answer is ${Q[1]}°.` });
+      }) },
+    { id: "k4-3d", title: "Volume and surface area: cones, spheres and pyramids (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Volumes and surface areas of cylinders, cones, spheres and pyramids, exactly in terms of π.",
+      make: () => distinct(10, () => {
+        const k = rand(6), r = rand(6) + 2, h = (rand(4) + 1) * 3;
+        if (k === 0) { const ans = piOf(r * r * h); return choice(`A cylinder has radius ${r} cm and height ${h} cm. What is its volume, in terms of π? (cm³)`, ans, others2u(ans, [piOf(2 * r * h), piOf(r * r * h / 3), piOf(r * h)]), { label: `cyl ${r},${h}`, skill: "volume of a cylinder", explain: `V = πr²h = π × ${r * r} × ${h} = ${ans}.` }); }
+        if (k === 1) { const ans = piOf(r * r * h / 3); return choice(`A cone has radius ${r} cm and height ${h} cm. What is its volume, in terms of π? (cm³)`, ans, others2u(ans, [piOf(r * r * h), piOf(r * h), piOf(2 * r * h / 3)]), { label: `cone ${r},${h}`, skill: "volume of a cone", explain: `V = ⅓πr²h = ⅓ × π × ${r * r} × ${h} = ${ans}.` }); }
+        if (k === 2) { const R = pick([3, 6, 9]), ans = piOf(4 * R ** 3 / 3); return choice(`A sphere has radius ${R} cm. What is its volume, in terms of π? (cm³)`, ans, others2u(ans, [piOf(4 * R * R), piOf(R ** 3), piOf(4 * R ** 3)]), { label: `sph v ${R}`, skill: "volume of a sphere", explain: `V = ⁴⁄₃πr³ = ⁴⁄₃ × π × ${R ** 3} = ${ans}.` }); }
+        if (k === 3) { const ans = piOf(4 * r * r); return choice(`A sphere has radius ${r} cm. What is its surface area, in terms of π? (cm²)`, ans, others2u(ans, [piOf(2 * r * r), piOf(r * r), piOf(4 * r)]), { label: `sph a ${r}`, skill: "surface area of a sphere", explain: `A = 4πr² = 4 × π × ${r * r} = ${ans}.` }); }
+        if (k === 4) { const [rr, hh, l] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 6, 10], [9, 12, 15]]), ans = piOf(rr * l);
+          return choice(`A cone has radius ${rr} cm and perpendicular height ${hh} cm. What is its curved surface area, in terms of π? (cm²) (Find the slant height first.)`, ans, others2u(ans, [piOf(rr * hh), piOf(rr * rr + rr * l), piOf(rr * l * 2)]), { label: `csa ${rr},${hh}`, skill: "surface area of a cone", explain: `Slant height l = √(${rr}² + ${hh}²) = ${l}. Curved area = πrl = π × ${rr} × ${l} = ${ans}.` }); }
+        const s = pick([3, 4, 5, 6, 9]);
+        return typed(`A pyramid has a square base of side ${s} cm and a height of ${h} cm. What is its volume? (cm³)`, s * s * h / 3, { label: `pyr ${s},${h}`, skill: "volume of a pyramid", explain: `V = ⅓ × base area × height = ⅓ × ${s * s} × ${h} = ${s * s * h / 3} cm³.` });
+      }) },
+    { id: "k4-trig", title: "Trigonometry and bearings (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Sine, cosine and tangent in right-angled triangles, exact values, and bearings.",
+      make: () => distinct(10, () => {
+        const k = rand(5);
+        if (k === 0) { const EX = [["sin 30°", "1/2"], ["cos 60°", "1/2"], ["tan 45°", "1"], ["sin 90°", "1"], ["cos 0°", "1"], ["tan 0°", "0"], ["sin 0°", "0"], ["cos 90°", "0"], ["sin 60°", "√3/2"], ["cos 30°", "√3/2"], ["tan 60°", "√3"], ["sin 45°", "√2/2"], ["cos 45°", "√2/2"], ["tan 30°", "1/√3"]];
+          const [q, ans] = pick(EX);
+          return choice(`What is the exact value of ${q}?`, ans, others2u(ans, ["1/2", "√3/2", "√2/2", "1", "0", "√3", "1/√3"]), { label: `exact ${q}`, skill: "exact trig values", explain: `${q} = ${ans}. ${/30|60/.test(q) ? "Use half of an equilateral triangle with sides 2." : /45/.test(q) ? "Use a right-angled isosceles triangle with short sides 1." : "Think of the sine and cosine graphs."}` }); }
+        const ang = rand(55) + 20, side = rand(15) + 5;
+        if (k === 1) { const which = rand(2), v = which ? side * Math.sin(rad(ang)) : side * Math.cos(rad(ang));
+          return typed(`A right-angled triangle has hypotenuse ${side} cm and an angle of ${ang}°. How long is the side ${which ? "opposite" : "next to (adjacent to)"} the ${ang}° angle? (cm, 1 d.p.; calculator)`, fixed(v), { input: "decimal", accept: near(v), label: `side ${side},${ang},${which}`, skill: "finding a side", explain: `${which ? "sin" : "cos"} ${ang}° = ${which ? "opposite" : "adjacent"} ÷ hypotenuse, so it's ${side} × ${which ? "sin" : "cos"} ${ang}° = ${fixed(v)} cm.` }); }
+        if (k === 2) { const v = side * Math.tan(rad(ang));
+          return typed(`In a right-angled triangle, the side next to a ${ang}° angle is ${side} cm. How long is the side opposite it? (cm, 1 d.p.; calculator)`, fixed(v), { input: "decimal", accept: near(v), label: `tan ${side},${ang}`, skill: "finding a side", explain: `tan ${ang}° = opposite ÷ adjacent, so it's ${side} × tan ${ang}° = ${fixed(v)} cm.` }); }
+        if (k === 3) { const o = rand(9) + 3, a2 = rand(9) + 3, v = Math.atan(o / a2) * 180 / Math.PI;
+          return typed(`A right-angled triangle has a side of ${o} cm opposite angle x and a side of ${a2} cm next to it. What is x? (degrees, 1 d.p.; calculator)`, fixed(v), { input: "decimal", accept: near(v), label: `ang ${o},${a2}`, skill: "finding an angle", explain: `tan x = ${o} ÷ ${a2}, so x = tan⁻¹(${o} ÷ ${a2}) = ${fixed(v)}°.` }); }
+        const b = rand(340) + 10, back = (b + 180) % 360, three = n => String(n).padStart(3, "0");
+        return typed(`The bearing of B from A is ${three(b)}°. What is the bearing of A from B? (°)`, three(back), { accept: [String(back)], label: `bearing ${b}`, skill: "back bearings", explain: `Turn round: ${b} ${b < 180 ? "+" : "−"} 180 = ${three(back)}°. Bearings have three figures.` });
+      }) },
+    { id: "k4-sine-cosine", title: "Sine rule, cosine rule and area of a triangle (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Find sides, angles and areas of any triangle with the sine rule, the cosine rule and ½ab sin C. (Higher, calculator)",
+      make: () => distinct(10, () => {
+        const k = rand(4), b = rand(10) + 5, c = rand(10) + 5, A = rand(100) + 25;
+        if (k === 0) { const a = Math.sqrt(b * b + c * c - 2 * b * c * Math.cos(rad(A)));
+          return typed(`In triangle ABC, b = ${b} cm, c = ${c} cm and angle A = ${A}°. Find a. (cm, 1 d.p.)`, fixed(a), { input: "decimal", accept: near(a), label: `cos side ${b},${c},${A}`, skill: "the cosine rule for a side", explain: `a² = ${b}² + ${c}² − 2 × ${b} × ${c} × cos ${A}° = ${fixed(a * a, 2)}, so a = ${fixed(a)} cm.` }); }
+        if (k === 1) { const B = rand(50) + 30; if (A + B > 160) return { label: "skip" }; const a = b * Math.sin(rad(A)) / Math.sin(rad(B));
+          return typed(`In triangle ABC, angle A = ${A}°, angle B = ${B}° and b = ${b} cm. Find a. (cm, 1 d.p.)`, fixed(a), { input: "decimal", accept: near(a), label: `sin side ${A},${B},${b}`, skill: "the sine rule for a side", explain: `a/sin A = b/sin B, so a = ${b} × sin ${A}° ÷ sin ${B}° = ${fixed(a)} cm.` }); }
+        if (k === 2) { const area = 0.5 * b * c * Math.sin(rad(A));
+          return typed(`Two sides of a triangle are ${b} cm and ${c} cm, and the angle between them is ${A}°. What is its area? (cm², 1 d.p.)`, fixed(area), { input: "decimal", accept: near(area), label: `area ${b},${c},${A}`, skill: "area = ½ab sin C", explain: `Area = ½ × ${b} × ${c} × sin ${A}° = ${fixed(area)} cm².` }); }
+        const a = rand(8) + Math.abs(b - c) + 2; if (a >= b + c) return { label: "skip" };
+        const ang = Math.acos((b * b + c * c - a * a) / (2 * b * c)) * 180 / Math.PI;
+        return typed(`A triangle has sides a = ${a} cm, b = ${b} cm and c = ${c} cm. Find angle A. (degrees, 1 d.p.)`, fixed(ang), { input: "decimal", accept: near(ang), label: `cos ang ${a},${b},${c}`, skill: "the cosine rule for an angle", explain: `cos A = (${b}² + ${c}² − ${a}²) ÷ (2 × ${b} × ${c}) = ${fixed((b * b + c * c - a * a) / (2 * b * c), 3)}, so A = ${fixed(ang)}°.` });
+      }) },
+    { id: "k4-probability", title: "Probability: missing values and expected results (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Probabilities that add to 1, expected frequency, relative frequency and spotting bias.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const parts = [rand(4) + 1, rand(4) + 1, rand(3) + 1].map(x => x * 5), rest = 100 - parts.reduce((s, x) => s + x, 0), names = ["red", "blue", "green"];
+          if (rest <= 0) return { label: "skip" };
+          const ans = String(rest / 100);
+          return typed(`A spinner can land on red, blue, green or yellow. P(red) = ${parts[0] / 100}, P(blue) = ${parts[1] / 100} and P(green) = ${parts[2] / 100}. What is P(yellow)?`, ans, { input: "decimal", accept: decAccept(rest / 100), label: `missing ${parts}`, skill: "probabilities add to 1", explain: `The four probabilities add to 1: 1 − ${parts.map(p => p / 100).join(" − ")} = ${ans}. (${names.length + 1} outcomes, one of them must happen.)` }); }
+        if (k === 1) { const p = pick([0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.45, 0.6]), n = pick([20, 40, 60, 80, 100, 200, 300, 500]), e = Math.round(p * n * 100) / 100;
+          if (!Number.isInteger(e)) return { label: "skip" };
+          return typed(`The probability that a seed grows is ${p}. ${n} seeds are planted. How many would you expect to grow?`, e, { label: `exp ${p},${n}`, skill: "expected frequency", explain: `Expected number = probability × number of tries = ${p} × ${n} = ${e}.` }); }
+        if (k === 2) { const n = pick([20, 40, 50, 80, 100, 200]), hits = rand(n / 2) + 1, rf = hits / n;
+          if (String(rf).length > 6) return { label: "skip" };
+          return typed(`A drawing pin is dropped ${n} times and lands point up ${hits} times. What is the relative frequency of point up? (as a decimal)`, String(rf), { input: "decimal", accept: decAccept(rf), label: `rf ${n},${hits}`, skill: "relative frequency", explain: `Relative frequency = ${hits} ÷ ${n} = ${rf}. More drops give a better estimate.` }); }
+        const n = pick([60, 120, 300, 600]), sixes = Math.round(n / 6 * pick([1, 1, 2, 2.5])), biased = sixes > n / 6 * 1.5, ans = biased ? "It is probably biased" : "It could well be fair";
+        return choice(`A dice is rolled ${n} times and lands on 6 ${sixes} times. What can you say?`, ans, [biased ? "It could well be fair" : "It is probably biased", "It is certainly fair"],
+          { label: `bias ${n},${sixes}`, skill: "fairness and bias", explain: `A fair dice would give about ${n / 6} sixes. ${sixes} is ${biased ? "far more than that, over many rolls" : "about what you'd expect"}.` });
+      }) },
+    { id: "k4-combined", title: "Combined events and tree diagrams (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "AND and OR rules, with and without replacement, counting outcomes and conditional probability.",
+      make: () => distinct(10, () => {
+        const k = rand(6);
+        if (k === 0) { const a = pick([0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]), b = pick([0.1, 0.2, 0.3, 0.5, 0.6, 0.9]), p = Math.round(a * b * 100) / 100;
+          return typed(`P(Ali is late) = ${a} and P(Bea is late) = ${b}, independently. What is the probability that both are late?`, String(p), { input: "decimal", accept: decAccept(p), label: `and ${a},${b}`, skill: "the AND rule", explain: `Independent events: multiply. ${a} × ${b} = ${p}.` }); }
+        if (k === 1) { const a = pick([0.2, 0.3, 0.4, 0.5, 0.6]), b = pick([0.1, 0.2, 0.3, 0.5]), p = Math.round((1 - (1 - a) * (1 - b)) * 100) / 100;
+          return typed(`P(rain on Saturday) = ${a} and P(rain on Sunday) = ${b}, independently. What is the probability it rains on at least one day?`, String(p), { input: "decimal", accept: decAccept(p), label: `atleast ${a},${b}`, skill: "at least one", explain: `1 − P(neither) = 1 − ${Math.round((1 - a) * 100) / 100} × ${Math.round((1 - b) * 100) / 100} = ${p}.` }); }
+        if (k === 2) { const r = rand(5) + 2, g = rand(5) + 2, t = r + g, ans = fracW(r * r, t * t);
+          return choice(`A bag has ${r} red and ${g} green beads. One is taken, put back, and another is taken. What is P(both red)?`, ans, others2u(ans, [fracW(r * (r - 1), t * (t - 1)), fracW(2 * r, t), fracW(r * r, t * (t - 1))]), { label: `with ${r},${g}`, skill: "with replacement", explain: `${r}/${t} × ${r}/${t} = ${r * r}/${t * t}${ans !== `${r * r}/${t * t}` ? ` = ${ans}` : ""}.` }); }
+        if (k === 3) { const r = rand(5) + 3, g = rand(5) + 2, t = r + g, ans = fracW(r * (r - 1), t * (t - 1));
+          return choice(`A bag has ${r} red and ${g} green beads. Two are taken without putting the first back. What is P(both red)?`, ans, others2u(ans, [fracW(r * r, t * t), fracW(r * (r - 1), t * t), fracW(r - 1, t - 1)]), { label: `without ${r},${g}`, skill: "without replacement", explain: `After a red is taken, ${r - 1} reds are left out of ${t - 1}: ${r}/${t} × ${r - 1}/${t - 1} = ${r * (r - 1)}/${t * (t - 1)}${ans !== `${r * (r - 1)}/${t * (t - 1)}` ? ` = ${ans}` : ""}.` }); }
+        if (k === 4) { const a = rand(4) + 2, b = rand(5) + 3, c = rand(3) + 2;
+          return typed(`A café has ${a} starters, ${b} mains and ${c} puddings. How many different three-course meals can you choose?`, a * b * c, { label: `count ${a},${b},${c}`, skill: "the product rule for counting", explain: `Multiply the choices: ${a} × ${b} × ${c} = ${a * b * c}.` }); }
+        const both = rand(6) + 2, onlyF = rand(8) + 2, ans = fracW(both, both + onlyF);
+        return choice(`In a class, ${both + onlyF} pupils play football, and ${both} of them also play tennis. A football player is picked at random. What is the probability they play tennis? (higher)`, ans, others2u(ans, [fracW(onlyF, both + onlyF), fracW(both, 30), fracW(both, onlyF)]), { label: `cond ${both},${onlyF}`, skill: "conditional probability", explain: `Only look at the ${both + onlyF} football players: ${both} of them play tennis, ${both}/${both + onlyF}${ans !== `${both}/${both + onlyF}` ? ` = ${ans}` : ""}.` });
+      }) },
+    { id: "k4-statistics", title: "Grouped data, quartiles, samples and correlation (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
+      blurb: "Estimate the mean from grouped data, find classes, frequency density and quartiles, sample fairly and describe correlation.",
+      make: () => distinct(10, () => {
+        const k = rand(6);
+        if (k < 3) { const w = pick([5, 10, 20]), f = [rand(8) + 1, rand(12) + 3, rand(12) + 3, rand(8) + 1], n = f.reduce((s, x) => s + x, 0);
+          const cls = i => `${i * w} < t ≤ ${(i + 1) * w}`;
+          const table = `<table class="q-table"><tr><th>Time, t (minutes)</th><th>Frequency</th></tr>${f.map((x, i) => `<tr><td>${cls(i)}</td><td>${x}</td></tr>`).join("")}</table>`;
+          if (k === 0) { const mean = f.reduce((s, x, i) => s + x * (i + 0.5) * w, 0) / n;
+            return typed(`Estimate the mean time, to 1 decimal place. (minutes)`, fixed(mean), { input: "decimal", accept: near(mean), html: table, label: `gmean ${w},${f}`, skill: "estimating the mean from grouped data", explain: `Use the middle of each class: (${f.map((x, i) => `${x} × ${(i + 0.5) * w}`).join(" + ")}) ÷ ${n} = ${fixed(mean)}.` }); }
+          if (k === 1) { const top = Math.max(...f); if (f.filter(x => x === top).length > 1) return { label: "skip" }; const ans = cls(f.indexOf(top));
+            return choice(`Which is the modal class?`, ans, others2u(ans, [0, 1, 2, 3].map(cls)), { html: table, label: `modal ${w},${f}`, skill: "the modal class", explain: `The modal class has the highest frequency, ${top}.` }); }
+          const mid = (n + 1) / 2; let run = 0, at = 0; for (; at < 4; at++) { run += f[at]; if (run >= mid) break; }
+          const ans = cls(at);
+          return choice(`${n} people were timed. Which class contains the median?`, ans, others2u(ans, [0, 1, 2, 3].map(cls)), { html: table, label: `medc ${w},${f}`, skill: "the class containing the median", explain: `The median is value number ${mid} of ${n}${mid % 1 ? " (halfway between the middle two)" : ""}. Counting up the frequencies, it falls in ${ans}.` }); }
+        if (k === 3) { const w = pick([5, 10, 20, 25]), f = Math.round(w * pick([0.4, 0.6, 0.8, 1.2, 2, 3])); const fd = Math.round(f / w * 100) / 100;
+          return typed(`A class of width ${w} has a frequency of ${f}. What is its frequency density? (higher)`, String(fd), { input: "decimal", accept: decAccept(fd), label: `fd ${w},${f}`, skill: "frequency density", explain: `Frequency density = frequency ÷ class width = ${f} ÷ ${w} = ${fd}.` }); }
+        if (k === 4) { const data = Array.from({ length: 11 }, () => rand(40) + 1).sort((a, b) => a - b), iqr = data[8] - data[2];
+          return typed(`Here are 11 values in order: ${data.join(", ")}. What is the interquartile range?`, iqr, { label: `iqr ${data}`, skill: "the interquartile range", explain: `The lower quartile is the 3rd value (${data[2]}) and the upper quartile is the 9th (${data[8]}): ${data[8]} − ${data[2]} = ${iqr}.` }); }
+        if (rand(2)) { const total = pick([600, 800, 1000, 1200]), part = Math.round(total * pick([0.2, 0.25, 0.3, 0.4, 0.45])), s = pick([40, 50, 60, 80, 100]), ans = part / total * s;
+          if (!Number.isInteger(ans)) return { label: "skip" };
+          return typed(`A school has ${total} pupils, ${part} of them in Year 10. A stratified sample of ${s} pupils is taken. How many should be in Year 10?`, ans, { label: `strat ${total},${part},${s}`, skill: "stratified sampling", explain: `Year 10 is ${part}/${total} of the school, so ${part}/${total} × ${s} = ${ans}.` }); }
+        const [say, ans] = pick([["As the temperature goes up, more ice creams are sold.", "Positive correlation"], ["The older a car is, the less it is worth.", "Negative correlation"], ["Shoe size and score in a spelling test.", "No correlation"], ["The more hours of practice, the faster the swim time (in seconds).", "Negative correlation"], ["Height and arm span.", "Positive correlation"], ["House number and age of the person living there.", "No correlation"]]);
+        return choice(`What kind of correlation would you expect? ${say}`, ans, others2u(ans, ["Positive correlation", "Negative correlation", "No correlation"]), { label: `corr ${say}`, skill: "describing correlation", explain: `${ans}. Remember that correlation doesn't prove one thing causes the other.` });
+      }) }
+  ];
+
+  /* ---------- More Third and Fourth level practice: the S1 to S3 (and England Years 7 to 9) lessons that had none at their level ---------- */
+  const numeracyUpperMore = [
+    { id: "t-calc", title: "Decimals and the order of operations", level: "Third", organiser: NUM, check: false,
+      blurb: "Multiply and divide with decimals without a calculator, and use the order of operations (brackets first).",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const a = rand(8) + 2, b = rand(8) + 2, pa = pick([1, 10]), pb = pick([10, 100]), ans = String(Number((a * b / (pa * pb)).toFixed(4)));
+          const A = String(a / pa), B = String(b / pb);
+          return typed(`${A} × ${B} = ?`, ans, { input: "decimal", accept: decAccept(Number(ans)), label: `${A}x${B}`, skill: "multiplying decimals", explain: `${a} × ${b} = ${a * b}. There ${pa * pb === 10 ? "is 1 decimal place" : `are ${String(pa * pb).length - 1} decimal places`} in the question, so ${ans}.` }); }
+        if (k === 1) { const b = pick([0.2, 0.3, 0.4, 0.5, 0.6, 0.8]), q = rand(12) + 2, a = dec(b * q);
+          return typed(`${a} ÷ ${b} = ?`, q, { label: `${a}/${b}`, skill: "dividing by a decimal", explain: `Multiply both by 10: ${dec(a * 10)} ÷ ${b * 10} = ${q}.` }); }
+        const a = rand(9) + 2, b = rand(9) + 2, c = rand(6) + 2;
+        const forms = [[`${a} + ${b} × ${c}`, a + b * c, `Multiply first: ${b} × ${c} = ${b * c}, then ${a} + ${b * c}.`],
+          [`(${a} + ${b}) × ${c}`, (a + b) * c, `Brackets first: ${a + b}, then × ${c}.`],
+          [`${a * c} ÷ ${c} + ${b}²`, a + b * b, `Powers and division before adding: ${a} + ${b * b}.`],
+          [`${a + b * c} − ${b} × ${c}`, a, `Multiply first: ${b} × ${c} = ${b * c}, then ${a + b * c} − ${b * c}.`]];
+        const [sum, v, why] = pick(forms);
+        return typed(`${sum} = ?`, v, { label: sum, skill: "the order of operations", explain: `${why} = ${v}.` });
+      }) },
+    { id: "t-factors", title: "HCF, LCM and prime factors", level: "Third", organiser: MFP, check: false,
+      blurb: "Find highest common factors and lowest common multiples, write numbers as products of primes, and spot primes.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const h = rand(9) + 2, a = h * (rand(5) + 1), b = h * (rand(5) + 2); if (a === b) return { label: "skip" }; const H = gcd(a, b);
+          return typed(`What is the highest common factor (HCF) of ${a} and ${b}?`, H, { label: `hcf ${a},${b}`, skill: "highest common factor", explain: `${H} is the biggest number that goes into both ${a} and ${b}.` }); }
+        if (k === 1) { const a = rand(10) + 3, b = rand(10) + 3; if (a === b) return { label: "skip" }; const L = a * b / gcd(a, b);
+          return typed(`What is the lowest common multiple (LCM) of ${a} and ${b}?`, L, { label: `lcm ${a},${b}`, skill: "lowest common multiple", explain: `${L} is the first number in both times tables: ${L} = ${a} × ${L / a} = ${b} × ${L / b}.` }); }
+        if (k === 2) { const e = [rand(4), rand(3), rand(2), rand(2)], ps = [2, 3, 5, 7], n = ps.reduce((t, p, i) => t * p ** e[i], 1);
+          if (n < 12 || e.filter(Boolean).length < 2) return { label: "skip" };
+          const show = ex => ps.map((p, i) => (ex[i] ? `${p}${ex[i] > 1 ? sup(ex[i]) : ""}` : "")).filter(Boolean).join(" × ");
+          const ans = show(e), w1 = e.slice(), w2 = e.slice(), i = e.findIndex(Boolean), j = e.length - 1 - e.slice().reverse().findIndex(Boolean);
+          w1[i] += 1; w2[j] = e[j] === 1 ? 2 : e[j] - 1;
+          return choice(`Write ${n} as a product of its prime factors.`, ans, others2u(ans, [show(w1), show(w2), `${n / ps[i]} × ${ps[i]}`]), { label: `pf ${n}`, skill: "prime factors", explain: `Keep dividing by primes: ${n} = ${ans}.` }); }
+        const n = rand(80) + 20, prime = range(2, Math.floor(Math.sqrt(n))).every(d => n % d), f = range(2, n - 1).find(d => n % d === 0);
+        return choice(`Is ${n} a prime number?`, prime ? "Yes" : "No", [prime ? "No" : "Yes"], { label: `prime ${n}`, skill: "prime numbers", explain: prime ? `Nothing but 1 and ${n} goes into ${n}.` : `${n} = ${f} × ${n / f}, so it isn't prime.` });
+      }) },
+    { id: "t-fdp", title: "Fractions, decimals and percentages", level: "Third", organiser: FDP, check: false,
+      blurb: "Change between fractions, decimals and percentages, put them in order, and find one amount as a percentage of another.",
+      make: () => distinct(10, () => {
+        const k = rand(4), F = [[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 8], [3, 8], [1, 10], [3, 10], [7, 10], [1, 20], [7, 20], [9, 25], [3, 50]];
+        if (k === 0) { const [n, d] = pick(F), p = n * 100 / d;
+          return typed(`Write ${n}/${d} as a percentage. (%)`, String(p), { input: "decimal", label: `pc ${n}/${d}`, skill: "fractions to percentages", explain: `${n} ÷ ${d} = ${n / d}, and × 100 gives ${p}%.` }); }
+        if (k === 1) { const [n, d] = pick(F);
+          return typed(`Write ${n}/${d} as a decimal.`, String(n / d), { input: "decimal", accept: decAccept(n / d), label: `dec ${n}/${d}`, skill: "fractions to decimals", explain: `${n} ÷ ${d} = ${n / d}.` }); }
+        if (k === 2) { const three = shuffle(F).slice(0, 3).filter((x, i, all) => all.findIndex(y => y[0] / y[1] === x[0] / x[1]) === i);
+          if (three.length < 3) return { label: "skip" };
+          const shown = three.map(([n, d], i) => [i === 0 ? `${n}/${d}` : i === 1 ? String(n / d) : `${n * 100 / d}%`, n / d]), small = shown.slice().sort((a, b) => a[1] - b[1])[0][0];
+          return choice(`Which is the smallest: ${shown.map(s => s[0]).join(", ")}?`, small, shown.map(s => s[0]).filter(s => s !== small), { label: `order ${shown.map(s => s[0])}`, skill: "ordering fractions, decimals and percentages", explain: `As decimals: ${shown.map(s => `${s[0]} = ${s[1]}`).join(", ")}.` }); }
+        const whole = pick([20, 25, 40, 50, 80, 200, 250, 400]), [n, d] = pick(F), part = whole * n / d;
+        if (!Number.isInteger(part)) return { label: "skip" };
+        return typed(`A pupil scores ${part} out of ${whole}. What percentage is that? (%)`, String(n * 100 / d), { input: "decimal", label: `of ${part}/${whole}`, skill: "one amount as a percentage of another", explain: `${part}/${whole} = ${n}/${d} = ${n * 100 / d}%.` });
+      }) },
+    { id: "t-area-volume", title: "Area and volume", level: "Third", organiser: MEAS, check: false,
+      blurb: "Areas of triangles, parallelograms, trapeziums and compound shapes, and volumes of cuboids and prisms.",
+      make: () => distinct(10, () => {
+        const k = rand(6), b = rand(10) + 3, h = rand(8) + 2;
+        if (k === 0) { if ((b * h) % 2) return { label: "skip" }; return typed(`A triangle has a base of ${b} cm and a height of ${h} cm. What is its area? (cm²)`, b * h / 2, { label: `tri ${b},${h}`, skill: "area of a triangle", explain: `½ × base × height = ½ × ${b} × ${h} = ${b * h / 2} cm².` }); }
+        if (k === 1) return typed(`A parallelogram has a base of ${b} cm and a perpendicular height of ${h} cm. What is its area? (cm²)`, b * h, { label: `par ${b},${h}`, skill: "area of a parallelogram", explain: `Base × perpendicular height = ${b} × ${h} = ${b * h} cm².` });
+        if (k === 2) { const a = rand(8) + 2; if (((a + b) * h) % 2) return { label: "skip" }; return typed(`A trapezium has parallel sides of ${a} cm and ${b} cm, ${h} cm apart. What is its area? (cm²)`, (a + b) * h / 2, { label: `trap ${a},${b},${h}`, skill: "area of a trapezium", explain: `½ × (a + b) × h = ½ × ${a + b} × ${h} = ${(a + b) * h / 2} cm².` }); }
+        if (k === 3) { const W = rand(6) + 6, H = rand(6) + 6, w = rand(W - 3) + 2, hh = rand(H - 3) + 2;
+          return typed(`An L-shape is a ${W} m by ${H} m rectangle with a ${w} m by ${hh} m rectangle cut from one corner. What is its area? (m²)`, W * H - w * hh, { label: `L ${W},${H},${w},${hh}`, skill: "area of compound shapes", explain: `Whole rectangle minus the corner: ${W * H} − ${w * hh} = ${W * H - w * hh} m².` }); }
+        if (k === 4) { const l = rand(8) + 2, w = rand(6) + 2, d = rand(6) + 2;
+          return typed(`A cuboid is ${l} cm by ${w} cm by ${d} cm. What is its volume? (cm³)`, l * w * d, { label: `cub ${l},${w},${d}`, skill: "volume of a cuboid", explain: `${l} × ${w} × ${d} = ${l * w * d} cm³.` }); }
+        const A = pick([6, 8, 12, 15, 20, 24]), L = rand(10) + 3;
+        return typed(`A prism has a cross-section of area ${A} cm² and a length of ${L} cm. What is its volume? (cm³)`, A * L, { label: `prism ${A},${L}`, skill: "volume of a prism", explain: `Area of cross-section × length = ${A} × ${L} = ${A * L} cm³.` });
+      }) },
+    { id: "t-transform", title: "Coordinates and transformations", level: "Third", organiser: ANGLE, check: false,
+      blurb: "Points in four quadrants: reflect, translate and rotate them, and find midpoints.",
+      make: () => distinct(10, () => {
+        const x = (rand(6) + 1) * (rand(2) ? 1 : -1), y = (rand(6) + 1) * (rand(2) ? 1 : -1), P = (a, b) => `(${minus(a)}, ${minus(b)})`, k = rand(5);
+        const ask = (how, to, wrong, why, skill) => choice(`The point ${P(x, y)} is ${how}. Where does it end up?`, to, others2u(to, wrong), { label: `${skill} ${x},${y} ${how}`, skill, explain: why });
+        if (k === 0) return ask("reflected in the x-axis", P(x, -y), [P(-x, y), P(-x, -y), P(y, x)], "Reflecting in the x-axis keeps x and changes the sign of y.", "reflection");
+        if (k === 1) return ask("reflected in the y-axis", P(-x, y), [P(x, -y), P(-x, -y), P(y, x)], "Reflecting in the y-axis keeps y and changes the sign of x.", "reflection");
+        if (k === 2) { const dx = rand(9) - 4 || 3, dy = rand(9) - 4 || -2;
+          return ask(`moved ${Math.abs(dx)} ${dx > 0 ? "right" : "left"} and ${Math.abs(dy)} ${dy > 0 ? "up" : "down"}`, P(x + dx, y + dy), [P(x - dx, y - dy), P(x + dy, y + dx), P(x + dx, y - dy)], `Add ${minus(dx)} to x and ${minus(dy)} to y.`, "translation"); }
+        if (k === 3) return ask("rotated 180° about the origin", P(-x, -y), [P(-x, y), P(x, -y), P(y, x)], "A half turn about the origin changes the sign of both coordinates.", "rotation");
+        const x2 = x + 2 * (rand(4) + 1), y2 = y - 2 * (rand(4) + 1);
+        return choice(`What is the midpoint of ${P(x, y)} and ${P(x2, y2)}?`, P((x + x2) / 2, (y + y2) / 2), others2u(P((x + x2) / 2, (y + y2) / 2), [P(x2 - x, y2 - y), P((x2 - x) / 2, (y2 - y) / 2), P((x + x2) / 2, (y - y2) / 2)]),
+          { label: `mid ${x},${y},${x2},${y2}`, skill: "midpoints", explain: `Average the x values and the y values: ${P((x + x2) / 2, (y + y2) / 2)}.` });
+      }) },
+    { id: "t-venn", title: "Sets and Venn diagrams", level: "Third", organiser: CHANCE, check: false,
+      blurb: "Count what is in each part of a Venn diagram, and find unions and intersections of sets.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k === 0) { const both = rand(8) + 2, a = both + rand(10) + 2, b = both + rand(10) + 2, none = rand(6) + 1, total = a + b - both + none;
+          return typed(`In a class of ${total}, ${a} have a dog, ${b} have a cat and ${both} have both. How many have neither?`, none, { label: `venn ${a},${b},${both},${total}`, skill: "Venn diagrams", explain: `Dog only ${a - both}, cat only ${b - both}, both ${both}: ${a + b - both} have a pet, so ${total} − ${a + b - both} = ${none}.` }); }
+        if (k === 1) { const both = rand(8) + 2, a = both + rand(10) + 2, b = both + rand(10) + 2;
+          return typed(`${a} pupils play football and ${b} play hockey. ${both} play both. How many play only football?`, a - both, { label: `only ${a},${b},${both}`, skill: "Venn diagrams", explain: `Take the ${both} who play both out of the ${a}: ${a - both}.` }); }
+        const m = pick([3, 4, 5]), n = pick([2, 6, 7]), top = pick([20, 24, 30]), A = range(1, top).filter(v => v % m === 0), B = range(1, top).filter(v => v % n === 0);
+        if (m === n) return { label: "skip" };
+        const inter = A.filter(v => B.includes(v)), uni = new Set(A.concat(B)), un = rand(2);
+        return typed(`A = multiples of ${m} up to ${top}, and B = multiples of ${n} up to ${top}. How many numbers are in A ${un ? "∪" : "∩"} B?`, un ? uni.size : inter.length, { label: `set ${m},${n},${top},${un}`, skill: un ? "union of sets" : "intersection of sets",
+          explain: un ? `A ∪ B is everything in A or B (or both): ${[...uni].sort((p, q) => p - q).join(", ")}.` : `A ∩ B is what is in both: ${inter.length ? inter.join(", ") : "nothing"}.` });
+      }) },
+    { id: "f-fraction-calc", title: "Multiplying and dividing fractions", level: "Fourth", organiser: FDP, check: false,
+      blurb: "Multiply and divide fractions and mixed numbers, giving answers in simplest form.",
+      make: () => distinct(10, () => {
+        const k = rand(4), a = rand(5) + 1, b = rand(6) + 2, c = rand(5) + 1, d = rand(6) + 2;
+        if (a >= b || c >= d) return { label: "skip" };
+        const mixed = (n, dd) => { const g = gcd(n, dd); n /= g; dd /= g; const w = Math.floor(n / dd), r = n % dd; return dd === 1 ? String(n) : w ? `${w} ${r}/${dd}` : `${r}/${dd}`; };
+        if (k === 0) { const ans = mixed(a * c, b * d); return choice(`${a}/${b} × ${c}/${d} = ?`, ans, others2u(ans, [mixed(a + c, b + d), mixed(a * d, b * c), mixed(a * c, b + d)]), { label: `${a}/${b}x${c}/${d}`, skill: "multiplying fractions", explain: `Multiply the tops and the bottoms: ${a * c}/${b * d}${ans !== `${a * c}/${b * d}` ? ` = ${ans}` : ""}.` }); }
+        if (k === 1) { const ans = mixed(a * d, b * c); return choice(`${a}/${b} ÷ ${c}/${d} = ?`, ans, others2u(ans, [mixed(a * c, b * d), mixed(b * c, a * d), mixed(a * d, b * d)]), { label: `${a}/${b}/${c}/${d}`, skill: "dividing fractions", explain: `Flip the second fraction and multiply: ${a}/${b} × ${d}/${c} = ${a * d}/${b * c}${ans !== `${a * d}/${b * c}` ? ` = ${ans}` : ""}.` }); }
+        if (k === 2) { const w = rand(3) + 1, top = w * b + a, ans = `${top}/${b}`; if (gcd(a, b) !== 1) return { label: "skip" };
+          return choice(`Write ${w} ${a}/${b} as an improper fraction.`, ans, others2u(ans, [`${w * a + b}/${b}`, `${w + a}/${b}`, `${top}/${w * b}`]), { label: `imp ${w},${a},${b}`, skill: "mixed numbers", explain: `${w} × ${b} = ${w * b}, plus ${a}: ${ans}.` }); }
+        const w1 = rand(2) + 1, w2 = rand(2) + 1, n = (w1 * b + a) * (w2 * d + c), dd = b * d, ans = mixed(n, dd);
+        if (gcd(a, b) !== 1 || gcd(c, d) !== 1) return { label: "skip" };
+        return choice(`${w1} ${a}/${b} × ${w2} ${c}/${d} = ?`, ans, others2u(ans, [mixed(w1 * w2 * b * d + a * c, b * d), mixed(n + dd, dd), mixed(n, dd * 2)]), { label: `mix ${w1}${a}${b}${w2}${c}${d}`, skill: "multiplying mixed numbers", explain: `Make them improper first: ${w1 * b + a}/${b} × ${w2 * d + c}/${d} = ${n}/${dd} = ${ans}.` });
+      }) },
+    { id: "f-equations", title: "Harder equations and inequalities", level: "Fourth", organiser: EQUATION, check: false,
+      blurb: "Solve equations with the unknown on both sides, with brackets and with fractions, and solve inequalities.",
+      make: () => distinct(10, () => {
+        const k = rand(4), x = rand(13) - 4;
+        if (k === 0) { const c = rand(4) + 1, a = c + rand(4) + 1, b = rand(13) - 6, d = (a - c) * x + b;
+          return typed(`Solve ${expr([a, "x"], [b, ""])} = ${expr([c, "x"], [d, ""])}. What is x?`, x, { accept: negAccept(x), label: `both ${a},${b},${c},${d}`, skill: "unknowns on both sides", explain: `Take ${c}x from both sides: ${expr([a - c, "x"], [b, ""])} = ${minus(d)}, so ${a - c === 1 ? "x" : `${a - c}x`} = ${minus(d - b)} and x = ${minus(x)}.` }); }
+        if (k === 1) { const a = rand(5) + 2, b = rand(11) - 5; if (!b) return { label: "skip" };
+          return typed(`Solve ${a}(x ${signed(b)}) = ${minus(a * (x + b))}. What is x?`, x, { accept: negAccept(x), label: `br ${a},${b},${x}`, skill: "equations with brackets", explain: `Divide by ${a}: x ${signed(b)} = ${minus(x + b)}, so x = ${minus(x)}.` }); }
+        if (k === 2) { const a = rand(4) + 2, b = rand(9) + 1, X = a * (rand(8) + 1);
+          return typed(`Solve x/${a} + ${b} = ${X / a + b}. What is x?`, X, { label: `fr ${a},${b},${X}`, skill: "equations with fractions", explain: `Take ${b}: x/${a} = ${X / a}. Multiply by ${a}: x = ${X}.` }); }
+        const a = rand(4) + 2, b = rand(9) + 1, ans = `x < ${minus(x)}`;
+        return choice(`Solve ${b} − ${a}x > ${minus(b - a * x)}.`, ans, others2u(ans, [`x > ${minus(x)}`, `x < ${minus(-x)}`, `x > ${minus(-x)}`]), { label: `neg ineq ${a},${b},${x}`, skill: "inequalities", explain: `−${a}x > ${minus(-a * x)}. Dividing by a negative number flips the sign: x < ${minus(x)}.` });
+      }) },
+    { id: "f-prisms", title: "Volume and surface area of prisms and cylinders", level: "Fourth", organiser: MEAS, check: false,
+      blurb: "Volumes of prisms and cylinders, and the surface area of cuboids and cylinders (take π as 3.14).",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const r = rand(6) + 2, h = rand(10) + 3, v = dec(3.14 * r * r * h);
+          return typed(`A cylinder has radius ${r} cm and height ${h} cm. What is its volume? Use π = 3.14. (cm³)`, v, { input: "decimal", label: `cylv ${r},${h}`, skill: "volume of a cylinder", explain: `V = πr²h = 3.14 × ${r * r} × ${h} = ${v} cm³.` }); }
+        if (k === 1) { const b = rand(6) + 2, h = 2 * (rand(4) + 1), L = rand(10) + 3;
+          return typed(`A triangular prism is ${L} cm long. Its triangle end has a base of ${b} cm and a height of ${h} cm. What is its volume? (cm³)`, b * h / 2 * L, { label: `tprism ${b},${h},${L}`, skill: "volume of a prism", explain: `End area = ½ × ${b} × ${h} = ${b * h / 2} cm². × ${L} = ${b * h / 2 * L} cm³.` }); }
+        if (k === 2) { const l = rand(8) + 2, w = rand(6) + 2, d = rand(6) + 2, sa = 2 * (l * w + l * d + w * d);
+          return typed(`A cuboid is ${l} cm by ${w} cm by ${d} cm. What is its total surface area? (cm²)`, sa, { label: `sa ${l},${w},${d}`, skill: "surface area of a cuboid", explain: `Three pairs of faces: 2 × (${l * w} + ${l * d} + ${w * d}) = ${sa} cm².` }); }
+        const r = rand(5) + 2, h = rand(8) + 3, sa = dec(2 * 3.14 * r * r + 2 * 3.14 * r * h);
+        return typed(`A closed cylinder has radius ${r} cm and height ${h} cm. What is its total surface area? Use π = 3.14. (cm²)`, sa, { input: "decimal", label: `cylsa ${r},${h}`, skill: "surface area of a cylinder", explain: `Two circles (2 × 3.14 × ${r}²) plus the curved side (2 × 3.14 × ${r} × ${h}) = ${sa} cm².` });
+      }) }
+  ];
+
   /* ---------- Number games for older pupils: Make the Target, Equal Pairs and Number Line ---------- */
   // Plain screens like the word games (no mascot), for P5 to S3. Each round is one result.
 
@@ -2381,7 +2928,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -2467,6 +3014,8 @@ window.PopActivities = (() => {
     "t-probability": ["MNU 3-22a"], "t-best-buy": ["MNU 3-09a"], "f-sci-notation": ["MTH 4-06b"], "f-sig-figs": ["MNU 4-01a"],
     "f-percent-change": ["MNU 4-07a"], "f-brackets": ["MTH 4-14a", "MTH 4-14b"], "f-pythagoras": ["MTH 4-16a"], "f-circles": ["MTH 4-16b"],
     "f-averages": ["MTH 4-20b"], "f-nth-term": ["MTH 4-13a"],
+    "t-calc": ["MNU 3-03a", "MNU 3-03b"], "t-factors": ["MTH 3-05a"], "t-fdp": ["MNU 3-07a", "MTH 3-07c"], "t-area-volume": ["MNU 3-11a", "MTH 3-11b"],
+    "t-transform": ["MTH 3-18a", "MTH 3-19a"], "t-venn": ["MNU 3-22a"], "f-fraction-calc": ["MTH 4-07b"], "f-equations": ["MTH 4-15a"], "f-prisms": ["MTH 4-11b", "MTH 4-11c"],
     "ng-target-second": ["MNU 2-03a"], "ng-target-third": ["MNU 3-03a"],
     "ng-pairs-second": ["MNU 2-07a", "MNU 2-07b", "MNU 2-11b"], "ng-pairs-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-08a", "MNU 3-07a"],
     "ng-line-second": ["MNU 2-02a", "MNU 2-04a", "MTH 2-07c"], "ng-line-third": ["MNU 3-04a", "MTH 3-06a", "MNU 3-07a"]

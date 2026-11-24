@@ -8,7 +8,7 @@ const page = { PopSpell: { LISTS: {} }, PASSAGES: [], STORIES: [] };
 page.window = page;
 runInNewContext(["words.js", "activities.js"].map(read).join("\n"), page);
 const A = page.PopActivities;
-const upper = A.AREAS.find(a => a.id === "numeracy").activities.filter(a => a.level === "Third" || a.level === "Fourth");
+const upper = A.AREAS.find(a => a.id === "numeracy").activities.filter(a => (a.level === "Third" || a.level === "Fourth") && !/GCSE/.test(a.organiser));
 const num = s => Number(String(s).replace(/−/g, "-").replace(/\s/g, ""));
 
 test("S1 to S3 maths is in the Numbers area, with outcomes, and kept out of the starting check", () => {

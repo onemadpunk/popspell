@@ -1709,6 +1709,13 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .qd-match { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 0; width: 60%; margin: 4px 0 6px 2em; font: 700 13pt var(--reading-font); }
 .qd-tiles { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0 !important; }
 .qd-tiles span { border: 1.5px solid #555; border-radius: 6px; padding: 1px 8px; font-family: var(--reading-font); }
+/* Maths quick drills (sheets/11-maths-drills.js): lettered questions in two columns, a box to work in, answers in two columns */
+.md-list { font-size: 12pt; }
+.md-list li { margin-bottom: 9px; }
+.md-list .ws-blank { height: 1.2em; vertical-align: bottom; }
+.md-work { display: block; margin: 4px 0 2px; border: 1px dashed #9aa3ad; border-radius: 6px; }
+.md-answers { columns: 2; column-gap: 24px; font-size: 10.5pt; list-style: none; padding-left: 0; }
+.md-answers li { break-inside: avoid; margin-bottom: 4px; }
 .ws-age-young .qd-say, .ws-age-young .qd-word { font-size: 17pt; }
 .ws-age-young .qd-task { font-size: 14pt; }
 /* A drill's rule box stays its own size in the younger look; the space left is for writing */
