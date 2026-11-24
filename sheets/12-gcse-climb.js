@@ -14,7 +14,7 @@
   const gxQ = (it, i, roomy = 1) => {
     const opts = it.options ? `<p class="gx-opts">Tick one: ${shuffle([it.answer].concat(it.options)).map(o => `<span>☐ ${o}</span>`).join("")}</p>` : "";
     const work = it.options ? 0 : Math.max(0, it.marks - 1) * roomy;
-    return `<div class="pp-q gx-q"><p><b>${i}.</b> ${it.q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|%)\)$/, "")}${it.calc ? " <i>(calculator)</i>" : ""}</p>
+    return `<div class="pp-q gx-q"><p><b>${i}.</b> ${it.q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|years|m²|square units|%)\)$/, "")}${it.calc ? " <i>(calculator)</i>" : ""}</p>
       ${it.pic ? `<div class="gx-pic">${it.pic.replace('class="q-pic"', 'class="pp-pic"')}</div>` : ""}${opts}
       ${work ? `<span class="md-work gx-work" style="height:${+(work * 9).toFixed(1)}mm"></span>` : ""}
       <p class="gx-ans">${it.options ? "" : `Answer ${it.unit === "£" ? "£" : ""}${blank(6)} ${it.unit && it.unit !== "£" ? it.unit : ""}`}<span class="gx-mk">(${gxMk(it.marks)})</span></p></div>`;
@@ -187,7 +187,7 @@
   ];
   // A later stage's topic slug is its id after the stage key: g5-indices → g5-indices (slugs repeat across stages, so the key stays)
   const gxStrip2 = (st, what, calc, marks) => gxStrip(`${st.name}${what ? `: ${what}` : ""}`, calc, marks);
-  const gxPlain = q => q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|%)\)$/, "");
+  const gxPlain = q => q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|years|m²|square units|%)\)$/, "");
 
   GX_LATER.forEach(st => {
     const L = slug => GX_LESSON(`${st.key}-${slug}`);
