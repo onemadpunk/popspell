@@ -186,6 +186,7 @@
     make: '<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
     settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>',
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17.5v.01"/>',
+    english: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
     back: '<path d="M10 19l-7-7 7-7M3 12h18"/>',
     out: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h11"/>'
   };
@@ -228,6 +229,7 @@
           <div class="t-side-foot">
             <a class="t-sidelink" href="#/make">${icon("make")}<span>Make a list</span></a>
             <button class="t-sidelink" type="button" id="tSettings">${icon("settings")}<span>Settings</span></button>
+            <a class="t-sidelink" href="english.html" target="_blank" rel="noopener">${icon("english")}<span>Adult English</span></a>
             <a class="t-sidelink" href="quick-guide.html" target="_blank" rel="noopener">${icon("help")}<span>Quick guide</span></a>
             <a class="t-sidelink" href="help.html" target="_blank" rel="noopener">${icon("help")}<span>Help</span></a>
             <div class="t-me"><span class="t-avatar" aria-hidden="true">${esc(initial)}</span>
