@@ -3204,5 +3204,675 @@ window.PopPaper = (() => {
       "Narrative structure and devices used to engage the reader and achieve particular effects", "Dialogue punctuated and set out correctly"])
   }));
 
+  /* ===================== Quick drills =====================
+     Short one-page drills for a tutoring session, in the way Sara's tutoring sheets work: a strip
+     that says it is a quick drill, a rule or word box where one helps, then two or three short tasks
+     that practise one thing. Every word and sentence is PopSpell's own. Each print picks a fresh mix
+     from the drill's pool, so the same drill can be done again next week, and the answers page
+     always matches the sheet it came with. */
+
+  const drillStrip = (level, mins = 10) => `<p class="qd-strip"><b>Quick drill</b><span>${level} level</span><span>About ${mins} minutes</span><span>Done ☐</span></p>`;
+  const drillHead = (h, title, who, level, mins) => `${h.sheetHead(title, who)}${drillStrip(level, mins)}`;
+  const task = (n, text) => `<p class="qd-task"><span class="qd-n">${n}</span> ${text}</p>`;
+  const cells = (arr, cls = "") => `<span class="qd-cells ${cls}">${arr.map(c => `<span class="qd-cell${c === "" ? " qd-gap" : ""}">${c}</span>`).join("")}</span>`;
+  const soundBoxes = n => `<span class="qd-cells">${"<span class=\"qd-cell qd-gap\"></span>".repeat(n)}</span>`;
+  const pickN = (arr, n) => shuffle(arr).slice(0, n);
+  const ALPHABET = "abcdefghijklmnopqrstuvwxyz";
+
+  // ---------- Early level ----------
+
+  add("paper-drill-missing-letters", "lesson-early-letter-sounds-and-blending-to-read", "Quick drill: missing letters",
+    "Fill the gaps in runs of the alphabet, small letters then capitals, and say each letter's sound. A fresh mix every print.", (who, h) => {
+      const run = upper => {
+        const start = rand(ALPHABET.length - 5), letters = [...ALPHABET.slice(start, start + 5)].map(c => upper ? c.toUpperCase() : c);
+        const gaps = pickN([1, 2, 3, 4], 2);
+        return { show: letters.map((c, i) => gaps.includes(i) ? "" : c), all: letters };
+      };
+      const rows = [false, false, false, true, true, true].map(run);
+      const around = pickN([...ALPHABET.slice(1, 25)], 4);
+      return {
+        pupil: `${drillHead(h, "Missing letters", who, "Early")}
+        ${task(1, "Write the missing letters. Say the sound of each letter as you go.")}
+        <div class="qd-rows">${rows.map(r => `<div class="qd-row">${cells(r.show)}</div>`).join("")}</div>
+        ${task(2, "Write the letter that comes before and the letter that comes after.")}
+        <div class="qd-rows qd-two">${around.map(c => `<div class="qd-row">${cells(["", c, ""])}</div>`).join("")}</div>`,
+        answers: answersPage(h, "Missing letters", rows.map(r => r.all.join(" ")).concat(around.map(c => {
+          const i = ALPHABET.indexOf(c); return `${ALPHABET[i - 1]} ${c} ${ALPHABET[i + 1]}`;
+        })), "Rows 1 to 6 are task 1; the last four are task 2. Listen for the sound as well as the letter name.")
+      };
+    });
+
+  add("paper-drill-different-one", "lesson-early-reading-tricky-words", "Quick drill: circle the different one",
+    "Look along each row and circle the one that is not the same: letters that look alike (b and d, p and q) and words that are easy to mix up (was and saw).", (who, h) => {
+      const PAIRS = [["b", "d"], ["d", "b"], ["p", "q"], ["q", "p"], ["m", "n"], ["n", "u"], ["h", "n"], ["f", "t"], ["i", "j"],
+        ["was", "saw"], ["on", "no"], ["it", "in"], ["my", "by"], ["the", "he"], ["pat", "tap"], ["dog", "bog"], ["and", "an"], ["big", "dig"], ["top", "pot"], ["of", "off"]];
+      const rows = pickN(PAIRS, 8).map(([same, odd]) => { const at = rand(5); return { items: Array.from({ length: 5 }, (_, i) => i === at ? odd : same), at, odd }; });
+      return {
+        pupil: `${drillHead(h, "Circle the different one", who, "Early")}
+        ${task(1, "Look along each row. Four are the same. Circle the one that is different.")}
+        <ol class="qd-odd">${rows.map(r => `<li>${r.items.map(x => `<span>${x}</span>`).join("")}</li>`).join("")}</ol>
+        ${task(2, "Pick two of the different ones. Write each one carefully.")}${ruled(h, 1)}`,
+        answers: answersPage(h, "Circle the different one", rows.map(r => `<b>${r.odd}</b> (number ${r.at + 1} along)`),
+          "If a pupil circles the wrong one, ask them to point to each one and say it aloud: b and d mix-ups usually show up here.")
+      };
+    });
+
+  add("paper-drill-sh-ch-th", "lesson-early-two-letters-one-sound-sh-ch-and-th", "Quick drill: sh, ch and th",
+    "Two letters, one sound: finish words with sh, ch or th from a clue, then put each sound of a word in its own box.", (who, h) => {
+      const CLUES = [["a boat", "", "sh", "ip"], ["you sit on it", "", "ch", "air"], ["it swims in the sea", "fi", "sh", ""], ["the opposite of thick", "", "th", "in"],
+        ["a baby hen", "", "ch", "ick"], ["you buy things in it", "", "sh", "op"], ["one, two, ...", "", "th", "ree"], ["you wash in it", "ba", "th", ""],
+        ["a lot", "mu", "ch", ""], ["you eat your dinner from it", "di", "sh", ""], ["it is below your mouth", "", "ch", "in"], ["you do this to a door", "", "sh", "ut"]]
+        .map(([clue, before, gap, after]) => ({ clue, before, gap, after }));
+      const clues = pickN(CLUES, 5);
+      const BOX = [["shop", 3], ["chin", 3], ["moth", 3], ["fish", 3], ["chip", 3], ["path", 3], ["shed", 3], ["much", 3], ["thick", 3], ["rush", 3], ["chat", 3], ["with", 3]];
+      const boxes = pickN(BOX, 4);
+      return {
+        pupil: `${drillHead(h, "sh, ch and th", who, "Early")}
+        <div class="pp-box qd-rule"><b>Two letters, one sound</b><p class="qd-big">sh &nbsp; ch &nbsp; th</p></div>
+        ${task(1, "Read the clue. Write <b>sh</b>, <b>ch</b> or <b>th</b> to finish the word.")}
+        <ol class="qd-list">${clues.map(c => `<li>${c.clue}: <span class="qd-word">${c.before}${blank(2.2)}${c.after}</span></li>`).join("")}</ol>
+        ${task(2, "Say the word. Write one sound in each box. Two letters that make one sound go in one box.")}
+        <div class="qd-rows qd-two">${boxes.map(([w, n]) => `<div class="qd-row"><span class="qd-say">${w}</span>${soundBoxes(n)}</div>`).join("")}</div>`,
+        answers: answersPage(h, "sh, ch and th", clues.map(c => `${c.before}<b>${c.gap}</b>${c.after}`).concat(boxes.map(([w]) => {
+          const parts = w.match(/sh|ch|th|ck|[a-z]/g); return `${w}: ${parts.map(p => `[${p}]`).join(" ")}`;
+        })), "The first answers are task 1, then the sound boxes for task 2.")
+      };
+    });
+
+  add("paper-drill-tiny-story", "lesson-early-writing-a-sentence", "Quick drill: read, draw and find",
+    "Read a three-sentence story, draw it, then find and circle the little words that come up again and again.", (who, h) => {
+      const STORIES = [
+        ["The cat sat on a mat.", "A dog ran to the cat.", "The cat ran up to the top of a tree."],
+        ["Sam had a red hat.", "The wind got the hat.", "Sam ran and got the hat back."],
+        ["I can see a big ship.", "It is on the sea.", "I wish I was on the ship."],
+        ["Mum got a box.", "In the box was a pup.", "The pup was for me!"],
+        ["We went to the shop.", "I got a bun and a jam pot.", "The bun was the best."]];
+      const story = pick(STORIES), text = story.join(" ").toLowerCase();
+      const look = ["the", "a", "to", "was", "i", "and", "is", "on", "we"].filter(w => new RegExp(`\\b${w}\\b`).test(text)).slice(0, 3);
+      const count = w => (text.match(new RegExp(`\\b${w}\\b`, "g")) || []).length;
+      return {
+        pupil: `${drillHead(h, "Read, draw and find", who, "Early")}
+        ${task(1, "Read the story to your adult.")}
+        <div class="pp-passage qd-story">${story.map(s => `<p>${s}</p>`).join("")}</div>
+        ${task(2, "Draw the story.")}<div class="pp-draw"></div>
+        ${task(3, `Find these words in the story and circle them: <b class="qd-look">${look.map(w => w === "i" ? "I" : w).join(" &nbsp; ")}</b>`)}
+        ${task(4, "Copy one sentence.")}${ruled(h, 1)}`,
+        answers: answersPage(h, "Read, draw and find", look.map(w => `<b>${w === "i" ? "I" : w}</b>: ${count(w)} time${count(w) > 1 ? "s" : ""} (count "The" at the start of a sentence too)`),
+          "Look for: reading the story in order, a drawing that shows what happened, and a copied sentence with a capital letter, finger spaces and a full stop.")
+      };
+    });
+
+  // ---------- First level ----------
+
+  add("paper-drill-word-box", "lesson-first-common-words-and-spelling-strategies", "Quick drill: words from the word box",
+    "Ten sentences, each missing one common tricky word: choose it from the word box and spell it right. A fresh mix every print.", (who, h) => {
+      const SENT = [["said", "\"Come and play,\" ___ Mia."], ["were", "We ___ late for the bus."], ["there", "Is ___ any milk left?"], ["because", "I put my coat on ___ it was cold."],
+        ["could", "She ___ not reach the top shelf."], ["would", "___ you like a drink?"], ["friend", "My best ___ lives next door."], ["people", "Lots of ___ came to the party."],
+        ["once", "___ upon a time, there was a king."], ["again", "Can we play that game ___?"], ["does", "Where ___ your gran live?"], ["water", "Plants need sun and ___."],
+        ["school", "We walk to ___ every morning."], ["many", "How ___ sweets are in the jar?"], ["laugh", "Funny jokes make me ___."], ["who", "___ ate the last biscuit?"],
+        ["were", "The shops ___ shut on Sunday."], ["any", "Have you got ___ pens?"], ["they", "The birds sing when ___ wake up."], ["come", "Please ___ in and sit down."]];
+      const used = new Set(), pickd = shuffle(SENT).filter(([w]) => used.has(w) ? false : (used.add(w), true)).slice(0, 10);
+      const fill = s => s.replace("___", blank(5.5));
+      return {
+        pupil: `${drillHead(h, "Words from the word box", who, "First")}
+        <div class="pp-box qd-rule"><b>Word box</b><p class="qd-bank">${shuffle(pickd.map(([w]) => w)).join(" &nbsp; · &nbsp; ")}</p></div>
+        ${task(1, "Choose a word from the box to finish each sentence. Use each word once.")}
+        <ol class="qd-list">${pickd.map(([, s]) => `<li>${fill(s)}</li>`).join("")}</ol>
+        ${task(2, "Pick two words from the box. Write a sentence of your own with each.")}${ruled(h, 2)}`,
+        answers: answersPage(h, "Words from the word box", pickd.map(([w, s]) => s.replace("___", `<b>${w}</b>`)),
+          "A capital letter is right where the word starts the sentence. Spelling counts: the word is copied from the box.")
+      };
+    });
+
+  add("paper-drill-vowel-teams", "lesson-first-vowel-teams-ai-ee-oa-igh", "Quick drill: ai, ee, oa and igh",
+    "Sort words by their vowel team, then use a clue to add the missing team. A fresh mix every print.", (who, h) => {
+      const TEAMS = { ai: ["rain", "tail", "snail", "paint", "wait", "train"], ee: ["tree", "feet", "sleep", "green", "sheep", "seed"],
+        oa: ["boat", "coat", "road", "goat", "soap", "toast"], igh: ["night", "light", "high", "right", "fight", "bright"] };
+      const sort = shuffle(Object.entries(TEAMS).flatMap(([t, ws]) => pickN(ws, 2).map(w => [w, t])));
+      const CLUES = [["it falls from clouds", "r", "ai", "n"], ["you have two of them on your legs", "f", "ee", "t"], ["it floats on water", "b", "oa", "t"],
+        ["the sun gives us this", "l", "igh", "t"], ["a dog wags it", "t", "ai", "l"], ["you do this in bed", "sl", "ee", "p"], ["you wash with it", "s", "oa", "p"],
+        ["the opposite of day", "n", "igh", "t"], ["the colour of grass", "gr", "ee", "n"], ["a farm animal with a beard", "g", "oa", "t"], ["it runs on a track", "tr", "ai", "n"]];
+      const clues = pickN(CLUES, 6);
+      return {
+        pupil: `${drillHead(h, "ai, ee, oa and igh", who, "First")}
+        ${task(1, "Read each word. Write it in the right column.")}
+        <p class="qd-bank">${sort.map(([w]) => w).join(" &nbsp; · &nbsp; ")}</p>
+        <table class="pp-table qd-sort"><thead><tr>${Object.keys(TEAMS).map(t => `<th>${t}</th>`).join("")}</tr></thead>
+          <tbody>${"<tr><td></td><td></td><td></td><td></td></tr>".repeat(2)}</tbody></table>
+        ${task(2, "Read the clue. Write the missing letters: <b>ai</b>, <b>ee</b>, <b>oa</b> or <b>igh</b>.")}
+        <ol class="qd-list">${clues.map(([c, a, , z]) => `<li>${c}: <span class="qd-word">${a}${blank(2.4)}${z}</span></li>`).join("")}</ol>`,
+        answers: answersPage(h, "ai, ee, oa and igh", Object.keys(TEAMS).map(t => `<b>${t}</b>: ${sort.filter(([, x]) => x === t).map(([w]) => w).join(", ")}`)
+          .concat(clues.map(([, a, t, z]) => `${a}<b>${t}</b>${z}`)), "The first four lines are the columns for task 1; then the words for task 2.")
+      };
+    });
+
+  add("paper-drill-magic-e", "lesson-first-silent-e-a-e-i-e-o-e-u-e", "Quick drill: add an e",
+    "Add a silent e to change a word (cap to cape), read both, then choose the right word for a clue.", (who, h) => {
+      const PAIRS = [["kit", "kite"], ["hop", "hope"], ["cub", "cube"], ["tap", "tape"], ["pin", "pine"], ["rod", "rode"], ["man", "mane"],
+        ["tub", "tube"], ["hat", "hate"], ["not", "note"], ["cut", "cute"], ["fin", "fine"], ["rip", "ripe"], ["can", "cane"], ["us", "use"]];
+      const adds = pickN(PAIRS, 6);
+      const CLUES = [["you fly it on a windy day", "kit", "kite"], ["a little message", "not", "note"], ["a lion has one round its neck", "man", "mane"],
+        ["a baby bear or lion", "cub", "cube"], ["fruit that is ready to eat", "rip", "ripe"], ["water comes out of it", "tap", "tape"],
+        ["you wear it on your head", "hat", "hate"], ["a box shape with six square sides", "cub", "cube"], ["you have a bath in it", "tub", "tube"], ["a tall tree with needles", "pin", "pine"]];
+      const seen = new Set(), clues = shuffle(CLUES).filter(([, a]) => seen.has(a) ? false : (seen.add(a), true)).slice(0, 5)
+        .map(([c, a, b, right = ["a baby bear or lion", "water comes out of it", "you wear it on your head", "you have a bath in it"].includes(c) ? a : b]) => ({ c, opts: shuffle([a, b]), right }));
+      return {
+        pupil: `${drillHead(h, "Add an e", who, "First")}
+        <div class="pp-box qd-rule"><b>Silent e</b><p>An <b>e</b> on the end is silent, but it makes the vowel say its name: c<b>a</b>p → c<b>a</b>p<b>e</b>.</p></div>
+        ${task(1, "Read the word. Add an <b>e</b> and write the new word. Read both words.")}
+        <div class="qd-rows qd-two">${adds.map(([a]) => `<div class="qd-row"><span class="qd-say">${a}</span> → ${blank(5)}</div>`).join("")}</div>
+        ${task(2, "Read the clue. Circle the right word.")}
+        <ol class="qd-list">${clues.map(c => `<li>${c.c}: <span class="qd-pick">${c.opts.join("</span> <span class=\"qd-pick\">")}</span></li>`).join("")}</ol>`,
+        answers: answersPage(h, "Add an e", adds.map(([a, b]) => `${a} → <b>${b}</b>`).concat(clues.map(c => `${c.c}: <b>${c.right}</b>`)),
+          "Listen for the vowel changing from its short sound to its name.")
+      };
+    });
+
+  add("paper-drill-joining-words", "lesson-first-joining-sentences-and-but-because-so", "Quick drill: and, but, because, so",
+    "Join two short sentences with the right joining word, then write one of your own.", (who, h) => {
+      const PAIRS = [["It was raining", "we took an umbrella", "so"], ["I like apples", "I don't like pears", "but"], ["We went to the park", "we played on the swings", "and"],
+        ["The baby cried", "she was hungry", "because"], ["I was tired", "I went to bed early", "so"], ["Tom ran fast", "he still missed the bus", "but"],
+        ["I put on my coat", "it was cold outside", "because"], ["We had soup", "then we had ice cream", "and"], ["The road was icy", "Dad drove slowly", "so"],
+        ["I wanted to play", "it was time for tea", "but"], ["The dog barked", "it heard a noise", "because"], ["She picked up her bag", "she ran to school", "and"]];
+      const rows = shuffle(["and", "but", "because", "so"].flatMap(j => pickN(PAIRS.filter(p => p[2] === j), 2)));
+      return {
+        pupil: `${drillHead(h, "and, but, because, so", who, "First")}
+        <div class="pp-box qd-rule"><b>Joining words</b><p><b>and</b> adds more &nbsp; · &nbsp; <b>but</b> something different &nbsp; · &nbsp; <b>because</b> gives a reason &nbsp; · &nbsp; <b>so</b> says what happened next</p></div>
+        ${task(1, "Write the best joining word in each gap.")}
+        <ol class="qd-list">${rows.map(([a, b]) => `<li>${a} ${blank(5)} ${b}.</li>`).join("")}</ol>
+        ${task(2, "Finish these with your own idea.")}
+        <p class="qd-finish">I was happy because ${blank(16)}</p><p class="qd-finish">I wanted to go out, but ${blank(14)}</p>`,
+        answers: answersPage(h, "and, but, because, so", rows.map(([a, b, j]) => `${a} <b>${j}</b> ${b}.`),
+          "Task 2: any ending that gives a reason after because, and something different after but.")
+      };
+    });
+
+  add("paper-drill-end-marks", "lesson-first-full-stops-question-marks-and-exclamation-marks", "Quick drill: sentence endings",
+    "Choose a full stop, question mark or exclamation mark for each sentence, then put capital letters and full stops into three sentences.", (who, h) => {
+      const S = [["Where is my bag", "?"], ["I had toast for breakfast", "."], ["Watch out", "!"], ["What time is it", "?"], ["The cat is asleep", "."], ["Help", "!"],
+        ["Can I have a turn", "?"], ["We went to the beach", "."], ["Ouch, that hurt", "!"], ["Do you like pizza", "?"], ["My sister is seven", "."], ["Who is at the door", "?"],
+        ["Look at that huge spider", "!"], ["It is my birthday today", "."]];
+      const rows = pickN(S, 8);
+      const FIX = [["my dog is called max", "My dog is called Max."], ["on saturday we went to the zoo", "On Saturday we went to the zoo."], ["amy and i like to read", "Amy and I like to read."],
+        ["we live in glasgow", "We live in Glasgow."], ["tom has a new bike", "Tom has a new bike."]];
+      const fix = pickN(FIX, 3);
+      return {
+        pupil: `${drillHead(h, "Sentence endings", who, "First")}
+        <div class="pp-box qd-rule"><b>Sentence endings</b><p><b>.</b> tells you something &nbsp; · &nbsp; <b>?</b> asks something &nbsp; · &nbsp; <b>!</b> shows a strong feeling or a warning</p></div>
+        ${task(1, "Put <b>.</b> <b>?</b> or <b>!</b> in the box.")}
+        <ol class="qd-list qd-cols2">${rows.map(([s]) => `<li>${s}<span class="qd-cell qd-gap qd-mark"></span></li>`).join("")}</ol>
+        ${task(2, "Write each sentence again with capital letters and a full stop.")}
+        ${fix.map(([s]) => `<p class="qd-copy">${s}</p>${ruled(h, 1)}`).join("")}`,
+        answers: answersPage(h, "Sentence endings", rows.map(([s, m]) => `${s}<b>${m}</b>`).concat(fix.map(([, s]) => s)),
+          "In task 1 an exclamation mark is fine for a sentence said with strong feeling, if the pupil can say why.")
+      };
+    });
+
+  add("paper-drill-past-tense", "lesson-first-past-tense-and-checking-my-writing", "Quick drill: yesterday I…",
+    "Write verbs in the past tense, using the -ed rules, then match words that change in their own way (go, went).", (who, h) => {
+      const ED = [["play", "played"], ["walk", "walked"], ["smile", "smiled"], ["clap", "clapped"],
+        ["carry", "carried"], ["help", "helped"], ["skip", "skipped"], ["like", "liked"], ["tidy", "tidied"], ["shout", "shouted"]];
+      const ed = pickN(ED, 8);
+      const ODD = [["go", "went"], ["see", "saw"], ["eat", "ate"], ["run", "ran"], ["have", "had"], ["come", "came"], ["sit", "sat"], ["make", "made"]];
+      const odd = pickN(ODD, 5), shown = shuffle(odd.map(([, b]) => b));
+      return {
+        pupil: `${drillHead(h, "Yesterday I…", who, "First")}
+        <div class="pp-box qd-rule"><b>Adding -ed</b><p>Most words: add <b>ed</b> (jump → jumped). Ends in e: add <b>d</b> (bake → baked).
+          Short vowel and one last letter: double it (hop → hopped). Ends in a consonant then y: y becomes <b>ied</b> (cry → cried).</p></div>
+        ${task(1, "Write each word as if it happened yesterday.")}
+        <div class="qd-rows qd-two">${ed.map(([a]) => `<div class="qd-row"><span class="qd-say">${a}</span> → ${blank(5.5)}</div>`).join("")}</div>
+        ${task(2, "These words change in their own way. Draw a line to match each one.")}
+        <div class="qd-match">${odd.map(([a], i) => `<span>${a}</span><span></span><span>${shown[i]}</span>`).join("")}</div>`,
+        answers: answersPage(h, "Yesterday I…", ed.map(([a, b]) => `${a} → <b>${b}</b>`).concat(odd.map(([a, b]) => `${a} → <b>${b}</b>`)),
+          "Mistakes here usually show which rule to practise: doubling (hoped / hopped) or y to ied.")
+      };
+    });
+
+  add("paper-drill-quick-read", "lesson-first-answering-questions-about-a-text", "Quick drill: read and answer",
+    "A short text with its key words in a box, then questions to find the answers in the text and one to think about.", (who, h) => {
+      const TEXTS = [
+        { title: "The lost kitten", key: ["kitten", "shed", "noise", "torch", "milk"], text: "Ava heard a small noise coming from the shed. She took a torch and looked inside. Behind a pile of old pots was a tiny grey kitten. It was shaking. Ava gave it a saucer of milk, and soon it began to purr.",
+          qs: [["Where did the noise come from?", "the shed"], ["What did Ava take with her?", "a torch"], ["What colour was the kitten?", "grey"], ["What did Ava give it?", "a saucer of milk"]],
+          think: ["How do you know the kitten felt better at the end?", "It began to purr (and stopped shaking)."] },
+        { title: "Sports day", key: ["race", "sack", "fell", "cheered", "medal"], text: "It was sports day at school. Leo was in the sack race. Halfway down the track he fell over, but he got back up and kept hopping. He came last, but everyone cheered. His teacher gave him a medal for not giving up.",
+          qs: [["Which race was Leo in?", "the sack race"], ["What happened halfway?", "he fell over"], ["Where did Leo come?", "last"], ["Why did he get a medal?", "for not giving up"]],
+          think: ["Why do you think everyone cheered?", "Because he kept going after he fell (any sensible reason)."] },
+        { title: "The snow day", key: ["snow", "window", "sledge", "hill", "cocoa"], text: "When Isla woke up, the world outside her window was white. Snow had fallen all night. She found her sledge in the garage and ran to the hill behind her house. After hours of sledging, her hands were frozen, so Gran made her a mug of hot cocoa.",
+          qs: [["What did Isla see from her window?", "snow / everything was white"], ["Where was her sledge?", "in the garage"], ["Where did she go sledging?", "the hill behind her house"], ["Who made the cocoa?", "Gran"]],
+          think: ["Why did Gran make her hot cocoa?", "Her hands were frozen / she was cold."] }];
+      const t = pick(TEXTS);
+      return {
+        pupil: `${drillHead(h, "Read and answer", who, "First", 15)}
+        <div class="pp-box qd-rule"><b>Key words: read these first</b><p class="qd-bank">${t.key.join(" &nbsp; · &nbsp; ")}</p></div>
+        ${task(1, `Read “${t.title}”.`)}<div class="pp-passage">${t.text}</div>
+        ${task(2, "Find the answers in the text.")}
+        <ol class="qd-list">${t.qs.map(([q]) => `<li>${q}<br>${blank(18)}</li>`).join("")}</ol>
+        ${task(3, t.think[0])}${lines(2)}`,
+        answers: answersPage(h, `Read and answer: ${t.title}`, t.qs.map(([q, a]) => `${q} <b>${a}</b>`).concat([`${t.think[0]} <b>${t.think[1]}</b>`]),
+          "Short answers are fine for task 2. For task 3, look for a reason that comes from the text.")
+      };
+    });
+
+  // ---------- Second level ----------
+
+  add("paper-drill-plurals-ing", "lesson-second-spelling-rules-ing-plurals-and-endings", "Quick drill: plurals and -ing",
+    "Make plurals with the s, es, ies and ves rules, then add -ing with the doubling and drop-the-e rules. A fresh mix every print.", (who, h) => {
+      const PL = [["cat", "cats"], ["bus", "buses"], ["box", "boxes"], ["church", "churches"], ["wish", "wishes"], ["baby", "babies"], ["city", "cities"], ["day", "days"],
+        ["leaf", "leaves"], ["knife", "knives"], ["fox", "foxes"], ["party", "parties"], ["toy", "toys"], ["wolf", "wolves"], ["glass", "glasses"], ["lorry", "lorries"]];
+      const ING = [["read", "reading"], ["run", "running"], ["ride", "riding"], ["jump", "jumping"], ["shop", "shopping"], ["smile", "smiling"],
+        ["play", "playing"], ["write", "writing"], ["sit", "sitting"], ["cook", "cooking"]];
+      const pl = pickN(PL, 8), ing = pickN(ING, 8);
+      return {
+        pupil: `${drillHead(h, "Plurals and -ing", who, "Second")}
+        <div class="pp-cols">
+          <div class="pp-box qd-rule"><b>More than one</b><p>Most words add <b>s</b>. After s, x, ch, sh add <b>es</b>. Consonant + y: change y to <b>ies</b>. Most f or fe endings: <b>ves</b>. Vowel + y: just add s.</p></div>
+          <div class="pp-box qd-rule"><b>Adding -ing</b><p>Short vowel and one last consonant: double it (swim → swimming). Ends in e: drop the e (make → making). Otherwise just add <b>ing</b>.</p></div></div>
+        ${task(1, "Write the plural.")}
+        <div class="qd-rows qd-two">${pl.map(([a]) => `<div class="qd-row"><span class="qd-say">${a}</span> → ${blank(6)}</div>`).join("")}</div>
+        ${task(2, "Add <b>ing</b>.")}
+        <div class="qd-rows qd-two">${ing.map(([a]) => `<div class="qd-row"><span class="qd-say">${a}</span> → ${blank(6)}</div>`).join("")}</div>
+        ${task(3, "Write one sentence using a plural and an -ing word from this sheet.")}${lines(2)}`,
+        answers: answersPage(h, "Plurals and -ing", pl.map(([a, b]) => `${a} → <b>${b}</b>`).concat(ing.map(([a, b]) => `${a} → <b>${b}</b>`)),
+          "The first eight are task 1. Ask which rule each one used: knowing the rule matters more than the one word.")
+      };
+    });
+
+  add("paper-drill-prefixes", "lesson-england-years-3-and-4-word-list-roots-prefixes-and-suffixes", "Quick drill: un, dis, re, mis and pre",
+    "Learn what five prefixes mean, write the prefix that fits each meaning, then circle the prefix in longer words.", (who, h) => {
+      const P = [["not happy", "un", "happy"], ["not kind", "un", "kind"], ["do again", "re", "do"], ["not agree", "dis", "agree"], ["spell wrongly", "mis", "spell"],
+        ["heat before", "pre", "heat"], ["fill again", "re", "fill"], ["not honest", "dis", "honest"], ["not lucky", "un", "lucky"], ["behave badly", "mis", "behave"],
+        ["not appear (vanish)", "dis", "appear"], ["view before", "pre", "view"], ["build again", "re", "build"], ["not lock", "un", "lock"], ["understand wrongly", "mis", "understand"]];
+      const rows = pickN(P, 8);
+      const CIRCLE = ["unfair", "rewrite", "disobey", "misread", "prepay", "untidy", "replay", "dislike", "mistake", "preschool"];
+      const circ = pickN(CIRCLE, 6);
+      return {
+        pupil: `${drillHead(h, "un, dis, re, mis and pre", who, "Second")}
+        <div class="pp-box qd-rule"><b>Prefixes go at the start of a word and change its meaning</b>
+          <p><b>un</b> and <b>dis</b> = not &nbsp; · &nbsp; <b>re</b> = again &nbsp; · &nbsp; <b>mis</b> = wrongly or badly &nbsp; · &nbsp; <b>pre</b> = before</p></div>
+        ${task(1, "Write the prefix that gives the meaning. Then write the whole word.")}
+        <table class="pp-table qd-prefix"><thead><tr><th>Meaning</th><th>Prefix</th><th>Word</th><th>Whole word</th></tr></thead>
+          <tbody>${rows.map(([m, , w]) => `<tr><td>${m}</td><td></td><td>${w}</td><td></td></tr>`).join("")}</tbody></table>
+        ${task(2, "Circle the prefix in each word.")}
+        <p class="qd-bank">${circ.join(" &nbsp; · &nbsp; ")}</p>
+        ${task(3, "Write a sentence that uses two of your whole words.")}${lines(3)}`,
+        answers: answersPage(h, "un, dis, re, mis and pre", rows.map(([m, p, w]) => `${m}: <b>${p}</b> → ${p}${w}`)
+          .concat([`Circle: ${circ.map(w => { const p = ["pre", "dis", "mis", "un", "re"].find(x => w.startsWith(x)); return `<b>${p}</b>${w.slice(p.length)}`; }).join(", ")}`]),
+          "The spelling of the root word never changes: dis + satisfied, mis + spell (two s's).")
+      };
+    });
+
+  add("paper-drill-syllables", "lesson-second-reading-fluently-with-pace-and-expression", "Quick drill: chop it into syllables",
+    "Clap and split longer words into syllables with a line, count the beats, then sort words by how many syllables they have.", (who, h) => {
+      const W = [["rabbit", "rab/bit"], ["sandwich", "sand/wich"], ["tomato", "to/ma/to"], ["elephant", "el/e/phant"], ["umbrella", "um/brel/la"], ["computer", "com/pu/ter"],
+        ["helicopter", "hel/i/cop/ter"], ["fantastic", "fan/tas/tic"], ["dinosaur", "di/no/saur"], ["kitten", "kit/ten"], ["calculator", "cal/cu/la/tor"], ["banana", "ba/na/na"],
+        ["hospital", "hos/pi/tal"], ["caterpillar", "cat/er/pil/lar"], ["pencil", "pen/cil"], ["remember", "re/mem/ber"], ["alligator", "al/li/ga/tor"]];
+      const split = pickN(W, 8), rest = shuffle(W.filter(w => !split.includes(w))).slice(0, 8);
+      const beats = w => w[1].split("/").length;
+      return {
+        pupil: `${drillHead(h, "Chop it into syllables", who, "Second")}
+        <div class="pp-box qd-rule"><b>Syllables</b><p>A syllable is one beat in a word. Clap it, and every syllable has a vowel sound: but/ter/fly has 3.</p></div>
+        ${task(1, "Clap each word. Write it with a line between the syllables, then the number of beats.")}
+        <div class="qd-rows qd-two">${split.map(([w]) => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(7.5)} <span class="qd-cell qd-gap"></span></div>`).join("")}</div>
+        ${task(2, "Sort these words by their number of syllables.")}
+        <p class="qd-bank">${rest.map(([w]) => w).join(" &nbsp; · &nbsp; ")}</p>
+        <table class="pp-table qd-sort"><thead><tr><th>2 syllables</th><th>3 syllables</th><th>4 syllables</th></tr></thead><tbody>${"<tr><td></td><td></td><td></td></tr>".repeat(3)}</tbody></table>`,
+        answers: answersPage(h, "Chop it into syllables", split.map(w => `${w[1]} <b>(${beats(w)})</b>`)
+          .concat([2, 3, 4].map(n => `<b>${n} syllables</b>: ${rest.filter(w => beats(w) === n).map(w => w[0]).join(", ") || "none this time"}`)),
+          "Where to split can vary a little (ele/phant); the number of beats is what to check.")
+      };
+    });
+
+  add("paper-drill-apostrophes", "lesson-second-commas-speech-marks-and-apostrophes", "Quick drill: apostrophes",
+    "Shorten words with an apostrophe (do not, don't), then use an apostrophe to show who something belongs to.", (who, h) => {
+      const SHORT = [["I am", "I'm"], ["cannot", "can't"], ["it is", "it's"], ["we are", "we're"], ["they have", "they've"], ["did not", "didn't"],
+        ["she will", "she'll"], ["you are", "you're"], ["is not", "isn't"], ["I would", "I'd"], ["could not", "couldn't"], ["we have", "we've"], ["he is", "he's"]];
+      const short = pickN(SHORT, 8);
+      const OWN = [["the bike belonging to Sam", "Sam's bike"], ["the ball belonging to the dog", "the dog's ball"], ["the coat belonging to my mum", "my mum's coat"],
+        ["the nest belonging to the bird", "the bird's nest"], ["the house belonging to Gran", "Gran's house"], ["the tail belonging to the cat", "the cat's tail"], ["the book belonging to Leo", "Leo's book"]];
+      const own = pickN(OWN, 5);
+      return {
+        pupil: `${drillHead(h, "Apostrophes", who, "Second")}
+        <div class="pp-cols">
+          <div class="pp-box qd-rule"><b>Shortening</b><p>The apostrophe goes where letters are missed out: do n<b>o</b>t → don<b>'</b>t.</p></div>
+          <div class="pp-box qd-rule"><b>Belonging</b><p>Add <b>'s</b> to the owner: the bike of Sam → Sam<b>'s</b> bike.</p></div></div>
+        ${task(1, "Write the short form.")}
+        <div class="qd-rows qd-two">${short.map(([a]) => `<div class="qd-row"><span class="qd-say">${a}</span> → ${blank(5.5)}</div>`).join("")}</div>
+        ${task(2, "Write it a shorter way, using an apostrophe.")}
+        <ol class="qd-list">${own.map(([a]) => `<li>${a} → ${blank(9)}</li>`).join("")}</ol>
+        ${task(3, "Write a sentence with one short form and one belonging apostrophe.")}${lines(2)}`,
+        answers: answersPage(h, "Apostrophes", short.map(([a, b]) => `${a} → <b>${b}</b>`).concat(own.map(([a, b]) => `${a} → <b>${b}</b>`)),
+          "Watch for it's: it only has an apostrophe when it means it is or it has.")
+      };
+    });
+
+  add("paper-drill-build-sentences", "lesson-second-varying-sentences-and-using-paragraphs", "Quick drill: build a better sentence",
+    "Put jumbled words in order to make a sentence, then improve plain sentences with describing words and a when or where opener.", (who, h) => {
+      const JUMBLE = ["The old fox crept quietly into the farmyard.", "After lunch, we walked to the river.", "My little brother hid under the stairs.",
+        "Suddenly, the lights went out.", "A huge wave crashed onto the rocks.", "Every morning, the baker opens his shop.", "The children laughed at the silly clown.",
+        "Last night, a storm blew our fence down."];
+      const jum = pickN(JUMBLE, 4).map(s => ({ s, tiles: shuffle(s.replace(/[.,]/g, "").split(" ")) }));
+      const PLAIN = ["The dog ran.", "A car stopped.", "The girl smiled.", "The door opened.", "A bird sang.", "The boy shouted."];
+      const plain = pickN(PLAIN, 3);
+      return {
+        pupil: `${drillHead(h, "Build a better sentence", who, "Second")}
+        ${task(1, "Put the words in order to make a sentence. Remember the capital letter, commas and full stop.")}
+        ${jum.map(j => `<p class="qd-tiles">${j.tiles.map(t => `<span>${t}</span>`).join("")}</p>${lines(1)}`).join("")}
+        ${task(2, "Make each sentence better: add a describing word and start with when or where it happened.")}
+        <p class="qd-example">The cat slept. → <i>In the warm kitchen, the fat cat slept.</i></p>
+        ${plain.map(s => `<p class="qd-copy">${s}</p>${lines(1)}`).join("")}`,
+        answers: answersPage(h, "Build a better sentence", jum.map(j => j.s),
+          "Some jumbles can go another way that still makes sense (moving the opener to the end): accept it if the punctuation fits. Task 2: look for an adjective, a when or where opener, and a comma after it.")
+      };
+    });
+  /* ===================== Quick drills: Third and Fourth level =====================
+     The same one-page shape as the Early to Second drills (10-quick-drills.js), for older pupils:
+     the harder spelling rules, word meaning in a short text, sentence building and punctuation,
+     and reading for bias and word choice. Every word and text is PopSpell's own. */
+
+  const meaningRow = (label, opts) => `<span class="qd-opts">${label}${opts.map(o => `<span class="qd-pick">${o}</span>`).join("")}</span>`;
+
+  // ---------- Third level ----------
+
+  add("paper-drill-number-prefixes", "lesson-third-spelling-specialist-and-tricky-words-accurately", "Quick drill: number prefixes",
+    "Prefixes that count (uni, bi, tri, quad, oct, cent, multi): underline them, say what number they mean, and build words from definitions.", (who, h) => {
+      const PRE = { uni: "one", mono: "one", bi: "two", tri: "three", quad: "four", oct: "eight", dec: "ten", cent: "a hundred", multi: "many" };
+      const SPOT = ["unicycle", "monorail", "biannual", "tripod", "quadruple", "octopus", "decade", "century", "multicoloured", "bilingual", "triangle", "uniform",
+        "monologue", "quadrilateral", "octagon", "centipede", "multistorey", "decathlon"];
+      const spot = pickN(SPOT, 9).map(w => [w, Object.keys(PRE).find(p => w.startsWith(p))]);
+      const BUILD = [["having one common form", "uni", "form"], ["a vehicle with two wheels", "bi", "cycle"], ["able to speak two languages", "bi", "lingual"],
+        ["a shape with three sides", "tri", "angle"], ["a speech by one person", "mono", "logue"], ["a shape with eight sides", "oct", "agon"],
+        ["a period of ten years", "dec", "ade"], ["a hundred years", "cent", "ury"], ["with many colours", "multi", "coloured"], ["a stand with three legs", "tri", "pod"],
+        ["four times as much", "quad", "ruple"], ["a rail with one track", "mono", "rail"]];
+      const build = pickN(BUILD.filter(b => !spot.some(([w]) => w === b[1] + b[2])), 6);
+      return {
+        pupil: `${drillHead(h, "Number prefixes", who, "Third")}
+        <div class="pp-box qd-rule"><b>Some prefixes count</b><p>${Object.entries(PRE).map(([p, n]) => `<b>${p}</b> = ${n}`).join(" &nbsp; · &nbsp; ")}</p></div>
+        ${task(1, "Underline the prefix in each word, then write the number it means.")}
+        <div class="qd-rows qd-three">${spot.map(([w]) => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(4)}</div>`).join("")}</div>
+        ${task(2, "Write the prefix and the whole word that match each definition.")}
+        <table class="pp-table qd-prefix"><thead><tr><th>Definition</th><th>Prefix</th><th>Root</th><th>Whole word</th></tr></thead>
+          <tbody>${build.map(([d, , r]) => `<tr><td>${d}</td><td></td><td>${r}</td><td></td></tr>`).join("")}</tbody></table>
+        ${task(3, "Think of one more word for any two of the prefixes. Use each in a sentence.")}${lines(2)}`,
+        answers: answersPage(h, "Number prefixes", spot.map(([w, p]) => `<b>${p}</b>${w.slice(p.length)}: ${PRE[p]}`).concat(build.map(([d, p, r]) => `${d}: <b>${p}</b> + ${r} = <b>${p}${r}</b>`)),
+          "The first nine are task 1. Task 3: any real word that uses the prefix with its number meaning (bicentenary, triplet, monotone…).")
+      };
+    });
+
+  add("paper-drill-suffix-rules", "lesson-third-spelling-specialist-and-tricky-words-accurately", "Quick drill: adding suffixes",
+    "Add suffixes such as -able, -ful, -ity, -ness, -ment and -ous using the y to i, drop the e and doubling rules, then use the new words.", (who, h) => {
+      const SUM = [["happy", "ness", "happiness"], ["plenty", "ful", "plentiful"], ["rely", "able", "reliable"], ["beauty", "ful", "beautiful"], ["vary", "ous", "various"],
+        ["adore", "able", "adorable"], ["fame", "ous", "famous"], ["secure", "ity", "security"], ["value", "able", "valuable"], ["popular", "ity", "popularity"],
+        ["enjoy", "ment", "enjoyment"], ["hope", "ful", "hopeful"], ["forget", "able", "forgettable"], ["begin", "er", "beginner"], ["equip", "ment", "equipment"],
+        ["adapt", "able", "adaptable"], ["lazy", "ness", "laziness"], ["pity", "ful", "pitiful"], ["care", "less", "careless"], ["admire", "ation", "admiration"]];
+      const sums = pickN(SUM, 10);
+      const CHOOSE = [["The old map was very", ["valuable", "valueable"], 0], ["She showed great", ["couragous", "courageous"], 1], ["The weather here is", ["changeable", "changable"], 0],
+        ["He gave a", ["truthful", "truthfull"], 0], ["The rules caused a lot of", ["argument", "arguement"], 0], ["The puppy was", ["adoreable", "adorable"], 1]];
+      const choose = pickN(CHOOSE, 4);
+      return {
+        pupil: `${drillHead(h, "Adding suffixes", who, "Third")}
+        <div class="pp-box qd-rule"><b>Suffix rules</b><p>Consonant + y: change y to <b>i</b> (happy → happiness), but keep y before -ing.
+          Ends in e and the suffix starts with a vowel: drop the <b>e</b> (fame → famous); keep it after soft c or g (courage → courageous) and before a consonant (hope → hopeful).
+          Stressed last syllable ending in one vowel + one consonant: <b>double</b> it (forget → forgettable).</p></div>
+        ${task(1, "Add the suffix. Write the new word.")}
+        <div class="qd-rows qd-two">${sums.map(([b, s]) => `<div class="qd-row"><span class="qd-say">${b} + ${s}</span> = ${blank(8)}</div>`).join("")}</div>
+        ${task(2, "Circle the correct spelling.")}
+        <ol class="qd-list">${choose.map(([s, o]) => `<li>${meaningRow(`${s} `, o)}</li>`).join("")}</ol>
+        ${task(3, "Use two of your new words from task 1 in one sentence.")}${lines(2)}`,
+        answers: answersPage(h, "Adding suffixes", sums.map(([b, s, w]) => `${b} + ${s} = <b>${w}</b>`).concat(choose.map(([s, o, k]) => `${s} <b>${o[k]}</b>`)),
+          "Ask which rule each word used. Mistakes cluster: y to i, the dropped e, or doubling.")
+      };
+    });
+
+  add("paper-drill-homophones", "lesson-third-editing-and-layout-that-helps-the-reader", "Quick drill: homophones",
+    "Words that sound the same but are spelt differently (their, there, they're; affect, effect): choose the right one, then correct a short paragraph.", (who, h) => {
+      const S = [["___ going to be late.", ["Their", "There", "They're"], 2], ["Leave your bags over ___.", ["their", "there", "they're"], 1], ["The team lost ___ match.", ["their", "there", "they're"], 0],
+        ["Is this ___ coat?", ["your", "you're"], 0], ["___ the tallest in the class.", ["Your", "You're"], 1], ["The dog wagged ___ tail.", ["its", "it's"], 0], ["___ been raining all day.", ["Its", "It's"], 1],
+        ["I don't know ___ to laugh or cry.", ["weather", "whether"], 1], ["The cold ___ the crops.", ["affected", "effected"], 0], ["The medicine had no ___.", ["affect", "effect"], 1],
+        ["She was ___ tired to walk.", ["to", "too", "two"], 1], ["I ___ the ball over the fence.", ["threw", "through"], 0], ["We walked ___ the forest.", ["threw", "through"], 1],
+        ["Please be ___ in the library.", ["quiet", "quite"], 0], ["The film was ___ good.", ["quiet", "quite"], 1], ["He ___ the race easily.", ["one", "won"], 1]];
+      const rows = pickN(S, 10);
+      const PARA = [["Their going to the park after school, but its to cold to stay long. Your welcome to join them if you bring you're coat.",
+        "They're going to the park after school, but it's too cold to stay long. You're welcome to join them if you bring your coat.", 5],
+        ["The whether was so bad that the match was cancelled. The team new there coach would be disappointed, but it was the right choice for they're safety.",
+        "The weather was so bad that the match was cancelled. The team knew their coach would be disappointed, but it was the right choice for their safety.", 4]];
+      const para = pick(PARA);
+      return {
+        pupil: `${drillHead(h, "Homophones", who, "Third")}
+        ${task(1, "Circle the word that fits.")}
+        <ol class="qd-list qd-cols2">${rows.map(([s, o]) => `<li>${s.replace("___", blank(3))}<br>${o.map(x => `<span class="qd-pick">${x}</span>`).join("")}</li>`).join("")}</ol>
+        ${task(2, `This paragraph has ${para[2]} homophone mistakes. Underline them, then write it out correctly.`)}
+        <div class="pp-passage">${para[0]}</div>${lines(3)}`,
+        answers: answersPage(h, "Homophones", rows.map(([s, o, k]) => s.replace("___", `<b>${o[k]}</b>`)).concat([para[1]]),
+          "Quick checks to teach: they're and you're can be read as they are and you are; it's as it is or it has; affect is usually the verb, effect the noun.")
+      };
+    });
+
+  add("paper-drill-complex-sentences", "lesson-third-sentences-punctuation-and-paragraphs", "Quick drill: although, unless, while",
+    "Join ideas into complex sentences with subordinating conjunctions (although, because, unless, while, since, when), with a comma when the clause comes first.", (who, h) => {
+      const P = [["I enjoyed the film", "it was very long", "although"], ["We will miss the bus", "we leave now", "unless"], ["Dad cooked dinner", "I set the table", "while"],
+        ["The match was cancelled", "the pitch was flooded", "because"], ["I have lived here", "I was five", "since"], ["You can go out", "you have finished your homework", "when"],
+        ["She kept running", "her legs ached", "although"], ["The plant will die", "you water it", "unless"], ["I read a book", "I waited for the train", "while"],
+        ["Our team won", "we practised every day", "because"]];
+      const rows = pickN(P, 6);
+      const FRONT = pickN(P.filter(p => !rows.includes(p)), 3);
+      const cap = s => s[0].toUpperCase() + s.slice(1), low = s => (/^I\b/.test(s) ? s : s[0].toLowerCase() + s.slice(1));
+      return {
+        pupil: `${drillHead(h, "Although, unless, while", who, "Third")}
+        <div class="pp-box qd-rule"><b>Complex sentences</b><p>A subordinating conjunction starts a clause that can't stand alone: <b>although, because, unless, while, since, when, if, until</b>.
+          When that clause comes first, put a comma after it: <i>Although it rained, we played outside.</i></p></div>
+        ${task(1, "Choose the best conjunction to fill each gap.")}
+        <p class="qd-bank">although · unless · while · because · since · when</p>
+        <ol class="qd-list">${rows.map(([a, b]) => `<li>${a} ${blank(6)} ${b}.</li>`).join("")}</ol>
+        ${task(2, "Write each pair as one sentence, starting with the conjunction. Remember the comma.")}
+        ${FRONT.map(([a, b, c]) => `<p class="qd-copy">${a}. ${cap(b)}. <i>(${c})</i></p>${lines(1)}`).join("")}`,
+        answers: answersPage(h, "Although, unless, while", rows.map(([a, b, c]) => `${a} <b>${c}</b> ${b}.`).concat(FRONT.map(([a, b, c]) => `${cap(c)} ${b}, ${low(a)}.`)),
+          "Task 1: accept another conjunction if the meaning works (when / while). Task 2: check the comma after the first clause.")
+      };
+    });
+
+  add("paper-drill-word-meaning", "lesson-third-close-reading-purpose-inference-and-language", "Quick drill: words in a text",
+    "A short text with harder words: choose the best meaning from the text, give synonyms, split words into syllables and circle suffixes.", (who, h) => {
+      const TEXTS = [
+        { title: "The night ferry", text: "The ferry left the harbour just after midnight. Mara stood on the deck, gripping the cold rail as the lights of the town grew faint. The sea was <u>tranquil</u> at first, but soon a <u>relentless</u> wind began to rise. Passengers hurried inside, clutching their bags. Mara stayed, <u>fascinated</u> by the white spray. By the time the island appeared, a pale glow was <u>gradually</u> spreading across the sky.",
+          mean: [["tranquil", ["calm and still", "very deep", "freezing cold"], 0], ["relentless", ["gentle", "never stopping", "sudden"], 1]],
+          syn: [["faint", "dim, weak"], ["clutching", "gripping, holding tightly"]], syl: ["fascinated", "gradually", "passengers"], suf: ["gradually", "relentless", "fascinated"] },
+        { title: "The allotment", text: "Grandad's allotment looked <u>neglected</u> when he first took it on: brambles everywhere and a shed with half a roof. He worked on it every weekend, <u>persistent</u> even in the rain. By the second summer it was <u>abundant</u> with beans, potatoes and enormous marrows. Neighbours stopped to admire it, and Grandad, usually so <u>modest</u>, could not hide his pride.",
+          mean: [["neglected", ["not looked after", "very small", "recently built"], 0], ["abundant", ["empty", "full of plenty", "expensive"], 1]],
+          syn: [["enormous", "huge, vast"], ["admire", "look at with approval, praise"]], syl: ["persistent", "neighbours", "enormous"], suf: ["neglected", "usually", "persistent"] },
+        { title: "The museum visit", text: "The class filed into the museum hall in silence. Above them hung the <u>immense</u> skeleton of a whale, its bones pale and <u>fragile</u>. A guide explained that the whale had been found on a beach over a hundred years ago. Jonah felt <u>insignificant</u> beneath it. He took out his notebook and began sketching, <u>determined</u> to remember every detail.",
+          mean: [["immense", ["very old", "extremely large", "very heavy"], 1], ["fragile", ["easily broken", "very white", "strong"], 0]],
+          syn: [["explained", "described, told"], ["sketching", "drawing"]], syl: ["skeleton", "insignificant", "determined"], suf: ["explained", "sketching", "insignificant"] }];
+      const t = pick(TEXTS);
+      const SUF = /(ly|ing|ed|ness|ful|less|ent|ant|ous|ive|ion|able)$/;
+      return {
+        pupil: `${drillHead(h, "Words in a text", who, "Third")}
+        ${task(1, `Read “${t.title}”.`)}<div class="pp-passage">${t.text}</div>
+        ${task(2, "Circle the best meaning of each word as it is used in the text.")}
+        <ol class="qd-list">${t.mean.map(([w, o]) => `<li><b>${w}</b>: ${o.map(x => `<span class="qd-pick">${x}</span>`).join("")}</li>`).join("")}</ol>
+        ${task(3, "Write a synonym for each word.")}
+        <div class="qd-rows qd-two">${t.syn.map(([w]) => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(9)}</div>`).join("")}</div>
+        ${task(4, "Split each word into syllables (fas/ci/nat/ed).")}
+        <div class="qd-rows qd-three">${t.syl.map(w => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(7)}</div>`).join("")}</div>
+        ${task(5, `Circle the suffix in: <b>${t.suf.join(" &nbsp; · &nbsp; ")}</b>`)}
+        ${task(6, "Find another underlined word. What does it tell you about the place or the person?")}${lines(2)}`,
+        answers: answersPage(h, `Words in a text: ${t.title}`, t.mean.map(([w, o, k]) => `${w}: <b>${o[k]}</b>`)
+          .concat(t.syn.map(([w, s]) => `${w}: <b>${s}</b> (or any word with the same meaning)`))
+          .concat([`Syllables: ${t.syl.map(w => ({ fascinated: "fas/ci/nat/ed", gradually: "grad/u/al/ly", passengers: "pas/sen/gers", persistent: "per/sis/tent", neighbours: "neigh/bours", enormous: "e/nor/mous", skeleton: "skel/e/ton", insignificant: "in/sig/nif/i/cant", determined: "de/ter/mined" })[w] || w).join(", ")}`,
+            `Suffixes: ${t.suf.map(w => { const m = w.match(SUF); return m ? `${w.slice(0, -m[1].length)}<b>${m[1]}</b>` : w; }).join(", ")}`]),
+          "Task 2: the clue is in the sentence around the word; ask the pupil which words helped. Syllable splits can vary a little.")
+      };
+    });
+
+  add("paper-drill-cause-effect", "lesson-third-reading-fluently-and-using-reading-strategies", "Quick drill: cause and effect",
+    "Match causes to their effects, then link them with because, as a result, therefore and so that.", (who, h) => {
+      const CE = [["The river burst its banks", "the town centre flooded"], ["The factory closed", "many people lost their jobs"], ["She trained every morning", "she won the race"],
+        ["The bridge was icy", "a lorry skidded off the road"], ["The ticket prices went up", "fewer people came to the concert"], ["The power went off", "the freezer began to defrost"],
+        ["Bees are disappearing", "some crops are not being pollinated"], ["He forgot his password", "he could not log in"], ["The road was closed", "the bus took a longer route"]];
+      const rows = pickN(CE, 5), effects = shuffle(rows.map(([, e]) => e));
+      const LINK = pickN(CE.filter(c => !rows.includes(c)), 3);
+      const linkers = ["As a result,", "Therefore,", "because"];
+      return {
+        pupil: `${drillHead(h, "Cause and effect", who, "Third")}
+        <div class="pp-box qd-rule"><b>Cause and effect</b><p>The <b>cause</b> is why something happens. The <b>effect</b> is what happens. Writers link them with
+          <b>because, so, as a result, therefore, due to, which meant that</b>.</p></div>
+        ${task(1, "Match each cause to its effect. Write the letter.")}
+        <div class="qd-ce">${rows.map(([c], i) => `<span>${i + 1}. ${c}</span><span class="qd-cell qd-gap qd-mark"></span><span>${"ABCDE"[i]}. ${effects[i]}</span>`).join("")}</div>
+        ${task(2, "Join each cause and effect into one or two sentences, using the linking words given.")}
+        ${LINK.map(([c, e], i) => `<p class="qd-copy">${c} / ${e} <i>(${linkers[i]})</i></p>${lines(1)}`).join("")}`,
+        answers: answersPage(h, "Cause and effect", rows.map(([c, e], i) => `${i + 1} → <b>${"ABCDE"[effects.indexOf(e)]}</b> (${e})`)
+          .concat(LINK.map(([c, e], i) => i === 2 ? `${e[0].toUpperCase() + e.slice(1)} <b>because</b> ${c[0].toLowerCase() + c.slice(1)}.` : `${c}. <b>${linkers[i]}</b> ${e}.`)),
+          "Task 2 with because puts the effect first. Check that the pupil can say which part is the cause.")
+      };
+    });
+
+  // ---------- Fourth level ----------
+
+  add("paper-drill-roots", "lesson-fourth-independent-spelling-accuracy", "Quick drill: Greek and Latin roots",
+    "Use word roots (bio, graph, tele, port, scrib, aud, dict, chron, geo, phon) to work out and spell unfamiliar words.", (who, h) => {
+      const R = { bio: "life", graph: "write, draw", tele: "far", port: "carry", scrib: "write", aud: "hear", dict: "say", chron: "time", geo: "earth", phon: "sound",
+        spect: "look", rupt: "break", struct: "build", vis: "see" };
+      const WORDS = [["biography", ["bio", "graph"]], ["telephone", ["tele", "phon"]], ["portable", ["port"]], ["inscription", ["scrib"]], ["audience", ["aud"]],
+        ["prediction", ["dict"]], ["chronological", ["chron"]], ["geography", ["geo", "graph"]], ["spectator", ["spect"]], ["eruption", ["rupt"]], ["construct", ["struct"]],
+        ["visible", ["vis"]], ["transport", ["port"]], ["autograph", ["graph"]], ["dictionary", ["dict"]], ["synchronise", ["chron"]], ["microphone", ["phon"]], ["television", ["tele", "vis"]]];
+      const roots = pickN(Object.keys(R), 6);
+      const words = pickN(WORDS, 6);
+      const GUESS = [["A chronometer is a device that measures…", "time"], ["Audible means able to be…", "heard"], ["A biologist studies…", "living things"],
+        ["Something disruptive breaks up…", "order or an activity"], ["Geology is the study of the…", "earth (rocks)"], ["Retrospective means looking…", "back"]];
+      const guess = pickN(GUESS, 3);
+      return {
+        pupil: `${drillHead(h, "Greek and Latin roots", who, "Fourth")}
+        ${task(1, "Write what each root means. Then write one word that uses it.")}
+        <table class="pp-table qd-roots"><thead><tr><th>Root</th><th>Meaning</th><th>A word with it</th></tr></thead>
+          <tbody>${roots.map(r => `<tr><td><b>${r}</b></td><td></td><td></td></tr>`).join("")}</tbody></table>
+        <p class="qd-example">Roots to choose meanings from: ${shuffle(roots.map(r => R[r])).join(" · ")}</p>
+        ${task(2, "Underline the root (or roots) in each word and explain the word's meaning using the root.")}
+        <div class="qd-rows qd-two">${words.map(([w]) => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(9)}</div>`).join("")}</div>
+        ${task(3, "Use the root to finish each definition.")}
+        <ol class="qd-list">${guess.map(([g]) => `<li>${g} ${blank(9)}</li>`).join("")}</ol>`,
+        answers: answersPage(h, "Greek and Latin roots", roots.map(r => `<b>${r}</b>: ${R[r]}`).concat(words.map(([w, rs]) => `${w}: <b>${rs.join(" + ")}</b> (${rs.map(r => R[r]).join(" + ")})`))
+          .concat(guess.map(([g, a]) => `${g} <b>${a}</b>`)), "Any real word with the root counts in task 1. Explanations in task 2 should use the root's meaning.")
+      };
+    });
+
+  add("paper-drill-tricky-plurals", "lesson-fourth-independent-spelling-accuracy", "Quick drill: tricky plurals",
+    "Plurals that break the usual rules: -o words, -f words, words from Latin and Greek, compound nouns and nouns that don't change.", (who, h) => {
+      const PL = [["volcano", "volcanoes"], ["studio", "studios"], ["piano", "pianos"], ["potato", "potatoes"], ["echo", "echoes"], ["chief", "chiefs"], ["thief", "thieves"],
+        ["roof", "roofs"], ["half", "halves"], ["cactus", "cacti"], ["fungus", "fungi"], ["crisis", "crises"], ["analysis", "analyses"], ["phenomenon", "phenomena"],
+        ["criterion", "criteria"], ["sister-in-law", "sisters-in-law"], ["passer-by", "passers-by"], ["sheep", "sheep"], ["series", "series"], ["aircraft", "aircraft"],
+        ["mystery", "mysteries"], ["journey", "journeys"], ["appendix", "appendices"], ["medium", "media"]];
+      const rows = pickN(PL, 12);
+      const FIX = [["The scientist checked all the datas before writing her analysises.", "data · analyses"], ["Three thiefs climbed onto the roofs of the studioes.", "thieves · studios"],
+        ["Both of my brother-in-laws grow potatos.", "brothers-in-law · potatoes"], ["The criterias for the competition were unclear.", "criteria"],
+        ["We saw two volcanos and several cactuses.", "volcanoes · cacti (cactuses is also accepted)"]];
+      const fix = pickN(FIX, 3);
+      return {
+        pupil: `${drillHead(h, "Tricky plurals", who, "Fourth")}
+        <div class="pp-box qd-rule"><b>When s or es is not enough</b><p>Consonant + o often adds <b>es</b> (potatoes), vowel + o adds <b>s</b> (studios). Some f words take <b>ves</b> (halves), others just s (roofs).
+          Latin and Greek words keep their own endings (cactus → cacti, crisis → crises, phenomenon → phenomena). Compound nouns pluralise the main word (sisters-in-law). Some never change (sheep).</p></div>
+        ${task(1, "Write the plural.")}
+        <div class="qd-rows qd-three">${rows.map(([s]) => `<div class="qd-row"><span class="qd-say">${s}</span> ${blank(6)}</div>`).join("")}</div>
+        ${task(2, "Each sentence has plural mistakes. Write the correct plurals.")}
+        <ol class="qd-list">${fix.map(([s]) => `<li>${s}<br>${blank(20)}</li>`).join("")}</ol>`,
+        answers: answersPage(h, "Tricky plurals", rows.map(([s, p]) => `${s} → <b>${p}</b>`).concat(fix.map(([s, a]) => `${s} → <b>${a}</b>`)),
+          "Some words have two accepted plurals (cactuses, funguses, mediums in some senses); accept them if the pupil can say so.")
+      };
+    });
+
+  add("paper-drill-colons-semicolons", "lesson-fourth-sentences-and-punctuation-for-effect", "Quick drill: colons and semicolons",
+    "Decide whether a sentence needs a colon, a semicolon or a comma, then write sentences that use each for effect.", (who, h) => {
+      const S = [["The rain didn't stop ^ the match went ahead anyway.", ";"], ["You will need three things ^ a torch, a map and a whistle.", ":"],
+        ["She had one goal ^ to win.", ":"], ["I love the coast ^ my brother prefers the mountains.", ";"], ["After the storm ^ the streets were covered in branches.", ","],
+        ["The results were clear ^ the plan had worked.", ":"], ["Some people read on trains ^ others stare out of the window.", ";"], ["Although it was late ^ nobody wanted to leave.", ","],
+        ["There was only one problem ^ nobody had the key.", ":"], ["The museum opens at nine ^ the café opens at ten.", ";"], ["We visited Paris, France ^ Rome, Italy; and Vienna, Austria.", ";"]];
+      const rows = pickN(S, 8);
+      return {
+        pupil: `${drillHead(h, "Colons and semicolons", who, "Fourth")}
+        <div class="pp-box qd-rule"><b>Colon or semicolon?</b><p>A <b>colon</b> introduces what comes next: a list, an explanation or a dramatic reveal. What comes before it is a full sentence.
+          A <b>semicolon</b> joins two full sentences that are closely linked, or separates items in a list that already has commas.</p></div>
+        ${task(1, "Write a colon, semicolon or comma in each box.")}
+        <ol class="qd-list">${rows.map(([s]) => `<li>${s.replace(" ^ ", `<span class="qd-cell qd-gap qd-mark"></span> `)}</li>`).join("")}</ol>
+        ${task(2, "Write your own sentences.")}
+        <p class="qd-copy">A colon before a dramatic reveal:</p>${lines(1)}
+        <p class="qd-copy">A semicolon joining two contrasting ideas:</p>${lines(1)}
+        ${task(3, "Why might a writer choose a semicolon instead of a full stop? Explain in one sentence.")}${lines(1)}`,
+        answers: answersPage(h, "Colons and semicolons", rows.map(([s, m]) => s.replace(" ^ ", `<b>${m}</b> `)),
+          "Task 1: a full stop would also be correct where a semicolon is shown; the point is that a comma alone would not. Task 3: it shows the two ideas are closely linked or contrasting.")
+      };
+    });
+
+  add("paper-drill-fact-opinion-bias", "lesson-fourth-bias-persuasion-and-credibility-in-what-i-read", "Quick drill: fact, opinion and bias",
+    "Sort statements into fact and opinion, find the loaded words that show bias, and rewrite a biased sentence neutrally.", (who, h) => {
+      const ST = [["The new leisure centre opened in March.", "F"], ["The new leisure centre is a shocking waste of money.", "O"], ["Over 2,000 people signed the petition.", "F"],
+        ["Only a handful of selfish residents complained.", "O"], ["The bus fare will rise by 20p next year.", "F"], ["This greedy fare rise will hurt ordinary families.", "O"],
+        ["Scotland has over 30,000 lochs.", "F"], ["Our town has the most beautiful beach in Scotland.", "O"], ["The council voted 7 to 5 in favour.", "F"],
+        ["Everyone knows the plan is a disaster.", "O"]];
+      const rows = pickN(ST, 8);
+      const LOADED = [["Protesters stormed the meeting, shouting their ridiculous demands.", "stormed · ridiculous", "Protesters entered the meeting and called out their demands."],
+        ["The heroic volunteers bravely rescued the helpless animals.", "heroic · bravely · helpless", "The volunteers rescued the animals."],
+        ["The council has finally admitted its embarrassing mistake.", "finally · admitted · embarrassing", "The council has said the decision was a mistake."]];
+      const loaded = pick(LOADED);
+      return {
+        pupil: `${drillHead(h, "Fact, opinion and bias", who, "Fourth")}
+        <div class="pp-box qd-rule"><b>Spotting bias</b><p>A <b>fact</b> can be checked. An <b>opinion</b> is a view or judgement. <b>Bias</b> shows in loaded words that push you to feel one way, in what is left out, and in opinions presented as facts.</p></div>
+        ${task(1, "Write F for fact or O for opinion.")}
+        <ol class="qd-list">${rows.map(([s]) => `<li>${s}<span class="qd-cell qd-gap qd-mark"></span></li>`).join("")}</ol>
+        ${task(2, "Underline the loaded words in this sentence.")}
+        <div class="pp-passage">${loaded[0]}</div>
+        ${task(3, "Rewrite it so it is neutral.")}${lines(1)}
+        ${task(4, "Choose one opinion from task 1. What would you need to know to check whether it is fair?")}${lines(2)}`,
+        answers: answersPage(h, "Fact, opinion and bias", rows.map(([s, a]) => `${s} <b>${a}</b>`).concat([`Loaded words: <b>${loaded[1]}</b>`, `Neutral, for example: ${loaded[2]}`]),
+          "A fact can be wrong and still be a fact statement (it can be checked). Task 4: look for evidence the pupil would ask for: costs, numbers, who says so.")
+      };
+    });
+
+  add("paper-drill-word-choice", "lesson-fourth-close-reading-detailed-analysis-and-evaluation", "Quick drill: word choice",
+    "Analyse a writer's word choice: what a word suggests (connotation), its effect on the reader, and how changing it would change the meaning.", (who, h) => {
+      const TEXTS = [
+        { title: "The city at dawn", text: "The city <u>crawled</u> awake. Buses <u>groaned</u> along the empty streets, and the first commuters <u>shuffled</u> towards the station, clutching coffee like a lifeline. Above them, the office towers stood <u>cold and indifferent</u>, their windows still dark.",
+          words: [["crawled", "slow, reluctant, like an animal or a baby; the city is tired"], ["groaned", "the buses seem to complain, like tired people; it is noisy and effortful"], ["shuffled", "people are slow and sleepy, not walking with purpose"], ["cold and indifferent", "the towers seem not to care about the people; a lonely, uncaring place"]],
+          swap: ["walked", "shuffled"] },
+        { title: "The storm", text: "By evening the storm had <u>arrived</u> in earnest. Wind <u>hurled</u> rain against the windows, and the old oak at the end of the garden <u>writhed</u> as if in pain. Somewhere a gate <u>slammed</u>, again and again, like someone trying to get in.",
+          words: [["hurled", "violent and deliberate, as if the wind is attacking"], ["writhed", "twisting in pain; the tree is personified and seems to suffer"], ["slammed", "loud, sudden, aggressive; creates tension"], ["like someone trying to get in", "a simile that makes the noise threatening"]],
+          swap: ["moved", "writhed"] }];
+      const t = pick(TEXTS), ws = pickN(t.words, 3);
+      return {
+        pupil: `${drillHead(h, "Word choice", who, "Fourth", 15)}
+        <div class="pp-box qd-rule"><b>Analysing word choice</b><p>Quote the word, say what it <b>suggests</b> (its connotations), then say the <b>effect</b> on the reader. Avoid "it makes you want to read on".</p></div>
+        ${task(1, `Read “${t.title}”.`)}<div class="pp-passage">${t.text}</div>
+        ${task(2, "For each underlined word, write what it suggests and its effect.")}
+        <table class="pp-table qd-tall"><thead><tr><th>Word</th><th>What it suggests</th><th>Effect on the reader</th></tr></thead>
+          <tbody>${ws.map(([w]) => `<tr><td><b>${w}</b></td><td></td><td></td></tr>`).join("")}</tbody></table>
+        ${task(3, `If the writer had used <b>${t.swap[0]}</b> instead of <b>${t.swap[1]}</b>, what would be lost?`)}${lines(2)}
+        ${task(4, "What mood does the whole paragraph create? Give one piece of evidence.")}${lines(2)}`,
+        answers: lookForPage(h, `Word choice: ${t.title}`, ws.map(([w, a]) => `<b>${w}</b>: ${a}`).concat([`Task 3: ${t.swap[0]} is neutral; ${t.swap[1]} carries the feeling (tired, pained) the writer wants.`,
+          "Task 4: a clear mood word (bleak, tense, weary, threatening) backed by a quotation and a comment on it."]),
+          "Credit any well-explained connotation; the comment matters more than matching these words.")
+      };
+    });
+
+  add("paper-drill-formal-register", "lesson-fourth-writing-reports-information-with-evidence", "Quick drill: formal or informal",
+    "Spot informal language and rewrite it formally for a report: no contractions or slang, precise vocabulary, and the passive where it fits.", (who, h) => {
+      const S = [["Loads of kids reckon the canteen food is rubbish.", "Many pupils consider the quality of the canteen food to be poor."],
+        ["We asked a bunch of people and most of them said yes.", "A survey was carried out and the majority of respondents agreed."],
+        ["The results were way better than we thought they'd be.", "The results were considerably better than expected."],
+        ["It's pretty obvious the bins need emptying more.", "It is clear that the bins need to be emptied more often."],
+        ["Tons of litter gets chucked on the field after lunch.", "A large amount of litter is dropped on the field after lunch."],
+        ["Basically, the bus is always late so folk get annoyed.", "The bus is frequently late, which causes frustration among passengers."],
+        ["We didn't get enough money to buy all the stuff.", "Insufficient funds were raised to purchase all the equipment."]];
+      const rows = pickN(S, 4);
+      const WORDS = [["get", "obtain / receive"], ["find out", "discover / establish"], ["a lot of", "a large number of / considerable"], ["kids", "children / young people"],
+        ["show", "demonstrate / indicate"], ["help", "assist / support"], ["start", "begin / commence"], ["enough", "sufficient / adequate"], ["about", "approximately"], ["think", "consider / believe"]];
+      const words = pickN(WORDS, 6);
+      return {
+        pupil: `${drillHead(h, "Formal or informal", who, "Fourth")}
+        <div class="pp-box qd-rule"><b>Formal register</b><p>Formal writing avoids contractions (it's → it is), slang and chatty words (loads, stuff, basically). It uses precise vocabulary and often the passive voice (<i>a survey was carried out</i>) to keep the focus on the facts.</p></div>
+        ${task(1, "Write a more formal word or phrase for each.")}
+        <div class="qd-rows qd-three">${words.map(([w]) => `<div class="qd-row"><span class="qd-say">${w}</span> ${blank(6)}</div>`).join("")}</div>
+        ${task(2, "Underline the informal language, then rewrite each sentence for a report.")}
+        ${rows.map(([s]) => `<p class="qd-copy">${s}</p>${lines(1)}`).join("")}`,
+        answers: answersPage(h, "Formal or informal", words.map(([w, f]) => `${w} → <b>${f}</b>`).concat(rows.map(([s, f]) => `For example: ${f}`)),
+          "Task 2 has many right answers: check that contractions, slang and vague words have gone and the meaning is kept.")
+      };
+    });
   return { sheets, get: id => sheets[id] || null, forLesson: lessonId => Object.values(sheets).filter(s => s.lesson === lessonId) };
 })();
