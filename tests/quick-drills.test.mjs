@@ -10,7 +10,7 @@ const drills = Object.values(window.PopPaper.sheets).filter(s => s.id.startsWith
 const answers = html => (html.match(/<li>/g) || []).length;
 
 test("there are quick drills from Early to Second level, each titled so the Library finds them", () => {
-  assert.ok(drills.length >= 16);
+  assert.ok(drills.length >= 28);
   for (const d of drills) assert.match(d.title, /^Quick drill: /, d.id);
 });
 
