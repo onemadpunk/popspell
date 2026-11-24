@@ -11,6 +11,10 @@ export const read = file => readFileSync(new URL(file, root), "utf8");
 export function loadSite() {
   const page = {};
   page.window = page;
+  // The same questions every run (a fixed seed), so the check after recording makes exactly the lines
+  // the recordings robot listed, instead of turning up a different handful of rare ones each time.
+  runInNewContext(`(() => { let s = 20261124; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();`, page);
   for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js", "audio/index.js"])
     runInNewContext(read(file), page);
   return page;
@@ -39,11 +43,6 @@ export const sentencesOf = text => (text.match(/[\s\S]+?[.!?]+["”]?(?=\s+["“
      phrases  phrases/<key> recordings asked for by key: {key: where}
      lines    how many different lines were found                                                */
 export function spoken(page = loadSite()) {
-  // Questions come from Math.random, so start it from the same seed every time: the recordings robot
-  // (which records what it finds, and drops pieces it no longer finds) and the audio check then see
-  // exactly the same lines, instead of each finding a different handful of the rarest ones.
-  runInNewContext(`(() => { let s = 20261124; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();`, page);
   const { PopActivities: A, PopSpeech: S } = page;
   const recordedWords = new Set((page.POPSPELL_AUDIO || {}).words || []);
   const pieces = new Map(), numbers = new Map(), tooBig = new Map(), words = new Map(), clips = new Map(), phrases = new Map();
