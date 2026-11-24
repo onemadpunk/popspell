@@ -57,7 +57,8 @@
       "use": [
         "n-tables-6-9",
         "n-division",
-        "n-big-add"
+        "n-big-add",
+        "t-calc"
       ],
       "home": "Split a bill, or work out the cost of several items with prices in pounds and pence.",
       "vocab": "decimal point, place value, method, estimate, inverse, check",
@@ -119,7 +120,8 @@
         "check": "Find the highest common factor and lowest common multiple of 18 and 24. Write 84 as a product of primes."
       },
       "use": [
-        "n-multiples"
+        "n-multiples",
+        "t-factors"
       ],
       "home": "Find the prime dates on this month's calendar.",
       "vocab": "multiple, factor, common, lowest common multiple, highest common factor, prime, prime factor, factor tree",
@@ -181,7 +183,8 @@
       "use": [
         "n-percent",
         "n-equivalent",
-        "en-fractions-y6"
+        "en-fractions-y6",
+        "t-fdp"
       ],
       "home": "Compare discounts on a shopping website or in a shop window.",
       "vocab": "equivalent, convert, mixed number, improper fraction, decimal fraction, percentage, discount",
@@ -337,7 +340,8 @@
       "use": [
         "n-area",
         "n-units",
-        "en-area-formulae"
+        "en-area-formulae",
+        "t-area-volume"
       ],
       "home": "Measure a room and work out how much flooring it would need.",
       "vocab": "area, volume, compound, cm², m², cm³, litre, length, breadth, height, formula",
@@ -575,7 +579,8 @@
         "check": "Plot (2, −3) and reflect it in the y-axis. How many lines of symmetry does a regular pentagon have?"
       },
       "use": [
-        "en-coordinates"
+        "en-coordinates",
+        "t-transform"
       ],
       "home": "Find symmetrical logos or flags and draw in their lines of symmetry.",
       "vocab": "coordinates, quadrant, axis, origin, reflect, line of symmetry",

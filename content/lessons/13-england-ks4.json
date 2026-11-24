@@ -23,6 +23,7 @@
         "check": "Ask for 5⁰, 4⁻², (2 × 10³) × (6 × 10⁴) in standard form, and y⁷ ÷ y² simplified."
       },
       "use": [
+        "k4-indices",
         "f-sci-notation",
         "t-powers"
       ],
@@ -51,7 +52,9 @@
         "practise": "The \"Exact answers\" sheet.",
         "check": "Ask for the exact circumference of a circle with diameter 8, √50 simplified, and 0.777… as a fraction."
       },
-      "use": [],
+      "use": [
+        "k4-surds"
+      ],
       "home": "Use a calculator's fraction or exact mode to check some answers, and talk about when an exact answer matters.",
       "vocab": "exact, surd, rationalise, multiple of π, recurring decimal, terminating decimal",
       "understand": "Why is 6π cm a better answer than 18.8 cm when you're asked for an exact length?",
@@ -78,6 +81,7 @@
         "check": "A mass is 4.3 kg to 1 decimal place: write its error interval. A rectangle is 8 cm by 5 cm, both to the nearest centimetre: find the upper bound of its area."
       },
       "use": [
+        "k4-bounds",
         "f-sig-figs"
       ],
       "home": "Look at a food label. If the pack says 500 g, what range of masses might it really hold?",
@@ -106,6 +110,7 @@
         "check": "Ask them to factorise x² + 5x + 6 and x² − 16 (and 3x² + 10x + 8, higher), checking each by expanding."
       },
       "use": [
+        "k4-factorise",
         "f-brackets"
       ],
       "home": "Make up a quadratic by expanding two brackets, and challenge someone at home to factorise it.",
@@ -134,7 +139,9 @@
         "practise": "The \"Prove it\" sheet.",
         "check": "Is (x + 1)² ≡ x² + 1? Why? Prove that the sum of two odd numbers is even."
       },
-      "use": [],
+      "use": [
+        "k4-functions"
+      ],
       "home": "Try a number trick (think of a number, double it, add 6, halve it, take away the number you started with) and prove with algebra why the answer is always 3.",
       "vocab": "equation, identity, proof, consecutive, function, input, output, inverse, composite",
       "understand": "Why don't five examples that work prove that something is always true?",
@@ -161,7 +168,9 @@
         "practise": "The \"Lines and gradients\" sheet.",
         "check": "Ask for the equation of the line through (0, −1) and (2, 7), and the gradient of a line perpendicular to it (higher)."
       },
-      "use": [],
+      "use": [
+        "k4-lines"
+      ],
       "home": "Find a real straight-line relationship (a phone plan, a taxi fare) and say what its gradient and intercept mean.",
       "vocab": "gradient, intercept, parallel, perpendicular, rate of change, tangent, radius",
       "understand": "On a graph of a phone bill against minutes used, what do the gradient and the intercept mean?",
@@ -188,7 +197,9 @@
         "practise": "The \"Solve the quadratic\" sheet.",
         "check": "Solve x² + x − 12 = 0. Where does y = x² + x − 12 cross each axis?"
       },
-      "use": [],
+      "use": [
+        "k4-quadratics"
+      ],
       "home": "Throw a ball and sketch its path. Where would the roots and the turning point be, and what do they mean?",
       "vocab": "quadratic, root, solution, intercept, turning point, factorise, completing the square, quadratic formula",
       "understand": "Why do we rearrange a quadratic to equal 0 before factorising?",
@@ -215,7 +226,10 @@
         "practise": "The \"Two unknowns\" sheet.",
         "check": "Solve 2x + y = 11 and x − y = 1. Solve 4 − 2x ≥ 10 and show it on a number line."
       },
-      "use": [],
+      "use": [
+        "k4-simultaneous",
+        "f-equations"
+      ],
       "home": "Find a \"two prices\" puzzle on a café menu and set it up as simultaneous equations.",
       "vocab": "simultaneous, eliminate, substitute, inequality, solution set, set notation, region",
       "understand": "What does the point where two straight lines cross tell you about their equations?",
@@ -242,6 +256,7 @@
         "check": "Find the nth term of 7, 11, 15, 19. Is 2, 6, 12, 20, 30 arithmetic, geometric or quadratic? Find its nth term (higher)."
       },
       "use": [
+        "k4-sequences",
         "f-nth-term"
       ],
       "home": "Look for growing patterns in tiles, stacks of cans or bricks, and predict the 10th one.",
@@ -269,7 +284,9 @@
         "practise": "The \"Graph gallery\" sheet.",
         "check": "Sketch y = x² and y = x² − 4 on the same axes. What happens to y = 1/x at x = 0, and why?"
       },
-      "use": [],
+      "use": [
+        "k4-graph-shapes"
+      ],
       "home": "Spot graph shapes in real life: the path of a ball, a cup of tea cooling, the tide going in and out.",
       "vocab": "linear, quadratic, cubic, reciprocal, exponential, asymptote, translation, reflection",
       "understand": "Why does the graph of y = 1/x never touch the x-axis?",
@@ -296,7 +313,9 @@
         "practise": "The \"Graphs in motion\" sheet.",
         "check": "A cyclist speeds up steadily from rest to 8 m/s in 4 seconds, then rides at 8 m/s for 6 seconds. What is the acceleration, and how far do they go?"
       },
-      "use": [],
+      "use": [
+        "k4-rates"
+      ],
       "home": "Sketch a distance-time graph of a journey to school, showing the stops.",
       "vocab": "gradient, rate of change, velocity, acceleration, area under a graph, tangent, chord",
       "understand": "On a velocity-time graph, why does the area underneath give the distance travelled?",
@@ -323,6 +342,7 @@
         "check": "A town of 5000 people grows by 2% a year. Write an expression for its population after n years, and work it out for 3 years."
       },
       "use": [
+        "k4-growth",
         "f-percent-change"
       ],
       "home": "Compare two savings accounts: which pays more over 5 years, and why?",
@@ -351,6 +371,7 @@
         "check": "y is inversely proportional to x, and y = 6 when x = 4. Find y when x = 3. Convert 15 m/s to km/h."
       },
       "use": [
+        "k4-proportion",
         "sec-proportion"
       ],
       "home": "Scale a recipe up or down, and talk about what would be in inverse proportion if more people shared the cooking.",
@@ -378,7 +399,9 @@
         "practise": "The \"Similar shapes\" sheet.",
         "check": "Two similar cylinders have radii of 3 cm and 6 cm. The small one has a volume of 40 cm³. What is the volume of the large one?"
       },
-      "use": [],
+      "use": [
+        "k4-similarity"
+      ],
       "home": "Compare a model car or toy with the real thing: what's the scale, and how many times bigger is the real one's surface area?",
       "vocab": "similar, congruent, scale factor, enlargement, centre of enlargement, corresponding, area factor, volume factor",
       "understand": "If the lengths are doubled, why is the volume multiplied by 8 and not 2?",
@@ -405,7 +428,9 @@
         "practise": "The \"Vectors\" sheet.",
         "check": "With a = (2, 5) and b = (−3, 1) as column vectors, find a + b and 2a − b."
       },
-      "use": [],
+      "use": [
+        "k4-vectors"
+      ],
       "home": "Give directions round the house as vectors (steps forward and across), then add them up to find the shortcut.",
       "vocab": "vector, column vector, scalar, resultant, parallel, midpoint, translation, invariant",
       "understand": "How can you tell from two vectors that two lines are parallel?",
@@ -432,6 +457,7 @@
         "check": "Find the perimeter of a sector with radius 9 cm and angle 40°, exactly and to 1 decimal place."
       },
       "use": [
+        "k4-sectors",
         "f-circles"
       ],
       "home": "Look at a slice of pizza or cake: estimate its angle and work out the length of its crust.",
@@ -458,7 +484,9 @@
         "practise": "The \"Circle theorems\" sheet.",
         "check": "In a cyclic quadrilateral, one angle is 68°. What is the opposite angle, and what is the reason?"
       },
-      "use": [],
+      "use": [
+        "k4-circle-theorems"
+      ],
       "home": "Teach one theorem to someone at home with a drawing, and explain why it's true.",
       "vocab": "theorem, cyclic quadrilateral, circumference, semicircle, tangent, chord, bisect, alternate segment, proof",
       "understand": "Why is the angle in a semicircle always 90°?",
@@ -484,7 +512,10 @@
         "practise": "The \"Solid shapes\" sheet.",
         "check": "Find the volume of a cone with radius 3 cm and height 4 cm, and its curved surface area (its slant height is 5 cm), in terms of π."
       },
-      "use": [],
+      "use": [
+        "k4-3d",
+        "f-prisms"
+      ],
       "home": "Find a cone, a sphere and a pyramid at home (an ice-cream cone, a ball, a tent) and estimate their volumes.",
       "vocab": "plan, elevation, prism, pyramid, cone, sphere, hemisphere, slant height, surface area, volume, composite",
       "understand": "Why is the volume of a cone a third of the cylinder that fits around it?",
@@ -512,6 +543,7 @@
         "check": "Without a calculator, find the side opposite a 30° angle when the hypotenuse is 12 cm. The bearing of B from A is 065°: what is the bearing of A from B?"
       },
       "use": [
+        "k4-trig",
         "f-pythagoras"
       ],
       "home": "Use a compass app to find the bearing of a landmark from home, and estimate how far away it is.",
@@ -539,7 +571,9 @@
         "practise": "The \"Any triangle\" sheet.",
         "check": "A triangle has sides of 6 cm and 9 cm with an angle of 50° between them. Find the third side and the area."
       },
-      "use": [],
+      "use": [
+        "k4-sine-cosine"
+      ],
       "home": "Measure two sides of a triangular object (a sandwich, a road sign) and the angle between them, and work out its area.",
       "vocab": "sine rule, cosine rule, included angle, opposite, area of a triangle",
       "understand": "How do you choose between the sine rule and the cosine rule?",
@@ -565,7 +599,9 @@
         "practise": "The \"Predict and test\" sheet.",
         "check": "The probabilities of a bus being early, on time or late are 0.1, x and 0.35. Find x, and how many of 200 buses you'd expect to be late."
       },
-      "use": [],
+      "use": [
+        "k4-probability"
+      ],
       "home": "Flip a coin 20 times, then 100 times. Which relative frequency of heads is closer to 0.5?",
       "vocab": "mutually exclusive, exhaustive, probability model, relative frequency, expected frequency, theoretical probability, sample size",
       "understand": "Why is a relative frequency from 500 trials a better estimate than one from 20?",
@@ -592,7 +628,9 @@
         "practise": "The \"Combined events\" sheet.",
         "check": "Two counters are taken without replacement from a bag with 3 red and 2 green. Find P(both red) and P(one of each colour)."
       },
-      "use": [],
+      "use": [
+        "k4-combined"
+      ],
       "home": "Work out how many PINs a 4-digit lock can have, and explain why the product rule works.",
       "vocab": "independent, dependent, tree diagram, with replacement, without replacement, product rule, conditional probability, Venn diagram, two-way table",
       "understand": "Why do the probabilities on the second branches change when you don't replace the first counter?",
@@ -619,7 +657,9 @@
         "practise": "The \"Data and samples\" sheet.",
         "check": "Why might a line of best fit for the ages and heights of children aged 5 to 12 give a silly prediction for a 40-year-old?"
       },
-      "use": [],
+      "use": [
+        "k4-statistics"
+      ],
       "home": "Find a news story that says one thing causes another. Is there evidence of cause, or only a correlation?",
       "vocab": "population, sample, bias, random, time series, trend, correlation, causation, line of best fit, interpolate, extrapolate",
       "understand": "Two things are strongly correlated. Does one cause the other? How could you tell?",
@@ -645,7 +685,9 @@
         "practise": "The \"Distributions\" sheet.",
         "check": "A histogram bar for 20 < t ≤ 30 has a frequency density of 1.8. How many values are in that class?"
       },
-      "use": [],
+      "use": [
+        "k4-statistics"
+      ],
       "home": "Time how long it takes people at home to do a puzzle, and compare the times with a box plot.",
       "vocab": "frequency, class width, frequency density, histogram, cumulative frequency, median, quartile, interquartile range, box plot, modal class",
       "understand": "Why do we compare an average and a spread, not just the averages?",

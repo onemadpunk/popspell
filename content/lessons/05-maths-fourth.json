@@ -56,7 +56,8 @@
         "check": "Work out 36 ÷ (4 + 2) × 3 − 2². Then solve a new multi-step problem and explain your plan."
       },
       "use": [
-        "en-multistep"
+        "en-multistep",
+        "t-calc"
       ],
       "home": "Plan the cost of a family day out with tickets, travel and food, step by step.",
       "vocab": "order of operations, brackets, powers, multi-step, strategy, inverse",
@@ -147,7 +148,8 @@
       },
       "use": [
         "en-fractions-y6",
-        "en-fractions-y5"
+        "en-fractions-y5",
+        "f-fraction-calc"
       ],
       "home": "Use fractions when cooking: scale a recipe by 1½.",
       "vocab": "mixed number, improper fraction, common denominator, multiply, cancel, simplify",
@@ -301,7 +303,8 @@
       },
       "use": [
         "n-area",
-        "en-area-formulae"
+        "en-area-formulae",
+        "f-prisms"
       ],
       "home": "Measure a cereal box and work out how much card it uses.",
       "vocab": "trapezium, kite, parallelogram, net, surface area, prism, cylinder, efficient",
@@ -330,7 +333,8 @@
         "check": "Find the volume of a triangular prism with triangle base 6 cm, height 4 cm and length 15 cm, and of a cylinder with radius 5 cm and height 12 cm."
       },
       "use": [
-        "en-area-formulae"
+        "en-area-formulae",
+        "f-prisms"
       ],
       "home": "Work out how many litres a mug, a vase or a fish tank holds, then check with water.",
       "vocab": "prism, cross-section, volume, cylinder, capacity, litre, cm³",
@@ -419,7 +423,8 @@
         "check": "Find the gradient through (1, 2) and (5, 10). What is the equation of the line through (3, −1) and (3, 4)? Does a ramp rising 0·5 m over 5 m meet a 1 in 12 rule?"
       },
       "use": [
-        "en-coordinates"
+        "en-coordinates",
+        "k4-lines"
       ],
       "home": "Measure a ramp or slope near you and work out its gradient.",
       "vocab": "gradient, slope, vertical, horizontal, steepness, equation, coordinate, straight line",
@@ -481,7 +486,8 @@
       },
       "use": [
         "sec-linear-equations",
-        "f-brackets"
+        "f-brackets",
+        "f-equations"
       ],
       "home": "Compare two real price plans (phones, gyms, taxis) and find where they cost the same.",
       "vocab": "equation, inequation, inequality, balance, expand, solve, interval",
@@ -511,7 +517,8 @@
         "check": "Find the hypotenuse when the other sides are 9 cm and 12 cm. A ramp rises 1·2 m over 6 m: find its angle with the ground."
       },
       "use": [
-        "f-pythagoras"
+        "f-pythagoras",
+        "k4-trig"
       ],
       "home": "Use a ruler and protractor to check a Pythagoras answer on a real triangle, such as a ladder's position or a slope.",
       "vocab": "hypotenuse, Pythagoras, opposite, adjacent, sine, cosine, tangent, inverse",
@@ -570,7 +577,10 @@
         "practise": "The \"Circles and similar shapes\" sheet.",
         "check": "Find a missing angle using a tangent and a radius. Two similar photos have widths 6 cm and 15 cm. If the small one is 4 cm tall, how tall is the large one? How many times larger is its area?"
       },
-      "use": [],
+      "use": [
+        "k4-circle-theorems",
+        "k4-similarity"
+      ],
       "home": "Find similar shapes at home (photo sizes, paper sizes such as A4 and A5) and work out their scale factor.",
       "vocab": "tangent, radius, semicircle, similar, scale factor, corresponding, area factor",
       "understand": "A shape is enlarged by scale factor 3. Why is its area 9 times bigger, not 3?",
@@ -601,7 +611,8 @@
         "check": "Reflect triangle (1, 1), (3, 1), (3, 4) in the x-axis and give the new coordinates. What is the order of rotational symmetry of a regular hexagon?"
       },
       "use": [
-        "en-coordinates"
+        "en-coordinates",
+        "t-transform"
       ],
       "home": "Find logos with rotational symmetry and give each one's order.",
       "vocab": "translate, reflect, transformation, image, vector, rotational symmetry, order of rotation",
@@ -663,7 +674,8 @@
       },
       "use": [
         "n-table",
-        "n-bar"
+        "n-bar",
+        "k4-statistics"
       ],
       "home": "Find a graph in the news and write two sentences about what it shows and one about what it doesn't.",
       "vocab": "correlation, scatter graph, stem and leaf, discrete, continuous, grouped, frequency, trend",
@@ -692,7 +704,8 @@
         "check": "The probability a phone is faulty is 0·02. How many faulty phones would you expect in a batch of 1500? Is a 1% chance of losing £1000 worse than a 50% chance of losing £10? Explain."
       },
       "use": [
-        "n-chance"
+        "n-chance",
+        "k4-probability"
       ],
       "home": "Look at a weather warning or an insurance offer and talk about the probability and the consequences.",
       "vocab": "probability, expected frequency, relative frequency, risk, prediction, outcome",

@@ -54,7 +54,9 @@
       },
       "use": [
         "t-sequences",
-        "f-nth-term"
+        "f-nth-term",
+        "k4-lines",
+        "k4-sequences"
       ],
       "home": "Find a graph in the news or on a phone bill, and use it to estimate one value that isn't printed.",
       "vocab": "estimate, intersection, simultaneous, piece-wise, geometric, arithmetic, multiplier, term",
@@ -84,7 +86,8 @@
       },
       "use": [
         "t-ratio",
-        "t-fractions-ops"
+        "t-fractions-ops",
+        "t-fdp"
       ],
       "home": "Mix a drink or a recipe in a ratio, and say what fraction of the whole each ingredient is.",
       "vocab": "fraction, quantity, ratio, part, whole, proportion, improper fraction",
@@ -113,7 +116,8 @@
         "check": "Give a Venn diagram of pupils who play football and tennis. Ask how many play both, how many play only tennis, and P(plays football or tennis)."
       },
       "use": [
-        "t-probability"
+        "t-probability",
+        "t-venn"
       ],
       "home": "Ask family members which of two things they like (such as tea and coffee) and draw a Venn diagram of the answers.",
       "vocab": "set, element, Venn diagram, intersection, union, outcome, sample space, infinite",
