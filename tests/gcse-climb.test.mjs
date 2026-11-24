@@ -27,8 +27,29 @@ test("the climb has 14 topics in order, each with a lesson, online practice and 
   for (const id of ["start-here-baseline-and-plan", "what-the-exam-expects", "mini-papers"]) assert.ok(L.get(`lesson-england-gcse-climb-${id}`), id);
 });
 
+test("stages 2 and 3: 14 topics each, in order, with a lesson, online practice, an exam sheet, a check and mini papers", () => {
+  assert.equal(X.STAGES.map(st => `${st.n}:${st.key}:${st.topics.length}`).join(), "1:gf:14,2:g5:14,3:gh:14");
+  assert.equal(X.ALL.length, 42);
+  for (const st of X.STAGES.slice(1)) {
+    const tag = st.n === 2 ? "grades 4 and 5" : "Higher";
+    st.topics.forEach((t, i) => {
+      assert.equal(t.n, i + 1, t.id);
+      assert.ok(t.id.startsWith(`${st.key}-`), t.id);
+      const slug = t.id.slice(3), a = A.get(t.id), l = L.get(`lesson-england-gcse-climb-${st.key}-${slug}`);
+      assert.equal(P.get(`paper-gx-${st.key}-${slug}`).title, `Exam practice (${tag}) ${t.n}: ${t.title}`, t.id);
+      assert.ok(a && a.check === false && /GCSE maths exam climb/.test(a.organiser), t.id);
+      assert.ok(l && l.use.includes(t.id) && P.forLesson(l.id).length, `${t.id} has a lesson with its sheet`);
+    });
+    for (const id of ["check", "tracker", "expects", "mini-noncalc", "mini-calc", "mini-problems"]) assert.ok(P.get(`paper-gx-${st.key}-${id}`), `${st.key} ${id}`);
+    for (const id of ["start-here", "what-the-exam-expects", "mini-papers"]) assert.ok(L.get(`lesson-england-gcse-climb-${st.key}-${id}`), `${st.key} ${id}`);
+    assert.equal(A.get(`${st.key}-check`).make().length, 14);
+    assert.equal(A.get(`${st.key}-mixed`).make().length, 12);
+  }
+  assert.ok(P.get("paper-gx-route") && L.get("lesson-england-gcse-climb-my-next-step"));
+});
+
 test("every bank question has marks, a mark scheme that adds up, and a fair answer", () => {
-  for (const t of X.TOPICS) for (const make of t.makers) for (let run = 0; run < 60; run++) {
+  for (const t of X.ALL) for (const make of t.makers) for (let run = 0; run < 60; run++) {
     const it = make();
     if (!it.q) continue;
     assert.ok([1, 2, 3].includes(it.marks), `${t.id}: ${it.q}`);
@@ -77,6 +98,25 @@ test("worked answers check out", () => {
   }
 });
 
+test("worked answers check out at grades 4 to 9", () => {
+  const T = id => X.topic(id).makers;
+  for (let run = 0; run < 200; run++) {
+    const sim = T("g5-solving")[2](), [x, y] = sim.answer.replace(/−/g, "-").match(/-?\d+/g).map(Number);
+    for (const eq of sim.q.replace(/−/g, "-").match(/[^:]*?=\s*-?\d+/g).map(e => e.replace(/^.*?equations |^ and /, ""))) {
+      const [lhs, rhs] = eq.split("="), val = lhs.replace(/ /g, "").match(/[+-]?\d*[xy]/g).reduce((t, term) => {
+        const c = term.slice(0, -1), k = c === "" || c === "+" ? 1 : c === "-" ? -1 : Number(c); return t + k * (term.endsWith("x") ? x : y); }, 0);
+      assert.equal(val, Number(rhs), `${sim.q} ${sim.answer}`);
+    }
+    const qf = T("gh-quadratics")[2](), [, b, c] = qf.q.replace(/−/g, "-").replace(/ /g, "").match(/^Solvex²([+-]\d*)x([+-]\d+)=0/) || [];
+    if (b !== undefined) for (const r of qf.answer.replace(/−/g, "-").match(/-?\d+\.\d+/g).map(Number)) {
+      const bb = b === "+" ? 1 : b === "-" ? -1 : Number(b);
+      assert.ok(Math.abs(r * r + bb * r + Number(c)) < 0.006 * (Math.abs(2 * r + bb) + 1), `${qf.q} ${qf.answer}`); // rounded to 2 dp
+    }
+    const py = T("g5-pythagoras")[0](), [p, q] = py.q.match(/\d+(?= cm)/g).map(Number);
+    assert.equal(Number(py.answer) ** 2, p * p + q * q, py.q);
+  }
+});
+
 test("sheets: every climb sheet builds, has a mark-scheme answers page and changes between prints", () => {
   const sheets = Object.values(P.sheets).filter(s => s.id.startsWith("paper-gx-"));
   assert.ok(sheets.length >= 20, `${sheets.length} sheets`);
@@ -94,14 +134,15 @@ test("sheets: every climb sheet builds, has a mark-scheme answers page and chang
         assert.equal(marks, Number(total[1]), `${s.id}: the marks add up to the total`);
       }
     }
-    if (!/expects|tracker/.test(s.id)) assert.ok(seen.size > 1, `${s.id} varies`);
+    if (!/expects|tracker|route/.test(s.id)) assert.ok(seen.size > 1, `${s.id} varies`);
   }
 });
 
 test("the climb sits with key stage 4 in England's library", () => {
   runInNewContext(read("england.js"), page);
   const E = page.PopEngland;
-  for (const id of ["gf-fractions", "paper-gx-fractions", "lesson-england-gcse-climb-fractions", "lesson-england-gcse-climb-mini-papers"]) {
+  for (const id of ["gf-fractions", "paper-gx-fractions", "lesson-england-gcse-climb-fractions", "lesson-england-gcse-climb-mini-papers", "g5-trig", "paper-gx-g5-trig",
+    "lesson-england-gcse-climb-g5-trig", "gh-vectors", "paper-gx-gh-vectors", "lesson-england-gcse-climb-gh-vectors", "lesson-england-gcse-climb-gh-mini-papers", "lesson-england-gcse-climb-my-next-step"]) {
     const w = E.forWork(id);
     assert.ok(w && w.statements.length, id);
     assert.equal(E.bandOf(w), "Key stage 4", id);

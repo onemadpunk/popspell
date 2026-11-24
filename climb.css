@@ -1,0 +1,115 @@
+/* GCSE maths climb (climb.html): a grown-up look for a pupil working on their own. Every screen fits a 1366 × 650 window without scrolling. */
+[hidden] { display: none !important; }
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --ink: #17233b;
+  --muted: #56627a;
+  --line: #d9dfea;
+  --primary: #0b2e6b;
+  --primary-soft: #e8eef9;
+  --accent: #0f7b8a;
+  --good: #087c4a;
+  --good-soft: #e1f5ea;
+  --part: #9a6400;
+  --part-soft: #fff4dc;
+  --oops: #b3261e;
+  --oops-soft: #fdecea;
+  --font: "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 18px; line-height: 1.45; }
+h1, h2, h3 { color: var(--primary); line-height: 1.2; margin: 0; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
+#app { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+
+/* ---------- Top bar and buttons ---------- */
+.cl-top { display: flex; align-items: center; gap: 14px; padding: 8px 20px; background: var(--surface); border-bottom: 1px solid var(--line); min-height: 52px; }
+.cl-brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--primary); font-weight: 700; }
+.cl-crumb { color: var(--muted); font-size: .95rem; }
+.cl-crumb b { color: var(--ink); }
+.cl-top-do { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.cl-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--primary);
+  border-radius: 10px; padding: 7px 16px; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.cl-btn:hover { border-color: var(--primary); }
+.cl-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+.cl-btn.big { padding: 10px 22px; font-size: 1.05rem; }
+.cl-btn.small { padding: 3px 10px; font-size: .85rem; }
+.cl-btn[disabled] { opacity: .5; cursor: default; }
+
+/* ---------- Home: my next step, then the three stages ---------- */
+.cl-home { width: 100%; max-width: 1300px; margin: 0 auto; padding: 14px 24px 10px; display: flex; flex-direction: column; gap: 12px; }
+.cl-next { display: grid; grid-template-columns: 1fr auto; gap: 6px 24px; align-items: center; background: var(--primary); color: #fff; border-radius: 16px; padding: 14px 22px; }
+.cl-next h1 { color: #fff; font-size: 1.45rem; }
+.cl-next p { margin: 0; opacity: .92; font-size: .95rem; }
+.cl-next .cl-label { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; opacity: .8; font-weight: 700; }
+.cl-next .cl-btn { background: #ffc837; color: #111; border-color: #ffc837; }
+.cl-next-do { grid-row: 1 / span 3; grid-column: 2; display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.cl-next-do .cl-btn.ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .5); font-size: .85rem; padding: 4px 12px; }
+.cl-grade { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.cl-grade .cl-btn { background: #fff; color: var(--primary); border-color: #fff; }
+.cl-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.cl-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px 8px; }
+.cl-stage.now { border: 2px solid var(--primary); }
+.cl-stage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.cl-stage-head h2 { font-size: 1.02rem; }
+.cl-stage-head span { color: var(--muted); font-size: .8rem; white-space: nowrap; }
+.cl-topics { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.cl-topic { width: 100%; display: grid; grid-template-columns: 1.2em 1fr auto; gap: 6px; align-items: center; border: 0; background: none; text-align: left;
+  padding: 1px 4px; border-radius: 6px; font-size: .8rem; line-height: 1.25; cursor: pointer; color: var(--ink); }
+.cl-topic:hover { background: var(--primary-soft); }
+.cl-topic i { font-style: normal; text-align: center; }
+.cl-topic em { font-style: normal; color: var(--muted); font-size: .75rem; }
+.cl-topic.secure i { color: var(--good); }
+.cl-topic.started i { color: var(--part); }
+.cl-topic.todo i { color: #9aa3b5; }
+.cl-stage-do { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.cl-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted); font-size: .8rem; }
+.cl-foot p { margin: 0; }
+
+/* ---------- A question ---------- */
+.cl-run { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 14px 24px 8px; display: flex; flex-direction: column; gap: 10px; }
+.cl-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: .88rem; }
+.cl-chip { display: inline-block; border-radius: 999px; padding: 1px 10px; background: var(--primary-soft); color: var(--primary); font-weight: 600; font-size: .82rem; }
+.cl-chip.calc { background: #e5f4f6; color: var(--accent); }
+.cl-chip.nocalc { background: #f3e8ff; color: #6b21a8; }
+.cl-q { font-size: 1.3rem; font-weight: 600; margin: 0; }
+.cl-pic svg { max-height: 190px; width: auto; }
+.cl-answer { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.cl-answer input { font-size: 1.2rem; padding: 6px 10px; border: 2px solid var(--line); border-radius: 10px; min-width: 240px; background: #fbfcff; }
+.cl-answer input:focus { outline: none; border-color: var(--primary); }
+.cl-unit { font-weight: 600; color: var(--muted); }
+.cl-opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.cl-opt { text-align: left; border: 2px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px 14px; cursor: pointer; font-size: 1.05rem; }
+.cl-opt:hover:not([disabled]) { border-color: var(--primary); }
+.cl-opt.picked { border-color: var(--primary); background: var(--primary-soft); }
+.cl-opt.good { border-color: var(--good); background: var(--good-soft); }
+.cl-opt.oops { border-color: var(--oops); background: var(--oops-soft); }
+.cl-hint { color: var(--muted); font-size: .85rem; margin: 0; }
+.cl-mark { border-radius: 12px; padding: 8px 14px; font-size: .98rem; }
+.cl-mark.good { background: var(--good-soft); border: 1px solid #9fd8b8; }
+.cl-mark.oops { background: var(--oops-soft); border: 1px solid #f1b5b0; }
+.cl-mark p { margin: 0 0 4px; }
+.cl-mark p:last-child { margin: 0; }
+.cl-runfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 20px; background: var(--surface); border-top: 1px solid var(--line); }
+.cl-bar { flex: 1; max-width: 360px; height: 8px; background: var(--primary-soft); border-radius: 99px; overflow: hidden; }
+.cl-bar span { display: block; height: 100%; background: var(--primary); }
+
+/* ---------- Results ---------- */
+.cl-result { flex: 1; width: 100%; max-width: 1100px; margin: 0 auto; padding: 18px 24px; display: flex; flex-direction: column; gap: 12px; }
+.cl-score { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; }
+.cl-verdict { font-size: 1.1rem; margin: 0; }
+.cl-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 24px; font-size: .9rem; list-style: none; margin: 0; padding: 0; }
+.cl-rows li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); padding: 2px 0; }
+.cl-rows .lost { color: var(--oops); font-weight: 600; }
+.cl-rows .full { color: var(--good); font-weight: 600; }
+.cl-do { display: flex; gap: 10px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .cl-stages { grid-template-columns: 1fr; }
+  .cl-next { grid-template-columns: 1fr; }
+  .cl-next-do { grid-row: auto; grid-column: 1; }
+  .cl-opts, .cl-rows { grid-template-columns: 1fr; }
+}
