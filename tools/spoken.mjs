@@ -39,6 +39,11 @@ export const sentencesOf = text => (text.match(/[\s\S]+?[.!?]+["”]?(?=\s+["“
      phrases  phrases/<key> recordings asked for by key: {key: where}
      lines    how many different lines were found                                                */
 export function spoken(page = loadSite()) {
+  // Questions come from Math.random, so start it from the same seed every time: the recordings robot
+  // (which records what it finds, and drops pieces it no longer finds) and the audio check then see
+  // exactly the same lines, instead of each finding a different handful of the rarest ones.
+  runInNewContext(`(() => { let s = 20261124; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();`, page);
   const { PopActivities: A, PopSpeech: S } = page;
   const recordedWords = new Set((page.POPSPELL_AUDIO || {}).words || []);
   const pieces = new Map(), numbers = new Map(), tooBig = new Map(), words = new Map(), clips = new Map(), phrases = new Map();

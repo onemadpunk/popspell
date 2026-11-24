@@ -3951,7 +3951,7 @@ window.PopActivities = (() => {
     return gfQ(`The curve y = ${sqPoly([1, -(r1 + r2), r1 * r2])} crosses the x-axis at x = ${gfM(r1)} and x = ${gfM(r2)}. Find the area enclosed by the curve and the x-axis. (square units)`, ans, 4,
       `•1 integrate between ${gfM(r1)} and ${gfM(r2)} (1 mark). •2 the integral: ${sqC(1, 3, "x³")} ${-(r1 + r2) / 2 < 0 ? "−" : "+"} ${sqC(Math.abs(r1 + r2), 2, "x²")} ${r1 * r2 < 0 ? "−" : "+"} ${Math.abs(r1 * r2)}x (1 mark). •3 the value ${sqFr(-(d ** 3), 6)}: negative, as the region is below the x-axis (1 mark). •4 area ${ans} square units (1 mark).`.replace(/ \+ 0x| [+−] 0x²|  /g, " "),
       { accept: sqDec(d ** 3, 6).concat([sqMix(d ** 3, 6)]), label: `ar ${r1}${d}`, skill: "area under a curve" }); };
-  const shDiffEq = () => { const a = 3 * gfR(1, 3), b = 2 * gfR(-3, 3), x0 = gfR(-2, 2) || 1, y0 = gfR(-9, 9), base = sqAt([a / 3, b / 2, 0, 0], x0), c = y0 - base, ans = `y = ${sqPoly([a / 3, b / 2, 0, c])}`;
+  const shDiffEq = () => { const a = 3 * gfR(1, 3), b = 2 * gfR(-3, 3), x0 = gfR(-2, 2) || 1, base = sqAt([a / 3, b / 2, 0, 0], x0), y0 = base + (gfR(-9, 9) || 4), c = y0 - base, ans = `y = ${sqPoly([a / 3, b / 2, 0, c])}`;
     return gfQ(`dy/dx = ${sqPoly([a, b, 0])}, and the curve passes through ${sqP(x0, y0)}. Find y in terms of x.`, ans, 3,
       `•1 integrate: y = ${sqPoly([a / 3, b / 2, 0, 0])} + C (1 mark). •2 substitute ${sqP(x0, y0)} (1 mark). •3 C = ${gfM(c)}: ${ans} (1 mark).`,
       { options: sqUniq(ans, [`y = ${sqPoly([a / 3, b / 2, 0, y0])}`, `y = ${sqPoly([a / 3, b / 2, 0, -c])}`, `y = ${sqPoly([a, b, 0, c])}`]).slice(0, 2), label: `de ${a}${b}${x0}${y0}`, skill: "differential equations" }); };
