@@ -2501,3 +2501,5 @@ body.area-teacher:has(.t-app) .site-footer { display: none; }
 .game-more ul { margin: 8px 0 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .games-section { margin-bottom: 18px; }
 .fill-time .plan-body { max-width: 760px; }
+.gx-check td { width: auto; }
+.gx-check td.gx-topic { width: 17%; }

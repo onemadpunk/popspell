@@ -4227,9 +4227,9 @@ window.PopPaper = (() => {
   const gxQ = (it, i, roomy = 1) => {
     const opts = it.options ? `<p class="gx-opts">Tick one: ${shuffle([it.answer].concat(it.options)).map(o => `<span>☐ ${o}</span>`).join("")}</p>` : "";
     const work = it.options ? 0 : Math.max(0, it.marks - 1) * roomy;
-    return `<div class="pp-q gx-q"><p><b>${i}.</b> ${it.q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles)\)$/, "")}${it.calc ? " <i>(calculator)</i>" : ""}</p>
+    return `<div class="pp-q gx-q"><p><b>${i}.</b> ${it.q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|%)\)$/, "")}${it.calc ? " <i>(calculator)</i>" : ""}</p>
       ${it.pic ? `<div class="gx-pic">${it.pic.replace('class="q-pic"', 'class="pp-pic"')}</div>` : ""}${opts}
-      ${work ? `<span class="md-work gx-work" style="height:${work * 9}mm"></span>` : ""}
+      ${work ? `<span class="md-work gx-work" style="height:${+(work * 9).toFixed(1)}mm"></span>` : ""}
       <p class="gx-ans">${it.options ? "" : `Answer ${it.unit === "£" ? "£" : ""}${blank(6)} ${it.unit && it.unit !== "£" ? it.unit : ""}`}<span class="gx-mk">(${gxMk(it.marks)})</span></p></div>`;
   };
   const gxScheme = items => items.map(it => `<b>${it.answer}</b> <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`);
@@ -4379,6 +4379,148 @@ window.PopPaper = (() => {
           ${items.map((it, i) => gxQ(Object.assign({}, it, { calc: false }), i + 1, slug === "problems" ? 1.4 : 1)).join("")}`,
         answers: answersPage(h, title, gxScheme(items), `Total ${total} marks. Note the topic of each question dropped on the tracker.`, gxAfter)
       };
+    }));
+
+  // ===================== Stages 2 and 3: grades 4 and 5, then Higher (grades 6 to 9) =====================
+  // The same kinds of sheet as stage 1, for each later stage: a stage check, a tracker, an exam-style
+  // sheet for each topic, what the exam expects at that stage, and mini papers.
+  const GX_LATER = [
+    { key: "g5", n: 2, grades: "4 and 5", name: "Grades 4 and 5", tag: "grades 4 and 5", target: 5, tier: "Foundation or Higher",
+      topics: [["indices", "Index laws and standard form"], ["growth", "Percentage change, reverse percentages and interest"], ["proportion", "Ratio problems and proportion"],
+        ["brackets", "Expanding and factorising"], ["solving", "Harder equations, simultaneous equations and formulae"], ["sequences", "Sequences and the nth term"],
+        ["lines", "Gradients, straight lines and quadratic graphs"], ["pythagoras", "Pythagoras' theorem"], ["trig", "Trigonometry in right-angled triangles"],
+        ["circles", "Circles, cylinders and prisms"], ["polygons", "Polygons, bearings and similar shapes"], ["compound", "Speed, density and pressure"],
+        ["trees", "Tree diagrams, Venn diagrams and relative frequency"], ["grouped", "Grouped data and comparing distributions"]] },
+    { key: "gh", n: 3, grades: "6 to 9", name: "Higher, grades 6 to 9", tag: "Higher", target: 7, tier: "Higher",
+      topics: [["surds", "Surds, and negative and fractional indices"], ["quadratics", "Solving quadratic equations"], ["algebra", "Algebraic fractions and harder simultaneous equations"],
+        ["functions", "Functions, iteration and harder sequences"], ["graphs", "Perpendicular lines, circles and turning points"], ["variation", "Direct and inverse proportion, and bounds"],
+        ["trig", "Sine rule, cosine rule and 3D trigonometry"], ["circles", "Circle theorems"], ["solids", "Arcs, sectors, cones and spheres"],
+        ["similar", "Similar shapes: lengths, areas and volumes, and congruence"], ["vectors", "Vectors"], ["probability", "Conditional probability and set notation"],
+        ["statistics", "Histograms, cumulative frequency and box plots"], ["proof", "Proof, recurring decimals and quadratic inequalities"]] }
+  ];
+  // A later stage's topic slug is its id after the stage key: g5-indices → g5-indices (slugs repeat across stages, so the key stays)
+  const gxStrip2 = (st, what, calc, marks) => gxStrip(`${st.name}${what ? `: ${what}` : ""}`, calc, marks);
+  const gxPlain = q => q.replace(/ \((£|°C|°|cm²|cm³|cm|g|km|m|degrees|minutes|mph|miles|km\/h|m\/s|g\/cm³|N\/m²|ml|litres|days|%)\)$/, "");
+
+  GX_LATER.forEach(st => {
+    const L = slug => GX_LESSON(`${st.key}-${slug}`);
+    const T = () => GX().stage(st.key).topics;
+
+    add(`paper-gx-${st.key}-check`, L("start-here"), `GCSE maths climb: stage ${st.n} check (${st.tag})`,
+      `One exam question on each of the 14 topics for ${st.tag}, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
+        const items = GX().check(st.key);
+        return {
+          pupil: `${h.sheetHead(`Stage ${st.n} check`, who)}${gxStrip2(st, "", "Calculator allowed", gxTotal(items))}
+            <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
+            <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
+          answers: `${answersPage(h, `Stage ${st.n} check`, items.map(it => `<b>${it.topic.n}. ${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the stage tracker.")}
+            <p class="gx-note"><b>What to work on first:</b> the topics that lost marks, in the climb's order. A topic with full marks still gets its exam-style sheet as a check before it's ticked off.</p>`
+        };
+      });
+
+    add(`paper-gx-${st.key}-tracker`, L("start-here"), `GCSE maths climb: stage ${st.n} tracker (${st.tag})`,
+      `One page to plan and track stage ${st.n}: the check score, lesson, online practice and exam-style sheet for each topic, and mini paper scores.`, (who, h) => {
+        const cell = '<td class="gx-cell"></td>';
+        return {
+          pupil: `${h.sheetHead(`Road to grade ${st.target}: tracker`, who)}${gxStrip2(st, "", "Keep this with the pupil's work", 0)}
+            <p class="gx-plan">Exam date: ${blank(7)} &nbsp; Tier: ${blank(5)} &nbsp; Sessions a week: ${blank(3)} &nbsp; Target grade: <b>${st.n === 2 ? "4, then 5" : "6 and up"}</b>${st.n === 2 ? " &nbsp; Then: Higher (stage 3)" : ""}</p>
+            <table class="gx-track"><thead><tr><th>Topic, in climb order</th><th>Check<br>marks</th><th>Lesson<br>(date)</th><th>Online<br>best %</th><th>Exam sheet<br>score</th><th>Secure<br>✓</th></tr></thead>
+            <tbody>${st.topics.map(([, title], i) => `<tr><td>${i + 1}. ${title}</td>${cell.repeat(5)}</tr>`).join("")}</tbody></table>
+            <p class="gx-plan"><b>Secure</b> means about three-quarters of the exam sheet's marks, with working shown, on two different days.</p>
+            <table class="gx-track gx-papers"><thead><tr><th>Mini paper</th><th>Date</th><th>Score</th><th>Topics to go back to</th></tr></thead>
+            <tbody>${Array.from({ length: 4 }, () => `<tr>${cell.repeat(4)}</tr>`).join("")}</tbody></table>`,
+          answers: lookForPage(h, `Road to grade ${st.target}: tracker`, [
+            "Plan with the stage check: work on the topics that lost marks first, in the climb's order.",
+            "Each topic: the lesson, then the online practice (aim for 80% or more), then the exam-style sheet marked like an examiner.",
+            "Every three or four sessions, a mini paper. Note the topics it shows up and go back to them.",
+            st.n === 2 ? "Most topics secure and mini papers at about two-thirds or more: the pupil is working around grade 5. Talk about the tier, and move to stage 3 if they're sitting Higher."
+              : "Higher marks come from accuracy and full method on long questions: re-do the mini paper questions that lost marks, not just new ones.",
+            "Scores here come from PopSpell's work and your marking. They are a guide for planning, not a predicted grade."])
+        };
+      });
+
+    st.topics.forEach(([slug, title], i) => {
+      add(`paper-gx-${st.key}-${slug}`, L(slug), `Exam practice (${st.tag}) ${i + 1}: ${title}`,
+        "Six exam-style questions with marks, easiest first, and a mark-scheme answers page. New numbers every print.", (who, h) => {
+          // At most two pictures, so the page fits A4 (every question says all it needs in words)
+          let pics = 0;
+          const items = GX().items(`${st.key}-${slug}`, 6).sort((a, b) => a.marks - b.marks || (a.pic ? 1 : 0) - (b.pic ? 1 : 0))
+            .map(it => (it.pic && ++pics > 2 ? Object.assign({}, it, { pic: "" }) : it));
+          const anyCalc = items.some(it => it.calc), total = gxTotal(items);
+          return {
+            pupil: `${h.sheetHead(`Exam practice: ${title}`, who)}${gxStrip2(st, `topic ${i + 1} of 14`, anyCalc ? "Calculator only where it says" : "No calculator", total)}
+              ${items.map((it, j) => gxQ(it, j + 1)).join("")}`,
+            answers: answersPage(h, `Exam practice: ${title}`, gxScheme(items), `Total ${total} marks. The answer, then where each mark comes from.`, gxAfter)
+          };
+        });
+    });
+
+    [["noncalc", "Mini paper: non-calculator", "Six questions from across the topics, like paper 1: no calculator. About 20 minutes.", it => !it.calc && it.marks >= 2 && !it.pic, "No calculator"],
+      ["calc", "Mini paper: calculator", "Six questions from across the topics, like papers 2 and 3, with a calculator. About 20 minutes.", it => it.marks >= 2 && !it.pic, "Calculator allowed"],
+      ["problems", "Mini paper: problem solving", "Five longer problems (3 marks each), where the marks are for planning the steps and showing them. About 20 minutes.", it => it.ps && !it.pic, "Calculator allowed"]]
+      .forEach(([slug, title, detail, keep, calc]) => add(`paper-gx-${st.key}-mini-${slug}`, L("mini-papers"), `${title} (${st.tag})`, detail, (who, h) => {
+        const pickFrom = shuffle(T());
+        const items = (slug === "problems" ? pickFrom.map(t => GX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, 5)
+          : pickFrom.map(t => GX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, 6)).sort((a, b) => a.marks - b.marks);
+        const total = gxTotal(items);
+        return {
+          pupil: `${h.sheetHead(`${title.replace("Mini paper: ", "Mini paper, ")}`, who)}${gxStrip2(st, "", calc, total)}
+            <p class="gx-intro">Like the real exam: show your working on every question. You may do them in any order.</p>
+            ${items.map((it, j) => gxQ(Object.assign({}, it, { calc: false }), j + 1, slug === "problems" ? 1.3 : 1)).join("")}`,
+          answers: answersPage(h, `${title} (${st.tag})`, gxScheme(items), `Total ${total} marks. Note the topic of each question dropped on the tracker.`, gxAfter)
+        };
+      }));
+  });
+
+  // ---------- What the exam expects at grades 4 and 5, and at Higher ----------
+
+  add("paper-gx-g5-expects", GX_LESSON("g5-what-the-exam-expects"), "What the exam expects: grades 4 and 5",
+    "Grades 4 and 5 in a page: what a standard and a strong pass take, choosing Foundation or Higher, the habits that earn the extra marks, and a model answer marked line by line.", (who, h) => ({
+      pupil: `${h.sheetHead("What the exam expects: grades 4 and 5", who)}${gxStrip("Grades 4 and 5", "Read, then talk it through", 0)}
+        ${box("Why 4 and 5 matter", `<p>A <b>4 is a standard pass</b> and a <b>5 a strong pass</b>. In England, a student without a 4 at 16 keeps studying maths and resits it after Year 11, and many college courses and sixth forms ask for a 4 or 5.</p>`)}
+        ${box("Foundation or Higher?", `<p>Both tiers can give a 4 or 5. <b>Foundation</b> goes up to grade 5 and its questions are more familiar, so it is the safer road to a 4. <b>Higher</b> goes from 4 to 9 (with a 3 allowed just below), and a 4 or 5 needs fewer of its marks, but every question is harder. The topics on this stage are the ones both tiers share. Decide the tier with the teacher, using mini paper results.</p>`)}
+        ${box("Roughly what it takes", `<p>Boundaries change every year. Recently, on Foundation, a 4 has needed somewhere around two-fifths to a half of the 240 marks and a 5 around three-fifths or more. On Higher, a 4 has needed around a fifth and a 5 around a third. Check last year's boundaries on the exam board's website.</p>`)}
+        ${box("The habits that lift a 3 to a 4 and 5", `<p><b>Finish multi-step questions:</b> 3, 4 and 5 mark questions are where these grades are won; write each step even if you can't see the end. <b>Use multipliers</b> (× 1.15, × 0.85) for percentages. <b>Know the formulae</b>, even if a formulae sheet is given, so you spend time using them, not finding them. <b>Round only at the end</b>, and give the accuracy asked for.</p>`)}
+        ${box("A model answer", `<p><b>Question:</b> After a 20% rise a bike costs £300. Work out the price before the rise. <i>(3 marks)</i></p>
+          <p><b>Answer A</b> (3 marks): £300 is 120% <b>M1</b>. 1% = £300 ÷ 120 = £2.50 <b>M1</b>. 100% = £250 <b>A1</b>.</p>
+          <p><b>Answer B</b> (0 marks): 20% of £300 = £60, £300 − £60 = £240. Taking 20% of the new price is the wrong method, so no method marks.</p>`)}`,
+      answers: lookForPage(h, "What the exam expects: grades 4 and 5", [
+        "Talk through why answer B scores nothing: the method itself is wrong, so there is nothing to give method marks for.",
+        "Ask which tier the pupil is sitting and why. If unsure, compare their stage 2 mini paper scores on a Foundation-style and a Higher-style paper.",
+        "Exam facts are the GCSE (9 to 1) format shared by AQA, Edexcel and OCR. Grade boundaries quoted are rough recent ranges; check the board's site for this year's details and whether a formulae sheet is given.",
+        "The resit rule in England: students without a grade 4 by 16 continue maths post-16 (check the current funding guidance for the detail)."])
+    }));
+
+  add("paper-gx-gh-expects", GX_LESSON("gh-what-the-exam-expects"), "What the exam expects: Higher, grades 6 to 9",
+    "The Higher paper in a page: what grades 6 to 9 take, where top marks are lost, exact answers and proof, and a model answer marked line by line.", (who, h) => ({
+      pupil: `${h.sheetHead("What the exam expects: Higher", who)}${gxStrip("Higher, grades 6 to 9", "Read, then talk it through", 0)}
+        ${box("The Higher papers", `<p>Three papers, each <b>1 hour 30 minutes</b> and <b>80 marks</b>; paper 1 non-calculator. Grades 4 to 9 (with a 3 allowed just below 4). Boundaries change every year: recently a 7 has needed somewhere around half the marks and a 9 around three-quarters or more. Check last year's boundaries on the exam board's website.</p>`)}
+        ${box("Where top grades are won and lost", `<p><b>Accuracy:</b> keep full values on the calculator and give the accuracy asked (3 significant figures if none is given). <b>Exact answers:</b> "in terms of π" or "in surd form" means no decimals. <b>Show that:</b> every step written, ending with the value given. <b>Proof:</b> use n for any number, and finish with the form that shows the result (for example 2(n + 1) is even). An example is never a proof.</p>`)}
+        ${box("The long questions", `<p>The last questions of each paper join two or three topics (for example similar shapes then volume, or a quadratic from an area). Plan first: what do I need, what do I know, which topic links them? Write each step: these questions have 4 or 5 marks, and most are for method.</p>`)}
+        ${box("A model answer", `<p><b>Question:</b> Solve x² + 4x − 7 = 0, giving your answers to 2 decimal places. <i>(3 marks)</i></p>
+          <p><b>Answer A</b> (3 marks): x = (−4 ± √(16 + 28)) ÷ 2 <b>M1</b> = (−4 ± √44) ÷ 2 <b>M1</b>; x = 1.32 or x = −5.32 <b>A1</b>.</p>
+          <p><b>Answer B</b> (1 mark): x = −4 ± √(16 − 28) ÷ 2 <b>M1</b> for the formula, then the sign of c is lost (−4ac is +28 here) and the √ of a negative stops the answer.</p>`)}`,
+      answers: lookForPage(h, "What the exam expects: Higher", [
+        "Talk through answer B: where exactly did it go wrong, and which mark did it keep? (The formula was set up, then −4 × 1 × (−7) became −28.)",
+        "Ask the pupil to show what \"in terms of π\", \"exact\" and \"show that\" ask for, with an example of each.",
+        "Grade boundaries quoted are rough recent ranges to show what a grade takes; check the board's site for this year's details and whether a formulae sheet is given."])
+    }));
+
+  // ---------- A route for a pupil working on their own ----------
+
+  add("paper-gx-route", GX_LESSON("my-next-step"), "GCSE maths climb: my route from grade 1 to 9",
+    "One page for a pupil working on their own (at home, or homeschooled): the three stages, what to do in each session, how to mark their own work and when to move on.", (who, h) => ({
+      pupil: `${h.sheetHead("My route: grade 1 to 9", who)}${gxStrip("GCSE maths climb", "Self-guided", 0)}
+        ${box("The three stages", `<p><b>Stage 1, grades 1 to 3</b> (Foundation): number, fractions, percentages, ratio, basic algebra, shape and data. <b>Stage 2, grades 4 and 5</b>: what both tiers share, from standard form to trigonometry. <b>Stage 3, grades 6 to 9</b> (Higher only): surds, quadratics, circle theorems, vectors, proof and more. Start where your check says; you don't have to go to the top.</p>`)}
+        ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/climb.html</b> and press <b>My next step</b>. <b>2.</b> Do what it says: the stage check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the mark scheme, even when you were right: it shows which lines earn marks. <b>4.</b> Write any question you got wrong in your notebook, with the right working, and try it again next session.</p>`)}
+        ${box("Marking your own work", `<p>Each question says its marks. Give yourself the marks for each step you wrote that matches the mark scheme, even if your final answer was wrong. No working, wrong answer: no marks. Be strict: the exam will be.</p>`)}
+        ${box("When to move on", `<p>A topic is <b>secure</b> when you score about three-quarters of the marks in one set of its practice (on paper, aim to do it twice on different days). When all of a stage's topics are secure, do a mini paper. Scoring about half or more on it? Start the next stage.</p>`)}
+        <p class="gx-plan">My exam date: ${blank(7)} &nbsp; My target grade: ${blank(3)} &nbsp; Stage I'm on: ${blank(3)} &nbsp; Sessions a week: ${blank(3)}</p>`,
+      answers: lookForPage(h, "My route: grade 1 to 9", [
+        "For the adult at home: the climb page keeps progress on this device only, in this browser. Nothing is sent anywhere, so use the same device each time.",
+        "Check in once a week: look at the topics marked secure on the climb page, and ask the pupil to explain one question they got wrong and how they fixed it.",
+        "If a topic stays below half its marks after three sessions, it needs teaching, not more practice: use the topic's lesson in PopSpell's library, or ask a tutor.",
+        "Scores are a guide for planning, not a predicted grade."])
     }));
   return { sheets, get: id => sheets[id] || null, forLesson: lessonId => Object.values(sheets).filter(s => s.lesson === lessonId) };
 })();

@@ -877,6 +877,66 @@
     "lesson-england-gcse-climb-statistics":["ma-y7-9-statistics-1","ma-y7-9-statistics-2","ma-y10-11-statistics-8"],
     "gf-baseline":["ma-y7-9-number-4","ma-y7-9-number-10","ma-y7-9-algebra-17","ma-y7-9-geometry-and-measures-1","ma-y7-9-statistics-1"],
     "gf-mixed":["ma-y7-9-number-4","ma-y7-9-number-10","ma-y7-9-algebra-17","ma-y7-9-geometry-and-measures-1","ma-y7-9-statistics-1"],
+    "g5-indices":["ma-y10-11-number-3","ma-y10-11-algebra-3","ma-y10-11-number-5"],
+    "lesson-england-gcse-climb-g5-indices":["ma-y10-11-number-3","ma-y10-11-algebra-3","ma-y10-11-number-5"],
+    "g5-growth":["ma-y10-11-ratio-proportion-and-rates-of-change-6","ma-y7-9-number-10","ma-y10-11-gcse-formulae-6"],
+    "lesson-england-gcse-climb-g5-growth":["ma-y10-11-ratio-proportion-and-rates-of-change-6","ma-y7-9-number-10","ma-y10-11-gcse-formulae-6"],
+    "g5-proportion":["ma-y10-11-ratio-proportion-and-rates-of-change-3","ma-y10-11-number-7","ma-y7-9-ratio-proportion-and-rates-of-change-4"],
+    "lesson-england-gcse-climb-g5-proportion":["ma-y10-11-ratio-proportion-and-rates-of-change-3","ma-y10-11-number-7","ma-y7-9-ratio-proportion-and-rates-of-change-4"],
+    "g5-brackets":["ma-y10-11-algebra-2","ma-y10-11-algebra-1","ma-y10-11-algebra-13"],
+    "lesson-england-gcse-climb-g5-brackets":["ma-y10-11-algebra-2","ma-y10-11-algebra-1","ma-y10-11-algebra-13"],
+    "g5-solving":["ma-y10-11-algebra-14","ma-y10-11-algebra-16","ma-y10-11-algebra-17"],
+    "lesson-england-gcse-climb-g5-solving":["ma-y10-11-algebra-14","ma-y10-11-algebra-16","ma-y10-11-algebra-17"],
+    "g5-sequences":["ma-y10-11-algebra-19","ma-y10-11-algebra-18"],
+    "lesson-england-gcse-climb-g5-sequences":["ma-y10-11-algebra-19","ma-y10-11-algebra-18"],
+    "g5-lines":["ma-y10-11-algebra-6","ma-y10-11-algebra-7","ma-y10-11-algebra-8"],
+    "lesson-england-gcse-climb-g5-lines":["ma-y10-11-algebra-6","ma-y10-11-algebra-7","ma-y10-11-algebra-8"],
+    "g5-pythagoras":["ma-y10-11-geometry-and-measures-10","ma-y10-11-gcse-formulae-3"],
+    "lesson-england-gcse-climb-g5-pythagoras":["ma-y10-11-geometry-and-measures-10","ma-y10-11-gcse-formulae-3"],
+    "g5-trig":["ma-y10-11-geometry-and-measures-10","ma-y10-11-geometry-and-measures-11","ma-y10-11-gcse-formulae-4"],
+    "lesson-england-gcse-climb-g5-trig":["ma-y10-11-geometry-and-measures-10","ma-y10-11-geometry-and-measures-11","ma-y10-11-gcse-formulae-4"],
+    "g5-circles":["ma-y10-11-geometry-and-measures-3","ma-y10-11-gcse-formulae-2","ma-y10-11-gcse-formulae-5"],
+    "lesson-england-gcse-climb-g5-circles":["ma-y10-11-geometry-and-measures-3","ma-y10-11-gcse-formulae-2","ma-y10-11-gcse-formulae-5"],
+    "g5-polygons":["ma-y10-11-geometry-and-measures-6","ma-y10-11-geometry-and-measures-9","ma-y10-11-ratio-proportion-and-rates-of-change-1"],
+    "lesson-england-gcse-climb-g5-polygons":["ma-y10-11-geometry-and-measures-6","ma-y10-11-geometry-and-measures-9","ma-y10-11-ratio-proportion-and-rates-of-change-1"],
+    "g5-compound":["ma-y10-11-ratio-proportion-and-rates-of-change-2","ma-y10-11-gcse-formulae-9"],
+    "lesson-england-gcse-climb-g5-compound":["ma-y10-11-ratio-proportion-and-rates-of-change-2","ma-y10-11-gcse-formulae-9"],
+    "g5-trees":["ma-y10-11-probability-3","ma-y10-11-probability-2","ma-y10-11-probability-1"],
+    "lesson-england-gcse-climb-g5-trees":["ma-y10-11-probability-3","ma-y10-11-probability-2","ma-y10-11-probability-1"],
+    "g5-grouped":["ma-y10-11-statistics-6","ma-y10-11-statistics-4","ma-y10-11-statistics-7"],
+    "lesson-england-gcse-climb-g5-grouped":["ma-y10-11-statistics-6","ma-y10-11-statistics-4","ma-y10-11-statistics-7"],
+    "gh-surds":["ma-y10-11-number-4","ma-y10-11-number-3","ma-y10-11-algebra-1"],
+    "lesson-england-gcse-climb-gh-surds":["ma-y10-11-number-4","ma-y10-11-number-3","ma-y10-11-algebra-1"],
+    "gh-quadratics":["ma-y10-11-algebra-13","ma-y10-11-algebra-7","ma-y10-11-gcse-formulae-1"],
+    "lesson-england-gcse-climb-gh-quadratics":["ma-y10-11-algebra-13","ma-y10-11-algebra-7","ma-y10-11-gcse-formulae-1"],
+    "gh-algebra":["ma-y10-11-algebra-1","ma-y10-11-algebra-14","ma-y10-11-algebra-16"],
+    "lesson-england-gcse-climb-gh-algebra":["ma-y10-11-algebra-1","ma-y10-11-algebra-14","ma-y10-11-algebra-16"],
+    "gh-functions":["ma-y10-11-algebra-5","ma-y10-11-algebra-15","ma-y10-11-algebra-19"],
+    "lesson-england-gcse-climb-gh-functions":["ma-y10-11-algebra-5","ma-y10-11-algebra-15","ma-y10-11-algebra-19"],
+    "gh-graphs":["ma-y10-11-algebra-6","ma-y10-11-algebra-12","ma-y10-11-algebra-9","ma-y10-11-algebra-11"],
+    "lesson-england-gcse-climb-gh-graphs":["ma-y10-11-algebra-6","ma-y10-11-algebra-12","ma-y10-11-algebra-9","ma-y10-11-algebra-11"],
+    "gh-variation":["ma-y10-11-ratio-proportion-and-rates-of-change-3","ma-y10-11-number-8","ma-y10-11-ratio-proportion-and-rates-of-change-6"],
+    "lesson-england-gcse-climb-gh-variation":["ma-y10-11-ratio-proportion-and-rates-of-change-3","ma-y10-11-number-8","ma-y10-11-ratio-proportion-and-rates-of-change-6"],
+    "gh-trig":["ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-13","ma-y10-11-geometry-and-measures-10"],
+    "lesson-england-gcse-climb-gh-trig":["ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-13","ma-y10-11-geometry-and-measures-10"],
+    "gh-circles":["ma-y10-11-geometry-and-measures-4","ma-y10-11-geometry-and-measures-3"],
+    "lesson-england-gcse-climb-gh-circles":["ma-y10-11-geometry-and-measures-4","ma-y10-11-geometry-and-measures-3"],
+    "gh-solids":["ma-y10-11-geometry-and-measures-7","ma-y10-11-geometry-and-measures-8","ma-y10-11-gcse-formulae-8"],
+    "lesson-england-gcse-climb-gh-solids":["ma-y10-11-geometry-and-measures-7","ma-y10-11-geometry-and-measures-8","ma-y10-11-gcse-formulae-8"],
+    "gh-similar":["ma-y10-11-geometry-and-measures-9","ma-y10-11-ratio-proportion-and-rates-of-change-1"],
+    "lesson-england-gcse-climb-gh-similar":["ma-y10-11-geometry-and-measures-9","ma-y10-11-ratio-proportion-and-rates-of-change-1"],
+    "gh-vectors":["ma-y10-11-geometry-and-measures-15","ma-y10-11-geometry-and-measures-14"],
+    "lesson-england-gcse-climb-gh-vectors":["ma-y10-11-geometry-and-measures-15","ma-y10-11-geometry-and-measures-14"],
+    "gh-probability":["ma-y10-11-probability-3","ma-y10-11-probability-4","ma-y10-11-gcse-formulae-7"],
+    "lesson-england-gcse-climb-gh-probability":["ma-y10-11-probability-3","ma-y10-11-probability-4","ma-y10-11-gcse-formulae-7"],
+    "gh-statistics":["ma-y10-11-statistics-3","ma-y10-11-statistics-5","ma-y10-11-statistics-6","ma-y10-11-statistics-1"],
+    "lesson-england-gcse-climb-gh-statistics":["ma-y10-11-statistics-3","ma-y10-11-statistics-5","ma-y10-11-statistics-6","ma-y10-11-statistics-1"],
+    "gh-proof":["ma-y10-11-algebra-4","ma-y10-11-number-6","ma-y10-11-algebra-17"],
+    "lesson-england-gcse-climb-gh-proof":["ma-y10-11-algebra-4","ma-y10-11-number-6","ma-y10-11-algebra-17"],
+    "g5-check":["ma-y10-11-number-5","ma-y10-11-ratio-proportion-and-rates-of-change-6","ma-y10-11-algebra-2","ma-y10-11-geometry-and-measures-10","ma-y10-11-probability-3"],
+    "g5-mixed":["ma-y10-11-number-5","ma-y10-11-ratio-proportion-and-rates-of-change-6","ma-y10-11-algebra-2","ma-y10-11-geometry-and-measures-10","ma-y10-11-probability-3"],
+    "gh-check":["ma-y10-11-number-4","ma-y10-11-algebra-13","ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-4","ma-y10-11-statistics-3"],
+    "gh-mixed":["ma-y10-11-number-4","ma-y10-11-algebra-13","ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-4","ma-y10-11-statistics-3"],
     "g-hopper-short":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-digraphs":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-long-a":["en-y1-reading-word-reading-2","en-y1-writing-transcription-spelling-2"],
@@ -1413,12 +1473,14 @@
     const years = pick(lesson(id) ? lessonYears() : [main]).flatMap(s => span(s.year)).filter(n => !Number.isNaN(n));
     const lo = Math.min(...years), hi = Math.max(...years);
     // The GCSE maths exam climb practises key stage 3 content for the GCSE exam, so it sits with key stage 4
-    if (climb(id)) return { lo: 10, hi: 11, label: "GCSE exam climb (Foundation, grade 1 to 3)", strand: strandOf(main.domain), domain: domainLabel(main.domain), statements };
+    if (climb(id)) return { lo: 10, hi: 11, label: climbLabel(id), strand: strandOf(main.domain), domain: domainLabel(main.domain), statements };
     return { lo, hi, label: lesson(id) ? rangeLabel(lo, hi) : yearLabel(main.year), strand: strandOf(main.domain),
       domain: domainLabel(main.domain), statements };
   }
   const lesson = id => Boolean(window.PopLessons && window.PopLessons.get(id));
-  const climb = id => /^(gf-|paper-gx-|lesson-england-gcse-climb-)/.test(String(id));
+  const climb = id => /^(gf-|g5-|gh-|paper-gx-|lesson-england-gcse-climb-)/.test(String(id));
+  const climbLabel = id => (/(^|-)g5-/.test(id) ? "GCSE exam climb (grades 4 and 5)" : /(^|-)gh-/.test(id) ? "GCSE exam climb (Higher, grades 6 to 9)"
+    : /my-next-step|gx-route/.test(id) ? "GCSE exam climb (grade 1 to 9)" : "GCSE exam climb (Foundation, grade 1 to 3)");
 
   // What England expects for a year group
   function expected(yearGroup) {
