@@ -55,6 +55,10 @@ The sound games follow the class's accent: **Scottish** (the default: *car* is `
 
 The stories and their questions are in [`passages.js`](passages.js) and can be edited there. New or changed stories are recorded in Eponine's voice automatically.
 
+### 🗣️ Adult English
+
+[`english.html`](english.html) is a separate area for teaching English to adults online (CEFR A1 to C1, British English, no mascot, no login, nothing saved). Lessons live in [`english-lessons.js`](english-lessons.js) and [`english.js`](english.js) draws them: one step per screen (talk, sort words into groups, read with true/false questions, a grammar box with typed gaps, choose the answer, a role-play, and a writing task), each with Check, Start again and a Teacher view that shows answers and notes. Every lesson prints a two-page student copy and a three-page teacher copy (answers plus aims, timings, mistakes to listen for and stretch questions). There is one lesson so far: A2 *Planning a trip* (going to for plans). `npm run english-check` opens every step in a browser at 1366 × 650 and fails if one needs scrolling or a printed page doesn't fit A4.
+
 ### 📚 My stories: decodable stories matched to each pupil
 
 [`stories.js`](stories.js) holds 14 short decodable stories for the EA stages (4 for Stage 1, 6 for Stage 2, 4 for Stage 3), each with three questions.
