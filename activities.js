@@ -4011,7 +4011,7 @@ window.PopActivities = (() => {
       { options: [`maximum ${k + c}, at x = ${180 + al}`, `maximum ${k}, at x = ${al}`].filter(o => o !== ans), label: `wm ${k}${al}${c}`, skill: "the wave function" }); };
 
   // 12. Circles
-  const shCentre = () => { const a = gfR(-6, 6), b = gfR(-6, 6), r = gfR(1, 9), c = a * a + b * b - r * r, ans = `centre ${sqP(a, b)}, radius ${r}`;
+  const shCentre = () => { const a = gfR(-6, 6) || 3, b = gfR(-6, 6), r = gfR(2, 9), c = a * a + b * b - r * r, ans = `centre ${sqP(a, b)}, radius ${r}`;
     return gfQ(`A circle has equation ${gxE([[1, "x²"], [1, "y²"], [-2 * a, "x"], [-2 * b, "y"], [c, ""]])} = 0. Write down its centre and radius.`, ans, 2,
       `•1 centre (−g, −f) = ${sqP(a, b)} (1 mark). •2 radius √(g² + f² − c) = √(${a * a} + ${b * b} ${c < 0 ? "+" : "−"} ${Math.abs(c)}) = ${r} (1 mark).`,
       { options: sqUniq(ans, [`centre ${sqP(-a, -b)}, radius ${r}`, `centre ${sqP(2 * a, 2 * b)}, radius ${r * r}`]), label: `cen ${a}${b}${r}`, skill: "the equation of a circle" }); };
