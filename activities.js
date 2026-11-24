@@ -2330,7 +2330,7 @@ window.PopActivities = (() => {
     { id: "k4-lines", title: "Straight-line graphs: y = mx + c (Years 10 and 11)", level: "Fourth", organiser: GCSE, check: false,
       blurb: "Find gradients and intercepts, the equation of a line, and parallel and perpendicular lines.",
       make: () => distinct(10, () => {
-        const k = rand(6), m = (rand(5) + 1) * (rand(3) ? 1 : -1), c = rand(13) - 6, line = `y = ${expr([m, "x"], [c, ""])}`;
+        const k = rand(6), m = (rand(5) + 1) * (rand(3) ? 1 : -1), c = (rand(6) + 1) * (rand(2) ? 1 : -1), line = `y = ${expr([m, "x"], [c, ""])}`;
         if (k === 0) { const x1 = rand(7) - 3, dx = rand(4) + 1, dy = (rand(9) + 1) * (rand(2) ? 1 : -1), y1 = rand(9) - 4, ans = sfrac(dy, dx);
           return choice(`What is the gradient of the line through (${minus(x1)}, ${minus(y1)}) and (${minus(x1 + dx)}, ${minus(y1 + dy)})?`, ans, others2u(ans, [sfrac(dx, dy), sfrac(-dy, dx), sfrac(dy + dx, dx)]),
             { label: `grad ${x1},${y1},${dx},${dy}`, skill: "gradient from two points", explain: `Gradient = change in y ÷ change in x = ${minus(dy)} ÷ ${dx} = ${ans}.` }); }
