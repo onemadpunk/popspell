@@ -2849,7 +2849,7 @@ window.PopActivities = (() => {
         return gfQ(`Solve ${a}x ${neg ? "−" : "+"} ${b} = ${neg ? a * x - b : a * x + b}.`, x, 2, `${neg ? "Add" : "Take away"} ${b} on both sides: ${a}x = ${a * x} (1 mark). Divide by ${a}: x = ${x} (1 mark).`, { label: `eq ${a},${b},${x},${neg}`, skill: "solving equations" }); },
       () => { const x = gfR(1, 9), a = gfR(2, 6), b = gfR(1, 8);
         return gfQ(`Solve ${a}(x + ${b}) = ${a * (x + b)}.`, x, 2, `Expand: ${a}x + ${a * b} = ${a * (x + b)}, or divide both sides by ${a} first: x + ${b} = ${x + b} (1 mark). x = ${x} (1 mark).`, { label: `eqb ${a},${b},${x}`, skill: "equations with brackets" }); },
-      () => { const x = gfR(1, 10), c = gfR(1, 5), a = c + gfR(1, 5), b = gfR(-9, 9), d = (a - c) * x + b;
+      () => { const x = gfR(1, 10), c = gfR(2, 5), a = c + gfR(2, 5), b = (gfR(1, 9)) * (rand(2) ? 1 : -1), d = (a - c) * x + b;
         const side = v => (v < 0 ? ` − ${-v}` : v > 0 ? ` + ${v}` : "");
         return gfQ(`Solve ${a}x${side(b)} = ${c === 1 ? "" : c}x${side(d)}.`, x, 3, `Take ${c === 1 ? "" : c}x from both sides: ${a - c === 1 ? "" : a - c}x${side(b)} = ${gfM(d)} (1 mark). ${b ? `${b > 0 ? "Take away" : "Add"} ${Math.abs(b)}: ` : ""}${a - c === 1 ? "" : a - c}x = ${(a - c) * x} (1 mark). x = ${x} (1 mark).`, { label: `eq2 ${a},${b},${c},${x}`, skill: "unknowns on both sides" }); },
       () => { const s = gfR(-5, 20), d = pick([2, 3, 4, 5, 6, 7, -3, -4]), t = range(0, 3).map(i => s + i * d);
@@ -2875,7 +2875,7 @@ window.PopActivities = (() => {
         return gfQ(`The graph shows a straight line. What is the value of y when x = ${x}?`, m * x + c, 1, `Go up from x = ${x} to the line, then across to the y-axis: y = ${m * x + c} (1 mark).`, { pic: gfGraph(m, c), label: `read ${m},${c},${x}`, skill: "reading graphs" }); },
       () => { const m = gfR(1, 3), c = gfR(1, 4), ans = expr([m, "x"], [c, ""]), w = [expr([c, "x"], [m, ""]), expr([m + 1, "x"], [c, ""]), expr([m, "x"], [c + 1, ""])].filter(o => o !== ans);
         return gfQ(`Which equation matches the line on the graph? Write it as y = mx + c.`, `y = ${ans}`, 1, `It crosses the y-axis at ${c}, so c = ${c}. It goes up ${m} for each 1 across, so m = ${m}: y = ${ans} (1 mark).`, { options: w.slice(0, 2).map(o => `y = ${o}`), pic: gfGraph(m, c), label: `match ${m},${c}`, skill: "y = mx + c" }); },
-      () => { const m = gfR(-5, 6) || 2, c = gfR(-9, 9), grad = rand(2), e = expr([m, "x"], [c, ""]);
+      () => { let m, c; do { m = gfR(-5, 6); c = gfR(-9, 9); } while (Math.abs(m) < 2 || !c); const grad = rand(2), e = expr([m, "x"], [c, ""]);
         return grad ? gfQ(`What is the gradient of the line y = ${e}?`, gfM(m), 1, `In y = mx + c, the gradient is m, the number in front of x: ${gfM(m)} (1 mark).`, { label: `grad ${m},${c}`, skill: "gradient" })
           : gfQ(`The line y = ${e} crosses the y-axis. What is the y-coordinate of that point?`, gfM(c), 1, `At the y-axis, x = 0, so y = ${gfM(c)} (1 mark).`, { label: `int ${m},${c}`, skill: "y-intercept" }); },
       () => { const m = gfR(2, 5), c = gfR(-6, 6), x = gfR(-3, 3);
@@ -3140,13 +3140,13 @@ window.PopActivities = (() => {
     ] },
     { id: "g5-lines", n: 7, short: "Graphs", title: "Gradients, straight lines and quadratic graphs", strand: "Patterns and missing numbers",
       blurb: "Gradient and intercept, the equation of a line through two points, parallel lines, midpoints and quadratic graphs.", makers: [
-      () => { const m = gfR(-5, 6) || 2, c = gfR(-9, 9), k = gfR(2, 4), what = rand(2);
+      () => { let m, c; do { m = gfR(-5, 6); c = gfR(-9, 9); } while (Math.abs(m) < 2 || !c); const k = gfR(2, 4), what = rand(2);
         return gfQ(`What is the ${what ? "gradient" : "y-intercept"} of the line ${k}y = ${gxE([[k * m, "x"], [k * c, ""]])}?`, gfM(what ? m : c), 1, `Divide everything by ${k}: y = ${gxE([[m, "x"], [c, ""]])}, so the ${what ? `gradient is ${gfM(m)}` : `y-intercept is ${gfM(c)}`} (1 mark).`, { label: `mc ${m},${c},${k},${what}`, skill: "gradient and intercept" }); },
       () => { const m = gfR(-4, 5) || 3, x1 = gfR(-4, 3), y1 = gfR(-5, 5), dx = gfR(1, 4), x2 = x1 + dx, y2 = y1 + m * dx;
         return gfQ(`Work out the gradient of the line through (${gfM(x1)}, ${gfM(y1)}) and (${gfM(x2)}, ${gfM(y2)}).`, gfM(m), 2, `Change in y ÷ change in x (1 mark): ${gfM(y2 - y1)} ÷ ${dx} = ${gfM(m)} (1 mark).`, { label: `grad ${x1},${y1},${m},${dx}`, skill: "gradient from two points" }); },
-      () => { const m = gfR(-4, 5) || 2, c = gfR(-6, 8), x1 = gfR(-2, 1), x2 = x1 + gfR(2, 4), ans = `y = ${gxE([[m, "x"], [c, ""]])}`;
+      () => { let m, c; do { m = gfR(-4, 5); c = gfR(-6, 8); } while (Math.abs(m) < 2 || !c || !(c + m)); const x1 = gfR(-2, 1), x2 = x1 + gfR(2, 4), ans = `y = ${gxE([[m, "x"], [c, ""]])}`;
         return gfQ(`Find the equation of the line through (${gfM(x1)}, ${gfM(m * x1 + c)}) and (${gfM(x2)}, ${gfM(m * x2 + c)}).`, ans, 3, `Gradient = ${gfM((m * x2 + c) - (m * x1 + c))} ÷ ${x2 - x1} = ${gfM(m)} (1 mark). Substitute a point to find c (1 mark). ${ans} (1 mark).`, { options: [`y = ${gxE([[m, "x"], [c + m, ""]])}`, `y = ${gxE([[-m, "x"], [c, ""]])}`], label: `eq ${m},${c},${x1},${x2}`, skill: "equation of a line" }); },
-      () => { const m = gfR(-5, 6) || 3, c = gfR(-9, 9), ans = `y = ${gxE([[m, "x"], [c + gfR(1, 5), ""]])}`;
+      () => { let m, c, d; do { m = gfR(-5, 6); c = gfR(-9, 9); d = c + gfR(1, 5); } while (Math.abs(m) < 2 || Math.abs(c) < 2 || !d); const ans = `y = ${gxE([[m, "x"], [d, ""]])}`;
         return gfQ(`Which line is parallel to y = ${gxE([[m, "x"], [c, ""]])}?`, ans, 1, `Parallel lines have the same gradient, ${gfM(m)} (1 mark).`, { options: [`y = ${gxE([[c || 1, "x"], [m, ""]])}`, `y = ${gxE([[-m, "x"], [c, ""]])}`].filter(o => o !== ans), label: `par ${m},${c}`, skill: "parallel lines" }); },
       () => { const x1 = gfR(-6, 6), y1 = gfR(-6, 6), x2 = x1 + 2 * gfR(1, 5), y2 = y1 + 2 * gfR(-4, 4), ans = `(${gfM((x1 + x2) / 2)}, ${gfM((y1 + y2) / 2)})`;
         return gfQ(`Find the midpoint of (${gfM(x1)}, ${gfM(y1)}) and (${gfM(x2)}, ${gfM(y2)}).`, ans, 2, `Add the x values and halve: ${gfM((x1 + x2) / 2)} (1 mark). The same for the y values: ${gfM((y1 + y2) / 2)} (1 mark).`, { accept: [ans.replace(/ /g, ""), ans.replace(/−/g, "-"), ans.replace(/−/g, "-").replace(/ /g, "")], label: `mid ${x1},${y1},${x2},${y2}`, skill: "midpoints" }); },
