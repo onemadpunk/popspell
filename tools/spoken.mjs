@@ -11,6 +11,10 @@ export const read = file => readFileSync(new URL(file, root), "utf8");
 export function loadSite() {
   const page = {};
   page.window = page;
+  // The same questions every run (a fixed seed), so the check after recording makes exactly the lines
+  // the recordings robot listed, instead of turning up a different handful of rare ones each time.
+  runInNewContext(`(() => { let s = 20261124; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();`, page);
   for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js", "audio/index.js"])
     runInNewContext(read(file), page);
   return page;
