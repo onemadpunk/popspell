@@ -2849,7 +2849,7 @@ window.PopActivities = (() => {
         return gfQ(`Solve ${a}x ${neg ? "−" : "+"} ${b} = ${neg ? a * x - b : a * x + b}.`, x, 2, `${neg ? "Add" : "Take away"} ${b} on both sides: ${a}x = ${a * x} (1 mark). Divide by ${a}: x = ${x} (1 mark).`, { label: `eq ${a},${b},${x},${neg}`, skill: "solving equations" }); },
       () => { const x = gfR(1, 9), a = gfR(2, 6), b = gfR(1, 8);
         return gfQ(`Solve ${a}(x + ${b}) = ${a * (x + b)}.`, x, 2, `Expand: ${a}x + ${a * b} = ${a * (x + b)}, or divide both sides by ${a} first: x + ${b} = ${x + b} (1 mark). x = ${x} (1 mark).`, { label: `eqb ${a},${b},${x}`, skill: "equations with brackets" }); },
-      () => { const x = gfR(1, 10), c = gfR(1, 5), a = c + gfR(1, 5), b = gfR(-9, 9), d = (a - c) * x + b;
+      () => { const x = gfR(1, 10), c = gfR(1, 5), a = c + gfR(1, 5), b = gfR(-9, 9) || 4, d = (a - c) * x + b;
         const side = v => (v < 0 ? ` − ${-v}` : v > 0 ? ` + ${v}` : "");
         return gfQ(`Solve ${a}x${side(b)} = ${c === 1 ? "" : c}x${side(d)}.`, x, 3, `Take ${c === 1 ? "" : c}x from both sides: ${a - c === 1 ? "" : a - c}x${side(b)} = ${gfM(d)} (1 mark). ${b ? `${b > 0 ? "Take away" : "Add"} ${Math.abs(b)}: ` : ""}${a - c === 1 ? "" : a - c}x = ${(a - c) * x} (1 mark). x = ${x} (1 mark).`, { label: `eq2 ${a},${b},${c},${x}`, skill: "unknowns on both sides" }); },
       () => { const s = gfR(-5, 20), d = pick([2, 3, 4, 5, 6, 7, -3, -4]), t = range(0, 3).map(i => s + i * d);
@@ -3321,7 +3321,7 @@ window.PopActivities = (() => {
         return gfQ(`Solve x/${a} + x/${b} = ${c}.`, x, 3, `Multiply every term by ${a * b / gcd(a, b)} (1 mark): ${b / gcd(a, b)}x + ${a / gcd(a, b)}x = ${c * a * b / gcd(a, b)} (1 mark). x = ${x} (1 mark).`, { label: `fe ${a},${b},${x}`, skill: "equations with fractions" }); },
       () => { const a = gfR(2, 6), b = gfR(1, 9), ans = `x = (${b}y + ${a}) / (y − 1)`;
         return gfQ(`Make x the subject of y = (x + ${a}) / (x − ${b}).`, ans, 3, `Multiply out: xy − ${b}y = x + ${a} (1 mark). Get the x terms together: xy − x = ${b}y + ${a} (1 mark). Factorise and divide: ${ans} (1 mark).`, { options: [`x = (${b}y − ${a}) / (y − 1)`, `x = (${a}y + ${b}) / (y + 1)`], label: `subj2 ${a},${b}`, skill: "changing the subject" }); },
-      () => { let r1, r2, m, n; do { r1 = gfR(-4, 4); r2 = gfR(-4, 4); m = gfR(-3, 3); n = gfR(-5, 5); } while (r1 >= r2 || !m);
+      () => { let r1, r2, m, n; do { r1 = gfR(-4, 4); r2 = gfR(-4, 4); m = gfR(-3, 3); n = gfR(-5, 5); } while (r1 >= r2 || !m || !n);
         const b = m - (r1 + r2), c = n + r1 * r2, pt = x => `(${gfM(x)}, ${gfM(m * x + n)})`, ans = `${pt(r1)} and ${pt(r2)}`;
         return gfQ(`Solve the simultaneous equations y = ${gxE([[m, "x"], [n, ""]])} and y = ${gxE([[1, "x²"], [b, "x"], [c, ""]])}.`, ans, 3, `Set them equal: ${gxE([[1, "x²"], [b - m, "x"], [c - n, ""]])} = 0 (1 mark). x = ${gfM(r1)} or x = ${gfM(r2)} (1 mark). Substitute for y: ${ans} (1 mark).`, { options: [`(${gfM(r1)}, ${gfM(m * r2 + n)}) and (${gfM(r2)}, ${gfM(m * r1 + n)})`, `(${gfM(-r1)}, ${gfM(-m * r1 + n)}) and (${gfM(-r2)}, ${gfM(-m * r2 + n)})`].filter(o => o !== ans), ps: true, label: `lq ${r1},${r2},${m},${n}`, skill: "a line and a curve" }); }
     ] },
@@ -3777,6 +3777,8 @@ window.PopActivities = (() => {
   // ----- Stage 3: Higher -----
   // Polynomials in x from coefficients, highest power first: [1, −2, 0, 5] is x³ − 2x² + 5
   const sqPoly = cs => gxE(cs.map((c, i) => [c, ["", "x", "x²", "x³", "x⁴"][cs.length - 1 - i]]));
+  // A coefficient of 2 to n either way: a 1 or 0 makes rare spoken pieces ("x³ add x² add x") nobody recorded
+  const sqBig = n => gfR(2, n) * pick([1, -1]);
   const sqAt = (cs, x) => cs.reduce((t, c) => t * x + c, 0);
   const sqFact = rs => rs.slice().sort((a, b) => (a === 0 ? -1 : b === 0 ? 1 : b - a)).map(r => (r === 0 ? "x" : gxB(1, -r))).join("");
   const sqRoots3 = () => { const rs = shuffle([-4, -3, -2, -1, 1, 2, 3, 4, 5]).slice(0, 3); return { rs, cs: [1, -(rs[0] + rs[1] + rs[2]), rs[0] * rs[1] + rs[1] * rs[2] + rs[0] * rs[2], -rs[0] * rs[1] * rs[2]] }; };
@@ -3848,7 +3850,7 @@ window.PopActivities = (() => {
     return gfQ(`The graph of y = logₐ x passes through the point (${a ** n}, ${n}). Find a.`, a, 2, `•1 ${n} = logₐ ${a ** n}, so a${sup(n)} = ${a ** n} (1 mark). •2 a = ${a} (1 mark).`, { label: `logb ${a}${n}`, skill: "logarithmic graphs" }); };
 
   // 4. Polynomials
-  const shRem = () => { const cs = [1, gfR(-5, 5), gfR(-9, 9), gfR(-9, 9)], k = gfR(-3, 3) || 2, r = sqAt(cs, k);
+  const shRem = () => { const cs = [1, sqBig(5), sqBig(9), sqBig(9)], k = gfR(-3, 3) || 2, r = sqAt(cs, k);
     return gfQ(`Find the remainder when ${sqPoly(cs)} is divided by ${gxB(1, -k)}.`, gfM(r), 2, `•1 synthetic division by ${gfM(k)}, or f(${gfM(k)}) (1 mark). •2 remainder ${gfM(r)} (1 mark).`,
       { label: `rem ${cs}${k}`, skill: "the remainder theorem" }); };
   const shFactorK = () => { const { rs, cs } = sqRoots3(), r = rs[0];
@@ -3893,7 +3895,7 @@ window.PopActivities = (() => {
       { ps: true, unit: "litres", label: `tank ${p}${L}`, skill: "recurrence relations in context" }); };
 
   // 7. Differentiation
-  const shDiffPoly = () => { const a = gfR(1, 5) * pick([1, -1]), b = gfR(-6, 6) || 2, c = gfR(-9, 9) || 1, d = gfR(-9, 9);
+  const shDiffPoly = () => { const a = gfR(1, 5) * pick([1, -1]), b = sqBig(6), c = sqBig(9), d = sqBig(9);
     const ans = sqPoly([3 * a, 2 * b, c]);
     return gfQ(`Differentiate y = ${sqPoly([a, b, c, d])} with respect to x.`, `dy/dx = ${ans}`, 2, `•1 multiply by the power and take 1 off it, term by term (1 mark). •2 dy/dx = ${ans}: the constant goes (1 mark).`,
       { options: sqUniq(`dy/dx = ${ans}`, [`dy/dx = ${sqPoly([3 * a, 2 * b, c, d])}`, `dy/dx = ${sqPoly([a, b, c])}`, `dy/dx = ${sqPoly([3 * a, 2 * b, 0])}`]).slice(0, 2), label: `dp ${a}${b}${c}${d}`, skill: "differentiating" }); };
