@@ -35,7 +35,7 @@ test("every bank question has marks, a mark scheme that adds up, and a fair answ
     const marks = (it.scheme.match(/\(1 mark/g) || []).length;
     assert.equal(marks, it.marks, `${t.id}: the scheme gives ${marks} of ${it.marks} marks: ${it.scheme}`);
     assert.ok(it.answer !== "" && it.skill && it.label, `${t.id}: ${it.q}`);
-    assert.doesNotMatch(it.q + it.answer + it.scheme + (it.options || []).join(), /NaN|undefined|Infinity|null|\.\d{6,}/, `${t.id}: ${it.q}`);
+    assert.doesNotMatch([it.q, it.answer, it.scheme, ...(it.options || [])].join(" | "), /NaN|undefined|Infinity|null|\.\d{6,}/, `${t.id}: ${it.q}`);
     if (it.options) assert.equal(new Set([it.answer, ...it.options]).size, it.options.length + 1, `${t.id}: ${it.q} ${it.options}`);
   }
 });
@@ -86,7 +86,7 @@ test("sheets: every climb sheet builds, has a mark-scheme answers page and chang
     for (let run = 0; run < 25; run++) {
       const b = s.build("Pupil", kit);
       assert.ok(b.pupil.includes("GCSE maths climb") && b.answers, s.id);
-      assert.doesNotMatch(b.pupil + b.answers, /undefined|NaN|null|\[object|\.\d{6,}/, s.id);
+      assert.doesNotMatch(b.pupil + " | " + b.answers, /undefined|NaN|null|\[object|\.\d{6,}/, s.id);
       seen.add(b.answers);
       const total = b.pupil.match(/Total ___ \/ (\d+)/);
       if (total && /^paper-gx-(?!baseline)/.test(s.id)) {
