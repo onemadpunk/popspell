@@ -3095,7 +3095,7 @@ window.PopActivities = (() => {
       () => { const g = gfR(2, 6), p = gfR(2, 5), q = gfR(1, 7); if (gcd(p, q) !== 1) return { label: "skip" }; const ans = `${g}x(${p}x + ${q})`;
         return gfQ(`Factorise fully ${g * p}x² + ${g * q}x.`, ans, 2, `Take out the common factor ${g}x (1 mark): ${ans} (1 mark). Taking out only ${g} or only x is not "fully".`, { options: [`${g}(${p}x² + ${q}x)`, `x(${g * p}x + ${g * q})`], label: `ff ${g},${p},${q}`, skill: "factorising fully" }); },
       () => { const a = gfR(2, 6), b = gfR(1, 9), c = gfR(2, 5), d = gfR(1, 9), k = rand(2) ? 1 : -1, ans = gxE([[a * 2 - c * k, "x"], [-a * b + c * d * k, ""]]);
-        if (a * 2 - c * k === 0) return { label: "skip" };
+        if (a * 2 - c * k === 0 || -a * b + c * d * k === 0) return { label: "skip" };
         return gfQ(`Expand and simplify ${a}(2x − ${b}) ${k > 0 ? "−" : "+"} ${c}(x − ${d}).`, ans, 2, `${a * 2}x − ${a * b} ${k > 0 ? `− ${c}x + ${c * d}` : `+ ${c}x − ${c * d}`} (1 mark): watch the sign in front of the second bracket. ${ans} (1 mark).`, { options: [gxE([[a * 2 - c * k, "x"], [-a * b - c * d * k, ""]]), gxE([[a * 2 + c * k, "x"], [-a * b + c * d * k, ""]])].filter((o, i, l) => o !== ans && l.indexOf(o) === i), label: `exs ${a}${b}${c}${d}${k}`, skill: "expanding brackets" }); },
       () => { const a = gfR(2, 12), ans = `(x + ${a})(x − ${a})`;
         return gfQ(`Factorise x² − ${a * a}.`, ans, 1, `The difference of two squares: x² − ${a}² = ${ans} (1 mark).`, { options: [`(x − ${a})²`, `(x + ${a})²`], label: `dots ${a}`, skill: "difference of two squares" }); },
@@ -3333,7 +3333,7 @@ window.PopActivities = (() => {
         return gfQ(`f(x) = ${gxE([[a, "x"], [b, ""]])}. Find f⁻¹(x).`, ans, 2, `Write y = ${gxE([[a, "x"], [b, ""]])} and rearrange for x: x = (y ${b < 0 ? "+" : "−"} ${Math.abs(b)}) / ${a} (1 mark). ${ans} (1 mark).`, { options: [`f⁻¹(x) = 1 / (${gxE([[a, "x"], [b, ""]])})`, `f⁻¹(x) = (x ${b < 0 ? "−" : "+"} ${Math.abs(b)}) / ${a}`], label: `inv ${a},${b}`, skill: "inverse functions" }); },
       () => { const a = gfR(1, 6) * (rand(2) ? 1 : -1), ans = `(${gxE([[1, "x"], [a, ""]])})²`;
         return gfQ(`f(x) = ${gxE([[1, "x"], [a, ""]])} and g(x) = x². Find gf(x).`, ans, 1, `Put f(x) into g: ${ans} (1 mark). fg(x) would be ${gxE([[1, "x²"], [a, ""]])}: the order matters.`, { options: [gxE([[1, "x²"], [a, ""]]), gxE([[1, "x²"], [a * a, ""]]), gxE([[1, "x²"], [2 * a, "x"]])].filter((o, i, l) => l.indexOf(o) === i).slice(0, 2), label: `gfx ${a}`, skill: "composite functions" }); },
-      () => { const a = gfR(1, 3), b = gfR(-5, 5), c = gfR(-6, 8), terms = range(1, 5).map(n => a * n * n + b * n + c).map(gfM).join(", "), ans = gxE([[a, "n²"], [b, "n"], [c, ""]]);
+      () => { const a = gfR(1, 3), b = gfR(-5, 5), c = gfR(-6, 8) || 3, terms = range(1, 5).map(n => a * n * n + b * n + c).map(gfM).join(", "), ans = gxE([[a, "n²"], [b, "n"], [c, ""]]);
         return gfQ(`Find the nth term of the quadratic sequence ${terms}, …`, ans, 3, `Second differences are ${2 * a}, so ${gxE([[a, "n²"]])} (1 mark). Subtract ${gxE([[a, "n²"]])} and find the linear part, ${gxE([[b, "n"], [c, ""]])} (1 mark). ${ans} (1 mark).`, { options: [gxE([[2 * a, "n²"], [b, "n"], [c, ""]]), gxE([[a, "n²"], [b + 1, "n"], [c - 1, ""]])].filter(o => o !== ans), label: `qseq ${a},${b},${c}`, skill: "quadratic sequences" }); },
       () => { const a = gfR(3, 12), x0 = gfR(2, 4), it = x => Math.sqrt(a + x), x1 = it(x0), x2 = it(x1), x3 = it(x2); if (x0 * x0 === a + x0) return { label: "skip" };
         return gfQ(`Use the iteration formula xₙ₊₁ = √(${a} + xₙ) with x₀ = ${x0} to find x₃, to 3 decimal places.`, x3.toFixed(3), 3, `x₁ = √${a + x0} = ${x1.toFixed(4)}… (1 mark). x₂ = ${x2.toFixed(4)}… (1 mark). x₃ = ${x3.toFixed(3)} (1 mark). Keep the full value on the calculator with the ANS key.`, { calc: true, label: `iter ${a},${x0}`, skill: "iteration" }); },
@@ -3618,7 +3618,8 @@ window.PopActivities = (() => {
       `•1 ${k < 2 ? "a common denominator, or " : ""}improper fractions: ${A[0]}/${A[1]} and ${B[0]}/${B[1]} (1 mark). •2 ${k === 3 ? `flip and multiply: ${A[0]}/${A[1]} × ${B[1]}/${B[0]} = ` : ""}${N}/${D} (1 mark). •3 ${ans}, as a mixed number in its simplest form (1 mark).`,
       { accept: imp !== ans ? [imp] : [], label: `mix ${w1}${n1}${d1}${op}${w2}${n2}${d2}`, skill: "mixed numbers" }); };
   // (x + a)(x² + bx + c)
-  const sqCubicExp = () => { const a = gfR(-5, 5) || 2, b = gfR(-4, 4) || -1, c = gfR(-6, 6) || 3;
+  const sqCubicExp = () => { let a, b, c; // both middle coefficients 0 or ±1 would make rare spoken lines
+    do { a = gfR(-5, 5) || 2; b = gfR(-4, 4) || -1; c = gfR(-6, 6) || 3; } while (Math.abs(a + b) <= 1 && Math.abs(a * b + c) <= 1);
     const ans = gxE([[1, "x³"], [a + b, "x²"], [a * b + c, "x"], [a * c, ""]]);
     return gfQ(`Expand and simplify ${gxB(1, a)}(${gxE([[1, "x²"], [b, "x"], [c, ""]])}).`, ans, 3,
       `•1 x × each term: ${gxE([[1, "x³"], [b, "x²"], [c, "x"]])} (1 mark). •2 ${gfM(a)} × each term: ${gxE([[a, "x²"], [a * b, "x"], [a * c, ""]])} (1 mark). •3 collect like terms: ${ans} (1 mark).`,
