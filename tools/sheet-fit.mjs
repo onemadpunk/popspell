@@ -18,7 +18,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = name => { const i = process.argv.indexOf(`--${name}`); return i > 0 ? process.argv[i + 1] : null; };
-const TYPES = arg("type") ? [arg("type")] : ["spelling", "paper", "activity", "dictation", "story", "lesson"];
+const TYPES = arg("type") ? [arg("type")] : ["spelling", "paper", "activity", "dictation", "story", "lesson", "pack"];
 const LIMIT = Number(arg("limit")) || Infinity;
 const KEEP = arg("pdf");
 const ONLY = arg("id") ? new RegExp(arg("id")) : null; // --id regex: only entries whose id matches
@@ -93,6 +93,10 @@ async function printPages(id, settings) {
     }
   }, { id, settings });
   await page.waitForFunction(() => window.__printed > 0, null, { timeout: 10000 });
+  return measure(page);
+}
+// The sheet on the page for printing: how many pages it has, and how many A4 pages Chrome makes of it
+async function measure(page) {
   const sheets = await page.evaluate(() => document.querySelectorAll(".worksheet-print > .ws-page").length || 1);
   // Each page that fits is a box the size of the printed A4 area: anything cut off its bottom is counted
   await page.emulateMedia({ media: "print" });
@@ -116,7 +120,7 @@ const SPELLING = [["practice, young", { "[data-mode]": "practice", "[data-band]"
   ["handwriting", { "[data-mode]": "handwriting" }], ["sentences", { "[data-mode]": "sentences" }]];
 const bad = [];
 let checked = 0;
-for (const type of TYPES) {
+for (const type of TYPES.filter(t => t !== "pack")) {
   const ids = (await setType(type)).filter(id => !ONLY || ONLY.test(id)).slice(0, LIMIT);
   for (const id of ids) {
     const runs = type === "spelling" ? SPELLING.map(([name, s]) => [name, Object.assign({ "[data-words]": false }, s)])
@@ -135,6 +139,31 @@ for (const type of TYPES) {
     process.stdout.write(".");
   }
   process.stdout.write(` ${type}\n`);
+}
+// The downloadable packs (pack.html): each stage's whole pack, the work then the answers
+if (TYPES.includes("pack")) {
+  const pk = await browser.newPage({ viewport: { width: 1366, height: 900 } });
+  pk.on("pageerror", e => errors.push(`pack.html: ${e.message}`));
+  await pk.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });
+  await pk.goto(`${base}/pack.html`);
+  await pk.waitForSelector("[data-stage]");
+  const stages = (await pk.$$eval("[data-stage]", bs => bs.map(b => b.dataset.stage))).filter(id => !ONLY || ONLY.test(id)).slice(0, LIMIT);
+  for (const id of stages) {
+    const label = `pack ${id}`;
+    checked++;
+    try {
+      await pk.click(`[data-stage="${id}"]`);
+      await pk.click("#make");
+      await pk.waitForSelector('[data-print="all"]');
+      await pk.evaluate(() => { window.__printed = 0; document.querySelector('[data-print="all"]').click(); });
+      await pk.waitForFunction(() => window.__printed > 0, null, { timeout: 60000 });
+      const r = await measure(pk);
+      if (r.pages > r.sheets) bad.push(`${label}: ${r.pages} A4 pages for ${r.sheets} sheets`);
+      else if (r.clipped) bad.push(`${label}: the bottom of ${r.clipped} page${r.clipped === 1 ? " is" : "s are"} cut off`);
+      else console.log(`${label}: ${r.sheets} pages, each on its own A4 page`);
+      if (KEEP && (KEEP_ALL || r.pages > r.sheets || r.clipped)) { fs.mkdirSync(KEEP, { recursive: true }); fs.writeFileSync(path.join(KEEP, `${label.replace(/[^\w-]+/g, "_")}.pdf`), r.pdf); }
+    } catch (e) { bad.push(`${label}: couldn't print (${String(e.message || e).split("\n")[0]})`); }
+  }
 }
 await browser.close();
 server.close();

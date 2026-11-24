@@ -1,0 +1,49 @@
+/* Maths packs to download (pack.html). The sheets themselves print with style.css's worksheet styles;
+   this is the page around them, and the pack's own cover and answers pages (.pk-how, .pk-plan). */
+.pk-body { background: #f4f6fa; color: #17233b; font-size: 17px; }
+.pk-app { min-height: 100vh; }
+.pk-top { display: flex; align-items: center; gap: 14px; padding: 8px 20px; background: #fff; border-bottom: 1px solid #d9dfea; min-height: 52px; }
+.pk-brand { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #0b2e6b; font-weight: 800; }
+.pk-crumb { color: #56627a; }
+.pk-link { margin-left: auto; color: #0b2e6b; font-weight: 700; }
+.pk-main { max-width: 980px; margin: 0 auto; padding: 16px 16px 28px; }
+.pk-intro h1 { margin: 0 0 4px; color: #0b2e6b; font-size: 1.7rem; }
+.pk-intro p { margin: 0 0 12px; max-width: 70ch; }
+.pk-pack h2 { margin: 6px 0 8px; font-size: 1.15rem; color: #0b2e6b; }
+.pk-pack h2 span { font-weight: 600; font-size: .9rem; color: #56627a; margin-left: 6px; }
+.pk-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.pk-stage { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 12px 14px; border: 2px solid #d9dfea; border-radius: 12px; background: #fff;
+  font: inherit; color: inherit; cursor: pointer; }
+.pk-stage b { color: #0b2e6b; }
+.pk-stage span { font-size: .9rem; color: #56627a; line-height: 1.35; }
+.pk-stage:hover { border-color: #0b2e6b; }
+.pk-stage.on { border-color: #0b2e6b; background: #e8eef9; box-shadow: inset 0 0 0 1px #0b2e6b; }
+.pk-make { margin-top: 14px; padding: 14px; background: #fff; border: 1px solid #d9dfea; border-radius: 12px; }
+.pk-who { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 10px; }
+.pk-who input { font: inherit; font-weight: 400; padding: 6px 10px; border: 1px solid #b9c3d6; border-radius: 8px; min-width: 0; width: 16em; max-width: 100%; }
+.pk-btn { display: inline-flex; align-items: center; justify-content: center; border: 1px solid #d9dfea; background: #fff; color: #0b2e6b; border-radius: 10px;
+  padding: 9px 18px; font: inherit; font-weight: 700; cursor: pointer; }
+.pk-btn:hover { border-color: #0b2e6b; }
+.pk-btn.primary { background: #0b2e6b; color: #fff; border-color: #0b2e6b; }
+.pk-btn[disabled] { opacity: .6; cursor: default; }
+.pk-ready { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: #e1f5ea; }
+.pk-ready p { margin: 0 0 8px; }
+.pk-do { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.pk-small { font-size: .88rem; color: #56627a; margin: 8px 0 0 !important; }
+.pk-foot { font-size: .85rem; color: #56627a; margin-top: 14px; }
+:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
+@media (max-width: 560px) { .pk-crumb { display: none; } .pk-btn { width: 100%; } }
+
+/* The pack's cover (plan to tick off) and the answers section's first page, on paper */
+:is(.worksheet-print, .sheet-preview-page) .pk-how { border: 1.5px solid #0b2e6b; border-radius: 6px; padding: 6px 10px; margin: 6px 0 8px; font-size: 10.5pt; }
+:is(.worksheet-print, .sheet-preview-page) .pk-how ol { margin: 4px 0 4px 18px; padding: 0; }
+:is(.worksheet-print, .sheet-preview-page) .pk-how li { margin: 1px 0; }
+:is(.worksheet-print, .sheet-preview-page) .pk-how p { margin: 4px 0 0; }
+:is(.worksheet-print, .sheet-preview-page) table.pk-plan { font-size: 10pt; }
+:is(.worksheet-print, .sheet-preview-page) table.pk-plan th, :is(.worksheet-print, .sheet-preview-page) table.pk-plan td { padding: 2px 6px; height: auto; vertical-align: top; }
+:is(.worksheet-print, .sheet-preview-page) .pk-plan .pk-n { width: 9mm; text-align: center; font-weight: 700; }
+:is(.worksheet-print, .sheet-preview-page) .pk-plan .pk-tick { width: 12mm; text-align: center; font-size: 13pt; }
+:is(.worksheet-print, .sheet-preview-page) .pk-plan td:nth-child(4) { width: 22mm; }
+:is(.worksheet-print, .sheet-preview-page) .pk-plan td:nth-child(5) { width: 18mm; }
+:is(.worksheet-print, .sheet-preview-page) .pk-what { color: #444; font-size: 9pt; }
+@media print { .pk-body { background: #fff; } .pk-body > #app { display: none; } }
