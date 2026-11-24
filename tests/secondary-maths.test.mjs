@@ -9,7 +9,7 @@ const page = { PopSpell: { LISTS: {} }, PASSAGES: [], STORIES: [] };
 page.window = page;
 runInNewContext(["words.js", "activities.js", "lessons.js", "paper-sheets.js"].map(read).join("\n"), page);
 const A = page.PopActivities, L = page.PopLessons, P = page.PopPaper;
-const gcse = A.AREAS.find(a => a.id === "numeracy").activities.filter(a => /GCSE/.test(a.organiser));
+const gcse = A.AREAS.find(a => a.id === "numeracy").activities.filter(a => /GCSE maths \(Years 10 and 11\)/.test(a.organiser));
 const num = s => Number(String(s).replace(/−/g, "-"));
 
 test("GCSE maths practice is in the Numbers area, out of the starting check, and every Years 10 and 11 maths lesson has some", () => {

@@ -2618,6 +2618,433 @@ window.PopActivities = (() => {
       }) }
   ];
 
+  /* ---------- GCSE maths exam climb (England), stage 1: Foundation, grade 1 to 3 ---------- */
+  // A pupil at GCSE grade 1 who needs a 3 (for college, or a post-16 resit) climbs the Foundation topics
+  // in "grade 3 first" order: the number, fractions, percentages, ratio and basic algebra that most
+  // Foundation marks rest on come first. Every question is exam-shaped: it says how many marks it is
+  // worth, and its answer is set out like a mark scheme (which line earns which mark), so a pupil learns
+  // that working earns marks even when the last step slips. The same bank makes the online practice and
+  // the A4 sheets (paper-sheets.js asks for it with PopActivities.examBank). Questions are PopSpell's own,
+  // not past papers. Later stages (grades 4 and 5, then Higher) add their own topics to EXAM_STAGES.
+  const GF = "Mathematics · GCSE maths exam climb";
+  const gfR = (lo, hi) => lo + rand(hi - lo + 1);
+  const gfM = n => (n < 0 ? `−${-n}` : `${n}`);
+  const gfBig = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  // A tidy decimal: 7.6, not 7.6000000001
+  const gfD = x => String(Math.round(x * 1000) / 1000).replace("-", "−");
+  // Money: whole pounds as 204, pence as 4.50
+  const gfP = x => { const r = Math.round(x * 100) / 100; return Number.isInteger(r) ? String(r) : r.toFixed(2); };
+  const gfF = (n, d) => fracW(n, d);
+  // The other ways a pupil might write a right answer: with its unit, a pound sign, 7.60 for 7.6, 7,000 for 7000
+  const gfAlso = (answer, unit = "") => {
+    const a = String(answer), base = new Set([a]);
+    if (/^−?\d+\.\d*0$/.test(a)) base.add(String(Number(a.replace("−", "-"))).replace("-", "−"));
+    if (/^−?\d+\.\d$/.test(a)) base.add(`${a}0`);
+    if (/^\d+$/.test(a) && a.length > 3) { base.add(gfBig(a)); base.add(a.replace(/\B(?=(\d{3})+(?!\d))/g, ",")); }
+    if (unit === "£") { if (/^\d+$/.test(a)) base.add(`${a}.00`); [...base].forEach(b => base.add(`£${b}`)); }
+    else if (unit) [...base].forEach(b => { base.add(`${b}${unit}`); base.add(`${b} ${unit}`); });
+    if (/^\d+:\d+$/.test(a)) { base.add(a.replace(":", " : ")); }
+    base.delete(a);
+    return [...base];
+  };
+  // One exam question: q, the answer, its marks, and the mark scheme
+  //   o: unit, accept, options (a choice), calc (calculator allowed), pic (an SVG), ps (a multi-step problem),
+  //      label (short, for results), skill (what a miss means needs practice)
+  const gfQ = (q, answer, marks, scheme, o = {}) => Object.assign({ q, answer: String(answer), marks, scheme, calc: false, unit: "" }, o);
+  const gfMk = n => `${n} mark${n > 1 ? "s" : ""}`;
+  // A straight-line graph on a squared grid, x from 0 to 6
+  const gfGraph = (m, c) => {
+    const top = Math.ceil((6 * m + c) / 2) * 2, sy = 150 / top, X = x => 30 + x * 25, Y = y => +(165 - y * sy).toFixed(1);
+    let g = "";
+    for (let x = 0; x <= 6; x++) g += `<line x1="${X(x)}" y1="${Y(0)}" x2="${X(x)}" y2="${Y(top)}" stroke="#cbd5e1"/><text x="${X(x)}" y="${Y(0) + 14}" font-size="11" text-anchor="middle" fill="#334155">${x}</text>`;
+    for (let y = 0; y <= top; y += 2) g += `<line x1="${X(0)}" y1="${Y(y)}" x2="${X(6)}" y2="${Y(y)}" stroke="#cbd5e1"/><text x="${X(0) - 5}" y="${Y(y) + 4}" font-size="11" text-anchor="end" fill="#334155">${y}</text>`;
+    g += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(6) + 8}" y2="${Y(0)}" stroke="#334155" stroke-width="1.5"/><line x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(top) - 8}" stroke="#334155" stroke-width="1.5"/>`;
+    g += `<text x="${X(6) + 12}" y="${Y(0) + 4}" font-size="12" fill="#334155">x</text><text x="${X(0) + 4}" y="${Y(top) - 10}" font-size="12" fill="#334155">y</text>`;
+    g += `<line x1="${X(0)}" y1="${Y(c)}" x2="${X(6)}" y2="${Y(6 * m + c)}" stroke="#2563A6" stroke-width="3"/>`;
+    return `<svg class="q-pic" viewBox="0 0 210 190" width="210" height="190" role="img" aria-label="A straight line on a grid">${g}</svg>`;
+  };
+  // An L-shape: a W by H rectangle with a w by h corner cut from its top right
+  const gfL = (W, H, w, h) => {
+    const s = +(150 / Math.max(W, H)).toFixed(2), x0 = 30, y0 = 15, P = (x, y) => `${+(x0 + x * s).toFixed(1)},${+(y0 + y * s).toFixed(1)}`;
+    const pts = [P(0, 0), P(W - w, 0), P(W - w, h), P(W, h), P(W, H), P(0, H)].join(" ");
+    const t = (x, y, txt, a = "middle") => `<text x="${x}" y="${y}" font-size="12" text-anchor="${a}" fill="#0f172a">${txt}</text>`;
+    return `<svg class="q-pic" viewBox="0 0 ${W * s + 80} ${H * s + 40}" width="${W * s + 80}" height="${H * s + 40}" role="img" aria-label="An L-shape">
+      <polygon points="${pts}" fill="#e0ecfa" stroke="#2563A6" stroke-width="2.5"/>
+      ${t(x0 + W * s / 2, y0 + H * s + 16, `${W} cm`)}${t(x0 - 4, y0 + H * s / 2, `${H} cm`, "end")}
+      ${t(x0 + (W - w) * s / 2, y0 - 3, `${W - w} cm`)}${t(x0 + W * s + 4, y0 + (h + H) * s / 2, `${H - h} cm`, "start")}</svg>`.replace(/(\d\.\d)\d+/g, "$1");
+  };
+
+  const GF_TOPICS = [
+    { id: "gf-number", n: 1, short: "Number", title: "Place value, negatives and rounding", strand: "Number",
+      blurb: "Digit values, ordering decimals, negative numbers, rounding and estimating.", makers: [
+      () => { const ds = shuffle(range(1, 9)).slice(0, 5), n = Number(ds.join("")), p = gfR(1, 4), d = ds[4 - p], v = d * 10 ** p;
+        return gfQ(`What is the value of the ${d} in ${gfBig(n)}?`, v, 1, `${d} is in the ${["ones", "tens", "hundreds", "thousands", "ten thousands"][p]} column, so it is worth ${gfBig(v)} (1 mark).`, { label: `${d} in ${n}`, skill: "place value" }); },
+      () => { const d = gfR(3, 8), e = gfR(3, 9), f = gfR(0, e - 1), g = gfR(1, 9), A = `0.${d}`, B = `0.${d - 1}${e}`, C = `0.${d - 1}${f}${g}`, big = rand(2);
+        return gfQ(`Which of these is the ${big ? "largest" : "smallest"}: ${shuffle([A, B, C]).join(", ")}?`, big ? A : C, 1, `Compare tenths first, then hundredths: ${C} < ${B} < ${A}. More digits does not mean bigger (1 mark).`, { options: big ? [B, C] : [A, B], label: `${big ? "largest" : "smallest"} ${A}`, skill: "ordering decimals" }); },
+      () => { const lo = -gfR(2, 12), up = gfR(5, 20);
+        return gfQ(`At 6 am the temperature was ${gfM(lo)}°C. By noon it had gone up by ${up} degrees. What was the temperature at noon? (°C)`, gfM(lo + up), 1, `Count on ${up} from ${gfM(lo)}: ${-lo} gets you to 0, then ${up + lo} more (1 mark).`, { unit: "°C", label: `${lo} up ${up}`, skill: "negative numbers" }); },
+      () => { const a = -gfR(3, 15), b = gfR(2, 14);
+        return gfQ(`One night it was ${gfM(a)}°C in Oslo and ${b}°C in Leeds. What is the difference between the two temperatures? (degrees)`, b - a, 1, `From ${gfM(a)} up to 0 is ${-a}, and 0 to ${b} is ${b}: ${-a} + ${b} = ${b - a} (1 mark).`, { label: `diff ${a},${b}`, skill: "negative numbers" }); },
+      () => { const k = rand(3);
+        if (k === 0) { let n; do n = gfR(1000, 99999); while (n % 100 === 50); const r = Math.round(n / 100) * 100;
+          return gfQ(`Round ${gfBig(n)} to the nearest hundred.`, r, 1, `Look at the tens digit: ${Math.floor(n / 10) % 10} ${Math.floor(n / 10) % 10 >= 5 ? "rounds up" : "rounds down"}, giving ${gfBig(r)} (1 mark).`, { label: `round ${n} 100`, skill: "rounding" }); }
+        if (k === 1) { let t; do t = gfR(1001, 99999); while (t % 100 === 50 || t % 10 === 0); const r = (Math.round(t / 100) / 10).toFixed(1);
+          return gfQ(`Round ${gfD(t / 1000)} to 1 decimal place.`, r, 1, `Look at the second decimal place: ${Math.floor(t / 10) % 10} ${Math.floor(t / 10) % 10 >= 5 ? "rounds up" : "rounds down"}, giving ${r} (1 mark).`, { label: `round ${t} 1dp`, skill: "rounding" }); }
+        let n; do n = gfR(110, 9900); while (String(n)[1] === "5"); const p = 10 ** (String(n).length - 1), r = Math.round(n / p) * p;
+        return gfQ(`Round ${gfBig(n)} to 1 significant figure.`, r, 1, `The first significant figure is the ${String(n)[0]} (worth ${gfBig(Number(String(n)[0]) * p)}). The next digit is ${String(n)[1]}, so ${gfBig(r)} (1 mark).`, { label: `round ${n} 1sf`, skill: "significant figures" }); },
+      () => { let a, b; do { a = gfR(21, 89) + gfR(1, 9) / 10; b = gfR(2, 8) + gfR(1, 9) / 10; } while (Math.floor(a) % 10 === 5 || Math.round(b * 10) % 10 === 5);
+        const ra = Math.round(a / 10) * 10, rb = Math.round(b);
+        return gfQ(`Estimate the value of ${a.toFixed(1)} × ${b.toFixed(1)} by rounding each number to 1 significant figure.`, ra * rb, 2, `Round both numbers: ${a.toFixed(1)} ≈ ${ra} and ${b.toFixed(1)} ≈ ${rb} (1 mark). ${ra} × ${rb} = ${ra * rb} (1 mark). Working out the exact answer gets no marks: the question asks for an estimate.`, { label: `est ${a}x${b}`, skill: "estimating" }); },
+      () => { const pos = shuffle(range(1, 9)).slice(0, 2), neg = shuffle(range(2, 12)).slice(0, 2).map(x => -x), all = shuffle(pos.concat(neg, [0]));
+        const up = all.slice().sort((x, y) => x - y), byAbs = all.slice().sort((x, y) => Math.abs(x) - Math.abs(y) || x - y), show = l => l.map(gfM).join(", ");
+        const others = [...new Set([show(byAbs), show(up.slice().reverse())])].filter(s => s !== show(up));
+        return gfQ(`Which list puts ${show(all)} in order, smallest first?`, show(up), 1, `Negative numbers are smaller than 0, and the bigger the number after the minus sign, the smaller it is: ${show(up)} (1 mark).`, { options: others, label: `order ${show(all)}`, skill: "ordering negative numbers" }); },
+      () => { const h = gfR(2, 6), wage = pick([9.5, 10.5, 11.25, 12.4, 10.8]), days = gfR(3, 5), pay = wage * h * days, ticket = gfR(3, 9) * days, left = pay - ticket;
+        return gfQ(`Mo earns £${wage.toFixed(2)} an hour. He works ${h} hours a day for ${days} days. His bus fare is £${ticket / days} a day. How much does he have left after paying his fares? (£)`, gfP(left), 3, `Pay for one day: ${h} × £${wage.toFixed(2)} = £${gfP(wage * h)} (1 mark). For ${days} days: £${gfP(pay)}, fares £${ticket} (1 mark). £${gfP(pay)} − £${ticket} = £${gfP(left)} (1 mark).`, { unit: "£", calc: true, ps: true, label: `wage ${wage} ${h} ${days}`, skill: "multi-step money problems" }); }
+    ] },
+    { id: "gf-calc", n: 2, short: "Calculating", title: "Calculating without a calculator", strand: "Number",
+      blurb: "Long multiplication, short division, decimals, the order of operations and problems with remainders.", makers: [
+      () => { const a = gfR(124, 489), b = gfR(23, 68), t = Math.floor(b / 10) * 10, u = b % 10;
+        return gfQ(`Work out ${a} × ${b}.`, a * b, 3, `A full written method, such as a grid or long multiplication (1 mark). The parts right: ${a} × ${t} = ${gfBig(a * t)} and ${a} × ${u} = ${gfBig(a * u)} (1 mark). ${gfBig(a * t)} + ${gfBig(a * u)} = ${gfBig(a * b)} (1 mark).`, { label: `${a}x${b}`, skill: "long multiplication" }); },
+      () => { const d = gfR(3, 9), q = gfR(124, 986);
+        return gfQ(`Work out ${gfBig(d * q)} ÷ ${d}.`, q, 2, `Short division, carrying remainders (1 mark): ${q} (1 mark). Check: ${q} × ${d} = ${gfBig(d * q)}.`, { label: `${d * q}/${d}`, skill: "short division" }); },
+      () => { const a = gfR(6, 20), b = gfR(101, a * 100 - 101), sub = rand(2);
+        if (sub) return gfQ(`Work out ${a} − ${gfD(b / 100)}.`, gfD((a * 100 - b) / 100), 1, `Line up the decimal points and write ${a} as ${a}.00: ${a}.00 − ${gfD(b / 100)} = ${gfD((a * 100 - b) / 100)} (1 mark).`, { label: `${a}-${b}`, skill: "subtracting decimals" });
+        const c = gfR(11, 99);
+        return gfQ(`Work out ${gfD(b / 100)} + ${gfD(c / 10)}.`, gfD(b / 100 + c / 10), 1, `Line up the decimal points: ${gfD(b / 100)} + ${gfD(c / 10)} = ${gfD(b / 100 + c / 10)} (1 mark).`, { label: `${b}+${c}`, skill: "adding decimals" }); },
+      () => { const a = gfR(2, 9), b = gfR(2, 9), k = rand(2);
+        if (k) return gfQ(`Work out 0.${a} × 0.${b}.`, gfD(a * b / 100), 2, `${a} × ${b} = ${a * b} (1 mark). There are two decimal places in the question, so two in the answer: ${gfD(a * b / 100)} (1 mark).`, { label: `0.${a}x0.${b}`, skill: "multiplying decimals" });
+        const c = gfR(11, 49);
+        return gfQ(`Work out ${gfD(c / 10)} × ${a}.`, gfD(c * a / 10), 1, `${c} × ${a} = ${c * a}, and one decimal place: ${gfD(c * a / 10)} (1 mark).`, { label: `${c}x${a}`, skill: "multiplying decimals" }); },
+      () => { const a = gfR(2, 12), b = gfR(2, 9), c = gfR(2, 6), k = rand(4);
+        const [q, v] = [[`${a} + ${b} × ${c}`, a + b * c], [`(${a} + ${b}) × ${c}`, (a + b) * c], [`${a} + ${b}²`, a + b * b], [`${a * c} ÷ ${c} − ${b}`, a - b]][k];
+        return gfQ(`Work out ${q}.`, gfM(v), 1, `Brackets, then powers, then × and ÷, then + and −: ${q} = ${gfM(v)} (1 mark).`, { label: q, skill: "order of operations" }); },
+      () => { const seats = pick([12, 15, 16, 25, 30, 40, 52]), people = seats * gfR(2, 6) + gfR(1, seats - 1), what = pick(["minibuses", "coaches"]), need = Math.ceil(people / seats);
+        return gfQ(`Each of the ${what} holds ${seats} people. ${people} people need to travel. How many ${what} are needed?`, need, 2, `${people} ÷ ${seats} = ${Math.floor(people / seats)} remainder ${people % seats} (1 mark). The ${people % seats} left over still need a seat, so ${need} (1 mark). Answering ${Math.floor(people / seats)} loses the second mark.`, { ps: true, label: `${people}/${seats}`, skill: "remainders in context" }); },
+      () => { const a = gfR(150, 450), b = gfR(220, 520), c = gfR(80, 400), n = gfR(2, 4), spent = a * n + b + c, note = Math.ceil(spent / 1000) * 1000 + (spent % 1000 > 800 ? 1000 : 0);
+        return gfQ(`Kim buys ${n} coffees at £${gfP(a / 100)} each, a sandwich at £${gfP(b / 100)} and a cake at £${gfP(c / 100)}. She pays with a £${note / 100} note. How much change should she get? (£)`, gfP((note - spent) / 100), 3, `Coffees: ${n} × £${gfP(a / 100)} = £${gfP(a * n / 100)} (1 mark). Total £${gfP(spent / 100)} (1 mark). Change £${note / 100} − £${gfP(spent / 100)} = £${gfP((note - spent) / 100)} (1 mark).`, { unit: "£", ps: true, label: `change ${a},${b},${c}`, skill: "money problems" }); },
+      () => { const x = gfR(11, 99), p = pick([10, 100, 1000]), mul = rand(2);
+        return mul ? gfQ(`Work out ${gfD(x / 10)} × ${p}.`, gfD(x / 10 * p), 1, `Each digit moves ${String(p).length - 1} place${p > 10 ? "s" : ""} to the left: ${gfD(x / 10 * p)} (1 mark).`, { label: `${x}x${p}`, skill: "× and ÷ by 10, 100, 1000" })
+          : gfQ(`Work out ${x} ÷ ${p}.`, gfD(x / p), 1, `Each digit moves ${String(p).length - 1} place${p > 10 ? "s" : ""} to the right: ${gfD(x / p)} (1 mark).`, { label: `${x}/${p}`, skill: "× and ÷ by 10, 100, 1000" }); }
+    ] },
+    { id: "gf-factors", n: 3, short: "Factors and powers", title: "Factors, multiples, primes and powers", strand: "Number",
+      blurb: "Primes, factors, HCF and LCM, prime factors, squares, cubes and roots.", makers: [
+      () => { const p = pick([23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]), o = shuffle([21, 27, 33, 39, 49, 51, 57, 63, 69, 77, 81, 87, 91, 93]).slice(0, 2);
+        return gfQ(`Which of these is a prime number: ${shuffle([p, ...o]).join(", ")}?`, p, 1, `${p} has only two factors, 1 and itself. ${o.map(x => `${x} = ${[3, 7, 13, 17].find(f => x % f === 0)} × ${x / [3, 7, 13, 17].find(f => x % f === 0)}`).join(" and ")} (1 mark).`, { options: o, label: `prime ${p}`, skill: "prime numbers" }); },
+      () => { const n = pick([12, 18, 20, 24, 28, 30, 36, 40, 45, 48]), fs = range(1, n).filter(f => n % f === 0);
+        return gfQ(`How many factors does ${n} have?`, fs.length, 1, `Find them in pairs: ${fs.filter(f => f * f <= n).map(f => `${f} × ${n / f}`).join(", ")}. That is ${fs.length} factors: ${fs.join(", ")} (1 mark).`, { label: `factors ${n}`, skill: "factors" }); },
+      () => { let g, p, q; do { g = gfR(2, 9); p = gfR(2, 9); q = gfR(2, 9); } while (p === q || gcd(p, q) !== 1);
+        return gfQ(`Find the highest common factor (HCF) of ${g * p} and ${g * q}.`, g, 2, `List the factors of both, or use prime factors (1 mark). The biggest number that divides both is ${g} (1 mark).`, { label: `hcf ${g * p},${g * q}`, skill: "highest common factor" }); },
+      () => { const [a, b] = pick([[6, 8], [12, 18], [4, 10], [15, 20], [9, 12], [8, 12], [10, 25], [6, 9], [12, 20], [15, 25]]), l = a * b / gcd(a, b);
+        return gfQ(`A bus leaves every ${a} minutes and a train every ${b} minutes. Both leave at 9 am. After how many minutes do they next leave at the same time?`, l, 2, `List multiples: ${a}: ${range(1, l / a).map(k => k * a).join(", ")}; ${b}: ${range(1, l / b).map(k => k * b).join(", ")} (1 mark). The lowest common multiple is ${l} (1 mark).`, { label: `lcm ${a},${b}`, skill: "lowest common multiple" }); },
+      () => { const k = rand(3), a = gfR(2, 9), r = gfR(4, 12), c = gfR(2, 5);
+        if (k === 0) return gfQ(`Work out ${a}³.`, a ** 3, 1, `${a} × ${a} × ${a} = ${a ** 3}, not ${a} × 3 (1 mark).`, { label: `${a}^3`, skill: "cubes" });
+        if (k === 1) return gfQ(`Work out √${r * r} + ${c}³.`, r + c ** 3, 1, `√${r * r} = ${r} and ${c}³ = ${c ** 3}, so ${r + c ** 3} (1 mark).`, { label: `r${r * r}+${c}^3`, skill: "squares, cubes and roots" });
+        return gfQ(`Work out ${r}² − √${a * a}.`, r * r - a, 1, `${r}² = ${r * r} and √${a * a} = ${a}, so ${r * r - a} (1 mark).`, { label: `${r}^2-r${a * a}`, skill: "squares, cubes and roots" }); },
+      () => { const e = [gfR(1, 4), gfR(0, 2), gfR(0, 1), rand(4) ? 0 : 1], ps = [2, 3, 5, 7]; if (e[1] + e[2] + e[3] === 0) e[1] = 1;
+        const n = ps.reduce((t, p, i) => t * p ** e[i], 1), fmt = ex => ps.map((p, i) => (ex[i] ? (ex[i] > 1 ? `${p}${sup(ex[i])}` : `${p}`) : "")).filter(Boolean).join(" × ");
+        const ans = fmt(e), wrong = [fmt([e[0] + 1, ...e.slice(1)]), `2 × ${n / 2}`, fmt([e[0], e[1] + 1, e[2], e[3]])].filter(w => w !== ans);
+        return gfQ(`Write ${n} as a product of its prime factors.`, ans, 2, `Split into factors until every one is prime, using a factor tree (1 mark): ${n} = ${ans} (1 mark).`, { options: wrong.slice(0, 2), label: `pf ${n}`, skill: "prime factors" }); },
+      () => { const k = gfR(3, 9), m = k * gfR(4, 11), s = gfR(1, k - 2), lo = m - s, hi = lo + k - 1;
+        return gfQ(`Write down the multiple of ${k} between ${lo} and ${hi}.`, m, 1, `${k} × ${m / k} = ${m} (1 mark).`, { label: `mult ${k} ${lo}`, skill: "multiples" }); },
+      () => { const b = gfR(2, 9), n = gfR(3, 6), ans = `${b}${sup(n)}`;
+        return gfQ(`Write ${Array(n).fill(b).join(" × ")} as a power of ${b}.`, ans, 1, `${n} lots of ${b} multiplied together is ${b} to the power ${n} (1 mark).`, { options: [`${n}${sup(b)}`, String(b * n)].filter(x => x !== ans), label: `pow ${b}^${n}`, skill: "index notation" }); }
+    ] },
+    { id: "gf-fractions", n: 4, short: "Fractions", title: "Fractions", strand: "Fractions, decimals and percentages",
+      blurb: "Fractions of amounts, simplifying, adding, multiplying and dividing fractions, and mixed numbers.", makers: [
+      () => { const d = pick([3, 4, 5, 6, 8]), n = gfR(1, d - 1), amt = d * gfR(3, 15);
+        return gfQ(`Work out ${n}/${d} of ${amt}.`, amt / d * n, 2, `Divide by the bottom: ${amt} ÷ ${d} = ${amt / d} (1 mark). Multiply by the top: ${amt / d} × ${n} = ${amt / d * n} (1 mark).`, { label: `${n}/${d} of ${amt}`, skill: "fraction of an amount" }); },
+      () => { let n, d; do { d = gfR(3, 12); n = gfR(1, d - 1); } while (gcd(n, d) !== 1); const k = gfR(2, 6);
+        return gfQ(`Write ${n * k}/${d * k} in its simplest form.`, `${n}/${d}`, 1, `Divide top and bottom by ${k}: ${n}/${d} (1 mark).`, { label: `simp ${n * k}/${d * k}`, skill: "simplifying fractions" }); },
+      () => { const [b, d] = pick([[2, 3], [3, 4], [2, 5], [4, 5], [3, 5], [2, 7], [3, 8], [4, 6], [5, 6], [3, 10]]), a = gfR(1, b - 1), c = gfR(1, d - 1), l = b * d / gcd(b, d), add = rand(2) || a * l / b <= c * l / d;
+        const top = add ? a * l / b + c * l / d : a * l / b - c * l / d, ans = gfF(top, l), mix = top > l && l / gcd(top, l) > 1 ? [`${Math.floor(top / l)} ${gfF(top % l, l)}`] : [];
+        return gfQ(`Work out ${a}/${b} ${add ? "+" : "−"} ${c}/${d}. Give your answer in its simplest form.`, ans, 2, `Use a common denominator: ${a * l / b}/${l} ${add ? "+" : "−"} ${c * l / d}/${l} (1 mark). = ${top}/${l}${ans !== `${top}/${l}` ? ` = ${ans}` : ""} (1 mark).`, { accept: mix, label: `${a}/${b}${add ? "+" : "-"}${c}/${d}`, skill: "adding and subtracting fractions" }); },
+      () => { const a = gfR(1, 5), b = gfR(a + 1, 9), c = gfR(1, 6), d = gfR(c + 1, 9), ans = gfF(a * c, b * d);
+        return gfQ(`Work out ${a}/${b} × ${c}/${d}. Give your answer in its simplest form.`, ans, 2, `Multiply the tops and the bottoms: ${a * c}/${b * d} (1 mark)${ans !== `${a * c}/${b * d}` ? `, which simplifies to ${ans}` : ", which is already in its simplest form"} (1 mark).`, { label: `${a}/${b}x${c}/${d}`, skill: "multiplying fractions" }); },
+      () => { const a = gfR(1, 4), b = gfR(a + 1, 7), c = gfR(1, 4), d = gfR(c + 1, 7); if (a * d === b * c) return { label: "skip" }; const ans = gfF(a * d, b * c), top = a * d, bot = b * c;
+        return gfQ(`Work out ${a}/${b} ÷ ${c}/${d}. Give your answer in its simplest form.`, ans, 2, `Flip the second fraction and multiply: ${a}/${b} × ${d}/${c} (1 mark) = ${top}/${bot}${ans !== `${top}/${bot}` ? ` = ${ans}` : ""} (1 mark).`, { accept: top > bot && bot / gcd(top, bot) > 1 ? [`${Math.floor(top / bot)} ${gfF(top % bot, bot)}`] : [], label: `${a}/${b}÷${c}/${d}`, skill: "dividing fractions" }); },
+      () => { const t = pick([20, 24, 30, 36, 40, 32]), p = gfR(2, t - 2), how = pick(["walk to college", "have a part-time job", "take the bus", "are left-handed"]);
+        return gfQ(`In a group of ${t} students, ${p} ${how}. What fraction of the group ${how}? Give your answer in its simplest form.`, gfF(p, t), 2, `${p} out of ${t} is ${p}/${t} (1 mark), which simplifies to ${gfF(p, t)} (1 mark).`, { label: `${p} of ${t}`, skill: "one number as a fraction of another" }); },
+      () => { let a, b, c, d; do { b = gfR(3, 9); d = gfR(3, 9); a = gfR(1, b - 1); c = gfR(1, d - 1); } while (b === d || a * d === b * c); const big = a * d > b * c ? `${a}/${b}` : `${c}/${d}`;
+        return gfQ(`Which is bigger, ${a}/${b} or ${c}/${d}?`, big, 1, `Use a common denominator: ${a}/${b} = ${a * d}/${b * d} and ${c}/${d} = ${b * c}/${b * d}, so ${big} is bigger (1 mark).`, { options: [big === `${a}/${b}` ? `${c}/${d}` : `${a}/${b}`, "They are the same size"], label: `cmp ${a}/${b} ${c}/${d}`, skill: "comparing fractions" }); },
+      () => { const w = gfR(1, 5), d = gfR(2, 9), n = gfR(1, d - 1); if (gcd(n, d) !== 1) return { label: "skip" };
+        return gfQ(`Write ${w} ${n}/${d} as an improper fraction.`, `${w * d + n}/${d}`, 1, `${w} whole${w > 1 ? "s are" : " is"} ${w * d}/${d}, plus ${n}/${d}: ${w * d + n}/${d} (1 mark).`, { label: `mixed ${w} ${n}/${d}`, skill: "mixed numbers" }); },
+      () => { const d = pick([3, 4, 5, 8]), n = gfR(1, d - 1), x = d * gfR(3, 12);
+        return gfQ(`${n}/${d} of a number is ${x / d * n}. What is the number?`, x, 2, `${x / d * n} ÷ ${n} = ${x / d} is one ${["", "", "half", "third", "quarter", "fifth", "", "", "eighth"][d]} (1 mark). ${x / d} × ${d} = ${x} (1 mark).`, { label: `rev ${n}/${d} ${x}`, skill: "reverse fractions" }); }
+    ] },
+    { id: "gf-percent", n: 5, short: "Percentages", title: "Fractions, decimals and percentages", strand: "Fractions, decimals and percentages",
+      blurb: "Converting, percentages of amounts, increases and decreases, VAT, interest and percentage change.", makers: [
+      () => { const k = rand(4), p = pick([5, 15, 35, 45, 65, 85, 12, 64, 28]);
+        if (k === 0) return gfQ(`Write ${gfD(p / 100)} as a percentage.`, p, 1, `Multiply by 100: ${p}% (1 mark).`, { unit: "%", label: `dec ${p}`, skill: "decimals to percentages" });
+        if (k === 1) { const [n, d] = pick([[3, 20], [7, 25], [9, 50], [3, 5], [7, 10], [11, 20], [3, 4], [1, 8]]);
+          return gfQ(`Write ${n}/${d} as a percentage.`, gfD(n / d * 100), 1, `Make the bottom 100 (or divide): ${n}/${d} = ${gfD(n / d)} = ${gfD(n / d * 100)}% (1 mark).`, { unit: "%", label: `frac ${n}/${d}`, skill: "fractions to percentages" }); }
+        if (k === 2) return gfQ(`Write ${p}% as a decimal.`, gfD(p / 100), 1, `Divide by 100: ${gfD(p / 100)} (1 mark).`, { label: `pc ${p}`, skill: "percentages to decimals" });
+        const q = pick([20, 40, 60, 80, 25, 75, 10, 30]);
+        return gfQ(`Write ${q}% as a fraction in its simplest form.`, gfF(q, 100), 1, `${q}/100 = ${gfF(q, 100)} (1 mark).`, { label: `pcf ${q}`, skill: "percentages to fractions" }); },
+      () => { const pct = pick([10, 20, 25, 30, 5, 15, 35, 40, 60, 75, 45]), amt = 20 * gfR(2, 20), ans = amt * pct / 100;
+        return gfQ(`Work out ${pct}% of £${amt}, without a calculator. (£)`, gfP(ans), 2, `Build it from 10% = £${gfP(amt / 10)}${pct % 10 ? ` and 5% = £${gfP(amt / 20)}` : ""} (1 mark). ${pct}% = £${gfP(ans)} (1 mark).`, { unit: "£", label: `${pct}% of ${amt}`, skill: "percentage of an amount" }); },
+      () => { const price = gfR(12, 96) * 5, pct = pick([10, 15, 20, 25, 30, 12, 35, 8]), up = rand(2), ans = price * (100 + (up ? pct : -pct)) / 100;
+        return gfQ(up ? `A phone contract costs £${price} a year. Next year it goes up by ${pct}%. What will it cost next year? (£)` : `A coat costs £${price}. In a sale, it is reduced by ${pct}%. What is the sale price? (£)`, gfP(ans), 2, `${pct}% of £${price} = £${gfP(price * pct / 100)} (1 mark). £${price} ${up ? "+" : "−"} £${gfP(price * pct / 100)} = £${gfP(ans)} (1 mark). Or in one step: £${price} × ${gfD((100 + (up ? pct : -pct)) / 100)}.`, { unit: "£", calc: true, label: `${up ? "inc" : "dec"} ${price} ${pct}`, skill: "percentage increase and decrease" }); },
+      () => { const t = pick([20, 25, 40, 50, 80, 60]), pcts = range(1, 19).map(k => k * 5).filter(p => t * p % 100 === 0), pct = pick(pcts), s = t * pct / 100;
+        return gfQ(`Sam scored ${s} out of ${t} in a test. What percentage is that?`, pct, 2, `${s}/${t} (1 mark) = ${gfD(s / t)} = ${pct}% (1 mark).`, { unit: "%", label: `${s}/${t} pc`, skill: "one number as a percentage of another" }); },
+      () => { const set = pick([[["5/8", 0.625], ["0.6", 0.6], ["62%", 0.62]], [["3/4", 0.75], ["0.7", 0.7], ["72%", 0.72]], [["2/5", 0.4], ["0.45", 0.45], ["42%", 0.42]], [["7/20", 0.35], ["0.3", 0.3], ["33%", 0.33]], [["4/5", 0.8], ["0.85", 0.85], ["81%", 0.81]], [["1/3", 0.3333], ["0.3", 0.3], ["35%", 0.35]]]);
+        const big = rand(2), sorted = set.slice().sort((x, y) => x[1] - y[1]), ans = (big ? sorted[2] : sorted[0])[0];
+        return gfQ(`Which is the ${big ? "largest" : "smallest"}: ${shuffle(set).map(s => s[0]).join(", ")}?`, ans, 1, `Write them all as decimals: ${set.map(s => `${s[0]} = ${gfD(s[1])}${s[0] === "1/3" ? "…" : ""}`).join(", ")}. So ${ans} (1 mark).`, { options: set.map(s => s[0]).filter(s => s !== ans), label: `fdp ${set[0][0]} ${big}`, skill: "comparing fractions, decimals and percentages" }); },
+      () => { const bill = gfR(20, 150) + pick([0, 0.5]);
+        return gfQ(`A repair costs £${gfP(bill)} plus VAT at 20%. What is the total cost? (£)`, gfP(bill * 1.2), 2, `VAT: 20% of £${gfP(bill)} = £${gfP(bill * 0.2)} (1 mark). Total: £${gfP(bill * 1.2)} (1 mark).`, { unit: "£", calc: true, label: `vat ${bill}`, skill: "VAT" }); },
+      () => { const P = pick([200, 500, 800, 1000, 1500, 2000]), r = gfR(2, 5), y = gfR(2, 5), i = P * r * y / 100, tot = rand(2);
+        return gfQ(`£${P} is put in a savings account paying ${r}% simple interest a year. How much ${tot ? "is in the account" : "interest is earned"} after ${y} years? (£)`, gfP(tot ? P + i : i), 2, `One year's interest: ${r}% of £${P} = £${gfP(P * r / 100)} (1 mark). ${y} years: £${gfP(i)}${tot ? `, so £${P} + £${gfP(i)} = £${gfP(P + i)}` : ""} (1 mark).`, { unit: "£", label: `si ${P} ${r} ${y} ${tot}`, skill: "simple interest" }); },
+      () => { const o = 20 * gfR(1, 10), pct = pick([5, 10, 15, 20, 25, 30, 35, 40]), up = rand(2), n = o * (100 + (up ? pct : -pct)) / 100;
+        return gfQ(`The price of a ticket ${up ? "rose" : "fell"} from £${o} to £${gfP(n)}. What was the percentage ${up ? "increase" : "decrease"}?`, pct, 3, `The change: £${gfP(Math.abs(n - o))} (1 mark). Divide by the original price: ${gfP(Math.abs(n - o))} ÷ ${o} = ${gfD(pct / 100)} (1 mark). × 100 = ${pct}% (1 mark). Dividing by the new price is a common mistake.`, { unit: "%", calc: true, ps: true, label: `pchange ${o} ${pct} ${up}`, skill: "percentage change" }); }
+    ] },
+    { id: "gf-ratio", n: 6, short: "Ratio", title: "Ratio, proportion and best buys", strand: "Number",
+      blurb: "Simplifying and sharing in a ratio, recipes, best buys, exchange rates and the unitary method.", makers: [
+      () => { let a, b; do { a = gfR(1, 9); b = gfR(1, 9); } while (a === b || gcd(a, b) !== 1); const k = gfR(2, 9);
+        return gfQ(`Write the ratio ${a * k} : ${b * k} in its simplest form.`, `${a}:${b}`, 1, `Divide both parts by ${k}: ${a} : ${b} (1 mark).`, { accept: [`${a} : ${b}`, `${a}: ${b}`, `${a} :${b}`], label: `ratio ${a * k}:${b * k}`, skill: "simplifying ratios" }); },
+      () => { let a, b; do { a = gfR(1, 7); b = gfR(2, 8); } while (a === b); const k = gfR(3, 25), big = rand(2), ans = (big ? Math.max(a, b) : Math.min(a, b)) * k;
+        return gfQ(`Ana and Ben share £${(a + b) * k} in the ratio ${a} : ${b}. How much does ${(a > b) === !!big ? "Ana" : "Ben"} get? (£)`, ans, 2, `Total parts: ${a} + ${b} = ${a + b}. One part: £${(a + b) * k} ÷ ${a + b} = £${k} (1 mark). ${ans / k} parts: £${ans} (1 mark).`, { unit: "£", label: `share ${a}:${b} ${k} ${big}`, skill: "sharing in a ratio" }); },
+      () => { let a, b; do { a = gfR(1, 7); b = gfR(1, 7); } while (a === b); const k = gfR(2, 9);
+        return gfQ(`In a club, the ratio of men to women is ${a} : ${b}. There are ${a * k} men. How many women are there?`, b * k, 2, `${a * k} ÷ ${a} = ${k} in each part (1 mark). ${b} × ${k} = ${b * k} (1 mark).`, { label: `part ${a}:${b} ${k}`, skill: "using a ratio" }); },
+      () => { const s = pick([4, 6, 8]), n = pick([2, 3, 10, 12, 5].filter(x => x !== s)), k5 = 5 * gfR(2, 20), amt = s * k5, food = pick(["flour", "rice", "pasta", "minced beef"]);
+        return gfQ(`A recipe for ${s} people uses ${amt} g of ${food}. How much ${food} is needed for ${n} people? (g)`, k5 * n, 2, `For 1 person: ${amt} ÷ ${s} = ${k5} g (1 mark). For ${n}: ${k5} × ${n} = ${k5 * n} g (1 mark).`, { unit: "g", label: `recipe ${s} ${amt} ${n}`, skill: "recipes and proportion" }); },
+      () => { const qa = pick([4, 5, 6, 8]), qb = pick([10, 12, 15, 20]), ua = gfR(20, 90), ub = ua + (rand(2) ? 1 : -1) * gfR(2, 8), item = pick(["toilet rolls", "cans of drink", "batteries", "bread rolls"]);
+        const ans = ua < ub ? "Pack A" : "Pack B";
+        return gfQ(`Pack A: ${qa} ${item} for £${gfP(qa * ua / 100)}. Pack B: ${qb} ${item} for £${gfP(qb * ub / 100)}. Which pack is better value?`, ans, 3, `Price of one in pack A: £${gfP(qa * ua / 100)} ÷ ${qa} = ${ua}p (1 mark). In pack B: £${gfP(qb * ub / 100)} ÷ ${qb} = ${ub}p (1 mark). ${ans} is cheaper for each one (1 mark: you must show both prices to get it).`, { options: [ans === "Pack A" ? "Pack B" : "Pack A", "They are the same value"], calc: true, ps: true, label: `best ${qa} ${ua} ${qb} ${ub}`, skill: "best buys" }); },
+      () => { const rate = pick([1.15, 1.2, 1.25, 1.4, 1.3]), p = 20 * gfR(3, 25), cur = rate === 1.15 || rate === 1.2 ? "euros" : "dollars", back = rand(2);
+        return back ? gfQ(`£1 = ${rate.toFixed(2)} ${cur}. Jo changes ${gfP(p * rate)} ${cur} back into pounds. How many pounds does she get? (£)`, p, 2, `Divide by the rate (1 mark): ${gfP(p * rate)} ÷ ${rate.toFixed(2)} = £${p} (1 mark).`, { unit: "£", calc: true, label: `fx back ${rate} ${p}`, skill: "exchange rates" })
+          : gfQ(`£1 = ${rate.toFixed(2)} ${cur}. How many ${cur} do you get for £${p}?`, gfP(p * rate), 2, `Multiply by the rate (1 mark): ${p} × ${rate.toFixed(2)} = ${gfP(p * rate)} ${cur} (1 mark).`, { calc: true, label: `fx ${rate} ${p}`, skill: "exchange rates" }); },
+      () => { const n = gfR(3, 8), m = gfR(2, 12), u = gfR(25, 95); if (m === n) return { label: "skip" };
+        return gfQ(`${n} pens cost £${gfP(n * u / 100)}. How much do ${m} of the same pens cost? (£)`, gfP(m * u / 100), 2, `One pen: £${gfP(n * u / 100)} ÷ ${n} = £${gfP(u / 100)} (1 mark). ${m} pens: £${gfP(m * u / 100)} (1 mark).`, { unit: "£", label: `unit ${n} ${u} ${m}`, skill: "the unitary method" }); },
+      () => { let a, b; do { a = gfR(1, 8); b = gfR(1, 8); } while (a === b); const who = rand(2);
+        return gfQ(`In a class, the ratio of boys to girls is ${a} : ${b}. What fraction of the class are ${who ? "girls" : "boys"}?`, gfF(who ? b : a, a + b), 1, `There are ${a + b} parts altogether, and ${who ? b : a} of them are ${who ? "girls" : "boys"}: ${gfF(who ? b : a, a + b)} (1 mark). Not ${who ? `${b}/${a}` : `${a}/${b}`}.`, { label: `rf ${a}:${b} ${who}`, skill: "ratios and fractions" }); }
+    ] },
+    { id: "gf-algebra", n: 7, short: "Algebra", title: "Algebra: simplify, substitute and expand", strand: "Patterns and missing numbers",
+      blurb: "Collecting like terms, substituting into formulae, expanding and factorising, and writing expressions.", makers: [
+      () => { const p = gfR(3, 9), q = gfR(2, 7), r = gfR(1, p - 1), s = gfR(1, 6), ans = expr([p - r, "a"], [q + s, "b"]);
+        return gfQ(`Simplify ${p}a + ${q}b − ${r === 1 ? "" : r}a + ${s === 1 ? "" : s}b.`, ans, 1, `Collect the a terms: ${p} − ${r} = ${p - r}; the b terms: ${q} + ${s} = ${q + s}. ${ans} (1 mark).`, { options: [expr([p + r, "a"], [q + s, "b"]), `${p - r + q + s}ab`], label: `ct ${p},${q},${r},${s}`, skill: "collecting like terms" }); },
+      () => { const a = gfR(2, 9), b = gfR(2, 9), k = rand(3);
+        if (k === 0) return gfQ(`Simplify ${a}x × ${b}y.`, `${a * b}xy`, 1, `Multiply the numbers, then the letters: ${a * b}xy (1 mark).`, { options: [`${a + b}xy`, `${a}${b}xy`].filter(o => o !== `${a * b}xy`), label: `${a}x*${b}y`, skill: "simplifying products" });
+        if (k === 1) return gfQ(`Simplify ${a}m × m.`, `${a}m²`, 1, `m × m = m², so ${a}m² (1 mark).`, { options: [`${a + 1}m`, `${a}m`], label: `${a}m*m`, skill: "simplifying products" });
+        return gfQ(`Simplify ${a * b}n ÷ ${b}.`, `${a}n`, 1, `${a * b} ÷ ${b} = ${a}: ${a}n (1 mark).`, { options: [`${a * b - b}n`, `${a * b}n²`, `${a}`].filter(o => o !== `${a}n`).slice(0, 2), label: `${a * b}n/${b}`, skill: "simplifying" }); },
+      () => { const a = gfR(2, 6), b = -gfR(1, 5), k = rand(3);
+        const [e, v, how] = [[`4a + 3b`, 4 * a + 3 * b, `4 × ${a} + 3 × (${gfM(b)}) = ${4 * a} − ${-3 * b}`], [`a² − b`, a * a - b, `${a}² − (${gfM(b)}) = ${a * a} + ${-b}`], [`5(a + b)`, 5 * (a + b), `5 × (${a} + (${gfM(b)})) = 5 × ${gfM(a + b)}`]][k];
+        return gfQ(`a = ${a} and b = ${gfM(b)}. Work out the value of ${e}.`, gfM(v), 2, `Put the numbers in: ${how} (1 mark) = ${gfM(v)} (1 mark).`, { label: `sub ${e} ${a},${b}`, skill: "substitution" }); },
+      () => { const k = rand(3);
+        if (k === 0) { const l = gfR(4, 15), w = gfR(2, 9); return gfQ(`P = 2l + 2w. Work out P when l = ${l} and w = ${w}.`, 2 * l + 2 * w, 2, `2 × ${l} + 2 × ${w} (1 mark) = ${2 * l + 2 * w} (1 mark).`, { label: `P ${l},${w}`, skill: "using formulae" }); }
+        if (k === 1) { const u = gfR(2, 20), a = gfR(2, 9), t = gfR(2, 8); return gfQ(`v = u + at. Work out v when u = ${u}, a = ${a} and t = ${t}.`, u + a * t, 2, `${u} + ${a} × ${t} (1 mark) = ${u} + ${a * t} = ${u + a * t} (1 mark). Multiply before adding.`, { label: `v ${u},${a},${t}`, skill: "using formulae" }); }
+        const f = pick([30, 35, 40, 45]), r = pick([20, 25, 30]), h = gfR(2, 6);
+        return gfQ(`A plumber's charge, in pounds, is C = ${f} + ${r}h, where h is the number of hours. Work out C for a ${h}-hour job.`, f + r * h, 2, `${f} + ${r} × ${h} (1 mark) = £${f + r * h} (1 mark).`, { unit: "£", label: `C ${f},${r},${h}`, skill: "using formulae" }); },
+      () => { const kk = gfR(2, 9), c = gfR(1, 9), neg = rand(2), ans = expr([kk, "x"], [neg ? -kk * c : kk * c, ""]);
+        return gfQ(`Expand ${kk}(x ${neg ? "−" : "+"} ${c}).`, ans, 1, `Multiply both terms inside the bracket by ${kk}: ${ans} (1 mark).`, { options: [expr([kk, "x"], [neg ? -c : c, ""]), expr([1, "x"], [neg ? -kk * c : kk * c, ""])], label: `exp ${kk},${c},${neg}`, skill: "expanding brackets" }); },
+      () => { let g, p, q; do { g = gfR(2, 6); p = gfR(2, 7); q = gfR(1, 9); } while (gcd(p, q) !== 1); const ans = `${g}(${p}x + ${q})`;
+        return gfQ(`Factorise ${g * p}x + ${g * q} fully.`, ans, 2, `The biggest number that goes into ${g * p} and ${g * q} is ${g} (1 mark). ${ans} (1 mark: check by expanding).`, { options: [`${g}(${p}x + ${g * q})`, `${g * p}(x + ${g * q})`], label: `fac ${g},${p},${q}`, skill: "factorising" }); },
+      () => { const pr = gfR(15, 90), extra = gfR(20, 95), ans = `np + ${extra}`;
+        return gfQ(`Pens cost p pence each. A ruler costs ${extra}p. Write an expression for the cost, in pence, of n pens and one ruler.`, ans, 1, `n pens cost n × p = np, plus ${extra} for the ruler: np + ${extra} (1 mark).`, { options: [`n + p + ${extra}`, `${extra}np`], label: `words ${extra}`, skill: "writing expressions" }); },
+      () => { const set = pick([["x + 5 = 9", "an equation"], ["3x + 2y", "an expression"], ["A = lw", "a formula"], ["7n − 4", "an expression"], ["2x − 1 = 11", "an equation"], ["P = 4s", "a formula"]]);
+        return gfQ(`Is ${set[0]} an equation, an expression or a formula?`, set[1], 1, `An expression has no equals sign; an equation can be solved for one letter; a formula links letters that stand for quantities. ${set[0]} is ${set[1]} (1 mark).`, { options: ["an equation", "an expression", "a formula"].filter(o => o !== set[1]), label: `vocab ${set[0]}`, skill: "algebra words" }); }
+    ] },
+    { id: "gf-equations", n: 8, short: "Equations and sequences", title: "Equations, inequalities and sequences", strand: "Patterns and missing numbers",
+      blurb: "Solving linear equations, inequalities, and the next term and nth term of a sequence.", makers: [
+      () => { const x = gfR(1, 12), a = gfR(2, 9), b = gfR(1, 20), neg = rand(2) && a * x > b;
+        return gfQ(`Solve ${a}x ${neg ? "−" : "+"} ${b} = ${neg ? a * x - b : a * x + b}.`, x, 2, `${neg ? "Add" : "Take away"} ${b} on both sides: ${a}x = ${a * x} (1 mark). Divide by ${a}: x = ${x} (1 mark).`, { label: `eq ${a},${b},${x},${neg}`, skill: "solving equations" }); },
+      () => { const x = gfR(1, 9), a = gfR(2, 6), b = gfR(1, 8);
+        return gfQ(`Solve ${a}(x + ${b}) = ${a * (x + b)}.`, x, 2, `Expand: ${a}x + ${a * b} = ${a * (x + b)}, or divide both sides by ${a} first: x + ${b} = ${x + b} (1 mark). x = ${x} (1 mark).`, { label: `eqb ${a},${b},${x}`, skill: "equations with brackets" }); },
+      () => { const x = gfR(1, 10), c = gfR(1, 5), a = c + gfR(1, 5), b = gfR(-9, 9), d = (a - c) * x + b;
+        const side = v => (v < 0 ? ` − ${-v}` : v > 0 ? ` + ${v}` : "");
+        return gfQ(`Solve ${a}x${side(b)} = ${c === 1 ? "" : c}x${side(d)}.`, x, 3, `Take ${c === 1 ? "" : c}x from both sides: ${a - c === 1 ? "" : a - c}x${side(b)} = ${gfM(d)} (1 mark). ${b ? `${b > 0 ? "Take away" : "Add"} ${Math.abs(b)}: ` : ""}${a - c === 1 ? "" : a - c}x = ${(a - c) * x} (1 mark). x = ${x} (1 mark).`, { label: `eq2 ${a},${b},${c},${x}`, skill: "unknowns on both sides" }); },
+      () => { const s = gfR(-5, 20), d = pick([2, 3, 4, 5, 6, 7, -3, -4]), t = range(0, 3).map(i => s + i * d);
+        return gfQ(`Write down the next term of the sequence ${t.map(gfM).join(", ")}.`, gfM(s + 4 * d), 1, `The terms go ${d > 0 ? "up" : "down"} by ${Math.abs(d)} each time: ${gfM(s + 3 * d)} ${d > 0 ? "+" : "−"} ${Math.abs(d)} = ${gfM(s + 4 * d)} (1 mark).`, { label: `next ${s},${d}`, skill: "term-to-term rules" }); },
+      () => { const d = gfR(2, 9), c = gfR(-5, 9), t = range(1, 4).map(n => d * n + c), ans = expr([d, "n"], [c, ""]);
+        return gfQ(`Find an expression for the nth term of the sequence ${t.map(gfM).join(", ")}.`, ans, 2, `It goes up by ${d}, so it starts ${d}n (1 mark). ${d} × 1 = ${d}, and the first term is ${gfM(t[0])}, so ${c >= 0 ? "add" : "take away"} ${Math.abs(c)}: ${ans} (1 mark).`, { options: [expr([1, "n"], [d, ""]), expr([d, "n"], [t[0], ""])].filter(o => o !== ans), label: `nth ${d},${c}`, skill: "the nth term" }); },
+      () => { const d = gfR(2, 9), c = gfR(-6, 9), n = pick([10, 20, 50, 100]);
+        return gfQ(`The nth term of a sequence is ${expr([d, "n"], [c, ""])}. Work out the ${n}th term.`, gfM(d * n + c), 1, `Put n = ${n} in: ${d} × ${n} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${gfM(d * n + c)} (1 mark).`, { label: `term ${d},${c},${n}`, skill: "the nth term" }); },
+      () => { const d = gfR(2, 7), c = gfR(1, 6), x = gfR(30, 99), yes = (x - c) % d === 0;
+        return gfQ(`Is ${x} a term in the sequence with nth term ${d}n + ${c}?`, yes ? "Yes" : "No", 2, `Solve ${d}n + ${c} = ${x}: ${d}n = ${x - c}, n = ${gfD((x - c) / d)} (1 mark). ${yes ? `That is a whole number, so yes: it is term ${(x - c) / d}` : "That is not a whole number, so no"} (1 mark: you need the reason).`, { options: [yes ? "No" : "Yes"], label: `in ${d},${c},${x}`, skill: "is it in the sequence?" }); },
+      () => { const lo = gfR(-5, 2), hi = lo + gfR(3, 7), k = rand(3), sym = [["<", "≤"], ["≤", "<"], ["<", "<"]][k], vals = range(lo, hi).filter(v => (sym[0] === "<" ? v > lo : v >= lo) && (sym[1] === "<" ? v < hi : v <= hi));
+        return gfQ(`n is a whole number and ${gfM(lo)} ${sym[0]} n ${sym[1]} ${gfM(hi)}. How many possible values of n are there?`, vals.length, 2, `List them (1 mark): ${vals.map(gfM).join(", ")}. That is ${vals.length} (1 mark). ${sym[0] === "<" ? gfM(lo) + " is not included" : gfM(lo) + " is included"}; ${sym[1] === "<" ? gfM(hi) + " is not" : gfM(hi) + " is"}.`, { label: `ineq ${lo},${hi},${k}`, skill: "inequalities" }); },
+      () => { const x = gfR(1, 9), a = gfR(2, 6), b = gfR(1, 12), sym = pick([">", "<", "≥", "≤"]);
+        return gfQ(`Solve ${a}x + ${b} ${sym} ${a * x + b}.`, `x ${sym} ${x}`, 2, `Take away ${b}: ${a}x ${sym} ${a * x} (1 mark). Divide by ${a}: x ${sym} ${x} (1 mark).`, { accept: [`x${sym}${x}`], label: `sineq ${a},${b},${x},${sym}`, skill: "solving inequalities" }); },
+      () => { const c = gfR(2, 12), k = rand(2), ans = k ? `x = y − ${c}` : `x = y/${c}`;
+        return gfQ(`Make x the subject of ${k ? `y = x + ${c}` : `y = ${c}x`}.`, ans, 1, `Do the opposite to both sides: ${k ? `take away ${c}` : `divide by ${c}`}. ${ans} (1 mark).`, { options: k ? [`x = y + ${c}`, `x = ${c} − y`] : [`x = ${c}y`, `x = y − ${c}`], label: `subj ${c},${k}`, skill: "changing the subject" }); }
+    ] },
+    { id: "gf-graphs", n: 9, short: "Graphs", title: "Coordinates and straight-line graphs", strand: "Patterns and missing numbers",
+      blurb: "Midpoints, reading straight-line graphs, gradient and intercept, and real-life graphs.", makers: [
+      () => { const x1 = gfR(-4, 6), y1 = gfR(-4, 8), x2 = x1 + 2 * gfR(1, 4), y2 = y1 + 2 * gfR(-3, 4), mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ans = `(${gfM(mx)}, ${gfM(my)})`;
+        return gfQ(`A is (${gfM(x1)}, ${gfM(y1)}) and B is (${gfM(x2)}, ${gfM(y2)}). Find the midpoint of AB. Write it as (x, y).`, ans, 2, `Add and halve each coordinate: (${gfM(x1)} + ${gfM(x2)}) ÷ 2 = ${gfM(mx)} (1 mark), (${gfM(y1)} + ${gfM(y2)}) ÷ 2 = ${gfM(my)} (1 mark).`, { accept: [`(${gfM(mx)},${gfM(my)})`, `${gfM(mx)}, ${gfM(my)}`, `${gfM(mx)},${gfM(my)}`], label: `mid ${x1},${y1},${x2},${y2}`, skill: "midpoints" }); },
+      () => { const m = gfR(1, 3), c = gfR(0, 4), x = gfR(1, 5);
+        return gfQ(`The graph shows a straight line. What is the value of y when x = ${x}?`, m * x + c, 1, `Go up from x = ${x} to the line, then across to the y-axis: y = ${m * x + c} (1 mark).`, { pic: gfGraph(m, c), label: `read ${m},${c},${x}`, skill: "reading graphs" }); },
+      () => { const m = gfR(1, 3), c = gfR(1, 4), ans = expr([m, "x"], [c, ""]), w = [expr([c, "x"], [m, ""]), expr([m + 1, "x"], [c, ""]), expr([m, "x"], [c + 1, ""])].filter(o => o !== ans);
+        return gfQ(`Which equation matches the line on the graph? Write it as y = mx + c.`, `y = ${ans}`, 1, `It crosses the y-axis at ${c}, so c = ${c}. It goes up ${m} for each 1 across, so m = ${m}: y = ${ans} (1 mark).`, { options: w.slice(0, 2).map(o => `y = ${o}`), pic: gfGraph(m, c), label: `match ${m},${c}`, skill: "y = mx + c" }); },
+      () => { const m = gfR(-5, 6) || 2, c = gfR(-9, 9), grad = rand(2), e = expr([m, "x"], [c, ""]);
+        return grad ? gfQ(`What is the gradient of the line y = ${e}?`, gfM(m), 1, `In y = mx + c, the gradient is m, the number in front of x: ${gfM(m)} (1 mark).`, { label: `grad ${m},${c}`, skill: "gradient" })
+          : gfQ(`The line y = ${e} crosses the y-axis. What is the y-coordinate of that point?`, gfM(c), 1, `At the y-axis, x = 0, so y = ${gfM(c)} (1 mark).`, { label: `int ${m},${c}`, skill: "y-intercept" }); },
+      () => { const m = gfR(2, 5), c = gfR(-6, 6), x = gfR(-3, 3);
+        return gfQ(`y = ${expr([m, "x"], [c, ""])}. Work out the value of y when x = ${gfM(x)}.`, gfM(m * x + c), 1, `${m} × ${x < 0 ? `(${gfM(x)})` : x} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${gfM(m * x + c)} (1 mark).`, { label: `tab ${m},${c},${x}`, skill: "tables of values" }); },
+      () => { const m = gfR(2, 5), c = gfR(1, 6), x = gfR(1, 6), y = m * x + c, ans = `(${x}, ${y})`;
+        return gfQ(`Which point lies on the line y = ${m}x + ${c}?`, ans, 1, `Put x = ${x} in: ${m} × ${x} + ${c} = ${y}, so (${x}, ${y}) is on the line (1 mark).`, { options: [`(${y}, ${x})`, `(${x}, ${y + 1})`].filter(o => o !== ans), label: `on ${m},${c},${x}`, skill: "points on a line" }); },
+      () => { const k = gfR(2, 9), h = rand(2), ans = h ? `y = ${k}` : `x = ${k}`;
+        return gfQ(`Which of these lines is ${h ? "horizontal" : "vertical"}?`, ans, 1, `y = ${k} is every point with y-coordinate ${k}: a horizontal line. x = ${k} is vertical (1 mark).`, { options: [h ? `x = ${k}` : `y = ${k}`, `y = ${k}x`], label: `hv ${k} ${h}`, skill: "horizontal and vertical lines" }); },
+      () => { const f = pick([30, 35, 40, 45, 50]), r = pick([15, 20, 25, 30]), h = gfR(2, 7), back = rand(2);
+        return back ? gfQ(`An electrician charges £${f} to come out, plus £${r} for each hour. One bill was £${f + r * h}. How many hours did the job take?`, h, 2, `Take off the call-out: £${f + r * h} − £${f} = £${r * h} (1 mark). ÷ £${r} = ${h} hours (1 mark).`, { label: `bill back ${f},${r},${h}`, skill: "real-life graphs and formulae" })
+          : gfQ(`An electrician charges £${f} to come out, plus £${r} for each hour. How much is a ${h}-hour job? (£)`, f + r * h, 2, `${h} × £${r} = £${r * h} (1 mark). + £${f} = £${f + r * h} (1 mark).`, { unit: "£", label: `bill ${f},${r},${h}`, skill: "real-life graphs and formulae" }); }
+    ] },
+    { id: "gf-measures", n: 10, short: "Units and time", title: "Units, time and speed", strand: "Measurement",
+      blurb: "Metric units, 24-hour time, durations, speed, distance and time, and converting between units.", makers: [
+      () => { const [from, to, f, unit] = pick([["km", "m", 1000, "m"], ["m", "cm", 100, "cm"], ["kg", "g", 1000, "g"], ["litres", "ml", 1000, "ml"], ["cm", "mm", 10, "mm"]]), x = gfR(11, 99) / 10, down = rand(2);
+        return down ? gfQ(`Change ${gfD(x * f)} ${to} into ${from}.`, gfD(x), 1, `There are ${f} ${to} in 1 ${from === "litres" ? "litre" : from}: ${gfD(x * f)} ÷ ${f} = ${gfD(x)} (1 mark).`, { unit: from === "litres" ? "" : from, label: `conv ${x}${to}`, skill: "metric units" })
+          : gfQ(`Change ${gfD(x)} ${from} into ${to}.`, gfD(x * f), 1, `There are ${f} ${to} in 1 ${from === "litres" ? "litre" : from}: ${gfD(x)} × ${f} = ${gfD(x * f)} (1 mark).`, { unit, label: `conv ${x}${from}`, skill: "metric units" }); },
+      () => { const s = gfR(6 * 60, 20 * 60), d = gfR(35, 150), e = s + d, t = m => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`, k = rand(2);
+        return k ? gfQ(`A train leaves at ${t(s)} and arrives at ${t(e)}. How long is the journey, in minutes?`, d, 2, `Count up to the next hour, then on: ${60 - s % 60 === 60 ? 0 : 60 - s % 60} minutes to ${t(Math.ceil(s / 60) * 60)} (1 mark), then to ${t(e)}: ${d} minutes altogether (1 mark). Don't subtract times like ordinary numbers.`, { unit: "minutes", label: `dur ${s},${d}`, skill: "time durations" })
+          : gfQ(`A film starts at ${t(s)} and lasts ${Math.floor(d / 60) ? `${Math.floor(d / 60)} hour${d >= 120 ? "s" : ""} ` : ""}${d % 60} minutes. What time does it finish? Give a 24-hour time.`, t(e), 2, `Add the hours, then the minutes, carrying 60 minutes into an hour (1 mark): ${t(e)} (1 mark).`, { accept: [t(e).replace(":", ""), t(e).replace(":", ".")], label: `end ${s},${d}`, skill: "time durations" }); },
+      () => { const h = gfR(1, 11), m = gfR(1, 59), pm = rand(2), ans = `${String(pm ? h + 12 : h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        return gfQ(`Write ${h}:${String(m).padStart(2, "0")} ${pm ? "pm" : "am"} as a 24-hour clock time.`, ans, 1, `${pm ? `Afternoon and evening times add 12 to the hour: ${h} + 12 = ${h + 12}` : "Morning times keep their hour, with a 0 in front"}: ${ans} (1 mark).`, { accept: [ans.replace(":", ""), ans.replace(":", ".")], label: `24h ${h},${m},${pm}`, skill: "24-hour time" }); },
+      () => { const t = pick([1.5, 2, 2.5, 3, 0.5, 4, 1.25]), v = pick([40, 48, 50, 60, 64, 70, 80]), d = v * t, words = `${Math.floor(t) ? `${Math.floor(t)} hour${t >= 2 ? "s" : ""}` : ""}${t % 1 ? ` ${(t % 1) * 60} minutes` : ""}`.trim();
+        return gfQ(`A car travels ${d} miles in ${words}. Work out its average speed in miles per hour.`, v, 2, `${words} = ${t} hours (1 mark). Speed = distance ÷ time = ${d} ÷ ${t} = ${v} mph (1 mark).`, { unit: "mph", label: `speed ${d},${t}`, skill: "speed" }); },
+      () => { const m = pick([15, 20, 30, 40, 45, 90]), v = pick([30, 45, 48, 60, 72, 90, 120]), d = v * m / 60; if (!Number.isInteger(d)) return { label: "skip" };
+        return gfQ(`A cyclist rides at ${v} km/h for ${m} minutes. How far do they go? (km)`, d, 2, `${m} minutes is ${gfF(m, 60)} of an hour (1 mark). Distance = speed × time = ${v} × ${gfF(m, 60)} = ${d} km (1 mark).`, { unit: "km", label: `dist ${v},${m}`, skill: "distance from speed and time" }); },
+      () => { const h = gfR(1, 5), [f, mins] = pick([[0.25, 15], [0.5, 30], [0.75, 45], [0.1, 6], [0.2, 12], [0.4, 24]]), hrs = `${h} hour${h > 1 ? "s" : ""}`, ans = `${hrs} ${mins} minutes`;
+        return gfQ(`A job takes ${gfD(h + f)} hours. Write this in hours and minutes.`, ans, 1, `${gfD(f)} of an hour is ${gfD(f)} × 60 = ${mins} minutes (1 mark). It is not ${Math.round(f * 100)} minutes.`, { options: [`${hrs} ${Math.round(f * 100)} minutes`, `${hrs} ${mins + 5} minutes`], label: `dech ${h},${f}`, skill: "time as a decimal" }); },
+      () => { const k = rand(2), n = 5 * gfR(2, 16);
+        return k ? gfQ(`5 miles is about 8 km. Change ${n} miles into kilometres.`, n / 5 * 8, 2, `${n} ÷ 5 = ${n / 5} lots of 5 miles (1 mark). ${n / 5} × 8 = ${n / 5 * 8} km (1 mark).`, { unit: "km", label: `mi ${n}`, skill: "miles and kilometres" })
+          : gfQ(`5 miles is about 8 km. Change ${n / 5 * 8} km into miles.`, n, 2, `${n / 5 * 8} ÷ 8 = ${n / 5} lots of 8 km (1 mark). ${n / 5} × 5 = ${n} miles (1 mark).`, { unit: "miles", label: `km ${n}`, skill: "miles and kilometres" }); },
+      () => { const [q, ans, others, why] = pick([["How many cm² are there in 1 m²?", "10 000", ["100", "1000"], "1 m² is 100 cm by 100 cm, so 100 × 100 = 10 000 cm²"], ["How many cm³ are there in 1 litre?", "1000", ["100", "10 000"], "1 litre = 1000 ml, and 1 ml = 1 cm³"], ["How many mm² are there in 1 cm²?", "100", ["10", "1000"], "1 cm² is 10 mm by 10 mm, so 100 mm²"], ["How many seconds are there in 1 hour?", "3600", ["360", "6000"], "60 × 60 = 3600"]]);
+        return gfQ(q, ans, 1, `${why} (1 mark).`, { options: others, accept: [ans.replace(" ", ""), ans.replace(" ", ",")], label: q, skill: "area, volume and time units" }); }
+    ] },
+    { id: "gf-angles", n: 11, short: "Angles and shapes", title: "Angles and shapes", strand: "Shape and angles",
+      blurb: "Angle facts on lines, in triangles and polygons, parallel lines, shape names and bearings.", makers: [
+      () => { const a = gfR(20, 160), b = rand(2) ? 0 : gfR(10, 170 - a), x = 180 - a - b;
+        return gfQ(`${b ? `Three angles lie on a straight line. Two of them are ${a}° and ${b}°.` : `Two angles lie on a straight line. One of them is ${a}°.`} Work out the ${b ? "third" : "other"} angle. (°)`, x, 1, `Angles on a straight line add up to 180°: 180 − ${a}${b ? ` − ${b}` : ""} = ${x}° (1 mark).`, { unit: "°", label: `line ${a},${b}`, skill: "angles on a straight line" }); },
+      () => { const a = gfR(60, 150), b = gfR(40, 120), c = gfR(20, 80), x = 360 - a - b - c; if (x < 10) return { label: "skip" };
+        return gfQ(`Four angles meet at a point. Three of them are ${a}°, ${b}° and ${c}°. Work out the fourth angle. (°)`, x, 1, `Angles around a point add up to 360°: 360 − ${a} − ${b} − ${c} = ${x}° (1 mark).`, { unit: "°", label: `point ${a},${b},${c}`, skill: "angles around a point" }); },
+      () => { const a = gfR(25, 100), b = gfR(20, 150 - a);
+        return gfQ(`Two angles of a triangle are ${a}° and ${b}°. Work out the third angle. (°)`, 180 - a - b, 1, `Angles in a triangle add up to 180°: 180 − ${a} − ${b} = ${180 - a - b}° (1 mark).`, { unit: "°", label: `tri ${a},${b}`, skill: "angles in a triangle" }); },
+      () => { const apex = 2 * gfR(10, 70), base = (180 - apex) / 2, k = rand(2);
+        return k ? gfQ(`An isosceles triangle has one angle of ${apex}° between its two equal sides. Work out the size of each of the other two angles. (°)`, base, 2, `180 − ${apex} = ${180 - apex} (1 mark). The other two are equal: ${180 - apex} ÷ 2 = ${base}° (1 mark).`, { unit: "°", label: `iso apex ${apex}`, skill: "isosceles triangles" })
+          : gfQ(`In an isosceles triangle, the two equal angles are each ${base}°. Work out the third angle. (°)`, apex, 2, `${base} + ${base} = ${2 * base} (1 mark). 180 − ${2 * base} = ${apex}° (1 mark).`, { unit: "°", label: `iso base ${base}`, skill: "isosceles triangles" }); },
+      () => { const a = gfR(60, 130), b = gfR(50, 120), c = gfR(40, 110), x = 360 - a - b - c; if (x < 30 || x > 170) return { label: "skip" };
+        return gfQ(`Three angles of a quadrilateral are ${a}°, ${b}° and ${c}°. Work out the fourth angle. (°)`, x, 1, `Angles in a quadrilateral add up to 360°: 360 − ${a} − ${b} − ${c} = ${x}° (1 mark).`, { unit: "°", label: `quad ${a},${b},${c}`, skill: "angles in a quadrilateral" }); },
+      () => { const n = pick([5, 6, 8, 9, 10, 12]), ext = 360 / n, k = rand(2), name = { 5: "pentagon", 6: "hexagon", 8: "octagon", 9: "nonagon", 10: "decagon", 12: "dodecagon (12 sides)" }[n];
+        return k ? gfQ(`Work out the size of each exterior angle of a regular ${name}. (°)`, ext, 2, `The exterior angles add up to 360° (1 mark). 360 ÷ ${n} = ${ext}° (1 mark).`, { unit: "°", label: `ext ${n}`, skill: "angles in polygons" })
+          : gfQ(`Work out the size of each interior angle of a regular ${name}. (°)`, 180 - ext, 2, `Exterior angle: 360 ÷ ${n} = ${ext}° (1 mark). Interior = 180 − ${ext} = ${180 - ext}° (1 mark).`, { unit: "°", label: `int ${n}`, skill: "angles in polygons" }); },
+      () => { const [desc, ans] = pick([["between the two parallel lines, on opposite sides of the line crossing them (a Z shape)", "Alternate angles: they are equal"], ["in matching positions at each parallel line (an F shape)", "Corresponding angles: they are equal"], ["between the two parallel lines, on the same side of the line crossing them (a C shape)", "Co-interior angles: they add up to 180°"]]);
+        return gfQ(`A line crosses two parallel lines. Two angles are ${desc}. Which reason is right?`, ans, 1, `Learn the three names and what each means: alternate (Z) are equal, corresponding (F) are equal, co-interior (C) add to 180°. In the exam, the reason must use the right name (1 mark).`, { options: ["Alternate angles: they are equal", "Corresponding angles: they are equal", "Co-interior angles: they add up to 180°"].filter(o => o !== ans), label: `par ${ans.slice(0, 5)}`, skill: "angles in parallel lines" }); },
+      () => { const [desc, ans, others] = pick([["a quadrilateral with exactly one pair of parallel sides", "trapezium", ["parallelogram", "kite"]], ["a quadrilateral with four equal sides and no right angles", "rhombus", ["square", "kite"]], ["a quadrilateral with two pairs of equal sides next to each other", "kite", ["rhombus", "trapezium"]], ["a triangle with no equal sides", "scalene", ["isosceles", "equilateral"]], ["a quadrilateral with two pairs of parallel sides and no right angles", "parallelogram", ["trapezium", "rectangle"]]]);
+        return gfQ(`What is the name of ${desc}?`, ans, 1, `It is a ${ans} (1 mark).`, { options: others, label: `name ${ans}`, skill: "naming shapes" }); },
+      () => { const [b, ans] = pick([["090°", "East"], ["180°", "South"], ["270°", "West"], ["045°", "North-east"], ["225°", "South-west"]]);
+        return gfQ(`Which direction is a bearing of ${b}?`, ans, 1, `Bearings are measured clockwise from north, with three figures: ${b} is ${ans} (1 mark).`, { options: shuffle(["East", "South", "West", "North-east", "South-west", "North-west"].filter(o => o !== ans)).slice(0, 2), label: `bear ${b}`, skill: "bearings" }); },
+      () => { const n = gfR(5, 10);
+        return gfQ(`Work out the sum of the interior angles of a polygon with ${n} sides. (°)`, (n - 2) * 180, 2, `It splits into ${n} − 2 = ${n - 2} triangles (1 mark). ${n - 2} × 180 = ${(n - 2) * 180}° (1 mark).`, { unit: "°", label: `sum ${n}`, skill: "angles in polygons" }); },
+      () => { const a = gfR(35, 75), x = 180 - 2 * a;
+        return gfQ(`Triangle ABC is isosceles with AB = AC. Angle ABC is ${a}°. The side BC is extended to D. Work out angle ACD. (°)`, 180 - a, 3, `Angle ACB = ${a}° (base angles of an isosceles triangle are equal) (1 mark). Angle ACD = 180 − ${a} (angles on a straight line add to 180°) (1 mark) = ${180 - a}° (1 mark). Give a reason for each step: the reasons are marked. (Angle BAC is ${x}°, which you don't need.)`, { unit: "°", ps: true, label: `ext iso ${a}`, skill: "angle reasoning" }); }
+    ] },
+    { id: "gf-area", n: 12, short: "Area and volume", title: "Perimeter, area and volume", strand: "Measurement",
+      blurb: "Rectangles, triangles, trapeziums, compound shapes, circles, cuboids and surface area.", makers: [
+      () => { const l = gfR(4, 15), w = gfR(2, 9); if (l === w) return { label: "skip" };
+        return gfQ(`A rectangle is ${l} cm long and ${w} cm wide. Work out its area. (cm²)`, l * w, 1, `Area = length × width = ${l} × ${w} = ${l * w} cm² (1 mark).`, { unit: "cm²", label: `rect a ${l},${w}`, skill: "area of a rectangle" }); },
+      () => { const l = gfR(4, 15), w = gfR(2, 9); if (l === w) return { label: "skip" };
+        return gfQ(`A rectangle is ${l} cm long and ${w} cm wide. Work out its perimeter. (cm)`, 2 * (l + w), 1, `Perimeter is the distance all the way round: ${l} + ${w} + ${l} + ${w} = ${2 * (l + w)} cm (1 mark). Don't confuse it with area.`, { unit: "cm", label: `rect p ${l},${w}`, skill: "perimeter" }); },
+      () => { const b = gfR(3, 14), h = 2 * gfR(2, 8);
+        return gfQ(`A triangle has base ${b} cm and perpendicular height ${h} cm. Work out its area. (cm²)`, b * h / 2, 2, `Area = ½ × base × height (1 mark) = ½ × ${b} × ${h} = ${b * h / 2} cm² (1 mark).`, { unit: "cm²", label: `tri ${b},${h}`, skill: "area of a triangle" }); },
+      () => { const a = gfR(3, 9), b = a + 2 * gfR(1, 4), h = gfR(3, 8), k = rand(2);
+        return k ? gfQ(`A trapezium has parallel sides ${a} cm and ${b} cm. The distance between them is ${h} cm. Work out its area. (cm²)`, (a + b) / 2 * h, 2, `Area = ½(a + b)h (1 mark) = ½ × (${a} + ${b}) × ${h} = ${(a + b) / 2 * h} cm² (1 mark).`, { unit: "cm²", label: `trap ${a},${b},${h}`, skill: "area of a trapezium" })
+          : gfQ(`A parallelogram has base ${b} cm and perpendicular height ${h} cm. Work out its area. (cm²)`, b * h, 2, `Area = base × perpendicular height (1 mark) = ${b} × ${h} = ${b * h} cm² (1 mark). Not the slanted side.`, { unit: "cm²", label: `para ${b},${h}`, skill: "area of a parallelogram" }); },
+      () => { const W = gfR(7, 12), H = gfR(6, 10), w = gfR(2, W - 3), h = gfR(2, H - 3), area = rand(2);
+        return area ? gfQ(`The L-shape is made from a rectangle with a corner cut out. Work out its area. (cm²)`, W * H - w * h, 3, `Split it into two rectangles, or take the corner away from the big rectangle (1 mark): the corner is ${w} cm by ${h} cm. ${W} × ${H} = ${W * H} and ${w} × ${h} = ${w * h} (1 mark). ${W * H} − ${w * h} = ${W * H - w * h} cm² (1 mark).`, { unit: "cm²", pic: gfL(W, H, w, h), ps: true, label: `L a ${W},${H},${w},${h}`, skill: "area of compound shapes" })
+          : gfQ(`The L-shape is made from a rectangle with a corner cut out. Work out its perimeter. (cm)`, 2 * (W + H), 3, `Find the two missing sides: ${W} − ${W - w} = ${w} cm and ${H} − ${H - h} = ${h} cm (1 mark). Add all six sides (1 mark): ${W} + ${H} + ${W - w} + ${h} + ${w} + ${H - h} = ${2 * (W + H)} cm (1 mark).`, { unit: "cm", pic: gfL(W, H, w, h), ps: true, label: `L p ${W},${H},${w},${h}`, skill: "perimeter of compound shapes" }); },
+      () => { const r = gfR(2, 12), k = rand(3), v = k === 0 ? Math.PI * r * r : k === 1 ? 2 * Math.PI * r : Math.PI * r * r / 2;
+        const q = k === 0 ? `Work out the area of a circle with radius ${r} cm. Give your answer to 1 decimal place. (cm²)` : k === 1 ? `Work out the circumference of a circle with diameter ${2 * r} cm. Give your answer to 1 decimal place. (cm)` : `Work out the area of a semicircle with radius ${r} cm. Give your answer to 1 decimal place. (cm²)`;
+        return gfQ(q, fixed(v), 2, k === 0 ? `Area = πr² = π × ${r}² (1 mark) = ${fixed(v)} cm² (1 mark).` : k === 1 ? `Circumference = πd = π × ${2 * r} (1 mark) = ${fixed(v)} cm (1 mark).` : `Half of π × ${r}² (1 mark) = ${fixed(v)} cm² (1 mark).`, { unit: k === 1 ? "cm" : "cm²", accept: near(v), calc: true, label: `circ ${k},${r}`, skill: "circles" }); },
+      () => { const a = gfR(2, 9), b = gfR(2, 9), c = gfR(2, 12), k = rand(2);
+        return k ? gfQ(`A cuboid measures ${a} cm by ${b} cm by ${c} cm. Work out its volume. (cm³)`, a * b * c, 2, `Volume = length × width × height (1 mark) = ${a} × ${b} × ${c} = ${a * b * c} cm³ (1 mark).`, { unit: "cm³", label: `cub ${a},${b},${c}`, skill: "volume of a cuboid" })
+          : gfQ(`A cube has edges of ${a} cm. Work out its total surface area. (cm²)`, 6 * a * a, 2, `One face: ${a} × ${a} = ${a * a} cm² (1 mark). Six faces: ${6 * a * a} cm² (1 mark).`, { unit: "cm²", label: `cube sa ${a}`, skill: "surface area" }); },
+      () => { const w = gfR(3, 9), l = gfR(4, 12), per = rand(2);
+        return per ? gfQ(`A rectangle has a perimeter of ${2 * (l + w)} cm. Its width is ${w} cm. Work out its length. (cm)`, l, 2, `Two widths: ${2 * w} cm. ${2 * (l + w)} − ${2 * w} = ${2 * l} for two lengths (1 mark). One length: ${l} cm (1 mark).`, { unit: "cm", label: `back p ${l},${w}`, skill: "working backwards from perimeter" })
+          : gfQ(`A rectangle has an area of ${l * w} cm². Its width is ${w} cm. Work out its length. (cm)`, l, 2, `Area = length × width, so length = ${l * w} ÷ ${w} (1 mark) = ${l} cm (1 mark).`, { unit: "cm", label: `back a ${l},${w}`, skill: "working backwards from area" }); },
+      () => { const s = pick([2, 3, 5]), a = s * gfR(2, 6), b = s * gfR(2, 5), c = s * gfR(1, 4);
+        return gfQ(`A box is ${a} cm by ${b} cm by ${c} cm inside. How many cubes with ${s} cm edges fit in the box?`, (a / s) * (b / s) * (c / s), 3, `Along each edge: ${a} ÷ ${s} = ${a / s}, ${b} ÷ ${s} = ${b / s}, ${c} ÷ ${s} = ${c / s} (1 mark). ${a / s} × ${b / s} × ${c / s} (1 mark) = ${(a / s) * (b / s) * (c / s)} (1 mark).`, { ps: true, label: `box ${s},${a},${b},${c}`, skill: "volume problems" }); },
+      () => { const w = gfR(3, 6), h = pick([2, 2.5, 3]), cover = pick([4, 5, 6]), area = w * h, tins = Math.ceil(area / cover); if (area % cover === 0) return { label: "skip" };
+        return gfQ(`A wall is ${w} m wide and ${h} m high. One tin of paint covers ${cover} m². How many tins are needed to paint the wall once?`, tins, 3, `Area: ${w} × ${h} = ${gfD(area)} m² (1 mark). ${gfD(area)} ÷ ${cover} = ${gfD(area / cover)} (1 mark). Round up: you can't buy part of a tin, so ${tins} (1 mark).`, { ps: true, label: `paint ${w},${h},${cover}`, skill: "area problems" }); }
+    ] },
+    { id: "gf-probability", n: 13, short: "Probability", title: "Probability", strand: "Data and chance",
+      blurb: "Probability as a fraction, events not happening, expected results, relative frequency and two dice.", makers: [
+      () => { const r = gfR(1, 8), b = gfR(1, 8), g = gfR(1, 8), t = r + b + g, [c, n] = pick([["red", r], ["blue", b], ["green", g]]);
+        return gfQ(`A bag has ${r} red, ${b} blue and ${g} green counters. One is taken at random. What is the probability it is ${c}? Give a fraction.`, `${n}/${t}`, 2, `There are ${t} counters (1 mark), and ${n} ${n === 1 ? "is" : "are"} ${c}: ${n}/${t}${gfF(n, t) !== `${n}/${t}` ? ` (or ${gfF(n, t)})` : ""} (1 mark).`, { accept: [gfF(n, t)], label: `bag ${r},${b},${g},${c}`, skill: "probability as a fraction" }); },
+      () => { const p = gfR(5, 95);
+        return gfQ(`The probability that a bus is late is ${gfD(p / 100)}. What is the probability that it is not late?`, gfD(1 - p / 100), 1, `Probabilities add up to 1: 1 − ${gfD(p / 100)} = ${gfD(1 - p / 100)} (1 mark).`, { label: `not ${p}`, skill: "probability of not happening" }); },
+      () => { let ps; do ps = [gfR(5, 40), gfR(5, 40), gfR(5, 40)]; while (100 - ps[0] - ps[1] - ps[2] < 5); const x = 100 - ps.reduce((s, v) => s + v, 0);
+        return gfQ(`A spinner can land on A, B, C or D. P(A) = ${gfD(ps[0] / 100)}, P(B) = ${gfD(ps[1] / 100)}, P(C) = ${gfD(ps[2] / 100)}. Work out P(D).`, gfD(x / 100), 2, `They add up to 1: ${gfD(ps[0] / 100)} + ${gfD(ps[1] / 100)} + ${gfD(ps[2] / 100)} = ${gfD((100 - x) / 100)} (1 mark). 1 − ${gfD((100 - x) / 100)} = ${gfD(x / 100)} (1 mark).`, { label: `table ${ps}`, skill: "probabilities add to 1" }); },
+      () => { const [p, ps] = pick([[0.3, "0.3"], [0.25, "1/4"], [0.2, "0.2"], [0.1, "0.1"], [0.4, "0.4"], [0.125, "1/8"], [0.6, "0.6"]]), n = pick([40, 80, 120, 200, 400, 160]), e = p * n; if (!Number.isInteger(e)) return { label: "skip" };
+        return gfQ(`The probability that a spinner lands on red is ${ps}. It is spun ${n} times. How many times would you expect it to land on red?`, e, 2, `Expected number = probability × number of trials (1 mark): ${ps} × ${n} = ${e} (1 mark).`, { label: `exp ${ps},${n}`, skill: "expected results" }); },
+      () => { const n = pick([20, 40, 50, 80, 100, 120, 200]), k = gfR(2, n - 2), f = gfF(k, n);
+        return gfQ(`A drawing pin is dropped ${n} times. It lands point up ${k} times. Estimate the probability that it lands point up next time. Give a fraction.`, `${k}/${n}`, 2, `Relative frequency = times it happened ÷ number of trials (1 mark): ${k}/${n}${f !== `${k}/${n}` ? ` = ${f}` : ""} (1 mark).`, { accept: [f, gfD(k / n)], label: `rf ${k},${n}`, skill: "relative frequency" }); },
+      () => { const s = gfR(3, 11), w = 6 - Math.abs(s - 7), f = gfF(w, 36);
+        return gfQ(`Two fair six-sided dice are rolled and the scores are added. What is the probability of a total of ${s}? Give a fraction.`, f, 2, `There are 36 equally likely outcomes. A total of ${s} happens ${w} ways: ${range(1, 6).filter(a => s - a >= 1 && s - a <= 6).map(a => `${a}+${s - a}`).join(", ")} (1 mark). ${w}/36${f !== `${w}/36` ? ` = ${f}` : ""} (1 mark).`, { accept: [`${w}/36`], label: `dice ${s}`, skill: "two dice" }); },
+      () => { const [p, ans, others] = pick([["0", "Impossible", ["Unlikely", "Even chance"]], ["0.5", "Even chance", ["Likely", "Unlikely"]], ["1", "Certain", ["Likely", "Even chance"]], ["0.9", "Likely", ["Certain", "Even chance"]], ["0.1", "Unlikely", ["Impossible", "Even chance"]]]);
+        return gfQ(`An event has a probability of ${p}. Which word describes it best?`, ans, 1, `On the scale from 0 (impossible) to 1 (certain), ${p} is ${ans.toLowerCase()} (1 mark).`, { options: others, label: `scale ${p}`, skill: "the probability scale" }); },
+      () => { const [what, n, list] = pick([["two coins are thrown", 4, "HH, HT, TH, TT"], ["three coins are thrown", 8, "HHH, HHT, HTH, THH, HTT, THT, TTH, TTT"], ["a coin is thrown and a six-sided dice is rolled", 12, "H1 to H6 and T1 to T6"], ["two four-sided spinners (1 to 4) are spun", 16, "4 × 4 pairs"]]);
+        return gfQ(`How many possible outcomes are there when ${what}?`, n, 1, `List them in order so none is missed: ${list}. That is ${n} (1 mark).`, { label: `outcomes ${n}`, skill: "listing outcomes" }); }
+    ] },
+    { id: "gf-statistics", n: 14, short: "Statistics", title: "Averages and charts", strand: "Data and chance",
+      blurb: "Mean, median, mode and range, finding a missing value, frequency tables, pie charts and correlation.", makers: [
+      () => { const xs = range(1, 4).map(() => gfR(2, 30)), s = xs.reduce((t, v) => t + v, 0), last = 5 - (s % 5) + gfR(0, 3) * 5, all = shuffle(xs.concat(last)), m = (s + last) / 5;
+        return gfQ(`Work out the mean of ${all.join(", ")}.`, m, 2, `Add them: ${s + last} (1 mark). Divide by how many there are: ${s + last} ÷ 5 = ${m} (1 mark).`, { label: `mean ${all}`, skill: "the mean" }); },
+      () => { const n = pick([5, 7, 6]), xs = range(1, n).map(() => gfR(1, 40)), sorted = xs.slice().sort((a, b) => a - b), med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+        return gfQ(`Find the median of ${xs.join(", ")}.`, gfD(med), n % 2 ? 1 : 2, `Put them in order: ${sorted.join(", ")}${n % 2 ? "" : " (1 mark)"}. The middle ${n % 2 ? "one" : `is halfway between ${sorted[n / 2 - 1]} and ${sorted[n / 2]}`}: ${gfD(med)} (1 mark). Not ordering them first is the usual mistake.`, { label: `med ${xs}`, skill: "the median" }); },
+      () => { const m = gfR(1, 15), others = shuffle(range(1, 20).filter(v => v !== m)).slice(0, 4), xs = shuffle(others.concat([m, m, m].slice(0, 2 + rand(2))));
+        return gfQ(`Write down the mode of ${xs.join(", ")}.`, m, 1, `The mode is the most common value: ${m} (1 mark).`, { label: `mode ${xs}`, skill: "the mode" }); },
+      () => { const xs = range(1, 6).map(() => gfR(3, 60)), r = Math.max(...xs) - Math.min(...xs);
+        return gfQ(`Work out the range of ${xs.join(", ")}.`, r, 1, `Largest − smallest: ${Math.max(...xs)} − ${Math.min(...xs)} = ${r} (1 mark).`, { label: `range ${xs}`, skill: "the range" }); },
+      () => { const n = gfR(4, 6), m = gfR(8, 20), given = range(1, n - 1).map(() => gfR(m - 6, m + 6)), x = m * n - given.reduce((t, v) => t + v, 0); if (x < 1) return { label: "skip" };
+        return gfQ(`The mean of ${n} numbers is ${m}. ${n - 1} of the numbers are ${given.join(", ")}. Work out the other number.`, x, 3, `The total must be ${n} × ${m} = ${m * n} (1 mark). The ${n - 1} numbers add up to ${m * n - x} (1 mark). ${m * n} − ${m * n - x} = ${x} (1 mark).`, { ps: true, label: `miss ${n},${m},${given}`, skill: "working backwards from the mean" }); },
+      () => { const f = range(0, 3).map(() => gfR(1, 9)), total = f.reduce((t, v, i) => t + v * i, 0), k = rand(2);
+        return gfQ(`A football team's goals per match: 0 goals in ${f[0]} matches, 1 goal in ${f[1]}, 2 goals in ${f[2]} and 3 goals in ${f[3]}. ${k ? "How many goals did they score altogether?" : "How many matches did they play?"}`, k ? total : f.reduce((t, v) => t + v, 0), 2, k ? `Multiply each number of goals by its frequency: 0 × ${f[0]} + 1 × ${f[1]} + 2 × ${f[2]} + 3 × ${f[3]} (1 mark) = ${total} (1 mark).` : `Add the frequencies (1 mark): ${f.join(" + ")} = ${f.reduce((t, v) => t + v, 0)} (1 mark).`, { label: `freq ${f},${k}`, skill: "frequency tables" }); },
+      () => { const t = pick([36, 60, 90, 120, 180, 72, 30, 45]), each = 360 / t, c = gfR(2, t - 2), what = pick(["chose tea", "walk to work", "chose football", "came by bus"]);
+        return gfQ(`${t} people were asked a question, and ${c} ${what}. They are shown on a pie chart. Work out the angle for "${what}". (°)`, c * each, 2, `360 ÷ ${t} = ${gfD(each)}° for each person (1 mark). ${c} × ${gfD(each)} = ${gfD(c * each)}° (1 mark).`, { unit: "°", label: `pie ${t},${c}`, skill: "pie charts" }); },
+      () => { const [say, ans] = pick([["As the temperature goes up, more ice creams are sold.", "Positive correlation"], ["As a car gets older, it is worth less.", "Negative correlation"], ["Shoe size and score in a maths test.", "No correlation"], ["The more hours of revision, the higher the test mark.", "Positive correlation"], ["The higher up a mountain, the colder it is.", "Negative correlation"]]);
+        return gfQ(`What kind of correlation would a scatter graph show? ${say}`, ans, 1, `${ans} (1 mark). Positive: both go up together. Negative: one goes up as the other goes down.`, { options: ["Positive correlation", "Negative correlation", "No correlation"].filter(o => o !== ans), label: `corr ${say.slice(0, 12)}`, skill: "correlation" }); }
+    ] }
+  ];
+  // The stages of the climb. Stage 1 is here; grades 4 and 5, then Higher, follow as their own stages.
+  const EXAM_STAGES = [{ id: "foundation-1-3", title: "Stage 1: Foundation, grade 1 to 3", topics: GF_TOPICS }];
+
+  // A bank question as an online one: the marks and calculator note shown, the mark scheme as the explanation
+  const gfOnline = (it, prefix = "") => {
+    const prompt = `${it.q} [${gfMk(it.marks)}${it.calc ? ", calculator allowed" : ""}]`;
+    const extra = { label: `${prefix}${it.label}`, skill: it.skill, explain: `Mark scheme: ${it.scheme}`, marks: it.marks };
+    if (it.pic) extra.html = it.pic;
+    if (it.options) return choice(prompt, it.answer, it.options, extra);
+    const plainNumber = /^\d+(\.\d+)?$/.test(it.answer);
+    return typed(prompt, it.answer, Object.assign(extra, { input: plainNumber ? (it.answer.includes(".") ? "decimal" : "numeric") : "text",
+      accept: [...new Set((it.accept || []).concat(gfAlso(it.answer, it.unit)))] }));
+  };
+  // n bank questions from one topic, all different, using as many kinds of question as it can
+  function gfItems(topic, n, keep = () => true) {
+    const out = [], seen = new Set();
+    for (let round = 0; out.length < n && round < 12; round++)
+      for (const maker of shuffle(topic.makers)) {
+        if (out.length >= n) break;
+        for (let tries = 0; tries < 8; tries++) {
+          const it = maker();
+          if (!it.q || seen.has(it.label) || !keep(it)) continue;
+          seen.add(it.label); out.push(it); break;
+        }
+      }
+    return out;
+  }
+  const gfTopic = id => GF_TOPICS.find(t => t.id === id);
+  // The baseline: two one-mark questions from every topic, in the order of the climb
+  const gfBaseline = () => GF_TOPICS.flatMap((t, i) => gfItems(t, 2, it => it.marks === 1 && !it.pic).map(it => Object.assign(it, { topic: t })));
+  const numeracyExam = [
+    { id: "gf-baseline", title: "GCSE maths climb: baseline check (grade 1 to 3)", level: "Fourth", organiser: GF, check: false,
+      blurb: "Two quick questions on each of the 14 Foundation topics, in the order of the climb. The results show which topics to teach first.",
+      make: () => gfBaseline().map((it, i) => Object.assign(gfOnline(it, `${it.topic.n}. ${it.topic.short}: `), { skill: `${it.topic.n}. ${it.topic.short}`, diff: i })) },
+    ...GF_TOPICS.map(t => ({ id: t.id, title: `GCSE maths climb ${t.n}: ${t.title}`, level: "Fourth", organiser: GF, check: false, blurb: `${t.blurb} Exam-style questions with marks and mark-scheme answers.`,
+      make: () => gfItems(t, 10).map(it => Object.assign(gfOnline(it), { diff: it.marks * 100 + (it.ps ? 50 : 0) + rand(50) })) })),
+    { id: "gf-mixed", title: "GCSE maths climb: mixed exam questions (grade 1 to 3)", level: "Fourth", organiser: GF, check: false,
+      blurb: "Twelve exam-style questions from across the 14 topics, a new mix every time, for revision once topics have been taught.",
+      make: () => shuffle(GF_TOPICS).slice(0, 12).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }
+  ];
+
   /* ---------- More Third and Fourth level practice: the S1 to S3 (and England Years 7 to 9) lessons that had none at their level ---------- */
   const numeracyUpperMore = [
     { id: "t-calc", title: "Decimals and the order of operations", level: "Third", organiser: NUM, check: false,
@@ -2928,7 +3355,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -3038,6 +3465,9 @@ window.PopActivities = (() => {
 
   return {
     AREAS,
+    // The GCSE maths exam climb's question bank, for the A4 sheets (paper-sheets.js): its stages and topics,
+    // n questions from a topic (keep filters them), and the baseline's two one-mark questions a topic
+    examBank: { STAGES: EXAM_STAGES, TOPICS: GF_TOPICS, topic: gfTopic, items: (id, n, keep) => gfItems(gfTopic(id), n, keep), baseline: gfBaseline },
     demand, // how demanding a question is: activities put their questions easy to hard by this
     // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
     alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),

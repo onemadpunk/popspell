@@ -1714,6 +1714,29 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .md-list li { margin-bottom: 9px; }
 .md-list .ws-blank { height: 1.2em; vertical-align: bottom; }
 .md-work { display: block; margin: 4px 0 2px; border: 1px dashed #9aa3ad; border-radius: 6px; }
+/* GCSE maths exam climb sheets (sheets/12-gcse-climb.js): exam-style questions with marks and a mark-scheme answers page */
+.gx-q { margin: 0 0 5px; }
+.gx-q > p:first-child { margin-bottom: 2px !important; }
+.gx-pic { margin: 2px 0 0 1.4em; }
+.gx-pic svg { max-height: 44mm; width: auto; }
+.gx-opts { margin: 2px 0 2px 1.4em !important; }
+.gx-opts span { display: inline-block; margin-right: 18px; }
+.gx-ans { display: flex; align-items: baseline; gap: 6px; justify-content: flex-end; margin: 2px 0 0 !important; }
+.gx-mk { font-size: 9.5pt; color: #475569; margin-left: 10px; white-space: nowrap; }
+.gx-intro, .gx-plan { font-size: 10.5pt; margin: 0 0 6px !important; }
+.gx-note { font-size: 10pt; margin-top: 8px; padding: 6px 10px; border-left: 3px solid #2563a6; background: #f1f5fb; }
+.gx-of { font-size: 9.5pt; color: #475569; }
+.gx-how { font-size: 10pt; color: #1f2937; }
+.gx-base, .gx-track, .gx-words { width: 100%; border-collapse: collapse; font-size: 10pt; }
+.gx-base td { border: 1px solid #b6c0cc; padding: 3px 6px; vertical-align: top; width: 42%; }
+.gx-base td.gx-topic { width: 16%; font-weight: 700; color: #0b2e6b; }
+.gx-line { display: block; text-align: right; }
+.gx-track th, .gx-track td { border: 1px solid #b6c0cc; padding: 4px 6px; text-align: left; }
+.gx-track th { background: #eef3fa; font-size: 9.5pt; }
+.gx-track td.gx-cell { width: 11%; height: 7mm; }
+.gx-papers { margin-top: 8px; }
+.gx-words th, .gx-words td { border: 1px solid #b6c0cc; padding: 3px 6px; text-align: left; vertical-align: top; }
+.gx-words th { width: 30%; background: #eef3fa; }
 .md-answers { columns: 2; column-gap: 24px; font-size: 10.5pt; list-style: none; padding-left: 0; }
 .md-answers li { break-inside: avoid; margin-bottom: 4px; }
 .ws-age-young .qd-say, .ws-age-young .qd-word { font-size: 17pt; }
