@@ -1,16 +1,21 @@
-/* The GCSE maths climb for a pupil working on their own (climb.html): grade 1 to 9 in three stages.
+/* The maths exam climb for a pupil working on their own (climb.html): the GCSE climb, grade 1 to 9 in three
+   stages, or with ?course=sqa Scotland's SQA climb (National 4 skills, National 5, Higher).
    "My next step" says what to do: the stage check first, then each topic that needs work in the climb's
    order (practice until about three-quarters of the marks), then a mini paper, then the next stage.
    Questions come from the same bank as the teacher's sheets (PopActivities.examBank); every answer shows
    its mark scheme. Progress is kept in this browser only (localStorage): nothing is sent anywhere. */
 (() => {
   "use strict";
-  const X = window.PopActivities.examBank;
+  // Two courses share this page: the GCSE climb (England), and the SQA climb (Scotland) with ?course=sqa
+  const SQA = /[?&]course=sqa\b/.test(location.search);
+  const X = SQA ? window.PopActivities.examBank.scotland : window.PopActivities.examBank;
+  const NAME = SQA ? "SQA maths climb" : "GCSE maths climb";
+  const goal = st => (SQA ? st.goal : st.n === 1 ? "grade 1 to 3" : `grades ${st.grades}`);
   const $ = id => document.getElementById(id);
   const app = $("app");
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[−–]/g, "-").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
-  const SECURE = 0.75, PAPER_PASS = 0.5, KEY = "popspell-climb";
+  const SECURE = 0.75, PAPER_PASS = 0.5, KEY = SQA ? "popspell-climb-sqa" : "popspell-climb";
   const today = () => new Date().toISOString().slice(0, 10);
 
   // ---------- Progress, on this device ----------
@@ -38,19 +43,19 @@
     return { kind: "done", st };
   }
   const STEP_TEXT = {
-    start: () => ["Where are you starting?", "Pick the grade you're working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know."],
-    check: s => [`Take the stage ${s.st.n} check`, `One question on each of the 14 topics for ${s.st.n === 1 ? "grade 1 to 3" : `grades ${s.st.grades}`} (${s.st.n === 1 ? 28 : 14} questions). It shows which topics to work on first. Write your working on paper as you go.`],
+    start: () => ["Where are you starting?", `Pick the ${SQA ? "course" : "grade"} you're working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know.`],
+    check: s => [`Take the stage ${s.st.n} check`, `One question on each of the ${s.st.topics.length} topics for ${goal(s.st)} (${!SQA && s.st.n === 1 ? 28 : s.st.topics.length} questions). It shows which topics to work on first. Write your working on paper as you go.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Ten exam questions; about three-quarters of the marks makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
     paper: s => ["Do a mini paper", `Every stage ${s.st.n} topic is secure. Ten mixed questions, like the real exam: about half the marks or more and you're ready for the next stage. Topics that lose marks go back on your list.`],
-    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
+    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${SQA ? (s.to.n === 3 ? " Higher usually follows a National 5 at grade A or B." : "") : s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
     done: () => ["Keep your marks sharp", "You've climbed all three stages. Keep doing mini papers, and go back to any topic that loses marks."]
   };
 
   // ---------- Home ----------
   function home() {
-    document.title = "GCSE maths climb · PopSpell";
+    document.title = `${NAME} · PopSpell`;
     const s = nextStep(), [title, about] = STEP_TEXT[s.kind](s);
-    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${st.n === 1 ? "Grade 1 to 3, or not sure" : st.n === 2 ? "Grade 4 or 5" : "Grade 6 or above"}</button>`).join("")}</div>` : "";
+    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${(SQA ? ["National 4, or not sure", "National 5", "Higher"] : ["Grade 1 to 3, or not sure", "Grade 4 or 5", "Grade 6 or above"])[st.n - 1]}</button>`).join("")}</div>` : "";
     const go = { check: "Start the check", topic: "Start practising", paper: "Start the mini paper", stage: `Go to stage ${s.to ? s.to.n : ""}`, done: "Mini paper" }[s.kind];
     app.innerHTML = `${top("My next step")}
       <main class="cl-home">
@@ -61,8 +66,9 @@
           ${go ? `<div class="cl-next-do"><button class="cl-btn big" id="go">${go} →</button>${s.kind === "topic" ? `<button class="cl-btn ghost" id="skip">I know this: test me</button>` : ""}</div>` : ""}
         </section>
         <div class="cl-stages">${X.STAGES.map(stageCard).join("")}</div>
-        <div class="cl-foot"><p>Questions are PopSpell's own, in the GCSE (9 to 1) exam style, with mark schemes. Your progress stays in this browser on this device.</p>
-          <a class="cl-btn small" href="pack.html?stage=gcse-${data.stage || 1}">Work on paper: download a pack</a>
+        <div class="cl-foot"><p>Questions are PopSpell's own, ${SQA ? "in the SQA exam style, marked one step a mark" : "in the GCSE (9 to 1) exam style, with mark schemes"}. Your progress stays in this browser on this device.
+          <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 and Higher climb"}</a></p>
+          ${SQA ? "" : `<a class="cl-btn small" href="pack.html?stage=gcse-${data.stage || 1}">Work on paper: download a pack</a>`}
           <button class="cl-btn small" id="reset">Start again</button></div>
       </main>`;
     app.querySelectorAll("[data-start]").forEach(b => b.onclick = () => { data.stage = Number(b.dataset.start); save(); home(); });
@@ -87,7 +93,7 @@
     const row = t => { const s = topicState(t), cls = s.secure ? "secure" : s.best != null ? "started" : "todo";
       return `<li><button class="cl-topic ${cls}" data-topic="${t.id}" title="Practise this topic"><i>${s.secure ? "✓" : s.best != null ? "◐" : "○"}</i><span>${t.n}. ${esc(t.title)}</span><em>${s.best != null ? `${Math.round(s.best * 100)}%` : ""}</em></button></li>`; };
     return `<section class="cl-stage${data.stage === st.n ? " now" : ""}">
-      <div class="cl-stage-head"><h2>${esc(st.title)}</h2><span>${secure} / 14 secure</span></div>
+      <div class="cl-stage-head"><h2>${esc(st.title)}</h2><span>${secure} / ${st.topics.length} secure</span></div>
       <ul class="cl-topics">${st.topics.map(row).join("")}</ul>
       <div class="cl-stage-do">
         <button class="cl-btn small" data-check="${st.n}">${check ? `Check again (last ${check.got}/${check.of})` : "Stage check"}</button>
@@ -97,7 +103,7 @@
   }
   function top(crumb, right = "") {
     return `<header class="cl-top"><a class="cl-brand" href="./"><img src="assets/brand/app-icon-192.png" alt="" width="32" height="32"><span>PopSpell</span></a>
-      <span class="cl-crumb">GCSE maths climb · <b>${esc(crumb)}</b></span><div class="cl-top-do">${right}</div></header>`;
+      <span class="cl-crumb">${NAME} · <b>${esc(crumb)}</b></span><div class="cl-top-do">${right}</div></header>`;
   }
 
   // ---------- Running a set of questions: the check, a topic, a mini paper ----------
@@ -122,7 +128,7 @@
       $("stop").onclick = home;
       const mark = right => {
         got[i] = right ? it.marks : 0;
-        $("fb").innerHTML = `<div class="cl-mark ${right ? "good" : "oops"}"><p><b>${right ? `Right: ${it.marks} mark${it.marks > 1 ? "s" : ""}.` : `Not this time. The answer is ${esc(q.answer)}.`}</b>${right ? "" : " In the exam you'd still get the marks for each right step of your working."}</p><p><b>Mark scheme:</b> ${esc(it.scheme)}</p></div>`;
+        $("fb").innerHTML = `<div class="cl-mark ${right ? "good" : "oops"}"><p><b>${right ? `Right: ${it.marks} mark${it.marks > 1 ? "s" : ""}.` : `Not this time. The answer is ${esc(q.answer)}.`}</b>${right ? "" : " In the exam you'd still get the marks for each right step of your working."}</p><p><b>${SQA ? "Marking" : "Mark scheme"}:</b> ${esc(it.scheme)}</p></div>`;
         $("next").disabled = false; $("next").focus();
       };
       if (q.options) app.querySelectorAll(".cl-opt").forEach(b => b.onclick = () => {
