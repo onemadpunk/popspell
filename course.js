@@ -114,10 +114,32 @@ window.PopCourse = (() => {
     return { set, n, name: p.name, calc: p.calc, note: p.note, items: order };
   }
 
+  // ---------- Paper only (no internet) ----------
+  // The parent edition for a family working with no internet: no web addresses anywhere, a printed
+  // homework sheet in place of the online practice, and a spare set of practice exams. The session
+  // notes are rewritten here, so course-data.js stays one set of notes.
+  const OFFLINE = [
+    [/^Look at popspell\.com\/climb\.html and try one topic's online practice\.$/, "Read \"What the exam expects\" again and fill in the exam date on the tracker."],
+    [/, then the online practice for topic \d+\./, "."],
+    [/^Online practice for topic \d+( again)?(: aim for 80%)?\.$/, "The homework sheet."],
+    [/; online practice for topic \d+\./, "; then the homework sheet."],
+    [/^Five questions of each kind from the online practice\.$/, "The homework sheet."],
+    [/for three cities online/, "for three cities from a newspaper or the weather forecast"],
+    [/in a shop or online/, "in a shop"],
+    [/Find a price online/, "Find a price in a shop or a catalogue"],
+    [/^Revise the weakest topic with its online practice\.$/, "Redo the practice questions from the weakest topic's session."],
+    [/^The weakest topic's online practice, then its Exam practice sheet\.$/, "Redo the practice and exam questions from the weakest topic's sessions."],
+    [/Print that topic's Exam practice sheet \(popspell\.com\/pack\.html, or from the session pages\) for homework\./, "For homework, redo that topic's practice questions from its session pages."],
+    [/the online practice for the weakest topics, and real past papers from the exam board's website \(free, with mark schemes\)/, "the practice questions of the weakest topics, the spare practice exams (set C, at the back of this pack), and real past papers with their mark schemes (ask the exam centre)"],
+    [/^Real past papers from the exam board's website, one a week, marked with their mark schemes\.$/, "The spare practice exams (set C), then real past papers, one a week, marked with their mark schemes. Ask the exam centre (the school or college where your child sits the exam) for printed past papers, or write to the exam board (AQA, Edexcel or OCR)."],
+    [/the online practice/gi, "the homework sheet"], [/online practice/gi, "homework sheet"]];
+  const offline = t => (typeof t === "string" ? OFFLINE.reduce((x, [re, to]) => x.replace(re, to), t) : Array.isArray(t) ? t.map(offline) : t);
+  const offlineSession = s => Object.fromEntries(Object.entries(s).map(([k, v]) => [k, ["t", "from", "sheets", "topics", "kind", "set", "paper"].includes(k) ? v : offline(v)]));
+
   function make(courseId, who = "", opts = {}) {
     const course = DATA.get(courseId) || DATA.courses[0];
-    const c = code(), perWeek = opts.perWeek || course.perWeek, start = opts.start || null;
-    const S = course.sessions.map((s, i) => Object.assign({ n: i + 1, kind: "teach" }, s));
+    const c = code(), perWeek = opts.perWeek || course.perWeek, start = opts.start || null, paper = Boolean(opts.paper);
+    const S = course.sessions.map((s, i) => Object.assign({ n: i + 1, kind: "teach" }, paper ? offlineSession(s) : s));
     const taught = [];
     const mockSeen = { A: new Set(), B: new Set() }, mocks = {};
     const sessions = S.map(s => {
@@ -144,6 +166,8 @@ window.PopCourse = (() => {
         }
         const exit = drawFirst([[s.from, it => it.marks <= 2 && !it.pic && fresh(it, 4)], [s.from, it => it.marks <= 2 && !it.pic], [topic, it => it.marks <= 2]], 3, seen);
         Object.assign(made, { starter, example: example[0], practice, exam, exit });
+        // Paper only: a printed homework sheet in place of the online practice
+        if (paper) made.homework = drawFirst([[s.from, () => true], [topic, () => true]], 6, seen).sort((a, b) => a.marks - b.marks);
         taught.push(s);
       } else if (s.kind === "check") {
         // A one-mark question and two (or three, when the check has three topics) longer ones from each topic
@@ -160,10 +184,12 @@ window.PopCourse = (() => {
       } else if (s.kind === "review" && !s.final) {
         made.round = X().TOPICS.map(t => draw([[t.id, null]], 1, it => it.marks >= 2 && !it.pic, seen)[0]).filter(Boolean);
       }
+      // Paper only: a spare set of practice exams (set C) with the last session, as there are no past papers to download
+      if (paper && s.final) made.papers = [1, 2, 3].map(n => (mocks[`C${n}`] = mockPaper("C", n, mockSeen.C || (mockSeen.C = new Set()))));
       if (s.sheets) made.sheets = s.sheets.filter(id => PAPER.get(id)).map(id => ({ id, title: PAPER.get(id).title, b: PAPER.get(id).build(who, kit) }));
       return made;
     });
-    return { course, code: c, who, perWeek, start, sessions, mocks, edition: opts.edition === "parent" ? "parent" : "tutor" };
+    return { course, code: c, who, perWeek, start, sessions, mocks, paper, edition: paper || opts.edition === "parent" ? "parent" : "tutor" };
   }
 
   // ---------- Pages ----------
@@ -175,7 +201,9 @@ window.PopCourse = (() => {
   const sLabel = (made, m) => `Session ${m.n} of ${made.sessions.length} · Week ${m.week}${m.date ? ` · ${m.date}` : ""}`;
 
   // Homework: the topic's online practice (unless the session's own homework already is), then the session's task
-  const homework = (C, s) => {
+  const homework = (made, s) => {
+    const C = made.course;
+    if (made.paper) return s.kind !== "teach" ? s.home || "" : `The homework sheet for this session (H1 to H6; the answers are with this session's answers).${s.home && s.home !== "The homework sheet." ? ` Then: ${s.home.replace(/^The homework sheet\.?\s*/, "").replace(/; then the homework sheet\.?$/, ".").replace(/^./, x => x.toLowerCase())}` : ""}`.replace(/ Then: $/, "");
     if (s.kind !== "teach" || /^Online practice/.test(s.home || "")) return s.home || "";
     const topics = [...new Set(s.from.map(([id]) => topicN(id)))].join(" and ");
     return `Online practice for topic ${topics} at popspell.com/${C.online}.${s.home ? ` Then: ${s.home[0].toLowerCase()}${s.home.slice(1)}` : ""}`;
@@ -202,7 +230,7 @@ window.PopCourse = (() => {
     if (s.slips) blocks.push(block(`${heading("Watch for")}${list(s.slips.map(esc))}`));
     if (s.ask) blocks.push(block(`<p><b>Ask:</b> ${esc(s.ask)}</p>`));
     if (s.help || s.push) blocks.push(block(`${s.help ? `<p><b>If they're stuck:</b> ${esc(s.help)}</p>` : ""}${s.push ? `<p><b>If they're flying:</b> ${esc(s.push)}</p>` : ""}`));
-    blocks.push(block(`<p><b>Homework:</b> ${esc(homework(C, s))}</p>
+    blocks.push(block(`<p><b>Homework:</b> ${esc(homework(made, s))}</p>
       ${s.merge ? `<p class="gx-of">◆ Short of weeks? This session can share a longer session with session ${m.n - 1}: do both teach parts, then half of each practice.</p>` : ""}`));
     blocks.push(block(`<div class="cs-notes"><b>Notes after the session</b> (what went well, what to revisit, exit ticket ___ / ___)</div>`, "cs-grow"));
     return doc(head, more, blocks, true);
@@ -224,7 +252,7 @@ window.PopCourse = (() => {
       m.exam.forEach((it, i) => blocks.push(block(question(it, `E${i + 1}`, { min: 1 }))));
       blocks.push(block(heading("Exit ticket", "On your own"), "cs-keep"));
       m.exit.forEach((it, i) => blocks.push(block(question(it, `X${i + 1}`))));
-      blocks.push(block(`<p class="cs-home"><b>Homework:</b> ${esc(homework(made.course, s))}</p>
+      blocks.push(block(`<p class="cs-home"><b>Homework:</b> ${esc(homework(made, s))}</p>
         <p class="cs-rate">How sure do I feel? ☐ Not yet &nbsp; ☐ Getting there &nbsp; ☐ I've got it &nbsp;&nbsp; Exit ticket: ___ / ${total(m.exit)}</p>`));
       docs.push(doc(head(title, strip(made.edition === "parent" ? "Home course" : "Tutor course", made.course.short, anyCalc ? "Calculator only where it says" : "No calculator")), more(`Session ${m.n}`), blocks));
     }
@@ -250,6 +278,10 @@ window.PopCourse = (() => {
       docs.push(doc(head(title, strip("After the mock", made.course.short, `Revision round ___ / ${total(m.round)}`)), more(s.t), blocks));
     }
     if (s.final) docs.push(doc(head(title, strip("Exam ready", made.course.short, "Keep this")), more(s.t), examDay(made)));
+    if (s.final && m.papers) m.papers.forEach(p => docs.push(...mockDocs(made, m, p).pupil));
+    // Paper only: the homework sheet
+    if (m.homework) docs.push(doc(head(`Homework: session ${m.n}`, strip("Homework", esc(s.t), `Total ___ / ${total(m.homework)}`)), more(`Homework: session ${m.n}`),
+      [block(`<p class="gx-intro">On your own, a day or two after the session. Show every step. Your parent has the answers.</p>`), ...m.homework.map((it, i) => block(question(it, `H${i + 1}`)))]));
     return docs;
   }
 
@@ -287,7 +319,7 @@ window.PopCourse = (() => {
     const s = m.s, head = `${K.brandHead(`Answers: session ${m.n}`, `${esc(s.t)}. ${made.edition === "parent" ? "For you, not your child." : "For the tutor."}`)}${stamp(made, sLabel(made, m))}`;
     const more = `${K.brandHead(`Answers: session ${m.n} (continued)`)}${stamp(made)}`;
     if (s.kind === "teach") return [doc(head, more, [schemes("Starter", m.starter, ["a", "b", "c", "d"]), schemes("Practice", m.practice, m.practice.map((_, i) => i + 1)),
-      schemes("Exam question", m.exam, m.exam.map((_, i) => `E${i + 1}`)), schemes("Exit ticket", m.exit, m.exit.map((_, i) => `X${i + 1}`)),
+      schemes("Exam question", m.exam, m.exam.map((_, i) => `E${i + 1}`)), schemes("Exit ticket", m.exit, m.exit.map((_, i) => `X${i + 1}`)), m.homework ? schemes("Homework", m.homework, m.homework.map((_, i) => `H${i + 1}`)) : "",
       block(`<p class="gx-note"><b>Marking like an examiner:</b> method marks for the right working even when the answer is wrong; no answer marks without it. Exit ticket at three-quarters or more: move on. Less: start the next session's starter with this topic.</p>`)].filter(Boolean), true)];
     if (s.kind === "check") {
       let q = 0;
@@ -298,20 +330,22 @@ window.PopCourse = (() => {
     }
     if (s.kind === "mock") return m.papers.flatMap(p => mockDocs(made, m, p).answers);
     if (s.kind === "review" && !s.final) return [doc(head, more, [schemes("Revision round", m.round, m.round.map((_, i) => i + 1))], true)];
+    if (s.final && m.papers) return m.papers.flatMap(p => mockDocs(made, m, p).answers);
     return [];
   }
 
   // The climb's own sheets a session uses (already one A4 page each)
   const sheetPages = (made, m) => (m.sheets || []).map(x => ({
     pupil: K.ageLook(x.b.pupil.replace("</header>", `</header>${stamp(made, sLabel(made, m))}`), "older"),
-    answers: x.b.answers ? x.b.answers.replace("</header>", `</header>${stamp(made, `Answers for session ${m.n}`)}`) : "" }));
+    answers: x.b.answers ? x.b.answers.replace("</header>", `</header>${stamp(made, `Answers for session ${m.n}`)}`)
+      .replace("Check the exam board's own page for", made.paper ? "Ask the exam centre for" : "Check the exam board's own page for") : "" }));
 
   // ---------- The parent edition (homeschool) ----------
   // For a parent who isn't confident in maths: the same sessions and sheets, but each session's plan is a
   // step-by-step page in plain words, with what to say, the worked example one step at a time, what to say
   // when the child is stuck, how to mark, and whether to move on or repeat.
   const steps = scheme => scheme.split(/\s*\((?:\d )?marks?\)\.?\s*/).map(x => x.trim()).filter(Boolean);
-  const MOVE_ON = `<p><b>Move on or repeat?</b> Exit ticket right (or nearly right) on most of it, about three-quarters: <b>move on</b> next time. Less than that: start next session by doing the exit ticket questions again together, then carry on. If a topic goes wrong twice, <b>repeat the session</b>: print it again from popspell.com/course.html (One session) for fresh numbers.</p>`;
+  const MOVE_ON = made => `<p><b>Move on or repeat?</b> Exit ticket right (or nearly right) on most of it, about three-quarters: <b>move on</b> next time. Less than that: start next session by doing the exit ticket questions again together, then carry on. If a topic goes wrong twice, <b>repeat the session</b>: ${made.paper ? "cover the answers and do its practice questions again, a few days later" : "print it again from popspell.com/course.html (One session) for fresh numbers"}.</p>`;
   function parentPlan(made, m) {
     const s = m.s, C = made.course;
     const head = `${K.brandHead(`Parent's guide: session ${m.n}`, `${esc(s.t)}. Read this page before you start.`)}${stamp(made, sLabel(made, m))}`;
@@ -341,16 +375,16 @@ window.PopCourse = (() => {
       blocks.push(step(4, "Exam question", "10 minutes",
         `<p>Questions E1 and E2 are like the real exam. <b>Don't help.</b> Allow about a minute per mark. Then mark them together with the answers page, line by line, and talk about which lines earned marks.</p>`));
       blocks.push(step(5, "Exit ticket and homework", "5 minutes",
-        `<p>Your child does X1 to X3 alone. Mark them and write the score on the tracker (and in the box on their sheet).</p>${MOVE_ON}
-        <p><b>Homework:</b> ${esc(homework(C, s))}</p>`));
+        `<p>Your child does X1 to X3 alone. Mark them and write the score on the tracker (and in the box on their sheet).</p>${MOVE_ON(made)}
+        <p><b>Homework:</b> ${esc(homework(made, s))}</p>`));
       if (s.slips) blocks.push(block(`${heading("Common mistakes to look out for")}${list(s.slips.map(esc))}`));
     } else {
       const what = {
-        start: "This session uses printed sheets from the climb. Follow the steps below; the answers are in this pack, after the pupil's pages.",
+        start: "This session uses the printed sheets in this pack. Follow the steps below; the answers are in this pack, after the pupil's pages.",
         check: "A progress check: a short test on the last few topics, to see what's secure. Your child works alone; you mark it afterwards.",
         mock: "A practice exam, like the real one. Your child works alone, in silence, timed. It's 1 hour 30 minutes, so you may want a longer session, or do it on a weekend morning.",
         review: "A session to look back at the practice exam and fix the gaps.",
-        skills: "A session on exam skills, using printed sheets from the climb. The answers are in this pack, after the pupil's pages."
+        skills: "A session on exam skills, using the printed sheets in this pack. The answers are in this pack, after the pupil's pages."
       }[s.kind] || "";
       blocks.push(block(`<p>${what}</p>${heading("Step by step")}<ol class="cs-list">${s.keys.map(k => `<li>${esc(k)}</li>`).join("")}</ol>`));
       blocks.push(block(`${heading("Marking")}<p>Use the answers pages. Give a mark for every line of working that matches the answers page, even when the final answer is wrong. A right answer with no working gets full marks; a wrong answer with no working gets none. Then go back over every question that lost marks: look at the answers page together and let your child redo it.</p>
@@ -365,10 +399,10 @@ window.PopCourse = (() => {
   }
   function parentGuide(made) {
     const C = made.course, n = made.sessions.length;
-    const head = `${K.brandHead("Teaching GCSE maths at home: grade 1 to 3", "A parent's guide. Read this first.")}${stamp(made)}`;
+    const head = `${K.brandHead("Teaching GCSE maths at home: grade 1 to 3", made.paper ? "A parent's guide, paper only. Read this first." : "A parent's guide. Read this first.")}${stamp(made)}`;
     const blocks = [
       block(box("You don't need to be good at maths", `<p>Everything is written out for you. Each session has a <b>parent's guide page</b> that tells you what to do, step by step, and what to say. The <b>answers pages</b> show every answer and every step of working. Your job is to keep things calm, keep to time, mark with the answers pages, and ask your child to explain their thinking. Learning alongside them is fine: say so.</p>`)),
-      block(box("The course", `<p>${n} sessions of about an hour, ${C.perWeek} a week for ${C.weeks} weeks. Your child starts with a check to see what they know, works through every topic that the grade 1 to 3 marks come from, does a progress check every few weeks, and finishes with two sets of practice exams (three papers each, like the real exam).</p>`)),
+      block(box("The course", `<p>${n} sessions of about an hour, ${C.perWeek} a week for ${C.weeks} weeks. Your child starts with a check to see what they know, works through every topic that the grade 1 to 3 marks come from, does a progress check every few weeks, and finishes with two sets of practice exams (three papers each, like the real exam)${made.paper ? ", plus a spare third set. Everything is on paper: no internet needed" : ""}.</p>`)),
       block(box("Before each session (10 minutes)", `<p>Read that session's parent's guide page and its worked example. Have the pupil's sheets, the answers pages (keep them on your side), pencils, a rubber, a ruler, and a scientific calculator (with a fraction key, about £10). Sit somewhere quiet with no phones.</p>`)),
       block(box("Every teaching session has five steps", `<ol class="cs-list"><li><b>Warm up</b> (5 minutes): four quick questions from earlier topics, so nothing is forgotten.</li>
         <li><b>Explain</b> (15 minutes): read out the explanation on the guide page, then go through the worked example one line at a time.</li>
@@ -377,8 +411,9 @@ window.PopCourse = (() => {
         <li><b>Exit ticket</b> (5 minutes): three questions on their own. The score tells you whether to move on.</li></ol>`)),
       block(box("How to mark", `<p>In the exam, marks are given for each correct step of working, not just the answer. The answers pages show which line earns which mark. So: <b>give a mark for every right line</b>, even if the final answer is wrong. A right answer with no working gets full marks, but a wrong answer with no working gets nothing. That's why your child should always write every step down.</p>`)),
       block(box("When they get it wrong", `<p>Don't say \"wrong\". Say \"Nearly, talk me through it.\" Most mistakes are one slip, and explaining finds it. Then compare with the answers page and let them try again. If they're stuck, use the \"If they're stuck\" lines on the guide page, or do the question together and let them do the next one alone. Short breaks help more than pushing on.</p>`)),
-      block(box("Move on or repeat?", `<p>Use the exit ticket. About three-quarters right: move on. Less: start the next session by doing the exit ticket again together. If a topic goes wrong twice, repeat the session: popspell.com/course.html prints any session again with new numbers. Progress checks and the tracker show which topics are secure.</p>`)),
-      block(box("Between sessions", `<p>Homework is the topic's free online practice at <b>popspell.com/${esc(C.online)}</b>: it marks itself and shows the working. After the practice exams, use real past papers: the exam board (AQA, Edexcel or OCR, ask the exam centre which) publishes them free with mark schemes. Ask the school or college about entering for the exam as a private candidate if your child isn't on a school roll.</p>`)),
+      block(box("Move on or repeat?", `<p>Use the exit ticket. About three-quarters right: move on. Less: start the next session by doing the exit ticket again together. If a topic goes wrong twice, repeat the session: ${made.paper ? "cover the answers and do its practice questions again a few days later, then its homework sheet" : "popspell.com/course.html prints any session again with new numbers"}. Progress checks and the tracker show which topics are secure.</p>`)),
+      made.paper ? block(box("Between sessions", `<p>Each teaching session has a <b>homework sheet</b> (six questions, H1 to H6) to do on paper a day or two later; its answers are with that session's answers. Everything is in this pack: nothing needs the internet. After the practice exams, there is a <b>spare set of practice exams (set C)</b> at the back. For real past papers, ask the exam centre (the school or college where your child will sit the exam) for printed copies with their mark schemes, or write to or phone the exam board (AQA, Edexcel or OCR: the exam centre tells you which). If your child isn't on a school roll, ask a local school or college about sitting the exam as a private candidate, early in the year.</p>`))
+        : block(box("Between sessions", `<p>Homework is the topic's free online practice at <b>popspell.com/${esc(C.online)}</b>: it marks itself and shows the working. After the practice exams, use real past papers: the exam board (AQA, Edexcel or OCR, ask the exam centre which) publishes them free with mark schemes. Ask the school or college about entering for the exam as a private candidate if your child isn't on a school roll.</p>`)),
       block(box("Maths words you'll meet", `<p><b>Numerator / denominator</b>: top / bottom of a fraction. <b>Factor</b>: divides exactly into a number. <b>Multiple</b>: in its times table. <b>Prime</b>: only divides by 1 and itself. <b>Expression</b>: letters and numbers, no equals sign. <b>Equation</b>: has an equals sign, can be solved. <b>Expand</b>: multiply out brackets. <b>Factorise</b>: put brackets back in. <b>Perimeter</b>: distance round. <b>Area</b>: space inside. <b>Mean</b>: add up and divide. <b>Median</b>: the middle one in order. <b>Mode</b>: the most common. <b>Range</b>: biggest minus smallest. <b>Estimate</b>: round first, then work out.</p>`)),
       block(box("About grades", `<p>The practice exams use grade 1 to 3 questions only, so a score isn't a predicted grade. About half the marks means the grade 1 to 3 topics are mostly in place; two-thirds or more, and a real past paper is the next test, where a grade 3 has usually needed around a third to two-fifths of the marks. Questions are PopSpell's own, not past papers.</p>`))];
     return doc(head, `${K.brandHead("A parent's guide (continued)")}${stamp(made)}`, blocks, true);
@@ -474,7 +509,9 @@ window.PopCourse = (() => {
       if (copy !== "answers") { sheetPages(made, m).forEach(x => P(x.pupil)); pupilSheets(made, m).forEach(d => paginate(d).forEach(P)); }
       if (copy !== "pupil") { sheetPages(made, m).filter(x => x.answers).forEach(x => A(x.answers)); answerSheets(made, m).forEach(d => paginate(d).forEach(A)); }
     });
-    return out.map(p => `<div class="ws-page${p.adult ? " ws-adult" : ""}">${p.html}</div>`);
+    // Paper only: no web address in the footer either
+    const foot = made.paper ? `<p class="ws-foot">PopSpell · free literacy and numeracy practice</p>` : "";
+    return out.map(p => `<div class="ws-page${p.adult ? " ws-adult" : ""}">${p.html}${foot}</div>`);
   }
 
   // ---------- Printing, or saving as PDF ----------
@@ -526,7 +563,7 @@ window.PopCourse = (() => {
           <div class="cs-form">
             <label class="pk-who">Pupil's name (optional) <input id="who" maxlength="40" autocomplete="off" value="${esc(made ? made.who : v("who"))}"></label>
             <label class="pk-who">First session <input id="start" type="date" value="${esc(made && made.start ? made.start.toISOString().slice(0, 10) : v("start"))}"></label>
-            <label class="pk-who">Edition <select id="edition"><option value="tutor"${made && made.edition === "parent" ? "" : " selected"}>Tutor (a teacher or tutor)</option><option value="parent"${made && made.edition === "parent" ? " selected" : ""}>Parent, teaching at home: step by step</option></select></label>
+            <label class="pk-who">Edition <select id="edition"><option value="tutor"${made && made.edition === "parent" ? "" : " selected"}>Tutor (a teacher or tutor)</option><option value="parent"${made && made.edition === "parent" && !made.paper ? " selected" : ""}>Parent, teaching at home: step by step</option><option value="paper"${made && made.paper ? " selected" : ""}>Parent, paper only (no internet, no web links)</option></select></label>
             <label class="pk-who">Sessions a week <select id="perWeek">${[1, 2, 3].map(k => `<option${(made ? made.perWeek : C.perWeek) === k ? " selected" : ""}>${k}</option>`).join("")}</select></label>
           </div>
           <button class="pk-btn primary" id="make">${made ? "Make a new course (new questions)" : "Make the course"}</button>
@@ -550,7 +587,7 @@ window.PopCourse = (() => {
       btn.disabled = true; btn.textContent = "Making the course…";
       await new Promise(r => setTimeout(r, 30));
       const d = v("start") ? new Date(`${v("start")}T12:00:00`) : null;
-      made = make(C.id, v("who").trim(), { start: d && !isNaN(d) ? d : null, perWeek: Number(v("perWeek")) || C.perWeek, edition: v("edition") });
+      made = make(C.id, v("who").trim(), { start: d && !isNaN(d) ? d : null, perWeek: Number(v("perWeek")) || C.perWeek, edition: v("edition") === "paper" ? "parent" : v("edition"), paper: v("edition") === "paper" });
       render();
       const first = app.querySelector("[data-print]");
       if (first) first.focus();

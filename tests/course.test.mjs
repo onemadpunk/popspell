@@ -75,3 +75,13 @@ test("the parent edition: every teaching session has what to say and what to say
   assert.match(C.pagesOf(made, "front", "answers").join(""), /A parent(?:'|&#39;)s guide/);
   assert.match(C.pagesOf(C.make("gcse-1-3", ""), "session-3", "answers").join(""), /Tutor plan: session 3/);
 });
+
+test("paper only: no web addresses or online practice anywhere, a homework sheet every teaching session, and a spare set of practice exams", () => {
+  const made = C.make("gcse-1-3", "", { edition: "parent", paper: true });
+  assert.ok(made.paper && made.edition === "parent");
+  const all = C.pagesOf(made, "all", "tutor").join("\n").replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(all, /popspell\.com|\.html|https?:|www\.|online|website|download/i);
+  for (const m of made.sessions.filter(m => m.s.kind === "teach")) assert.equal(m.homework.length, 6, m.s.t);
+  for (const n of [1, 2, 3]) assert.equal(made.mocks[`C${n}`].items.reduce((t, it) => t + it.marks, 0), 80);
+  assert.match(C.pagesOf(made, "session-3", "pupil").join(""), /Homework: session 3/);
+});
