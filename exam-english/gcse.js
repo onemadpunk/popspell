@@ -763,5 +763,6 @@ window.EXAM_ENGLISH.gcse = (() => {
   const LIT_STAGE = { key: "lit", n: 4, title: "English Literature", goal: "Literature", topics: LIT, optional: true,
     about: "For pupils who also sit English Literature: Shakespeare, the 19th-century novel and poetry. Not needed for an English Language resit." };
 
-  return { key: "gcse", name: "GCSE English climb", exam: "GCSE English Language", STAGES, LIT: LIT_STAGE, WRITING, CHECK, GRADES, EXAM, MINI, LEVELS_8, LEVELS_4 };
+  return { key: "gcse", name: "GCSE English climb", exam: "GCSE English Language", STAGES, LIT: LIT_STAGE, WRITING, CHECK, GRADES, EXAM, MINI, LEVELS_8, LEVELS_4,
+    other: ["In Scotland? The SQA English climb (National 4, 5 and Higher) →", "english-climb.html?course=sqa"] };
 })();

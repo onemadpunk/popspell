@@ -68,7 +68,7 @@ const say = o => `${o.tall >= 1000 ? `zoomed to ${Math.round(o.zoom * 100)}%` : 
 // 1. The pupil app: each activity in the teacher's preview
 await page.goto(`${base}/check.html`);
 await page.waitForFunction(() => window.PopActivities && window.PopEnglishExam);
-const ids = PART === "climb" ? [] : (await page.evaluate(() => window.PopActivities.AREAS.find(a => a.id === "english-exam").activities.map(a => a.id))).filter(id => !ONLY || ONLY.test(id));
+const ids = PART === "climb" ? [] : (await page.evaluate(() => window.PopActivities.AREAS.filter(a => /^english-exam/.test(a.id)).flatMap(a => a.activities.map(a => a.id)))).filter(id => !ONLY || ONLY.test(id));
 let screens = 0;
 for (const id of ids) {
   await page.goto(`${base}/check.html#/activity/${encodeURIComponent(id)}?preview=1`);

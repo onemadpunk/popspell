@@ -46,19 +46,20 @@ window.PopEnglishExam = (() => {
 
   // The online practice for the teacher's Library and the pupil app: a set per topic, each stage's check
   // and mixed revision. activities.js passes its own choice() so the questions are the app's kind.
-  function activities(kit) {
+  // key picks one course (each has its own area in the Library); left out, every course.
+  function activities(kit, key) {
     const out = [];
-    for (const c of Object.values(COURSES)) {
-      const ORG = `Literacy · ${c.name}`;
+    for (const c of Object.values(COURSES).filter(c => !key || c.key === key)) {
+      const ORG = `Literacy · ${c.name}`, level = c.level || "Fourth";
       const set = (list) => list.map((it, i) => Object.assign(online(it, kit.choice), { diff: i }));
       for (const st of stagesOf(c)) {
         const tag = st.optional ? st.title : `stage ${st.n}`;
-        if (!st.optional) out.push({ id: `${st.key}-check`, title: `${c.name}: ${st.title.replace(/^Stage (\d):/, "stage $1 check,")}`, level: "Fourth", organiser: ORG, check: false,
+        if (!st.optional) out.push({ id: `${st.key}-check`, title: `${c.name}: ${st.title.replace(/^Stage (\d):/, "stage $1 check,")}`, level, organiser: ORG, check: false,
           blurb: `${st.n === 1 ? "Two questions" : "One question"} on each of the ${st.topics.length} topics, in the order of the climb. The results show which topics to work on first.`,
           make: () => set(check(st.key)) });
-        for (const t of st.topics) out.push({ id: t.id, title: `${c.name} ${st.optional ? "(Literature)" : st.n + "." + t.n}: ${t.title}`, level: "Fourth", organiser: ORG, check: false,
+        for (const t of st.topics) out.push({ id: t.id, title: `${c.name} ${st.optional ? "(Literature)" : st.n + "." + t.n}: ${t.title}`, level, organiser: ORG, check: false,
           blurb: `${t.blurb} Eight exam-style questions with the reason for each answer.`, make: () => set(items(t.id, 8)) });
-        if (!st.optional) out.push({ id: `${st.key}-mixed`, title: `${c.name}: mixed questions (${tag}, ${st.goal})`, level: "Fourth", organiser: ORG, check: false,
+        if (!st.optional) out.push({ id: `${st.key}-mixed`, title: `${c.name}: mixed questions (${tag}, ${st.goal})`, level, organiser: ORG, check: false,
           blurb: `Ten questions from across the ${st.title.replace(/^Stage \d: /, "")} topics, a new mix every time, for revision.`, make: () => set(mixed(st.key)) });
       }
     }

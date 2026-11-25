@@ -1,0 +1,949 @@
+{
+ "section": "Scotland: SQA English exam climb (National 4 skills, National 5, Higher)",
+ "lessons": [
+  {
+   "id": "lesson-sqa-english-climb-en4-understand",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.1: Main ideas and key details (National 4 skills)",
+   "intention": "We are learning to find a passage's main ideas and the key details that support them, in the lines a question names.",
+   "criteria": [
+    "I can say what a paragraph is mainly about in one sentence.",
+    "I can find the details that back up a main idea.",
+    "I can answer only from the lines the question names."
+   ],
+   "steps": {
+    "start": "Read a short news story. In one sentence: what's it about? Now, which two details prove that?",
+    "teach": "Main idea first, then details. Box the lines the question names and read only inside the box. One mark is usually one clear point: give as many points as there are marks. Topic sentences (often a paragraph's first) usually carry the main idea.",
+    "practise": "The \"SQA English practice 1.1: Main ideas and key details\" sheet (its exam question is like Reading (National 4 unit), RUAE understanding questions), then the online practice.",
+    "check": "Give a new paragraph and ask for its main idea and two supporting details, in two minutes."
+   },
+   "use": [
+    "en4-understand"
+   ],
+   "home": "Read one article a day and say its main idea in a single sentence.",
+   "vocab": "main idea, key detail, topic sentence, line reference",
+   "understand": "Why do points from outside the lines named score nothing, even if they're true?",
+   "lookFor": "Says the question tests reading those lines carefully, so only points from there can be credited.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-ownwords",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.2: Putting it in your own words (National 4 skills)",
+   "intention": "We are learning to put a writer's ideas into our own words, so the marker can see we understand them.",
+   "criteria": [
+    "I can explain an idea without copying the writer's key words.",
+    "I can give one point per mark.",
+    "I can keep the meaning the same while changing the words."
+   ],
+   "steps": {
+    "start": "\"The ferry is a lifeline.\" Say it without using \"lifeline\". What did you have to understand to do that?",
+    "teach": "Own-words questions reward understanding, not copying. Find the key word or phrase, ask what it means here, then say that plainly. Simple words are fine: \"it's essential to them\". One clear point per mark, often as a short numbered list.",
+    "practise": "The \"SQA English practice 1.2: Putting it in your own words\" sheet (its exam question is like RUAE understanding questions), then the online practice.",
+    "check": "Give three sentences from a passage and ask for each in their own words."
+   },
+   "use": [
+    "en4-ownwords"
+   ],
+   "home": "Explain a headline to someone at home without using any of its words.",
+   "vocab": "own words, gloss, paraphrase, key phrase",
+   "understand": "Why does copying the writer's words score nothing in an own-words question?",
+   "lookFor": "Says it doesn't show you understood: the marker can't tell whether you know what the words mean.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-words",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.3: Word choice: what words suggest (National 4 skills)",
+   "intention": "We are learning to explain what a writer's word choice suggests, beyond its dictionary meaning.",
+   "criteria": [
+    "I can choose a single word or short phrase to comment on.",
+    "I can say what it suggests (its connotations).",
+    "I can link that to what the writer wants us to think or feel."
+   ],
+   "steps": {
+    "start": "\"Crowd\", \"mob\", \"gathering\": the same people. What does each word make you think of them?",
+    "teach": "A word choice answer has two parts: the word (quoted) and what it suggests. Use the frame: \"The word '…' suggests…, which shows…\". Connotations are what a word brings with it: \"lifeline\" suggests survival depends on it. Never just say \"it makes you want to read on\".",
+    "practise": "The \"SQA English practice 1.3: Word choice: what words suggest\" sheet (its exam question is like RUAE analysis questions), then the online practice.",
+    "check": "Give a sentence with a strong word and ask for a 2-mark comment on it."
+   },
+   "use": [
+    "en4-words"
+   ],
+   "home": "Find three strong words in an advert or headline and say what each suggests.",
+   "vocab": "word choice, connotation, suggests, effect",
+   "understand": "Why does saying a word is \"descriptive\" earn nothing?",
+   "lookFor": "Says every word describes something; the marks are for what this word suggests and why the writer chose it.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-imagery",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.4: Imagery: similes, metaphors and personification (National 4 skills)",
+   "intention": "We are learning to explain similes, metaphors and personification: what's being compared, and what that suggests.",
+   "criteria": [
+    "I can identify a simile, metaphor or personification.",
+    "I can say what the comparison is literally about.",
+    "I can explain what the comparison suggests about the subject."
+   ],
+   "steps": {
+    "start": "\"The terminal was a beehive.\" What's being compared to what? What does a beehive have that the terminal shares?",
+    "teach": "Imagery answers work in three steps: what's the literal thing? What's it compared to? What do they share, and what does that suggest? \"Lifeline\": a rope that saves someone drowning; the ferry is what keeps the islands alive. The name of the technique earns nothing on its own.",
+    "practise": "The \"SQA English practice 1.4: Imagery: similes, metaphors and personification\" sheet (its exam question is like RUAE analysis questions), then the online practice.",
+    "check": "Give two images from an unseen passage and ask for a full 2-mark answer on one."
+   },
+   "use": [
+    "en4-imagery"
+   ],
+   "home": "Collect one image from a song or article and explain what it compares and why.",
+   "vocab": "simile, metaphor, personification, literal, figurative",
+   "understand": "Why is \"it's a metaphor\" not enough for a mark?",
+   "lookFor": "Says the mark is for explaining what the comparison suggests; spotting it is only the start.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-sentences",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.5: Sentence structure: lists, short sentences, colons and dashes (National 4 skills)",
+   "intention": "We are learning to explain how sentence structure (lists, short sentences, questions, colons and dashes) creates an effect.",
+   "criteria": [
+    "I can spot a list, a short sentence, a question, a colon or a dash.",
+    "I can say what the structure does (builds up, stresses, explains).",
+    "I can link the structure to the writer's point."
+   ],
+   "steps": {
+    "start": "Read: \"Nobody is a customer. Everybody is welcome.\" Why two short sentences, not one long one?",
+    "teach": "Sentence structure means the shape of the sentence, not its words. Common features: lists (build up, show how many), short sentences (stress, shock), questions (involve the reader), colons (introduce an explanation or list), dashes (add or interrupt). Always say what the feature does to the meaning, not just that it's there.",
+    "practise": "The \"SQA English practice 1.5: Sentence structure: lists, short sentences, colons and dashes\" sheet (its exam question is like RUAE analysis questions), then the online practice.",
+    "check": "Give a passage with a list and a colon; ask for a comment on each."
+   },
+   "use": [
+    "en4-sentences"
+   ],
+   "home": "Spot one short sentence in an article or speech and say why it's short.",
+   "vocab": "sentence structure, list, colon, dash, rhetorical question, minor sentence",
+   "understand": "Why is \"the writer uses a list\" not an answer?",
+   "lookFor": "Says the mark is for what the list does in this sentence, such as showing how many problems there are or building up to a point.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-tone",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.6: Tone and the writer’s attitude (National 4 skills)",
+   "intention": "We are learning to identify a writer's tone and attitude, and explain the language that creates it.",
+   "criteria": [
+    "I can name a tone precisely: sarcastic, admiring, angry, nostalgic.",
+    "I can find the words that create it.",
+    "I can explain how they show the writer's attitude."
+   ],
+   "steps": {
+    "start": "Say \"Oh, great\" three ways: pleased, sarcastic, bored. What changes? How does a writer do that on the page?",
+    "teach": "Tone is the writer's voice: how they sound about their subject. Name it in one exact word, then prove it with a quotation and a comment. Clues: word choice (formal or chatty), punctuation (exclamations), sentence shape, sarcasm (saying the opposite of what's meant).",
+    "practise": "The \"SQA English practice 1.6: Tone and the writer’s attitude\" sheet (its exam question is like RUAE analysis questions), then the online practice.",
+    "check": "Give a short opinion piece and ask for its tone and one piece of evidence."
+   },
+   "use": [
+    "en4-tone"
+   ],
+   "home": "Read two reviews of the same thing and say how their tones differ.",
+   "vocab": "tone, attitude, sarcastic, formal, informal, nostalgic",
+   "understand": "Why does a precise tone word (\"sceptical\") earn more than a vague one (\"negative\")?",
+   "lookFor": "Says the precise word shows real understanding of the writer's attitude, which is what the question is testing.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-accuracy",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: sentences and punctuation",
+   "codes": [],
+   "title": "SQA English climb 1.7: Writing accurately: sentences, paragraphs and spelling (National 4 skills)",
+   "intention": "We are learning to write accurately: sentence ends, paragraphs, apostrophes and the spellings markers see wrong most.",
+   "criteria": [
+    "I can mark sentence boundaries and avoid comma splices.",
+    "I can use apostrophes for missing letters and ownership.",
+    "I can proofread my own writing and correct it."
+   ],
+   "steps": {
+    "start": "Read aloud: \"The ferry was late, we missed the bus.\" Where does your voice stop? That's a full stop, not a comma.",
+    "teach": "Technical accuracy is in every folio mark band. Fix comma splices with a full stop, a joining word or a semicolon. Apostrophes: missing letters (don't) or ownership (the island's ferry). Confusables: their/there/they're, to/too, of/have. Proofread by reading each sentence on its own, slowly.",
+    "practise": "The \"SQA English practice 1.7: Writing accurately: sentences, paragraphs and spelling\" sheet (its exam question is like Portfolio (technical accuracy)), then the online practice.",
+    "check": "Give a paragraph with eight mistakes and ask them to find and fix all eight."
+   },
+   "use": [
+    "en4-accuracy"
+   ],
+   "home": "Rewrite three text messages in full, accurate sentences.",
+   "vocab": "comma splice, apostrophe, proofread, paragraph, Standard English",
+   "understand": "Why can good ideas still get a low folio mark?",
+   "lookFor": "Says accuracy is part of every band: frequent errors that get in the way hold a piece down, however good the ideas.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-text",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 1.8: Writing about a text you’ve studied (National 4 skills)",
+   "intention": "We are learning to write about a text we've studied: a clear point, a short quotation and an explanation.",
+   "criteria": [
+    "I can make a point about a character or theme.",
+    "I can back it up with a short quotation.",
+    "I can explain how the quotation proves my point."
+   ],
+   "steps": {
+    "start": "Think of a character from a book or film you know. One word to describe them? Now, what moment proves it?",
+    "teach": "Critical writing starts with PEE: a point that answers the question, evidence (a short quotation or close reference), and an explanation of how it proves the point. Keep quotations short and fitted into your sentence. Explain the writer's choice, not just the story.",
+    "practise": "The \"SQA English practice 1.8: Writing about a text you’ve studied\" sheet (its exam question is like Critical reading (National 4 unit, then the National 5 essay)), then the online practice.",
+    "check": "Ask for one PEE paragraph on a character from a text they've studied."
+   },
+   "use": [
+    "en4-text"
+   ],
+   "home": "Choose a favourite film character and write three PEE sentences about them.",
+   "vocab": "point, evidence, explanation, quotation, character, theme",
+   "understand": "Why is retelling the story not the same as writing about the text?",
+   "lookFor": "Says retelling only shows you know what happens; the marks are for explaining how the writer creates meaning.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-ownwords",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.1: RUAE: understanding in your own words (National 5)",
+   "intention": "We are learning to answer National 5 understanding questions: precise points from the lines named, in our own words.",
+   "criteria": [
+    "I can find the right number of points for the marks.",
+    "I can gloss key words accurately in my own words.",
+    "I can answer in about a minute a mark."
+   ],
+   "steps": {
+    "start": "A 3-mark question: \"Explain in your own words three arguments…\" How many points? Where from? What's the trap?",
+    "teach": "Count the marks: that's the number of points. Underline the lines named. For each point, find the key phrase and translate it. Bullet points are fine. Never copy whole phrases: one or two key words lifted can lose the mark.",
+    "practise": "The \"SQA English practice 2.1: RUAE: understanding in your own words\" sheet (its exam question is like RUAE (National 5)), then the online practice.",
+    "check": "Time a 3-mark own-words question on an unseen paragraph: 3 minutes."
+   },
+   "use": [
+    "en5-ownwords"
+   ],
+   "home": "Summarise a news story in three bullet points without using its key words.",
+   "vocab": "own words, gloss, understanding, line reference",
+   "understand": "Why are understanding questions the safest marks in the RUAE paper?",
+   "lookFor": "Says they need careful reading, not technical knowledge, and they're a large share of the 30 marks.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-wordchoice",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.2: RUAE: analysing word choice (National 5)",
+   "intention": "We are learning to analyse word choice for 2 or 4 marks: the reference, its connotations and how it supports the writer's view.",
+   "criteria": [
+    "I can choose the most loaded word in a phrase.",
+    "I can give detailed connotations, not just a meaning.",
+    "I can link each comment to the question's focus."
+   ],
+   "steps": {
+    "start": "\"Phones have invaded our classrooms.\" Which word is doing the work? What does it suggest?",
+    "teach": "SQA marks analysis as reference plus comment: up to 2 marks each. A detailed comment explores connotations and links them to the question's focus (e.g. the writer's negative view). For 4 marks, give two references with detailed comments, or more with basic ones. Quote one word or a short phrase.",
+    "practise": "The \"SQA English practice 2.2: RUAE: analysing word choice\" sheet (its exam question is like RUAE (National 5)), then the online practice.",
+    "check": "Ask for a 4-mark word choice answer on an unseen opinion piece, then mark it with the 2-1-0 scale."
+   },
+   "use": [
+    "en5-wordchoice"
+   ],
+   "home": "Find two loaded words in a newspaper column and write a detailed comment on each.",
+   "vocab": "word choice, connotation, analyse, reference, comment",
+   "understand": "What turns a 1-mark comment into a 2-mark one?",
+   "lookFor": "Says a 2-mark comment explores what the word suggests in detail and links it to the question, not just giving its meaning.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-imagery",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.3: RUAE: analysing imagery (National 5)",
+   "intention": "We are learning to analyse imagery at National 5: the literal root of the image, and how it's applied to the subject.",
+   "criteria": [
+    "I can say what an image is literally about.",
+    "I can explain how that is applied to the subject.",
+    "I can write a detailed comment worth 2 marks."
+   ],
+   "steps": {
+    "start": "\"a timetable they can trust as surely as the tide\". What's the tide literally like? What's the writer saying about the timetable?",
+    "teach": "Use the SQA method: \"Just as [literal root]… so [the subject]…\". Explain the shared quality, then what it suggests about the writer's view. One image analysed fully is better than three named.",
+    "practise": "The \"SQA English practice 2.3: RUAE: analysing imagery\" sheet (its exam question is like RUAE (National 5)), then the online practice.",
+    "check": "Give two images from a passage; ask for a 4-mark answer."
+   },
+   "use": [
+    "en5-imagery"
+   ],
+   "home": "Find one metaphor in a sports report and write a \"just as… so…\" comment on it.",
+   "vocab": "imagery, literal, figurative, metaphor, simile, root",
+   "understand": "Why does the \"just as… so…\" frame help with imagery?",
+   "lookFor": "Says it makes you explain both halves of the comparison, which is what a detailed comment needs.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-structure",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.4: RUAE: sentence structure and punctuation (National 5)",
+   "intention": "We are learning to analyse sentence structure and punctuation for marks: name the feature, then explain its effect in context.",
+   "criteria": [
+    "I can identify lists, repetition, parenthesis, colons, short sentences and questions.",
+    "I can explain the effect of each in its context.",
+    "I can avoid general comments like \"it makes you read on\"."
+   ],
+   "steps": {
+    "start": "Read a sentence with a list of four problems, then a short one: \"It has failed.\" What does each structure do?",
+    "teach": "Identify the feature precisely, then explain what it does in this sentence: a list shows the range of problems; a short sentence gives a blunt, final judgement; a colon introduces an explanation; parenthesis adds an aside. A comment that could fit any sentence scores nothing.",
+    "practise": "The \"SQA English practice 2.4: RUAE: sentence structure and punctuation\" sheet (its exam question is like RUAE (National 5)), then the online practice.",
+    "check": "Ask for a 4-mark sentence structure answer on two paragraphs of an unseen passage."
+   },
+   "use": [
+    "en5-structure"
+   ],
+   "home": "Write a short persuasive paragraph that uses a list, a colon and a short sentence on purpose.",
+   "vocab": "sentence structure, parenthesis, repetition, climax, colon, minor sentence",
+   "understand": "Why does \"it emphasises the point\" rarely earn a mark on its own?",
+   "lookFor": "Says it could describe any feature; the mark needs to say what is emphasised and why, in this sentence.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-tone",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.5: RUAE: tone, and how a writer links ideas (National 5)",
+   "intention": "We are learning to identify tone and to explain how a sentence links one part of an argument to the next.",
+   "criteria": [
+    "I can name a tone precisely and prove it.",
+    "I can explain how a link sentence refers back and moves on.",
+    "I can quote from both sides of a link."
+   ],
+   "steps": {
+    "start": "\"And boats do break down.\" What came before this sentence? What comes after? How does it join them?",
+    "teach": "Tone: name it precisely and show the language that creates it. Link questions: quote the part of the sentence that looks back and say what it refers to, then quote the part that looks forward and say what it introduces. Both halves are needed for full marks.",
+    "practise": "The \"SQA English practice 2.5: RUAE: tone, and how a writer links ideas\" sheet (its exam question is like RUAE (National 5)), then the online practice.",
+    "check": "Give a passage with a clear link sentence; ask for a 2-mark link answer."
+   },
+   "use": [
+    "en5-tone"
+   ],
+   "home": "Find a paragraph opening in an article that links to the paragraph before, and explain how.",
+   "vocab": "tone, link, refer back, introduce, topic sentence",
+   "understand": "Why does a link answer need both a backward and a forward reference?",
+   "lookFor": "Says the question asks how it joins two parts, so it has to show what it connects at each end.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-summary",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.6: RUAE: the final question (summarising) (National 5)",
+   "intention": "We are learning to answer the National 5 final question: identify key points across the whole passage, in our own words.",
+   "criteria": [
+    "I can find the key points across the whole passage.",
+    "I can tell a key point from a supporting detail or example.",
+    "I can write each point briefly in my own words."
+   ],
+   "steps": {
+    "start": "List the five most important things the passage says. Which of your points are really examples, not points?",
+    "teach": "The final question asks for key ideas across the whole passage, usually 5 marks. Plan by noting one main idea per paragraph, then combine and cut. A key point is the writer's idea, not an example or statistic. Bullet points in your own words are best.",
+    "practise": "The \"SQA English practice 2.6: RUAE: the final question (summarising)\" sheet (its exam question is like RUAE (National 5), last question), then the online practice.",
+    "check": "Ask for a 5-point summary of an unseen passage in 8 minutes."
+   },
+   "use": [
+    "en5-summary"
+   ],
+   "home": "Summarise a long read in five bullet points of no more than ten words each.",
+   "vocab": "summary, key point, supporting detail, own words",
+   "understand": "Why is \"the writer uses statistics\" not a key point?",
+   "lookFor": "Says it describes a technique, not an idea: the summary wants what the writer argues, not how.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-scottish",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 2.7: The Scottish text: short questions and the 10-mark question (National 5)",
+   "intention": "We are learning to answer Scottish text questions: short analysis questions on an extract, then the 10-mark question that links it to the whole text.",
+   "criteria": [
+    "I can answer short analysis questions on an extract.",
+    "I can identify what the extract and the rest of the text share.",
+    "I can plan a 10-mark answer: commonality, extract, elsewhere."
+   ],
+   "steps": {
+    "start": "Read Mr Enfield's story from Jekyll and Hyde. What one word sums up Hyde here? Where else in the novel do we see that?",
+    "teach": "The 10-mark question has three parts: 2 marks for what the extract and the rest of the text have in common (the commonality), 2 marks for a reference and comment from the extract, 6 marks for references and comments from elsewhere in the text. Bullet points are accepted. Prepare quotations from across the set text for each key theme.",
+    "practise": "The \"SQA English practice 2.7: The Scottish text: short questions and the 10-mark question\" sheet (its exam question is like Critical Reading, Section 1 (National 5)), then the online practice.",
+    "check": "Ask for a 10-mark plan (commonality, two extract points, three elsewhere) in 5 minutes."
+   },
+   "use": [
+    "en5-scottish"
+   ],
+   "home": "Make a theme grid for your own Scottish set text: three themes, three quotations each.",
+   "vocab": "Scottish text, commonality, extract, elsewhere in the text, theme",
+   "understand": "Why can the 10-mark question be answered in bullet points?",
+   "lookFor": "Says it is marked point by point (commonality, extract, elsewhere), so clear separate points are rewarded and easy to credit.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-essay",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 2.8: The critical essay (National 5)",
+   "intention": "We are learning to plan and write a National 5 critical essay: a line of thought, analysis of techniques, and relevance to the question.",
+   "criteria": [
+    "I can write an introduction that answers the question.",
+    "I can write topic sentences linked to the question.",
+    "I can analyse quotations, not just explain the story."
+   ],
+   "steps": {
+    "start": "Two essay openings: one starts with the plot, one with an answer to the question. Which would a marker prefer, and why?",
+    "teach": "A critical essay has a line of thought: the introduction answers the question, each paragraph develops one point (topic sentence, reference, analysis, link back), and the conclusion sums up. It must be on a different genre from the Scottish text answered in Section 1. Prepare two texts, and adapt to the question asked rather than writing a memorised essay.",
+    "practise": "The \"SQA English practice 2.8: The critical essay\" sheet (its exam question is like Critical Reading, Section 2 (National 5)), then the online practice.",
+    "check": "Ask for an introduction and one body paragraph in 20 minutes, marked with the 20-mark bands."
+   },
+   "use": [
+    "en5-essay"
+   ],
+   "home": "Write a thesis for an essay on a film you know well, and three topic sentences.",
+   "vocab": "critical essay, line of thought, topic sentence, analysis, relevance",
+   "understand": "Why should a prepared essay be adapted, not repeated, in the exam?",
+   "lookFor": "Says relevance to the question is in every mark band, so an essay that doesn't answer the question asked can't reach the higher bands.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-ownwords",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.1: Higher RUAE: understanding and summarising (Higher)",
+   "intention": "We are learning to answer Higher understanding questions: precise glosses of the writer's argument and stance.",
+   "criteria": [
+    "I can identify the writer's line of argument.",
+    "I can gloss abstract ideas precisely.",
+    "I can answer from the lines named, one point per mark."
+   ],
+   "steps": {
+    "start": "\"The landscape has been grazed, burned and drained until it has forgotten what it used to be.\" What's the writer's argument in plain words?",
+    "teach": "Higher understanding questions often want the writer's argument, not just facts. Gloss precisely: \"damaged by farming and land management until little natural habitat is left\". Watch for qualifiers (\"partly\", \"often\") that change a point.",
+    "practise": "The \"SQA English practice 3.1: Higher RUAE: understanding and summarising\" sheet (its exam question is like RUAE (Higher)), then the online practice.",
+    "check": "Time a 4-mark understanding question on an unseen paragraph: 4 minutes."
+   },
+   "use": [
+    "enh-ownwords"
+   ],
+   "home": "Read a newspaper editorial and summarise its argument in two sentences.",
+   "vocab": "gloss, argument, stance, qualifier",
+   "understand": "Why does Higher reward precise glosses over general ones?",
+   "lookFor": "Says a vague gloss could fit many ideas; a precise one shows you understand exactly what this writer argues.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-analysis",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.2: Higher analysis: language working together (Higher)",
+   "intention": "We are learning to analyse how features of language work together to create a writer's view, at Higher depth.",
+   "criteria": [
+    "I can choose features from word choice, imagery, sentence structure and tone.",
+    "I can write insightful comments that link to the writer's purpose.",
+    "I can analyse two features in one quotation where they combine."
+   ],
+   "steps": {
+    "start": "\"a green desert\". What's odd about the phrase? How does that oddness work on the reader?",
+    "teach": "Higher analysis needs insight: go beyond connotations to what the writer achieves. Use any feature the question allows, and choose the richest quotations. An oxymoron like \"green desert\" combines word choice and imagery: say how each part works and what the tension suggests.",
+    "practise": "The \"SQA English practice 3.2: Higher analysis: language working together\" sheet (its exam question is like RUAE (Higher)), then the online practice.",
+    "check": "Ask for a 4-mark analysis answer on two paragraphs, marked with the 2-1-0 scale."
+   },
+   "use": [
+    "enh-analysis"
+   ],
+   "home": "Find one sentence in a quality newspaper that uses two techniques together and analyse it.",
+   "vocab": "analysis, insight, oxymoron, juxtaposition, effect",
+   "understand": "What makes a Higher comment \"insightful\" rather than just \"detailed\"?",
+   "lookFor": "Says it explains how the language serves the writer's purpose or argument, not only what the words suggest.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-link",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.3: Higher: structure and the link question (Higher)",
+   "intention": "We are learning to explain how a sentence or paragraph helps the structure of an argument: linking, turning, and developing.",
+   "criteria": [
+    "I can explain how a sentence links to what comes before and after.",
+    "I can explain a turning point in an argument.",
+    "I can comment on how structure supports the writer's purpose."
+   ],
+   "steps": {
+    "start": "\"I am not against trees.\" Why would a writer arguing against rewilding say that?",
+    "teach": "Structure questions ask what a sentence does in the argument: concedes a point, turns the argument, introduces a new idea, or links two sections. Quote and explain both directions for a link. For a turning point, say what changes and why it makes the argument stronger.",
+    "practise": "The \"SQA English practice 3.3: Higher: structure and the link question\" sheet (its exam question is like RUAE (Higher)), then the online practice.",
+    "check": "Give a short sentence from a passage and ask how it develops the argument, for 3 marks."
+   },
+   "use": [
+    "enh-link"
+   ],
+   "home": "In an opinion column, find the sentence where the argument turns, and explain it.",
+   "vocab": "structure, concession, turning point, link, development",
+   "understand": "Why might a writer concede a point to the other side?",
+   "lookFor": "Says it makes them seem fair and reasonable, which makes their own argument more persuasive.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-tone",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.4: Higher: tone, register and stance (Higher)",
+   "intention": "We are learning to analyse tone, register and stance: how a writer sounds, and how that shapes the argument.",
+   "criteria": [
+    "I can identify tone and register precisely.",
+    "I can explain how tone is created by several features.",
+    "I can link tone to the writer's stance."
+   ],
+   "steps": {
+    "start": "Read the farmer's opening paragraph. What one word describes how he sounds? Which words make you hear it?",
+    "teach": "Tone at Higher is often mixed or shifting: defiant then conciliatory; ironic then sincere. Name it precisely, show the language that creates it, and explain how it serves the writer's stance. Register (formal or colloquial) is part of tone.",
+    "practise": "The \"SQA English practice 3.4: Higher: tone, register and stance\" sheet (its exam question is like RUAE (Higher)), then the online practice.",
+    "check": "Ask for a 4-mark tone answer: how does the writer create a tone of defiance?"
+   },
+   "use": [
+    "enh-tone"
+   ],
+   "home": "Listen to a political speech and note two shifts in tone.",
+   "vocab": "tone, register, stance, defiant, conciliatory, ironic",
+   "understand": "Why do writers sometimes shift tone during an argument?",
+   "lookFor": "Says it can win over a reader: defiance shows conviction, then a warmer tone invites agreement.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-evaluate",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.5: Higher: evaluating effectiveness (Higher)",
+   "intention": "We are learning to evaluate effectiveness: how well a paragraph, opening or conclusion does its job, with evidence.",
+   "criteria": [
+    "I can say what makes a conclusion effective.",
+    "I can support my evaluation with references.",
+    "I can link the ending back to the passage as a whole."
+   ],
+   "steps": {
+    "start": "Read the last paragraph. Does it work as an ending? What does it do that a good ending should?",
+    "teach": "An evaluation question asks how effective something is. Say what it does (sums up, returns to the opening, ends on a strong image, calls to action), give a reference, and explain why that works for this passage. Saying \"it is effective\" scores nothing without the reason.",
+    "practise": "The \"SQA English practice 3.5: Higher: evaluating effectiveness\" sheet (its exam question is like RUAE (Higher)), then the online practice.",
+    "check": "Ask for a 3-mark evaluation of a conclusion from an unseen passage."
+   },
+   "use": [
+    "enh-evaluate"
+   ],
+   "home": "Look at the last line of three articles and rank them as endings, with a reason each.",
+   "vocab": "evaluate, effective, conclusion, circular structure, call to action",
+   "understand": "Why does an evaluation answer still need a reference?",
+   "lookFor": "Says the marks are for showing how the language achieves the effect, which needs evidence from the passage.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-compare",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.6: Higher: the comparison question (Higher)",
+   "intention": "We are learning to answer the Higher comparison question: the key areas where two writers agree or disagree, with evidence from both.",
+   "criteria": [
+    "I can identify three or more key areas of agreement or disagreement.",
+    "I can support each with references to both passages.",
+    "I can write the answer in about 15 minutes."
+   ],
+   "steps": {
+    "start": "Two writers on rewilding. In one sentence each, what do they believe? Where exactly do they clash?",
+    "teach": "The 5-mark comparison question rewards key areas of agreement or disagreement, each supported by both passages. Plan a grid: area, passage 1, passage 2. Bullet points or continuous prose are both fine. Three well-developed areas usually reach full marks; a list of minor points doesn't.",
+    "practise": "The \"SQA English practice 3.6: Higher: the comparison question\" sheet (its exam question is like RUAE (Higher), last question (5 marks)), then the online practice.",
+    "check": "Ask for a comparison grid of three areas on two short passages, then a 5-mark answer."
+   },
+   "use": [
+    "enh-compare"
+   ],
+   "home": "Read two opinion pieces on the same topic and list three points where they disagree.",
+   "vocab": "comparison, agree, disagree, key area, both passages",
+   "understand": "Why does each point need evidence from both passages?",
+   "lookFor": "Says the question is about how the two writers' ideas relate, so a point about only one passage isn't a comparison.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-scottish",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 3.7: Higher Scottish text: Burns and the 10-mark question (Higher)",
+   "intention": "We are learning to answer Higher Scottish text questions on poetry: analysis of the extract, then the 10-mark question across the poet's work.",
+   "criteria": [
+    "I can analyse language in a Scottish poem, including Scots.",
+    "I can identify a theme shared by the poem and other poems by the poet.",
+    "I can plan a 10-mark answer with references from at least one other poem."
+   ],
+   "steps": {
+    "start": "\"Wee, sleekit, cow'rin, tim'rous beastie\". What do these words do? Why does Burns write in Scots?",
+    "teach": "For poetry, the 10-mark question asks for the commonality across poems: 2 marks; the given poem: 2 marks; other poems by the poet: 6 marks. Prepare quotations from each set poem by theme. Scots words carry tone and voice: comment on them like any word choice.",
+    "practise": "The \"SQA English practice 3.7: Higher Scottish text: Burns and the 10-mark question\" sheet (its exam question is like Critical Reading, Section 1 (Higher)), then the online practice.",
+    "check": "Ask for a 10-mark plan on To a Mouse and one other Burns poem."
+   },
+   "use": [
+    "enh-scottish"
+   ],
+   "home": "Read another Burns poem and note one link to To a Mouse.",
+   "vocab": "Scots, theme, commonality, poetic voice, stanza",
+   "understand": "Why does the 10-mark question reward references from other poems so highly?",
+   "lookFor": "Says 6 of the 10 marks test knowledge of the poet's wider work, so preparing the whole set of poems matters most.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-essay",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 3.8: The Higher critical essay (Higher)",
+   "intention": "We are learning to write a Higher critical essay: a sustained, convincing line of thought with insightful analysis.",
+   "criteria": [
+    "I can write a thesis that addresses the whole question.",
+    "I can sustain a line of thought from paragraph to paragraph.",
+    "I can analyse techniques insightfully and evaluate their effect on the text as a whole."
+   ],
+   "steps": {
+    "start": "Read a Higher essay question. Underline every part of it. How many parts must the essay answer?",
+    "teach": "Higher essays must answer all parts of the question, including \"the text as a whole\". A thesis sets the line of thought; each paragraph develops it with analysis of techniques (structure, imagery, dialogue, symbolism); the conclusion evaluates. Prepare two texts in depth, and adapt to the question asked.",
+    "practise": "The \"SQA English practice 3.8: The Higher critical essay\" sheet (its exam question is like Critical Reading, Section 2 (Higher)), then the online practice.",
+    "check": "Ask for a thesis, plan and one body paragraph in 25 minutes, marked with the 20-mark bands."
+   },
+   "use": [
+    "enh-essay"
+   ],
+   "home": "Choose a film and write a Higher-style thesis about how a decision shapes its meaning.",
+   "vocab": "line of thought, thesis, insightful, evaluation, text as a whole",
+   "understand": "Why does \"the text as a whole\" matter in a Higher essay question?",
+   "lookFor": "Says it asks how the part (a character, scene or decision) shapes the whole text's meaning, which is where the top bands' insight comes from.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-start-here",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, National 4 skills: start here",
+   "intention": "We are finding out which National 4 skills topics are secure and which to learn first, learning what National 4 English expects, and making a plan.",
+   "criteria": [
+    "I can try a question on each National 4 skills topic and show what I already know.",
+    "I know what National 4 English expects, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: the reading and writing skills National 5 takes for granted. National 4 has no exam, so this stage is about being ready.",
+    "teach": "Read the \"What the exam expects: SQA National 4 skills English\" sheet together. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"SQA English climb: National 4 skills check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"SQA English climb: National 4 skills tracker\" sheet: topics marked ✗ go first. Agree the exam date, folio deadline and sessions a week."
+   },
+   "use": [
+    "en4-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading good journalism.",
+   "vocab": "RUAE, Critical Reading, portfolio, folio, reference, comment",
+   "understand": "Why do analysis answers always need both a reference and a comment?",
+   "lookFor": "Says SQA marks the comment on the reference: a quotation alone scores nothing, and a comment with no reference can't be credited.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-writing",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb, National 4 skills: folio writing",
+   "intention": "We are learning to plan, draft, check and redraft a folio piece, aiming at National 4.",
+   "criteria": [
+    "I can plan a piece before drafting.",
+    "I can check my draft against the National 4 skills list and correct it.",
+    "I can redraft once, acting on one piece of feedback."
+   ],
+   "steps": {
+    "start": "How is a folio piece marked? (Out of 15: content, structure, expression and technical accuracy.) What does each reward?",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The stage's two folio task sheets, one each lesson (\"SQA English folio task: personal reflective writing (National 4 skills)\" and \"SQA English folio task: persuasive writing (National 4 skills)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the 15-mark bands. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "folio, portfolio, draft, redraft, purpose, audience",
+   "understand": "Why is a folio piece redrafted, when exam answers aren't?",
+   "lookFor": "Says the folio is written over time in class, so feedback and redrafting are how it reaches its best band; the final piece is what's marked.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en4-mini-papers",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, National 4 skills: mini papers",
+   "intention": "We are practising under exam conditions: a paper cut down, timed, and marked the SQA way.",
+   "criteria": [
+    "I can manage my time at about a minute a mark.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: reading (National 4 skills) (SQA English)\" and \"Mini paper: reading and a text (National 4 skills) (SQA English)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both folio pieces drafted, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "en4-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, marking instructions, a minute a mark",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing, and the final question (summary, comparison or 10-marker) carries the most marks.",
+   "sqa": "National 4 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-start-here",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, National 5: start here",
+   "intention": "We are finding out which National 5 topics are secure and which to learn first, learning what National 5 English expects, and making a plan.",
+   "criteria": [
+    "I can try a question on each National 5 topic and show what I already know.",
+    "I know what National 5 English expects, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: National 5 English, two question papers (RUAE and Critical Reading) and the folio. Look back at what's secure from the last stage.",
+    "teach": "Read the \"What the exam expects: SQA National 5 English\" sheet together, and the \"SQA National 5 and Higher English: the exams in a page\" sheet. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"SQA English climb: National 5 check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"SQA English climb: National 5 tracker\" sheet: topics marked ✗ go first. Agree the exam date, folio deadline and sessions a week."
+   },
+   "use": [
+    "en5-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading good journalism.",
+   "vocab": "RUAE, Critical Reading, portfolio, folio, reference, comment",
+   "understand": "Why do analysis answers always need both a reference and a comment?",
+   "lookFor": "Says SQA marks the comment on the reference: a quotation alone scores nothing, and a comment with no reference can't be credited.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-writing",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb, National 5: folio writing",
+   "intention": "We are learning to plan, draft, check and redraft a folio piece, aiming at National 5.",
+   "criteria": [
+    "I can plan a piece before drafting.",
+    "I can check my draft against the National 5 list and correct it.",
+    "I can redraft once, acting on one piece of feedback."
+   ],
+   "steps": {
+    "start": "How is a folio piece marked? (Out of 15: content, structure, expression and technical accuracy.) What does each reward?",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The stage's two folio task sheets, one each lesson (\"SQA English folio task: prose fiction (National 5)\" and \"SQA English folio task: argumentative essay (National 5)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the 15-mark bands. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "folio, portfolio, draft, redraft, purpose, audience",
+   "understand": "Why is a folio piece redrafted, when exam answers aren't?",
+   "lookFor": "Says the folio is written over time in class, so feedback and redrafting are how it reaches its best band; the final piece is what's marked.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-en5-mini-papers",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, National 5: mini papers",
+   "intention": "We are practising under exam conditions: a paper cut down, timed, and marked the SQA way.",
+   "criteria": [
+    "I can manage my time at about a minute a mark.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: RUAE (like National 5) (SQA English)\" and \"Mini paper: Critical Reading (like National 5) (SQA English)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both folio pieces drafted, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "en5-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, marking instructions, a minute a mark",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing, and the final question (summary, comparison or 10-marker) carries the most marks.",
+   "sqa": "National 5 English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-start-here",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, Higher: start here",
+   "intention": "We are finding out which Higher topics are secure and which to learn first, learning what Higher English expects, and making a plan.",
+   "criteria": [
+    "I can try a question on each Higher topic and show what I already know.",
+    "I know what Higher English expects, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: Higher English, two question papers (RUAE and Critical Reading) and the folio. Look back at what's secure from the last stage.",
+    "teach": "Read the \"What the exam expects: SQA Higher English\" sheet together. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"SQA English climb: Higher check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"SQA English climb: Higher tracker\" sheet: topics marked ✗ go first. Agree the exam date, folio deadline and sessions a week."
+   },
+   "use": [
+    "enh-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading good journalism.",
+   "vocab": "RUAE, Critical Reading, portfolio, folio, reference, comment",
+   "understand": "Why do analysis answers always need both a reference and a comment?",
+   "lookFor": "Says SQA marks the comment on the reference: a quotation alone scores nothing, and a comment with no reference can't be credited.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-writing",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb, Higher: folio writing",
+   "intention": "We are learning to plan, draft, check and redraft a folio piece, aiming at Higher.",
+   "criteria": [
+    "I can plan a piece before drafting.",
+    "I can check my draft against the Higher list and correct it.",
+    "I can redraft once, acting on one piece of feedback."
+   ],
+   "steps": {
+    "start": "How is a folio piece marked? (Out of 15: content, structure, expression and technical accuracy.) What does each reward?",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The stage's two folio task sheets, one each lesson (\"SQA English folio task: personal reflective essay (Higher)\" and \"SQA English folio task: persuasive essay (Higher)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the 15-mark bands. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "folio, portfolio, draft, redraft, purpose, audience",
+   "understand": "Why is a folio piece redrafted, when exam answers aren't?",
+   "lookFor": "Says the folio is written over time in class, so feedback and redrafting are how it reaches its best band; the final piece is what's marked.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enh-mini-papers",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, Higher: mini papers",
+   "intention": "We are practising under exam conditions: a paper cut down, timed, and marked the SQA way.",
+   "criteria": [
+    "I can manage my time at about a minute a mark.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: RUAE (like Higher) (SQA English)\" and \"Mini paper: Critical Reading (like Higher) (SQA English)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both folio pieces drafted, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "enh-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, marking instructions, a minute a mark",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing, and the final question (summary, comparison or 10-marker) carries the most marks.",
+   "sqa": "Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-my-next-step",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb: my next step (self-guided, National 4 to Higher)",
+   "intention": "We are learning to work through the SQA English climb on our own: one step a session, marking our own answers honestly.",
+   "criteria": [
+    "I can find my next step on the climb page and do it.",
+    "I can count the marks a written answer would get.",
+    "I know when to move on to the next stage."
+   ],
+   "steps": {
+    "start": "Open popspell.com/english-climb.html?course=sqa together and press My next step.",
+    "teach": "Show how the page works: the check, topics in order, folio tasks with a timer and checklist, then a mini paper. Show how to mark an analysis answer: one reference plus a detailed comment is 2 marks.",
+    "practise": "The \"SQA English climb: my route from National 4 to Higher\" sheet to keep, then the first step on the page.",
+    "check": "Ask the pupil to explain what secure means and what they'll do next session."
+   },
+   "use": [],
+   "home": "Ten minutes of reading every day, and one climb session two or three times a week.",
+   "vocab": "self-assessment, marking, model answer, secure",
+   "understand": "Why should you count your own marks, not just read the model answer?",
+   "lookFor": "Says counting shows exactly which comment was basic and which was detailed, so you know what to change next time.",
+   "sqa": "National 5 English"
+  }
+ ]
+}

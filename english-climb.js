@@ -46,10 +46,10 @@
     return { kind: "done", st };
   }
   const STEP_TEXT = {
-    start: () => ["Where are you starting?", "Pick the grade you’re working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know."],
+    start: () => ["Where are you starting?", `Pick the ${C.key === "sqa" ? "level" : "grade"} you’re working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know.`],
     check: s => [`Take the stage ${s.st.n} check`, `${s.st.n === 1 ? "Two questions" : "One question"} on each of the ${s.st.topics.length} topics for ${s.st.goal}. It shows which topics to work on first.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Eight exam-style questions; six or more right makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
-    write: s => [`Writing task: ${s.w.kind.toLowerCase()}`, `Half of every paper is the writing question. Plan, write for about ${s.w.minutes - 10} minutes, check your work against a list, then compare it with a model answer at ${s.w.grade}.`],
+    write: s => [`Writing task: ${s.w.kind.toLowerCase()}`, `${C.writingWhy || "Half of every paper is the writing question."} Plan, write for about ${s.w.minutes - 10} minutes, check your work against a list, then compare it with a model answer at ${s.w.grade}.`],
     paper: s => ["Do a mini paper", `Every stage ${s.st.n} topic is secure. Ten mixed questions: six or more right and you’re ready for the next stage. Topics that lose marks go back on your list. For a full paper with longer answers, print the mini paper from your teacher’s pack.`],
     stage: s => [`Move up to stage ${s.to.n}`, `You’ve finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}: ${s.to.about}`],
     done: () => ["Keep your marks sharp", "You’ve climbed every stage. Keep doing mini papers and writing tasks, and go back to any topic that loses marks."]
@@ -123,7 +123,8 @@
     if (!p) return "";
     let body = p.text.split(/\n\n+/).map(par => `<p>${esc(par).replace(/\n/g, "<br>")}</p>`).join("");
     if (p.mark) body = body.replace(esc(p.mark), m => `<mark>${m}</mark>`);
-    return `<article class="ec-text${p.kind === "poem" || p.kind === "play" ? " verse" : ""}"><p class="ec-src"><b>${esc(p.title)}</b> · ${esc(p.by)}</p>${body}</article>`;
+    const long = p.kind === "poem" && p.text.split("\n").length > 20 ? " long" : ""; // a long poem: two columns
+    return `<article class="ec-text${p.kind === "poem" || p.kind === "play" ? " verse" : ""}${long}"><p class="ec-src"><b>${esc(p.title)}</b> · ${esc(p.by)}</p>${body}</article>`;
   }
 
   // ---------- Running a set of questions: the check, a topic, a mini paper ----------
@@ -213,7 +214,7 @@
     const words = s => (s.trim().match(/\S+/g) || []).length;
     const show = () => {
       clearInterval(timer);
-      const head = `<div class="ec-task"><span class="cl-chip">${esc(w.paper)} · ${w.minutes} minutes · 40 marks</span><h1>${esc(w.q)}</h1></div>`;
+      const head = `<div class="ec-task"><span class="cl-chip">${esc(w.paper)} · ${w.minutes} minutes · ${w.marks || 40} marks</span><h1>${esc(w.q)}</h1></div>`;
       let body = "", foot = "";
       if (step === "plan") {
         body = `${head}<div class="ec-cols"><section><h2>Plan (about 5 minutes)</h2><ol class="ec-list">${w.plan.map(p => `<li>${esc(p)}</li>`).join("")}</ol></section>
@@ -225,7 +226,7 @@
       } else if (step === "check") {
         const box = (items, set) => items.map((p, k) => `<label class="ec-tick"><input type="checkbox" data-set="${set}" data-k="${k}"> <span>${esc(p)}</span></label>`).join("");
         body = `${head}<p class="ec-small">Read your writing again${draft() ? " (it’s saved on this device)" : ""}. Tick only what is really true. Be honest: it’s for you.</p>
-          <div class="ec-cols"><section><h2>Content and organisation</h2>${box(list.content, "c")}</section><section><h2>Accuracy</h2>${box(list.accuracy, "a")}</section></div>`;
+          <div class="ec-cols"><section><h2>${esc((C.checkLabels || [])[0] || "Content and organisation")}</h2>${box(list.content, "c")}</section><section><h2>${esc((C.checkLabels || [])[1] || "Accuracy")}</h2>${box(list.accuracy, "a")}</section></div>`;
         foot = `<button class="cl-btn primary" id="model">See the model answer →</button>`;
       } else {
         const ticked = data.writing[w.id] ? data.writing[w.id].ticked : 0, total = list.content.length + list.accuracy.length;

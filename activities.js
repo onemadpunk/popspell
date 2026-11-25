@@ -4426,7 +4426,7 @@ window.PopActivities = (() => {
 
   // The English exam climbs (GCSE, and Scotland's National 5 and Higher): their bank is in exam-english/, loaded
   // before this file on the pages that use it. Set by the teacher, like the secondary practice.
-  const englishExam = window.PopEnglishExam ? window.PopEnglishExam.activities({ choice }) : [];
+  const englishExam = key => window.PopEnglishExam ? window.PopEnglishExam.activities({ choice }, key) : [];
   const AREAS = [
     { id: "games", title: "Games with Pip", colour: "#0F766E", icon: "🎮", activities: trailGames.concat(switchGames, canopyGames), game: true },
     { id: "word-games", title: "Word games", colour: "#334155", icon: "🧩", activities: wordGames, game: true, older: true },
@@ -4439,7 +4439,8 @@ window.PopActivities = (() => {
     // More of England's curriculum, beyond what the CfE activities reach: set by the teacher, like the grammar
     { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
-    { id: "english-exam", title: "English exam climb (GCSE)", colour: "#1E40AF", icon: "🎓", activities: englishExam, assignedOnly: true },
+    { id: "english-exam", title: "English exam climb (GCSE)", colour: "#1E40AF", icon: "🎓", activities: englishExam("gcse"), assignedOnly: true },
+    { id: "english-exam-sqa", title: "English exam climb (SQA National 5 and Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
     { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary.filter(a => !/^Numeracy/.test(a.organiser)), assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },

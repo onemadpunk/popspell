@@ -16,6 +16,9 @@
 .ec-text p { margin: 0 0 7px; }
 .ec-text .ec-src { font-family: var(--font); font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
 .ec-text .ec-src b { color: var(--ink); }
+.ec-text.long { column-count: 2; column-gap: 18px; }
+.ec-text.long .ec-src, .ec-text.long p:last-child { column-span: all; }
+.ec-text.long p { break-inside: avoid; }
 .ec-text mark { background: #fff1a8; padding: 0 2px; border-radius: 3px; box-shadow: 0 0 0 2px #fff1a8; }
 
 /* A writing task */
