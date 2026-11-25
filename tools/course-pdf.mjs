@@ -5,7 +5,8 @@
    then sessions 1 to 20, 21 to 40 and 41 to 60 as tutor copies (plan, pupil's sheets, answers), and the
    pupil's sheets for all 60 sessions on their own, to print as the pupil's workbook.
    Options: --name "Sam" (the pupil's name on the sheets), --start 2026-12-01 (dates in the plan),
-   --per-week 2. It needs Playwright, like sheet-check. */
+   --per-week 2, --edition parent (step-by-step guides for a parent teaching at home in place of the tutor
+   plans). It needs Playwright, like sheet-check. */
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -19,8 +20,9 @@ try { ({ chromium } = await import("playwright")); } catch {
   console.error("course-pdf needs Playwright: npm install --no-save playwright && npx playwright install chromium");
   process.exit(2);
 }
-const JOBS = [["front", "tutor", "0 Tutor guide, plan and tracker"], ["1-20", "tutor", "1 Sessions 1-20 (tutor copy)"], ["21-40", "tutor", "2 Sessions 21-40 (tutor copy)"],
-  ["41-60", "tutor", "3 Sessions 41-60 with mock papers (tutor copy)"], ["all", "pupil", "4 Pupil workbook (all sessions, no answers)"]];
+const PARENT = arg("edition") === "parent", WHO = PARENT ? "parent's" : "tutor";
+const JOBS = [["front", "tutor", PARENT ? "0 Parent's guide, plan and tracker" : "0 Tutor guide, plan and tracker"], ["1-20", "tutor", `1 Sessions 1-20 (${WHO} copy)`], ["21-40", "tutor", `2 Sessions 21-40 (${WHO} copy)`],
+  ["41-60", "tutor", `3 Sessions 41-60 with practice exams (${WHO} copy)`], ["all", "pupil", "4 Pupil workbook (all sessions, no answers)"]];
 const TYPES = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webp": "image/webp", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
 const server = http.createServer((req, res) => {
   const file = path.join(ROOT, path.normalize(decodeURIComponent(req.url.split("?")[0])));
@@ -35,10 +37,10 @@ const errors = [];
 page.on("pageerror", e => errors.push(e.message));
 await page.goto(`http://127.0.0.1:${server.address().port}/course.html`);
 await page.waitForSelector("#make");
-const code = await page.evaluate(({ who, start, perWeek }) => {
-  const made = PopCourse.use(PopCourse.make("gcse-1-3", who, { start: start ? new Date(`${start}T12:00:00`) : null, perWeek: Number(perWeek) || 2 }));
+const code = await page.evaluate(({ who, start, perWeek, edition }) => {
+  const made = PopCourse.use(PopCourse.make("gcse-1-3", who, { start: start ? new Date(`${start}T12:00:00`) : null, perWeek: Number(perWeek) || 2, edition }));
   return made.code;
-}, { who: arg("name"), start: arg("start"), perWeek: arg("per-week") });
+}, { who: arg("name"), start: arg("start"), perWeek: arg("per-week"), edition: arg("edition") });
 if (OUT) fs.mkdirSync(OUT, { recursive: true });
 const bad = [];
 for (const [which, copy, name] of JOBS) {

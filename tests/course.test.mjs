@@ -60,3 +60,18 @@ test("a made course: full teaching sessions, 80-mark mock papers with no repeats
     assert.ok(pupil.length < all.length);
   }
 });
+
+test("the parent edition: every teaching session has what to say and what to say when stuck, and a step-by-step page", () => {
+  for (const s of course.sessions.filter(s => !s.kind)) {
+    assert.ok(s.say && s.say.length >= 2, `${s.t}: what to say`);
+    assert.ok(s.stuck && s.stuck.length >= 2, `${s.t}: if they're stuck`);
+  }
+  const made = C.make("gcse-1-3", "", { edition: "parent" });
+  assert.equal(made.edition, "parent");
+  const one = C.pagesOf(made, "session-3", "answers").join("");
+  assert.match(one, /Parent(?:'|&#39;)s guide: session 3/);
+  assert.match(one, /If they(?:'|&#39;)re stuck/);
+  assert.doesNotMatch(one, /Tutor plan/);
+  assert.match(C.pagesOf(made, "front", "answers").join(""), /A parent(?:'|&#39;)s guide/);
+  assert.match(C.pagesOf(C.make("gcse-1-3", ""), "session-3", "answers").join(""), /Tutor plan: session 3/);
+});

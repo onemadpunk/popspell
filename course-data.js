@@ -529,5 +529,243 @@ window.PopCourseData = (() => {
         home: "Real past papers from the exam board's website, one a week, marked with their mark schemes." }
     ]
   };
+  /* The parent edition (homeschool): for a parent who isn't confident in maths, each teaching session
+     also has what to say, in plain words, to read aloud or say in their own words (say), and what to
+     say when the child is stuck (stuck). Keyed by session title. */
+  const PARENT = {
+    "Place value and ordering decimals": {
+      say: ["Every digit in a number has a value that depends on where it sits. In 4 728, the 7 is in the hundreds column, so it's worth 700, not 7.",
+        "Each column is worth ten times the one to its right: ones, tens, hundreds, thousands. After the decimal point come tenths, hundredths, thousandths.",
+        "To compare decimals, make them the same length by adding zeros on the end: 0.6 becomes 0.600 and 0.53 becomes 0.530. Now it's easy to see 0.600 is bigger.",
+        "A longer decimal is not a bigger one. Think of money: £0.60 is more than £0.53."],
+      stuck: ["Draw the columns (thousands, hundreds, tens, ones) and write the number in them, one digit per box.", "Say it as money: is 60p more or less than 53p?", "Add zeros so both decimals have the same number of digits, then compare from the left."] },
+    "Negative numbers": {
+      say: ["Negative numbers are below zero, like temperatures in winter. Picture a thermometer: up means warmer, down means colder.",
+        "−8 is colder than −3, so −8 is smaller. The bigger the number after the minus sign, the smaller it really is.",
+        "To find the difference between −6 and 4, count up from −6 to 0 (that's 6), then from 0 to 4 (that's 4). 6 + 4 = 10."],
+      stuck: ["Draw a thermometer from −10 to 10 and point at each number.", "Count the jumps out loud, one at a time.", "Ask: is it getting warmer (up) or colder (down)?"] },
+    "Rounding, significant figures and estimating": {
+      say: ["Rounding means giving a simpler number that's close. Find the digit you're rounding to, then look at the next digit along: 5 or more, round up; 4 or less, stay the same.",
+        "So 3 870 to the nearest thousand: the next digit after the 3 is 8, so it rounds up to 4 000. Keep the zeros: the answer is still about four thousand, not 4.",
+        "To estimate, round every number to its first digit first. 48.7 × 21.3 becomes 50 × 20 = 1 000. Write the rounded numbers down: the exam gives a mark for that."],
+      stuck: ["Underline the digit you're rounding to, and circle the one after it.", "Ask: is it nearer 3 000 or 4 000? Draw a number line.", "For estimates: round first, then work it out. Don't work out the exact answer."] },
+    "Adding and subtracting decimals, × and ÷ by 10, 100, 1000": {
+      say: ["When adding or subtracting decimals, write them in columns with the decimal points lined up, one under the other. Fill gaps with zeros: 14 is the same as 14.00.",
+        "Multiplying by 10 makes a number ten times bigger: every digit moves one column to the left. 2.5 × 10 = 25. By 100 it moves two places, by 1 000 three.",
+        "Dividing moves the digits to the right: 98 ÷ 1 000 = 0.098."],
+      stuck: ["Write the numbers on squared paper, one digit per square, points in the same column.", "Say it as money: £2.50 ten times is £25.", "Ask: should the answer be bigger or smaller than the number we started with?"] },
+    "Long multiplication and short division": {
+      say: ["For a big multiplication like 247 × 36, split the 36 into 30 and 6. Do 247 × 30 and 247 × 6, then add the two answers.",
+        "A grid helps: write 200, 40 and 7 across the top, 30 and 6 down the side, multiply each pair, then add everything up.",
+        "For division, the bus stop method: divide one digit at a time, and carry any remainder to the next digit. Check by multiplying back."],
+      stuck: ["Draw the grid and fill one box at a time.", "Check the times table on a times-table square: it's fine to use one while practising.", "Multiply the answer back: does it give the number you started with?"] },
+    "Multiplying decimals and the order of operations": {
+      say: ["To multiply decimals, ignore the points and multiply the whole numbers: 0.3 × 0.4 → 3 × 4 = 12. Then count the digits after the points in the question (two here) and put that many in the answer: 0.12.",
+        "Order of operations: brackets first, then powers (like ²), then × and ÷, then + and −. So 5 + 3 × 4 is 5 + 12 = 17, not 32."],
+      stuck: ["Count the decimal places in the question on your fingers.", "Underline the part to do first, and write its answer underneath.", "Ask: is a small number times a small number bigger or smaller? (Half of a half is a quarter.)"] },
+    "Problem solving with money and remainders": {
+      say: ["Long word problems are just several small sums in a row. Read it twice, underline the numbers and what it asks for at the very end.",
+        "Say the plan in words first: 'find the cost of the coffees, then the total, then the change.' Then do one step per line and label it.",
+        "Remainders depend on the story: if 82 people need 15-seat minibuses, 5 buses leave 7 people behind, so you need 6."],
+      stuck: ["Ask: what does the question want at the end? Circle it.", "Ask: what can you work out straight away?", "Act it out with coins or counters."] },
+    "Factors, multiples and primes": {
+      say: ["Factors are numbers that divide exactly into a number. Find them in pairs: for 36, 1 × 36, 2 × 18, 3 × 12, 4 × 9, 6 × 6.",
+        "Multiples are the times table: multiples of 4 are 4, 8, 12, 16 and so on.",
+        "A prime number has exactly two factors, 1 and itself: 2, 3, 5, 7, 11, 13 and so on. 1 is not prime."],
+      stuck: ["Factors fit into the number; multiples come out of it (the times table).", "Try dividing by 2, 3, 5 and 7 in turn.", "Use counters: can 12 counters make equal rows of 3?"] },
+    "Powers, squares, cubes and roots": {
+      say: ["A small number up high is a power: it tells you how many times to multiply the number by itself. 5³ = 5 × 5 × 5 = 125, not 5 × 3.",
+        "Squaring is multiplying by itself once: 7² = 49. The square root sign √ undoes it: √49 = 7.",
+        "It's worth learning the squares up to 15² and the cubes of 1 to 5 and 10 by heart."],
+      stuck: ["Write the multiplication out in full before working it out.", "Ask: which number times itself makes 64?", "Use flash cards for squares, a few minutes a day."] },
+    "Prime factors, HCF and LCM": {
+      say: ["A factor tree breaks a number into primes. 72 splits into 8 × 9, then 8 into 2 × 4, 4 into 2 × 2, and 9 into 3 × 3. Circle the primes: 2, 2, 2, 3, 3.",
+        "Write it as a multiplication: 72 = 2 × 2 × 2 × 3 × 3, or with powers, 2³ × 3².",
+        "HCF (highest common factor) is the biggest number that divides into both. LCM (lowest common multiple) is the first number in both times tables.",
+        "If a question asks when two buses next leave together, that's the LCM."],
+      stuck: ["Start the tree by halving if the number is even.", "List the factors of both numbers and circle the ones they share.", "List the first few multiples of each until one appears in both lists."] },
+    "Equivalent fractions, simplifying and mixed numbers": {
+      say: ["A fraction is equal parts of a whole: 3/4 is three of four equal pieces.",
+        "Multiply or divide the top and bottom by the same number and the fraction stays the same size: 6/8 = 3/4. Simplest form means you can't divide any further.",
+        "To compare fractions, make the bottoms the same: 2/3 = 8/12 and 3/4 = 9/12, so 3/4 is bigger.",
+        "A mixed number like 3 2/5 is wholes and a bit. As an improper fraction: 3 × 5 + 2 = 17, so 17/5."],
+      stuck: ["Draw a bar and split it into equal parts.", "Ask: what number goes into both the top and the bottom?", "Use a pizza or a chocolate bar to show it."] },
+    "Fractions of amounts": {
+      say: ["To find a fraction of an amount, divide by the bottom number, then multiply by the top. 3/5 of 40: 40 ÷ 5 = 8, then 8 × 3 = 24.",
+        "To write one number as a fraction of another, put the part over the whole: 15 out of 40 is 15/40, which simplifies to 3/8.",
+        "Working backwards: if 2/3 of a number is 10, then 1/3 is 5, so the whole number is 15. Draw a bar to see it."],
+      stuck: ["Draw a bar split into as many parts as the bottom number.", "Say it as sharing: share 40 sweets between 5 people.", "Ask: what is one part worth?"] },
+    "Adding and subtracting fractions": {
+      say: ["You can only add fractions when the bottom numbers are the same. 1/5 + 2/5 = 3/5.",
+        "If they're different, change them to the same bottom number. For 1/2 + 1/3, both go into 6: 3/6 + 2/6 = 5/6.",
+        "Only add the top numbers. The bottom number stays the same. Simplify at the end if you can."],
+      stuck: ["List the times tables of both bottom numbers until you find one in both.", "Whatever you do to the bottom, do to the top.", "Check: is the answer sensible? 1/2 + 1/3 must be more than 1/2."] },
+    "Multiplying and dividing fractions": {
+      say: ["To multiply fractions, multiply the tops together and the bottoms together: 2/3 × 4/5 = 8/15.",
+        "To divide, use Keep, Change, Flip: keep the first fraction, change ÷ to ×, flip the second upside down. 2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6.",
+        "Write the Keep-Change-Flip line down: it earns a mark."],
+      stuck: ["Say the steps aloud: keep, change, flip.", "Multiply across: top times top, bottom times bottom.", "Simplify: what divides into both numbers?"] },
+    "Fractions, decimals and percentages": {
+      say: ["Per cent means 'out of 100'. 45% is 45 out of 100, which is 45/100 or 0.45.",
+        "Decimal to percentage: multiply by 100. 0.3 is 30%, not 3%.",
+        "Fraction to percentage: make the bottom 100. 3/20 = 15/100 = 15%.",
+        "To put a mix in order, change them all into percentages first."],
+      stuck: ["Use money: 0.3 of a pound is 30p, 30% of £1.", "Remember the key ones: half is 50%, a quarter 25%, a tenth 10%.", "Write each number as a percentage under it, then compare."] },
+    "Percentages of amounts, VAT and simple interest": {
+      say: ["Find 10% by dividing by 10. Half of that is 5%. Divide by 100 for 1%.",
+        "Build any percentage from those: 35% = 30% + 5%. For £60: 10% = £6, 30% = £18, 5% = £3, so 35% = £21.",
+        "VAT at 20% means work out 20% and add it on. Simple interest is the same amount every year, so multiply by the number of years."],
+      stuck: ["Always start with 10%.", "Write each step on its own line: 10% =, 5% =, ...", "Ask: does the question want the percentage, or the new total?"] },
+    "Percentage increase, decrease and change": {
+      say: ["To increase by a percentage, work out the percentage and add it on. To decrease, take it off.",
+        "With a calculator there's a shortcut: increase by 35% means × 1.35; decrease by 35% means × 0.65.",
+        "Percentage change = the change ÷ the starting amount × 100. A price going from £180 to £207 changed by £27: 27 ÷ 180 × 100 = 15%."],
+      stuck: ["Ask: what was it at the start? Always divide by that.", "Do the non-calculator method first, then check with the shortcut.", "Ask: has it gone up or down?"] },
+    "Ratio: simplifying, and ratios as fractions": {
+      say: ["A ratio compares amounts: 3 : 5 means for every 3 of one thing there are 5 of the other.",
+        "Simplify a ratio like a fraction: divide both sides by the same number. 35 : 40 = 7 : 8.",
+        "To make a fraction from a ratio, add the parts for the bottom. Boys to girls 3 : 5 means 8 parts in all, so the girls are 5/8 of the class."],
+      stuck: ["Draw the parts as boxes: 3 boxes and 5 boxes.", "Ask: how many parts altogether?", "Check the units are the same first (both cm, or both m)."] },
+    "Sharing in a ratio and using a ratio": {
+      say: ["To share £88 in the ratio 5 : 3: add the parts (5 + 3 = 8), find one part (£88 ÷ 8 = £11), then times each side: 5 × £11 = £55 and 3 × £11 = £33. Check they add to £88.",
+        "If you know one share instead of the total, use that to find one part. Men to women 3 : 7 with 27 men: one part is 27 ÷ 3 = 9, so women are 7 × 9 = 63."],
+      stuck: ["Draw a bar with one box for each part.", "Ask: is this number the total, or just one person's share?", "Check the shares add up to the total."] },
+    "Proportion: the unitary method and recipes": {
+      say: ["Find the cost of one first, then multiply. 5 pens cost £2.10, so one costs £2.10 ÷ 5 = 42p, and 11 cost 11 × 42p = £4.62.",
+        "Recipes work the same way: if 640 g of pasta feeds 8, then one person needs 80 g, and 12 people need 960 g."],
+      stuck: ["Write two columns: people and grams (or pens and price).", "Ask: how much for one?", "Check: more people should mean more pasta."] },
+    "Best buys and exchange rates": {
+      say: ["To find the best buy, work out the price of one item in each pack, then compare. The cheaper price per item is better value.",
+        "Always finish with a sentence that uses your numbers: 'Pack B is better value because each can costs 79p, less than 83p.'",
+        "Exchange rates: if £1 = 1.30 dollars, multiply pounds by 1.30 to get dollars, and divide dollars by 1.30 to get pounds."],
+      stuck: ["Divide the price by how many are in the pack.", "Ask: should I end up with more dollars or fewer than my pounds?", "Write the sentence: '... is better value because ...'"] },
+    "Algebra: the words, writing expressions and collecting like terms": {
+      say: ["In algebra a letter stands for a number we don't know yet.",
+        "An expression has no equals sign (3x + 2). An equation has one and can be solved (3x + 2 = 11). A formula connects things, like Area = length × width.",
+        "Like terms have the same letter. 5a + 2b − 4a + 4b: collect the a's (5a − 4a = a) and the b's (2b + 4b = 6b), giving a + 6b. The sign in front belongs to the term."],
+      stuck: ["Use objects: a is an apple, b is a banana. 5 apples take away 4 apples...", "Circle the a terms in one colour and the b terms in another.", "Ask: is there an equals sign?"] },
+    "Simplifying, expanding and factorising": {
+      say: ["5x × 2y: multiply the numbers (10) and write the letters together (xy): 10xy.",
+        "Expanding brackets: multiply everything inside by the number outside. 9(x + 2) = 9x + 18. Draw arrows from the 9 to each part.",
+        "Factorising is the opposite: find a number that divides into every term and put it outside a bracket. 6x + 27 = 3(2x + 9). Check by expanding it back."],
+      stuck: ["Draw the arrows and do one multiplication at a time.", "Ask: what number goes into 6 and 27?", "Expand your answer to check you get back where you started."] },
+    "Substitution and using formulae": {
+      say: ["Substituting means swapping each letter for its number. Use brackets so nothing gets lost: with a = 2 and b = −3, 4a + 3b becomes 4 × 2 + 3 × (−3) = 8 − 9 = −1.",
+        "4a means 4 times a, so with a = 2 it's 8, not 42.",
+        "Do powers first: 3x² with x = 4 is 3 × 16 = 48."],
+      stuck: ["Rewrite the expression with the numbers in brackets before working anything out.", "Say it aloud: 'four lots of a'.", "Check negatives on a number line."] },
+    "Solving equations": {
+      say: ["An equation is like a balance: whatever you do to one side, do to the other.",
+        "To solve 9x + 5 = 77, undo the + 5 first by taking 5 from both sides: 9x = 72. Then undo the × 9 by dividing both sides by 9: x = 8.",
+        "Write each step on a new line, with the equals signs under each other. Then check: 9 × 8 + 5 = 77. ✓"],
+      stuck: ["Say it as a puzzle: 'I think of a number, times by 9, add 5, get 77.'", "Ask: what was done to x last? Undo that first.", "Put your answer back into the equation to check it."] },
+    "Unknowns on both sides, and changing the subject": {
+      say: ["When x is on both sides, like 7x + 7 = 5x + 13, first get all the x's on one side: take 5x from both sides to get 2x + 7 = 13.",
+        "Then solve as before: 2x = 6, so x = 3.",
+        "Changing the subject means rearranging to get a different letter on its own: y = 11x becomes x = y ÷ 11."],
+      stuck: ["Take away the smaller number of x's.", "Write what you're doing to both sides at the side of the line.", "Check by putting the answer back into both sides."] },
+    "Inequalities": {
+      say: ["< means 'less than', > means 'greater than'. The small end points at the smaller number.",
+        "−1 < n < 3 means n is between −1 and 3 but not equal to either. As whole numbers: 0, 1, 2.",
+        "Solve an inequality like an equation, keeping the sign: 2x + 11 > 21, so 2x > 10, so x > 5."],
+      stuck: ["Draw a number line and mark the two ends.", "Ask: is the end number included? (Only with ≤ or ≥.)", "Try a number in it to check."] },
+    "Sequences and the nth term": {
+      say: ["A sequence is a list of numbers in a pattern. Find the next term by working out what you add each time.",
+        "The nth term is a rule for any term: in 6n + 2, the 10th term is 6 × 10 + 2 = 62.",
+        "The number in front of n is the jump between terms: 6n + 2 goes up in sixes.",
+        "Is 89 in the sequence 7n + 4? Solve 7n + 4 = 89: n is not a whole number, so no. Say why."],
+      stuck: ["Write the gaps between the terms underneath.", "Put n = 1, 2, 3 into the rule and write out the first few terms.", "Ask: does it land exactly on that number?"] },
+    "Coordinates, midpoints and straight lines": {
+      say: ["Coordinates are (across, up): along the corridor, then up the stairs.",
+        "x = 4 is a straight line going up and down through 4 on the x-axis. y = 4 is a line going across.",
+        "The midpoint of two points: add the two x's and halve, then add the two y's and halve.",
+        "To check if a point is on a line like y = 2x + 4, put its x in: if you get its y, it's on the line."],
+      stuck: ["Put a finger on the origin (0, 0) and move across, then up.", "Plot the points on squared paper.", "Ask: which number is the x and which is the y?"] },
+    "Gradient, intercept and real-life graphs": {
+      say: ["In y = mx + c, the m (the number in front of x) is the gradient: how steep the line is, or how much it goes up for each 1 across.",
+        "The c (the number on its own) is where the line crosses the y-axis.",
+        "In real life: a plumber charging £40 plus £30 an hour has y = 30x + 40: £40 is where it starts, £30 is how much it goes up each hour."],
+      stuck: ["Cover the x with a finger: the number left on its own is c.", "On a graph, draw a line up from the x value to the line, then across.", "Check the scale on each axis: how much is one square worth?"] },
+    "Metric units, area and volume units, and scales": {
+      say: ["Learn these: 10 mm = 1 cm, 100 cm = 1 m, 1 000 m = 1 km, 1 000 g = 1 kg, 1 000 ml = 1 litre.",
+        "Going from a big unit to a small one, multiply (2 m = 200 cm). From small to big, divide.",
+        "Area units are trickier: 1 m² is 100 cm by 100 cm, which is 10 000 cm².",
+        "A map scale of 1 : 50 000 means 1 cm on the map is 50 000 cm in real life, which is 500 m."],
+      stuck: ["Use a ruler and a metre stick to see the sizes.", "Ask: should the number get bigger or smaller?", "Draw a 1 m square split into 100 by 100."] },
+    "Time: 24-hour clock, durations and decimals of an hour": {
+      say: ["On the 24-hour clock, afternoon times add 12 to the hour: 4:36 pm is 16:36.",
+        "To find how long something lasts, count on: up to the next whole hour, then whole hours, then the rest. Add the pieces.",
+        "Hours written as decimals: 0.5 hours is 30 minutes, 0.25 is 15 minutes. Multiply the decimal part by 60. So 5.2 hours is 5 hours 12 minutes, not 20."],
+      stuck: ["Draw a time line and mark the jumps.", "Don't use column subtraction for times: there are 60 minutes in an hour, not 100.", "Use a real clock face."] },
+    "Speed, distance and time": {
+      say: ["Speed = distance ÷ time. A car going 60 miles in 2 hours goes 30 miles per hour.",
+        "Distance = speed × time, and time = distance ÷ speed.",
+        "Time must be in hours: 30 minutes is 0.5 hours, 15 minutes is 0.25 hours, so 1 hour 15 minutes is 1.25 hours."],
+      stuck: ["Draw the triangle: D on top, S and T underneath. Cover what you want.", "Change minutes into hours first.", "Ask: is the answer sensible for a car, a bike, or walking?"] },
+    "Angle facts": {
+      say: ["Four facts to learn: angles on a straight line add up to 180°, around a point 360°, in a triangle 180°, in a four-sided shape 360°.",
+        "An isosceles triangle has two equal sides (shown with little dashes) and the two angles at the bottom are equal.",
+        "Always write the reason in words, like 'angles in a triangle add up to 180°'. It earns marks."],
+      stuck: ["Ask: is it a straight line, a point, a triangle or a four-sided shape?", "Add the angles you know, then take from 180 or 360.", "Don't measure: diagrams are not drawn accurately."] },
+    "Parallel lines, polygons and angle reasons": {
+      say: ["Parallel lines never meet (like train tracks). When a line crosses them, some angles are equal: matching corners (an F shape) and opposite sides of a Z shape.",
+        "The angles inside a shape with n sides add up to (n − 2) × 180°. A pentagon: 3 × 180 = 540°.",
+        "For longer angle questions, find one angle at a time, write it on the diagram, and give each reason."],
+      stuck: ["Trace the F or Z shape with a finger.", "Split the shape into triangles from one corner.", "Write each angle on the picture as soon as you find it."] },
+    "Shapes, symmetry, 3D shapes and bearings": {
+      say: ["Know the four-sided shapes: square, rectangle, rhombus (a pushed-over square), parallelogram (a pushed-over rectangle), kite and trapezium (one pair of parallel sides).",
+        "A line of symmetry is a fold line where both halves match. Rotational symmetry counts how many times a shape looks the same as you turn it once round.",
+        "For 3D shapes: faces are flat surfaces, edges are where faces meet, vertices are the corners.",
+        "A bearing is an angle measured clockwise from north, written with three figures: east is 090°."],
+      stuck: ["Use real things: a cereal box, a tin, a paper shape you can fold.", "Count faces by touching each one.", "Draw a north arrow first, then turn clockwise."] },
+    "Transformations: translation, reflection and rotation": {
+      say: ["A translation slides a shape without turning it. 3 right and 2 down: add 3 to x and take 2 from y.",
+        "A reflection flips it in a mirror line. In the x-axis, the y number changes sign: (3, 2) goes to (3, −2).",
+        "A rotation turns it. Half a turn about (0, 0) changes both signs: (3, 2) goes to (−3, −2).",
+        "To describe a transformation, give all the details: the mirror line, or the angle, direction and centre, or how far across and up."],
+      stuck: ["Draw the grid and plot the point first.", "Use tracing paper to turn or flip a shape.", "Ask: did it slide, flip or turn?"] },
+    "Perimeter and area": {
+      say: ["Perimeter is the distance all the way round: add every side. Area is the space inside, measured in squares (cm²).",
+        "Rectangle: length × width. Triangle: half of base × height. Parallelogram: base × height. Trapezium: add the two parallel sides, halve, then times by the height.",
+        "The height must be straight up from the base (at a right angle), not the sloping side."],
+      stuck: ["Trace round the edge with a finger for perimeter.", "Count squares on squared paper to check an area.", "Write the formula first, then put the numbers in."] },
+    "Compound shapes and area problems": {
+      say: ["An L-shape is two rectangles stuck together. Draw a line to split it, work out each area, then add.",
+        "For missing sides: the sides going one way must add up to the long side opposite.",
+        "Paint and tiles questions: find the area, divide by how much one tin covers, then round up: you can't buy part of a tin."],
+      stuck: ["Draw the split line and label every side.", "Colour the two rectangles differently.", "Ask: if you needed 2.4 tins, how many would you buy?"] },
+    "Circles": {
+      say: ["The radius goes from the centre to the edge. The diameter goes right across: it's twice the radius.",
+        "Circumference (the distance round) = π × diameter. Area = π × radius × radius.",
+        "Use the π button on the calculator. If you're given the diameter, halve it before working out the area."],
+      stuck: ["Draw the circle and mark the radius and diameter.", "Ask: radius or diameter? Which does this formula need?", "Write the formula with the numbers in before pressing buttons."] },
+    "Volume and surface area": {
+      say: ["Volume is how much space is inside a box: length × width × height, in cm³.",
+        "Surface area is the area of all the outside faces added up. A box has six faces, in three matching pairs.",
+        "How many small cubes fit in a box? Divide each length by the cube's edge, then multiply the three answers."],
+      stuck: ["Use a real box, or build one from cubes or sugar lumps.", "List the six faces and their sizes.", "Ask: is it the inside (volume) or the outside (surface area)?"] },
+    "Probability: the scale, fractions and adding to 1": {
+      say: ["Probability is how likely something is, from 0 (impossible) to 1 (certain). Even chance is 1/2.",
+        "Probability = the number of ways it can happen ÷ the total number of things. 3 blue counters out of 14: 3/14.",
+        "The chance of something not happening is 1 minus the chance it does. If the bus is late 0.2 of the time, it's not late 0.8 of the time."],
+      stuck: ["Use a bag of real counters or sweets.", "Ask: how many altogether? That's the bottom of the fraction.", "Check: all the probabilities should add up to 1."] },
+    "Outcomes, two dice and relative frequency": {
+      say: ["List outcomes in order so none are missed. Two coins: HH, HT, TH, TT.",
+        "With two dice, draw a 6 by 6 grid with the totals: 36 outcomes. Six of them make 7, so P(7) = 6/36 = 1/6.",
+        "Relative frequency is from an experiment: how many times it happened ÷ how many tries. Expected number = probability × number of tries."],
+      stuck: ["Roll two real dice and fill in the grid.", "Ask: how many squares in the grid show that total?", "For expected results: half of 100 is 50, so ..."] },
+    "Averages and range": {
+      say: ["Mean: add them all up, divide by how many there are. Median: put them in order, take the middle one. Mode: the one that appears most often. Range: biggest take away smallest.",
+        "Always write the numbers in order first for the median and the range.",
+        "In a frequency table, multiply each value by how many times it appears, add those up, then divide by the total frequency for the mean."],
+      stuck: ["Write the numbers in order and cross them off from both ends to find the middle.", "Ask: how many numbers are there?", "Say the four words and what each means before starting."] },
+    "Charts, two-way tables and working backwards": {
+      say: ["A pie chart is a circle of 360°. Divide 360 by the total to get the degrees for one person, then multiply for each group.",
+        "A two-way table has rows and columns that add up to totals. Fill in what you know, then use the totals to find the gaps.",
+        "Correlation: positive if both go up together, negative if one goes up as the other goes down, none if there's no pattern.",
+        "If the mean of 6 numbers is 19, their total is 6 × 19 = 114. Take away the ones you know to find the missing one."],
+      stuck: ["Check the pie chart angles add up to 360°.", "In the table, look for a row or column with only one gap.", "Mean backwards: total = mean × how many."] }
+  };
+  gcse13.sessions.forEach(s => { if (PARENT[s.t]) Object.assign(s, PARENT[s.t]); });
   return { courses: [gcse13], get: id => [gcse13].find(c => c.id === id) };
 })();

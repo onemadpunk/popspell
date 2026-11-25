@@ -39,6 +39,7 @@ jobs:
           npx playwright install --with-deps chromium
           npm run sheet-check
           npm run course-pdf
+          npm run course-pdf -- --edition parent
 
       - uses: actions/setup-java@v4
         with:
