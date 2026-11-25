@@ -4574,14 +4574,14 @@ window.PopPaper = (() => {
       `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
         // A draw of long questions and mark schemes can push a page onto another sheet, so draw again (up to 80 times)
         // and keep the shortest, stopping once the questions are no longer than a normal check
-        const size = list => list.reduce((t, it) => t + it.q.length + it.scheme.length + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
+        const size = list => list.reduce((t, it) => t + it.q.length + 2 * (it.scheme.length + String(it.answer).length) + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
         let items = SQX().check(st.key);
-        for (let i = 0; i < 80 && size(items) > 2150; i++) { const next = SQX().check(st.key); if (size(next) < size(items)) items = next; }
+        for (let i = 0; i < 80 && size(items) > 3300; i++) { const next = SQX().check(st.key); if (size(next) < size(items)) items = next; }
         return {
           pupil: `${h.sheetHead(`${st.course} check`, who)}${sqStrip(st.name, "Calculator allowed", gxTotal(items))}
             <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
             <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
-          answers: `${answersPage(h, `${st.course} check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the tracker. Work first on the topics that lost marks, in the climb's order.")}`
+          answers: `${answersPage(h, `${st.course} check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme.replace(/ \(1 mark\)/g, "")}</span>`), "Each bullet is one mark. Copy each topic's score onto the tracker. Work first on the topics that lost marks, in the climb's order.")}`
         };
       });
 
