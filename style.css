@@ -1374,6 +1374,7 @@ a.me-card:hover { border-color: var(--primary); }
 .exam-text p { font-family: var(--reading-font); font-size: 1rem; line-height: 1.45; margin: 0 0 7px; }
 .exam-text .ex-head { font-family: inherit; font-size: .88rem; line-height: 1.3; color: var(--muted); margin-bottom: 6px; }
 .exam-text .ex-head b { color: var(--ink); }
+.exam-text.wordy p:not(.ex-head) { font-size: .95rem; line-height: 1.38; }
 .exam-text.long { column-count: 2; column-gap: 18px; }
 .exam-text.long .ex-head, .exam-text.long p:last-child { column-span: all; }
 .exam-text.long p { break-inside: avoid; font-size: .94rem; line-height: 1.32; margin-bottom: 5px; }

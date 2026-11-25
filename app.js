@@ -2392,8 +2392,8 @@
   // An exam text beside its question: the title and source, then the text (poems and plays keep their lines)
   const examTextHTML = p => {
     const mark = html => (p.mark ? html.replace(esc(p.mark), m => `<mark>${m}</mark>`) : html);
-    // a long poem (Burns) goes in two columns so it fits beside the question
-    const long = p.kind === "poem" && p.text.split("\n").length > 20 ? " long" : "";
+    // a long poem (Burns) goes in two columns, and a text over 200 words a little smaller, so it fits beside the question
+    const long = p.kind === "poem" && p.text.split("\n").length > 20 ? " long" : p.text.split(/\s+/).length > 200 ? " wordy" : "";
     return `<div class="passage exam-text${long}" id="examText"><p class="ex-head"><b>${esc(p.title)}</b> · ${esc(p.by)}</p>
     ${mark(p.text.split(/\n\n+/).map(par => `<p>${esc(par).replace(/\n/g, "<br>")}</p>`).join(""))}</div>`;
   };
