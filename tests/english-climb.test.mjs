@@ -74,11 +74,11 @@ test("a stage check asks every topic of its stage, and the online sets are the a
   for (const q of set) assert.ok(q.exam && q.explain, "exam question with its reason");
 });
 
-// Scotland's climb: National 4 skills, National 5, Higher (exam-english/sqa.js, sheets/15-sqa-english-climb.js)
+// Scotland's climb: National 4 skills, National 5, Higher, Advanced Higher (exam-english/sqa.js, sheets/15-sqa-english-climb.js)
 const S = X.course("sqa"), sTopics = X.stagesOf(S).flatMap(st => st.topics);
 
-test("SQA: three stages of eight topics, each with online practice, a lesson and an exam sheet, in its own Library area", () => {
-  assert.equal(S.STAGES.map(s => s.topics.length).join(), "8,8,8");
+test("SQA: four stages of eight topics, each with online practice, a lesson and an exam sheet, in its own Library area", () => {
+  assert.equal(S.STAGES.map(s => s.topics.length).join(), "8,8,8,8");
   const area = A.AREAS.find(a => a.id === "english-exam-sqa");
   assert.ok(area && area.assignedOnly);
   for (const t of sTopics) {
@@ -87,7 +87,7 @@ test("SQA: three stages of eight topics, each with online practice, a lesson and
     assert.ok(l && l.use.includes(t.id) && l.sqa, `${t.id} lesson`);
     assert.equal(P.get(`paper-ex-${t.id}`).lesson, l.id);
   }
-  assert.ok(A.AREAS.find(a => a.id === "english-exam").activities.every(a => !/^en[45h]-/.test(a.id)), "GCSE area has only GCSE");
+  assert.ok(A.AREAS.find(a => a.id === "english-exam").activities.every(a => !/^en(4|5|h|ah)-/.test(a.id)), "GCSE area has only GCSE");
 });
 
 test("SQA: every question has one right answer, different options, a reason, and quoted lines that are in its text", () => {
@@ -110,14 +110,14 @@ test("SQA: every question has one right answer, different options, a reason, and
 });
 
 test("SQA: folio tasks, mini papers and every sheet build", () => {
-  assert.equal(S.WRITING.length, 6);
+  assert.equal(S.WRITING.length, 8);
   assert.ok(S.WRITING.every(w => w.marks === 15 && S.STAGES.some(st => st.key === w.stage)));
   for (const m of S.MINI) for (const p of m.parts) {
     if (p.ref) assert.ok(X.topic(p.ref) && X.topic(p.ref).written.marks > 0, `${m.id}: ${p.ref}`);
     else assert.ok(p.q && p.marks > 0 && p.look, `${m.id}: ${p.q}`);
   }
   const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-"));
-  assert.equal(ex.length, 24 + 3 * 3 + 6 + 6 + 2);
+  assert.equal(ex.length, 32 + 4 * 3 + 8 + 8 + 2);
   for (const s of ex) for (let i = 0; i < 3; i++) {
     const b = s.build("Pupil", kit);
     assert.ok(b.pupil && b.answers && !/undefined|NaN/.test(b.pupil + b.answers), s.id);

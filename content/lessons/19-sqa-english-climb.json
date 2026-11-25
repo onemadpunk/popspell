@@ -1,5 +1,5 @@
 {
- "section": "Scotland: SQA English exam climb (National 4 skills, National 5, Higher)",
+ "section": "Scotland: SQA English exam climb (National 4 skills, National 5, Higher, Advanced Higher)",
  "lessons": [
   {
    "id": "lesson-sqa-english-climb-en4-understand",
@@ -674,6 +674,230 @@
    "sqa": "Higher English"
   },
   {
+   "id": "lesson-sqa-english-climb-enah-unseen",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 4.1: Textual analysis: reading an unseen text (Advanced Higher)",
+   "intention": "We are learning to read an unseen literary text closely and build a line of argument about how it creates meaning.",
+   "criteria": [
+    "I can say what a text is about and how it makes me feel before naming techniques.",
+    "I can find the features that matter most for the question.",
+    "I can open with an argument and prove it with close analysis."
+   ],
+   "steps": {
+    "start": "Give a short unseen passage and two minutes. Ask: what is it about, and what's the feeling? Only then: how does the writer do it?",
+    "teach": "Read the text twice: first for meaning and feeling, then with the question in mind, annotating. Decide your argument (one or two sentences that answer the question), then choose the three or four features that prove it best. Analyse short, embedded quotations: what the words suggest, and how that serves your argument.",
+    "practise": "The \"SQA English practice 4.1: Textual analysis: reading an unseen text\" sheet (its exam question is like Textual Analysis (Advanced Higher)), then the online practice.",
+    "check": "Give a new unseen paragraph and ask for an opening argument and one analytical paragraph in 15 minutes."
+   },
+   "use": [
+    "enah-unseen"
+   ],
+   "home": "Read one short story a week and write two sentences: what it's about, and how the writer makes you feel it.",
+   "vocab": "unseen text, line of argument, close reading, annotation, embedded quotation",
+   "understand": "Why decide your argument before choosing techniques?",
+   "lookFor": "Says the techniques are evidence for the argument: without one, an answer becomes a list.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-poetry",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 4.2: Textual analysis: poetry, form and sound (Advanced Higher)",
+   "intention": "We are learning to analyse how a poem's form, rhyme, rhythm and sound shape its meaning.",
+   "criteria": [
+    "I can identify a poem's form (for example a sonnet) and say what it does.",
+    "I can analyse the volta, repetition and rhyme in context.",
+    "I can explain sound effects precisely, not generally."
+   ],
+   "steps": {
+    "start": "Read “Remember” aloud. Where does the poem change its mind? How can you tell?",
+    "teach": "Form is meaning: a sonnet's octave and sestet set up an argument and its turn; a circular structure can trap; regular quatrains can feel controlled or closed. Always ask what each choice does here: repetition (a plea), the volta (a change of heart), alliteration (pressing pain home), paradox (life and death together).",
+    "practise": "The \"SQA English practice 4.2: Textual analysis: poetry, form and sound\" sheet (its exam question is like Textual Analysis (Advanced Higher), poetry), then the online practice.",
+    "check": "Ask for a 10-mark analysis of how Hardy's “Neutral Tones” presents a dying love."
+   },
+   "use": [
+    "enah-poetry"
+   ],
+   "home": "Learn one short poem by heart and say what its form adds to its meaning.",
+   "vocab": "sonnet, octave, sestet, volta, quatrain, enjambment, alliteration, paradox",
+   "understand": "Why does it matter that “Remember” is a sonnet?",
+   "lookFor": "Says the sonnet's turn lets the speaker change her mind, from asking to be remembered to freeing the lover from grief.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-prose",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 4.3: Textual analysis: prose fiction and non-fiction (Advanced Higher)",
+   "intention": "We are learning to analyse narrative voice, point of view, structure and sentence craft in literary prose, fiction and non-fiction.",
+   "criteria": [
+    "I can identify narrative voice, including free indirect style.",
+    "I can analyse sentence structure for effect.",
+    "I can analyse the crafted voice and structure of reflective non-fiction."
+   ],
+   "steps": {
+    "start": "Read “What did it matter?” from Chopin. Whose question is it? How do you know?",
+    "teach": "Name the narrative voice precisely (first person, third person, free indirect style) and show how it shapes our sympathy. Then look at how sentences are built: lists, polysyndeton, dashes, questions. In literary non-fiction, look for the writer's voice, the shift from then to now, and a controlling image.",
+    "practise": "The \"SQA English practice 4.3: Textual analysis: prose fiction and non-fiction\" sheet (its exam question is like Textual Analysis (Advanced Higher), prose), then the online practice.",
+    "check": "Ask for a 10-mark analysis of how Chopin presents Louise's feelings."
+   },
+   "use": [
+    "enah-prose"
+   ],
+   "home": "Choose a paragraph from any novel and rewrite it in a different narrative voice. What changes?",
+   "vocab": "narrative voice, free indirect style, point of view, polysyndeton, irony, reflective voice",
+   "understand": "How does free indirect style change our response to Louise?",
+   "lookFor": "Says it puts us inside her thoughts, so we understand a feeling society would condemn.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-drama",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb 4.4: Textual analysis: drama, dialogue and stagecraft (Advanced Higher)",
+   "intention": "We are learning to analyse drama as performance: dialogue, stage directions, pace, characterisation and audience response.",
+   "criteria": [
+    "I can analyse how dialogue and stage directions work together.",
+    "I can comment on pace and comic or dramatic timing.",
+    "I can say how an audience would respond, and why."
+   ],
+   "steps": {
+    "start": "Read the handbag scene aloud in pairs, twice: once flatly, once with the stage directions. What changes?",
+    "teach": "A play is written to be performed. Analyse what the lines do on stage: a direction like “Gravely” sets up a joke; a two-word question is a comic beat; a long, grand speech after quick exchanges changes the pace. Link character to theme: Lady Bracknell's snobbery is Wilde's satire on a society that judges by birth.",
+    "practise": "The \"SQA English practice 4.4: Textual analysis: drama, dialogue and stagecraft\" sheet (its exam question is like Textual Analysis (Advanced Higher), drama), then the online practice.",
+    "check": "Ask for a 10-mark analysis of how Wilde creates comedy in the extract."
+   },
+   "use": [
+    "enah-drama"
+   ],
+   "home": "Watch a scene of any comedy and note one moment where timing makes the joke.",
+   "vocab": "stage direction, dialogue, pace, characterisation, satire, comedy of manners, hyperbole",
+   "understand": "Why should a drama answer think about the audience?",
+   "lookFor": "Says plays are written for performance, so the effect on an audience is part of the meaning.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-critical",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 4.5: Writing the textual analysis answer (Advanced Higher)",
+   "intention": "We are learning to write a full 20-mark textual analysis: an argument from the first sentence, close analysis, precise terms and evaluation.",
+   "criteria": [
+    "I can plan an argument before writing.",
+    "I can use critical terms precisely and show what they do.",
+    "I can sustain my argument and evaluate the writer's choices."
+   ],
+   "steps": {
+    "start": "Show two openings to the same question: one a summary, one an argument. Which would you rather keep reading, and why?",
+    "teach": "Spend about 20 minutes reading and planning: argument, then three or four sections that each move it on. Each paragraph: a point that develops the argument, short quotations, analysis with precise terms, and a link back. Evaluate how effectively the writer's choices work. Keep 10 minutes to check.",
+    "practise": "The \"SQA English practice 4.5: Writing the textual analysis answer\" sheet (its exam question is like Textual Analysis (Advanced Higher), the whole answer), then the online practice.",
+    "check": "Set the full Textual Analysis question on “Neutral Tones” in 75 minutes and mark it with the 20-mark bands."
+   },
+   "use": [
+    "enah-critical"
+   ],
+   "home": "Make a glossary of ten critical terms, each with an example from a text you know.",
+   "vocab": "argument, sustained, critical terminology, evaluation, integrated quotation",
+   "understand": "What makes an answer “sustained” rather than a list?",
+   "lookFor": "Says each paragraph develops the same argument further, rather than starting a new point about a new technique.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-essay",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 4.6: Literary study: the critical essay across texts (Advanced Higher)",
+   "intention": "We are learning to write a Literary Study essay: one argument that answers the question across several texts in one genre.",
+   "criteria": [
+    "I know how many texts my genre needs.",
+    "I can plan an essay by idea, not by text.",
+    "I can make connections and contrasts explicit, with evidence from every text."
+   ],
+   "steps": {
+    "start": "Give a Literary Study question. Ask: what is the key word, and what would you argue about it across your texts?",
+    "teach": "Prepare deep knowledge of your texts (three poems, two plays, two novels or three short stories, or two non-fiction texts) and adapt it to the question asked. Plan three or four ideas; in each paragraph bring in every text, analyse short quotations and say how they connect or differ. The texts must not be the ones in your dissertation.",
+    "practise": "The \"SQA English practice 4.6: Literary study: the critical essay across texts\" sheet (its exam question is like Literary Study (Advanced Higher)), then the online practice.",
+    "check": "Ask for a plan, an introduction and one comparative paragraph in 30 minutes."
+   },
+   "use": [
+    "enah-essay"
+   ],
+   "home": "For each of your texts, keep a page of five short quotations with a line on what each shows.",
+   "vocab": "comparison, connection, line of argument, genre, thesis",
+   "understand": "Why plan by idea rather than by text?",
+   "lookFor": "Says it keeps the texts in conversation, which is what makes an argument across texts rather than two separate essays.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-dissertation",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 4.7: The dissertation: question, texts and argument (Advanced Higher)",
+   "intention": "We are learning to plan an Advanced Higher dissertation: a focused question, suitable texts, lines of argument, sources and referencing.",
+   "criteria": [
+    "I can write a focused, arguable question on a limited area of technique.",
+    "I can choose literary texts I study on my own.",
+    "I know the rules: 2,500 to 3,500 words, footnotes, a bibliography, no texts from my Literary Study."
+   ],
+   "steps": {
+    "start": "Compare “Thomas Hardy's poetry” with “How does Hardy use landscape to present loss in three poems from 1912–13?” Which could you argue in 3,000 words?",
+    "teach": "Read widely first, then narrow: a few literary texts and one aspect of technique. Turn a topic into a question you can argue, and three claims you expect to prove. Use criticism to test your argument, always acknowledged in footnotes and the bibliography. Keep a reading log. Generative AI may only be used to find possible sources.",
+    "practise": "The \"SQA English practice 4.7: The dissertation: question, texts and argument\" sheet (its exam question is like Project: dissertation (Advanced Higher)), then the online practice.",
+    "check": "Ask for a 250-word proposal: question, texts, three claims, sources."
+   },
+   "use": [
+    "enah-dissertation"
+   ],
+   "home": "Keep a reading log for your dissertation texts: page, quotation, note.",
+   "vocab": "dissertation, proposal, focus, footnote, bibliography, critical source",
+   "understand": "Why is a narrow question better than a broad topic?",
+   "lookFor": "Says a narrow question allows close analysis and a real argument, which the top marks reward, while a broad topic only allows a survey.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-portfolio",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb 4.8: Portfolio writing: one crafted piece (Advanced Higher)",
+   "intention": "We are learning to craft one portfolio piece at Advanced Higher: a clear purpose, a distinctive voice and deliberate choices.",
+   "criteria": [
+    "I know the genres and the rules: one piece, no word limit, a supervised first draft.",
+    "I can plan a piece around a controlling image, moment or argument.",
+    "I can explain the choices I made and redraft after one round of feedback."
+   ],
+   "steps": {
+    "start": "Read the opening of “Plot 14”. What tells you about the writer's voice in the first sentence?",
+    "teach": "Choose a genre you read a lot of. Plan the movement of the piece (then, the turn, now; or the argument's build), and one image or idea to carry it. Draft in one sitting, check against the list, take feedback on one draft only, then redraft with care. Every choice should serve the purpose.",
+    "practise": "The \"SQA English practice 4.8: Portfolio writing: one crafted piece\" sheet (its exam question is like Portfolio–writing (Advanced Higher)), then the online practice.",
+    "check": "Ask for a 250-word opening and three sentences explaining the choices made."
+   },
+   "use": [
+    "enah-portfolio"
+   ],
+   "home": "Read one piece of writing in your chosen genre each week and note one technique to try.",
+   "vocab": "genre, voice, purpose, controlling image, redraft, craft",
+   "understand": "Why explain your own choices?",
+   "lookFor": "Says it shows the choices were deliberate, which is what “crafted” means, and helps you redraft with purpose.",
+   "sqa": "Advanced Higher English"
+  },
+  {
    "id": "lesson-sqa-english-climb-en4-start-here",
    "level": "Senior",
    "subject": "Literacy",
@@ -920,12 +1144,94 @@
    "sqa": "Higher English"
   },
   {
+   "id": "lesson-sqa-english-climb-enah-start-here",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, Advanced Higher: start here",
+   "intention": "We are finding out which Advanced Higher topics are secure and which to learn first, learning what Advanced Higher English expects, and making a plan for the year.",
+   "criteria": [
+    "I can try a question on each Advanced Higher topic and show what I already know.",
+    "I know the four parts of Advanced Higher English and what each is worth.",
+    "I have a plan for the dissertation and the portfolio as well as the exams."
+   ],
+   "steps": {
+    "start": "Talk about the goal: Advanced Higher English, two question papers (Literary Study and Textual Analysis), one portfolio piece and a dissertation. Look back at what's secure from Higher.",
+    "teach": "Read the \"What the exam expects: SQA Advanced Higher English\" sheet together. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"SQA English climb: Advanced Higher check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"SQA English climb: Advanced Higher tracker\" sheet: topics marked ✗ go first. Agree the exam date, the portfolio and dissertation deadlines, and sessions a week."
+   },
+   "use": [
+    "enah-check"
+   ],
+   "home": "Start a reading log for possible dissertation texts, and read one unseen poem or short story a week.",
+   "vocab": "Literary Study, Textual Analysis, portfolio, dissertation, line of argument",
+   "understand": "Why should the dissertation be planned at the start of the year?",
+   "lookFor": "Says it is 30% of the course and needs independent reading, a focused question and drafting time, which can't be rushed at the end.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-writing",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "SQA English climb, Advanced Higher: portfolio writing",
+   "intention": "We are learning to plan, draft, check and redraft a portfolio piece, aiming at Advanced Higher.",
+   "criteria": [
+    "I can plan a piece before drafting.",
+    "I can check my draft against the Advanced Higher list and correct it.",
+    "I can redraft once, acting on one round of feedback."
+   ],
+   "steps": {
+    "start": "How is the Advanced Higher portfolio marked? (One piece, out of 15, doubled to 30: purpose, structure, voice, expression.) What would lift a piece a band?",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The stage's two writing task sheets (\"SQA English folio task: reflective essay (Advanced Higher)\" and \"SQA English folio task: argumentative essay (Advanced Higher)\" sheets), or the writing tasks on the My next step page. Only one piece is submitted.",
+    "check": "Mark with the 15-mark bands. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 20 minutes on any topic once a week, then check it against the list.",
+   "vocab": "portfolio, genre, draft, redraft, voice, purpose",
+   "understand": "Why is only one round of feedback allowed?",
+   "lookFor": "Says the final piece must show the pupil's own crafting; one round of feedback guides it without the teacher writing it.",
+   "sqa": "Advanced Higher English"
+  },
+  {
+   "id": "lesson-sqa-english-climb-enah-mini-papers",
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "SQA English climb, Advanced Higher: mini papers",
+   "intention": "We are practising under exam conditions: a Textual Analysis answer and a Literary Study essay, timed and marked with the bands.",
+   "criteria": [
+    "I can plan and write a sustained answer in the time.",
+    "I can mark my answer honestly with the 20-mark bands.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the two mini papers' times. How long will you spend reading and planning before you write?",
+    "teach": "Sit a mini paper, timed. Then mark it with the answers page and the bands, and note on the tracker what to work on.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: Textual Analysis (like Advanced Higher) (SQA English)\" and \"Mini paper: Literary Study (like Advanced Higher) (SQA English)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 13 out of 20 or more, with a portfolio draft and a dissertation proposal done, means the stage is going well. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "enah-mixed"
+   ],
+   "home": "Re-write the weakest paragraph of the mini paper answer.",
+   "vocab": "timing, bands, line of argument, sustained",
+   "understand": "Why spend 20 minutes reading and planning before writing a textual analysis?",
+   "lookFor": "Says the argument decides which features to analyse; without a plan the answer becomes a list and can't be sustained.",
+   "sqa": "Advanced Higher English"
+  },
+  {
    "id": "lesson-sqa-english-climb-my-next-step",
    "level": "Senior",
    "subject": "Literacy",
    "strand": "Reading: understanding stories",
    "codes": [],
-   "title": "SQA English climb: my next step (self-guided, National 4 to Higher)",
+   "title": "SQA English climb: my next step (self-guided, National 4 to Advanced Higher)",
    "intention": "We are learning to work through the SQA English climb on our own: one step a session, marking our own answers honestly.",
    "criteria": [
     "I can find my next step on the climb page and do it.",
@@ -935,7 +1241,7 @@
    "steps": {
     "start": "Open popspell.com/english-climb.html?course=sqa together and press My next step.",
     "teach": "Show how the page works: the check, topics in order, folio tasks with a timer and checklist, then a mini paper. Show how to mark an analysis answer: one reference plus a detailed comment is 2 marks.",
-    "practise": "The \"SQA English climb: my route from National 4 to Higher\" sheet to keep, then the first step on the page.",
+    "practise": "The \"SQA English climb: my route from National 4 to Advanced Higher\" sheet to keep, then the first step on the page.",
     "check": "Ask the pupil to explain what secure means and what they'll do next session."
    },
    "use": [],

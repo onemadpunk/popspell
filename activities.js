@@ -4094,10 +4094,357 @@ window.PopActivities = (() => {
     ["logs", "Logs and exponentials", "Logarithms and exponentials", "Patterns and missing numbers", "The laws of logs, exponential and log equations, exponential growth and decay, and log graphs.", [shLogVal, shLogLaws, shExpEq, shLogEq, shHalfLife, shLogLine]]
   ].map(([slug, short, title, strand, blurb, makers], i) => ({ id: `nh-${slug}`, n: i + 1, short, title, strand, blurb, makers }));
 
+  // ----- Stage 4: Advanced Higher -----
+  // Advanced Higher Mathematics (SQA's 2019 course specification): calculus; algebra, proof and number
+  // theory; matrices, vectors and complex numbers. Answers that are expressions are a choice of three;
+  // numbers are typed. Every scheme is one bullet a mark, as Higher's.
+  // a + bi, tidily: 3 − 2i, −i, 4, 5i
+  const saZ = (a, b) => { if (!b) return gfM(a); const im = Math.abs(b) === 1 ? "i" : `${Math.abs(b)}i`; return a ? `${gfM(a)} ${b < 0 ? "−" : "+"} ${im}` : `${b < 0 ? "−" : ""}${im}`; };
+  // A matrix, said and printed as its rows: rows (2, 1) and (3, 4)
+  const saRows = m => { const r = m.map(row => `(${row.map(gfM).join(", ")})`); return `rows ${r.slice(0, -1).join(", ")} and ${r[r.length - 1]}`; };
+  const saDet2 = m => m[0][0] * m[1][1] - m[0][1] * m[1][0];
+  const saDet3 = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  const saCross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const saDot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const saNCr = (n, r) => { let v = 1; for (let i = 1; i <= r; i++) v = v * (n - r + i) / i; return Math.round(v); };
+  // k/(x − a), with its sign in front: + 3/(x − 2), − 1/(x + 4)
+  const saPart = (k, den, first) => `${k < 0 ? (first ? "−" : " − ") : first ? "" : " + "}${Math.abs(k)}/${den}`;
+  // An exponential: e^(3x), e^(−x), e^x
+  const saE = (k, v = "x") => (k === 1 ? `e^${v}` : `e^(${k === -1 ? "−" : gfM(k)}${v})`);
+  // A coefficient in front of something: 3x, −x, x
+  // A fraction in front of something, bracketed so it can't be misread: (2/3)e^(3x), 4x, x
+  const saF = (n, d, v) => { const f = sqFr(n, d); return f === "1" ? v : f === "−1" ? `−${v}` : f.includes("/") ? `(${f})${v}` : `${f}${v}`; };
+  // A signed product for working: 3 × (−2)
+  const saX = n => (n < 0 ? `(${gfM(n)})` : String(n));
+  const saK = (k, v) => (k === 1 ? v : k === -1 ? `−${v}` : `${gfM(k)}${v}`);
+
+  // 1. Partial fractions and the binomial theorem
+  const saPF2 = () => { const [a, b] = shuffle([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]).slice(0, 2), A = sqBig(5), B = sqBig(5); if (A + B === 0) return {};
+    const p = A + B, q = -(A * b + B * a), den = gxB(1, -a) + gxB(1, -b), dA = gxB(1, -a), dB = gxB(1, -b), ans = `${saPart(A, dA, true)}${saPart(B, dB)}`;
+    return gfQ(`Express (${gxE([[p, "x"], [q, ""]])}) / (${den}) in partial fractions.`, ans, 3,
+      `•1 ${gxE([[p, "x"], [q, ""]])} = A${dB} + B${dA} (1 mark). •2 put x = ${gfM(a)}: A = ${gfM(A)} (1 mark). •3 put x = ${gfM(b)}: B = ${gfM(B)}, so ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${saPart(B, dA, true)}${saPart(A, dB)}`, `${saPart(-A, dA, true)}${saPart(-B, dB)}`, `${saPart(A, dA, true)}${saPart(-B, dB)}`]).slice(0, 2), label: `pf ${a}${b}${A}${B}`, skill: "partial fractions" }); };
+  const saPFRep = () => { const a = sqBig(5), A = sqBig(6), B = sqBig(9), p = A, q = B - A * a, d = gxB(1, -a), ans = `${saPart(A, d, true)}${saPart(B, `${d}²`)}`;
+    return gfQ(`Express (${gxE([[p, "x"], [q, ""]])}) / ${d}² in partial fractions.`, ans, 3,
+      `•1 the form A/${d} + B/${d}² (1 mark). •2 ${gxE([[p, "x"], [q, ""]])} = A${d} + B, so A = ${gfM(A)} (1 mark). •3 B = ${gfM(B)} (1 mark).`,
+      { options: sqUniq(ans, [`${saPart(A, d, true)}${saPart(q, `${d}²`)}`, `${saPart(B, d, true)}${saPart(A, `${d}²`)}`]), label: `pfr ${a}${A}${B}`, skill: "repeated factors in partial fractions" }); };
+  const saBinCoeff = () => { const n = gfR(5, 9), r = gfR(2, n - 2), a = pick([1, 2, 3]), b = pick([1, 2, -1, -2, 3]), k = r, v = saNCr(n, k) * a ** (n - k) * b ** k;
+    if (Math.abs(v) > 100000) return {};
+    return gfQ(`Find the coefficient of x${sup(k)} in the expansion of (${gxE([[a, ""], [b, "x"]])})${sup(n)}.`, gfM(v), 3,
+      `•1 general term ${n}C r × ${a}${sup(`${n}`)}⁻ʳ × (${gfM(b)}x)ʳ (1 mark). •2 r = ${k}, giving ${n}C${k} × ${a}${sup(n - k)} × (${gfM(b)})${sup(k)} (1 mark). •3 ${gfM(v)} (1 mark).`,
+      { label: `bc ${n}${k}${a}${b}`, skill: "the binomial theorem" }); };
+  const saBinFree = () => { const m = pick([2, 3, 4]), n = 2 * m, a = pick([1, 2, 3]), v = saNCr(n, m) * a ** m;
+    return gfQ(`Find the term independent of x in the expansion of (x + ${a}/x)${sup(n)}.`, String(v), 3,
+      `•1 general term ${n}Cr × x${sup(n)}⁻ʳ × (${a}/x)ʳ = ${n}Cr × ${a}ʳ × x${sup(n)}⁻²ʳ (1 mark). •2 ${n} − 2r = 0, so r = ${m} (1 mark). •3 ${n}C${m} × ${a}${sup(m)} = ${v} (1 mark).`,
+      { label: `bf ${n}${a}`, skill: "the binomial theorem" }); };
+  const saNCrQ = () => { const n = gfR(5, 12), r = gfR(2, Math.min(5, n - 2)), v = saNCr(n, r);
+    return gfQ(`Evaluate ${n}C${r} (the binomial coefficient: the number of ways to choose ${r} from ${n}).`, String(v), 1, `•1 ${n}! ÷ (${r}! × ${n - r}!) = ${v} (1 mark).`, { label: `ncr ${n}${r}`, skill: "binomial coefficients" }); };
+
+  // 2. Differentiation
+  const saProd = () => { const n = gfR(2, 4), k = sqBig(4), ans = `${saE(k)}(${n}x${sup(n - 1).replace("¹", "")} ${k < 0 ? "−" : "+"} ${Math.abs(k)}x${sup(n)})`.replace("x⁰", "");
+    return gfQ(`Differentiate y = x${sup(n)}${saE(k)}.`, ans, 3, `•1 the product rule: u = x${sup(n)}, v = ${saE(k)} (1 mark). •2 u' = ${n}x${sup(n - 1).replace("¹", "")} and v' = ${saK(k, saE(k))} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${n}x${sup(n - 1).replace("¹", "")} × ${saK(k, saE(k))}`, `${saE(k)}(${n}x${sup(n - 1).replace("¹", "")} ${k < 0 ? "+" : "−"} ${Math.abs(k)}x${sup(n)})`]), label: `prod ${n}${k}`, skill: "the product rule" }); };
+  const saQuot = () => { const a = gfR(1, 5), b = gfR(-6, 6), c = gfR(1, 4), d = gfR(-6, 6), top = a * d - b * c; if (!top || !b || !d) return {};
+    const den = gxB(c, d), ans = `${gfM(top)}/${den}²`;
+    return gfQ(`Differentiate y = ${gxB(a, b)}/${den}, simplifying fully.`, ans, 3,
+      `•1 the quotient rule: (u'v − uv')/v² (1 mark). •2 (${a}${den} − ${c}${gxB(a, b)}) / ${den}² (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${gfM(-top)}/${den}²`, `${gfM(a * d + b * c)}/${den}²`]), label: `quot ${a}${b}${c}${d}`, skill: "the quotient rule" }); };
+  const saLnGrad = () => { const a = gfR(1, 4), b = gfR(1, 9), t = gfR(1, 3) * pick([1, -1]), n = 2 * a * t, d = a * t * t + b;
+    return gfQ(`f(x) = ln(${a === 1 ? "" : a}x² + ${b}). Find f'(${gfM(t)}).`, sqFr(n, d), 2, `•1 f'(x) = ${2 * a}x / (${a === 1 ? "" : a}x² + ${b}), by the chain rule (1 mark). •2 f'(${gfM(t)}) = ${sqFr(n, d)} (1 mark).`,
+      { accept: sqDec(n, d), label: `ln ${a}${b}${t}`, skill: "differentiating ln" }); };
+  const saTrigD = () => { const k = gfR(2, 5), [f, ans, w1, w2] = pick([
+    [`sec ${k}x`, `${k} sec ${k}x tan ${k}x`, `${k} sec² ${k}x`, `−${k} sec ${k}x tan ${k}x`], [`tan ${k}x`, `${k} sec² ${k}x`, `sec² ${k}x`, `${k} sec ${k}x tan ${k}x`],
+    [`cosec ${k}x`, `−${k} cosec ${k}x cot ${k}x`, `${k} cosec ${k}x cot ${k}x`, `−${k} cosec² ${k}x`], [`cot ${k}x`, `−${k} cosec² ${k}x`, `${k} cosec² ${k}x`, `−${k} sec² ${k}x`]]);
+    return gfQ(`Differentiate y = ${f}.`, ans, 2, `•1 the derivative of ${f.split(" ")[0]} x (from the formulae list or learned) (1 mark). •2 times ${k} by the chain rule: ${ans} (1 mark).`,
+      { options: [w1, w2], label: `trigd ${f}`, skill: "derivatives of tan, sec, cosec and cot" }); };
+  const saQuotVal = () => { const a = gfR(1, 9), b = gfR(1, 5);
+    return gfQ(`f(x) = (x² + ${a}) / (x + ${b}). Find f'(0).`, sqFr(-a, b * b), 3, `•1 the quotient rule (1 mark). •2 f'(x) = (2x(x + ${b}) − (x² + ${a})) / (x + ${b})² (1 mark). •3 f'(0) = ${sqFr(-a, b * b)} (1 mark).`,
+      { accept: sqDec(-a, b * b), label: `qv ${a}${b}`, skill: "the quotient rule" }); };
+
+  // 3. Implicit, parametric and inverse trig differentiation
+  const saImplicit = () => { const a = pick([1, 2, 3, -1, -2]), p = gfR(-4, 4), q = gfR(-4, 4), top = -(2 * p + a * q), bot = a * p + 2 * q; if (!bot || !p || !q || !top) return {};
+    const c = p * p + a * p * q + q * q, curve = `x² ${a < 0 ? "−" : "+"} ${saK(Math.abs(a), "xy")} + y² = ${gfM(c)}`;
+    return gfQ(`Find the gradient of the curve ${curve} at the point ${sqP(p, q)}.`, sqFr(top, bot), 3,
+      `•1 2x + 2y dy/dx (1 mark). •2 the product rule on ${saK(a, "xy")}: ${saK(a, "y")} ${a < 0 ? "−" : "+"} ${saK(Math.abs(a), "x")} dy/dx (1 mark). •3 dy/dx = ${sqFr(top, bot)} (1 mark).`,
+      { accept: sqDec(top, bot), label: `imp ${a}${p}${q}`, skill: "implicit differentiation" }); };
+  const saParam = () => { const a = gfR(-5, 5), b = gfR(-6, 6), t = gfR(1, 3) * pick([1, -1]), n = 3 * t * t + b, d = 2 * t; if (!b || !n) return {};
+    return gfQ(`A curve has parametric equations x = t² ${a < 0 ? "−" : "+"} ${Math.abs(a)}, y = t³ ${b < 0 ? "−" : "+"} ${saK(Math.abs(b), "t")}. Find dy/dx when t = ${gfM(t)}.`.replace(" + 0,", ","), sqFr(n, d), 3,
+      `•1 dx/dt = 2t and dy/dt = 3t² ${b < 0 ? "−" : "+"} ${Math.abs(b)} (1 mark). •2 dy/dx = (dy/dt) ÷ (dx/dt) (1 mark). •3 ${sqFr(n, d)} (1 mark).`,
+      { accept: sqDec(n, d), label: `par ${a}${b}${t}`, skill: "parametric differentiation" }); };
+  const saInvTrig = () => { const k = gfR(2, 5), s = rand(2), ans = s ? `${k}/√(1 − ${k * k}x²)` : `${k}/(1 + ${k * k}x²)`;
+    return gfQ(`Differentiate y = ${s ? "sin⁻¹" : "tan⁻¹"}(${k}x).`, ans, 2, `•1 the derivative of ${s ? "sin⁻¹x is 1/√(1 − x²)" : "tan⁻¹x is 1/(1 + x²)"} (1 mark). •2 with the chain rule, ${ans} (1 mark).`,
+      { options: sqUniq(ans, s ? [`1/√(1 − ${k * k}x²)`, `${k}/(1 + ${k * k}x²)`] : [`1/(1 + ${k * k}x²)`, `${k}/√(1 − ${k * k}x²)`]), label: `inv ${s}${k}`, skill: "inverse trig functions" }); };
+  const saRates = () => { const R = gfR(3, 15), c = pick([0.5, 1.5, 2, 2.5, 3, 4]), v = 4 * Math.PI * R * R * c; if (!sqSafe(v, 1)) return {};
+    return gfQ(`A spherical balloon is inflated so that its radius increases at ${c} cm per second. How fast is its volume increasing when the radius is ${R} cm? Give your answer to 1 decimal place. (cm³/s)`, sqR(v, 1), 3,
+      `•1 V = 4/3πr³, so dV/dr = 4πr² (1 mark). •2 dV/dt = dV/dr × dr/dt (1 mark). •3 4π × ${R}² × ${c} = ${sqR(v, 1)} cm³/s (1 mark).`,
+      { calc: true, ps: true, unit: "cm³/s", label: `rr ${R}${c}`, skill: "related rates of change" }); };
+  const saSpeed = () => { const a = gfR(2, 9), b = gfR(10, 30), t = gfR(1, 4), vy = b - 10 * t, s = Math.hypot(a, vy); if (!sqSafe(s, 1) || Number.isInteger(s)) return {};
+    return gfQ(`A ball moves so that x = ${a}t and y = ${b}t − 5t² (metres, t in seconds). Find its speed when t = ${t}, to 1 decimal place. (m/s)`, sqR(s, 1), 3,
+      `•1 dx/dt = ${a} and dy/dt = ${b} − 10t (1 mark). •2 speed = √((dx/dt)² + (dy/dt)²) (1 mark). •3 √(${a}² + ${vy < 0 ? `(${gfM(vy)})` : vy}²) = ${sqR(s, 1)} m/s (1 mark).`,
+      { calc: true, ps: true, unit: "m/s", label: `sp ${a}${b}${t}`, skill: "motion in a plane" }); };
+
+  // 4. Integration: standard results, substitution and partial fractions
+  const saIntTan = () => { const a = gfR(2, 6), k = gfR(1, 4) * a, ans = `${k / a === 1 ? "" : k / a}tan⁻¹(x/${a}) + c`;
+    return gfQ(`Find ∫ ${k}/(${a * a} + x²) dx.`, ans, 2, `•1 the form 1/(a² + x²), with a = ${a} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${k}tan⁻¹(x/${a}) + c`, `${saF(k, a * a, "tan⁻¹")}(${a}x) + c`, `${k / a === 1 ? "" : k / a}sin⁻¹(x/${a}) + c`]).slice(0, 2), label: `itan ${a}${k}`, skill: "standard integrals" }); };
+  const saIntLn = () => { const a = gfR(1, 4), b = gfR(-6, 6), c = gfR(1, 9); if (!b) return {};
+    const inner = sqPoly([a, b, c]), top = gxE([[2 * a, "x"], [b, ""]]), ans = `ln|${inner}| + c`;
+    return gfQ(`Find ∫ (${top}) / (${inner}) dx.`, ans, 2, `•1 the top is the derivative of the bottom: the form f'(x)/f(x) (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`(${top})ln|${inner}| + c`, `1/(${inner})² + c`]), label: `iln ${a}${b}${c}`, skill: "integrating f'(x)/f(x)" }); };
+  const saIntPF = () => { const [a, b] = shuffle([-4, -3, -2, -1, 1, 2, 3, 4]).slice(0, 2), A = sqBig(4), B = sqBig(4); if (A + B === 0) return {};
+    const p = A + B, q = -(A * b + B * a), lnA = `${saK(A, `ln|x ${-a < 0 ? "−" : "+"} ${Math.abs(a)}|`)}`, lnB = saK(B, `ln|x ${-b < 0 ? "−" : "+"} ${Math.abs(b)}|`);
+    const ans = `${lnA} ${B < 0 ? "−" : "+"} ${lnB.replace(/^−/, "")} + c`;
+    return gfQ(`Use partial fractions to find ∫ (${gxE([[p, "x"], [q, ""]])}) / (${gxB(1, -a)}${gxB(1, -b)}) dx.`, ans, 4,
+      `•1 A${gxB(1, -b)} + B${gxB(1, -a)} (1 mark). •2 A = ${gfM(A)} (1 mark). •3 B = ${gfM(B)} (1 mark). •4 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${saK(B, `ln|x ${-a < 0 ? "−" : "+"} ${Math.abs(a)}|`)} ${A < 0 ? "−" : "+"} ${saK(Math.abs(A), `ln|x ${-b < 0 ? "−" : "+"} ${Math.abs(b)}|`)} + c`, `${lnA} ${B < 0 ? "+" : "−"} ${lnB.replace(/^−/, "")} + c`]), label: `ipf ${a}${b}${A}${B}`, skill: "integrating with partial fractions" }); };
+  const saSubst = () => { const n = gfR(2, 4), top = 2 ** (n + 1) - 1, d = 2 * (n + 1);
+    return gfQ(`Use the substitution u = x² + 1 to evaluate ∫ from 0 to 1 of x(x² + 1)${sup(n)} dx.`, sqFr(top, d), 4,
+      `•1 du = 2x dx (1 mark). •2 limits: u = 1 to u = 2 (1 mark). •3 ½ ∫ u${sup(n)} du = [u${sup(n + 1)}/${d}] (1 mark). •4 (2${sup(n + 1)} − 1)/${d} = ${sqFr(top, d)} (1 mark).`,
+      { accept: sqDec(top, d), label: `sub ${n}`, skill: "integration by substitution" }); };
+  const saIntExp = () => { const k = pick([2, 3, 4, 5]), m = gfR(2, 5), ans = `${saF(m, k, saE(k))} + c`;
+    return gfQ(`Find ∫ ${m}${saE(k)} dx.`, ans, 1, `•1 divide by ${k}, the coefficient of x: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${m * k}${saE(k)} + c`, `${m}${saE(k + 1)} + c`]), label: `iexp ${k}${m}`, skill: "standard integrals" }); };
+
+  // 5. Integration by parts, areas and volumes
+  const saParts = () => { const k = gfR(2, 4), ans = `${saF(1, k, "x")}${saE(k)} − ${saF(1, k * k, saE(k))} + c`;
+    return gfQ(`Use integration by parts to find ∫ x${saE(k)} dx.`, ans, 3, `•1 u = x, dv/dx = ${saE(k)} (1 mark). •2 ${saF(1, k, "x")}${saE(k)} − ∫ ${saF(1, k, saE(k))} dx (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${saF(1, k, "x")}${saE(k)} + ${saF(1, k * k, saE(k))} + c`, `${k}x${saE(k)} − ${k * k}${saE(k)} + c`]), label: `parts ${k}`, skill: "integration by parts" }); };
+  const saPartsLn = () => { const n = gfR(1, 3), v = (n * Math.E ** (n + 1) + 1) / (n + 1) ** 2; if (!sqSafe(v, 2)) return {};
+    return gfQ(`Use integration by parts to evaluate ∫ from 1 to e of x${sup(n).replace("¹", "")} ln x dx, to 2 decimal places.`, sqR(v, 2), 4,
+      `•1 u = ln x, dv/dx = x${sup(n).replace("¹", "")} (1 mark). •2 [x${sup(n + 1)}/${n + 1} × ln x] − ∫ x${sup(n).replace("¹", "")}/${n + 1} dx (1 mark). •3 [x${sup(n + 1)}/${n + 1} ln x − x${sup(n + 1)}/${(n + 1) ** 2}] from 1 to e (1 mark). •4 (${n === 1 ? "" : n}e${sup(n + 1)} + 1)/${(n + 1) ** 2} = ${sqR(v, 2)} (1 mark).`,
+      { calc: true, label: `pln ${n}`, skill: "integration by parts" }); };
+  const saVolX = () => { const a = gfR(1, 6), b = gfR(1, 9), h = gfR(2, 6), v = Math.PI * (a * h * h / 2 + b * h); if (!sqSafe(v, 1)) return {};
+    return gfQ(`The part of the curve y = √(${a === 1 ? "" : a}x + ${b}) from x = 0 to x = ${h} is rotated through 360° about the x-axis. Find the volume made, to 1 decimal place. (units³)`, sqR(v, 1), 3,
+      `•1 V = π ∫ y² dx = π ∫ from 0 to ${h} of (${a === 1 ? "" : a}x + ${b}) dx (1 mark). •2 π[${saF(a, 2, "x²")} + ${b}x] (1 mark). •3 ${sqR(v, 1)} (1 mark).`,
+      { calc: true, unit: "units³", label: `vol ${a}${b}${h}`, skill: "volumes of revolution" }); };
+  const saVolY = () => { const a = gfR(1, 3), b = gfR(a + 1, 6), v = Math.PI * (b * b - a * a) / 2; if (!sqSafe(v, 1)) return {};
+    return gfQ(`The part of y = x² (x ≥ 0) between y = ${a} and y = ${b} is rotated through 360° about the y-axis. Find the volume made, to 1 decimal place. (units³)`, sqR(v, 1), 3,
+      `•1 V = π ∫ x² dy, with x² = y (1 mark). •2 π[y²/2] from ${a} to ${b} (1 mark). •3 ${sqR(v, 1)} (1 mark).`,
+      { calc: true, unit: "units³", label: `voly ${a}${b}`, skill: "volumes about the y-axis" }); };
+  const saKinem = () => { const p = gfR(2, 6), c = gfR(-4, 6), v0 = gfR(0, 8), T = gfR(2, 5), v = p * T * T / 2 * 1 + c * T + v0; if (!Number.isInteger(v) || !c) return {};
+    return gfQ(`A particle's acceleration is a = ${p}t ${c < 0 ? "−" : "+"} ${Math.abs(c)} m/s². Its velocity when t = 0 is ${v0} m/s. Find its velocity when t = ${T}. (m/s)`, gfM(v), 3,
+      `•1 v = ∫ a dt = ${saF(p, 2, "t²")} ${c < 0 ? "−" : "+"} ${saK(Math.abs(c), "t")} + C (1 mark). •2 C = ${v0} (1 mark). •3 ${gfM(v)} m/s (1 mark).`,
+      { unit: "m/s", label: `kin ${p}${c}${v0}${T}`, skill: "integration in context" }); };
+
+  // 6. First-order differential equations
+  const saSepCircle = () => { const [a, b, c] = pick(SQ_PY), [p, q] = rand(2) ? [a, b] : [b, a];
+    return gfQ(`Solve y dy/dx = x, given y = ${p} when x = 0 (y > 0). Find y when x = ${q}.`, String(c), 4,
+      `•1 separate: ∫ y dy = ∫ x dx (1 mark). •2 ½y² = ½x² + C (1 mark). •3 C = ${p * p / 2}, so y² = x² + ${p * p} (1 mark). •4 y = √(${q * q} + ${p * p}) = ${c} (1 mark).`,
+      { label: `sep ${p}${q}`, skill: "separable differential equations" }); };
+  const saSepExp = () => { const k = gfR(1, 4) * 2 * pick([1, -1]), A = gfR(2, 9), ans = `y = ${A}e^(${gfM(k / 2)}x²)`.replace("e^(1x²)", "e^(x²)").replace("e^(−1x²)", "e^(−x²)");
+    return gfQ(`Solve dy/dx = ${saK(k, "xy")}, given y = ${A} when x = 0.`, ans, 3, `•1 ∫ 1/y dy = ∫ ${saK(k, "x")} dx (1 mark). •2 ln y = ${saK(k / 2, "x²")} + C (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = ${A}e^(${gfM(k)}x²)`, `y = e^(${gfM(k / 2)}x²) + ${A - 1}`.replace("e^(1x²)", "e^(x²)").replace("e^(−1x²)", "e^(−x²)")]), label: `sepe ${k}${A}`, skill: "separable differential equations" }); };
+  const saIFactor = () => { const a = gfR(2, 4), m = gfR(1, 3), e = m + a + 1, ans = `y = x${sup(m + 1)}/${e} + C/x${sup(a)}`;
+    return gfQ(`Find the general solution of dy/dx + (${a}/x)y = x${sup(m).replace("¹", "")}, for x > 0.`, ans, 4,
+      `•1 the integrating factor e^(∫ ${a}/x dx) (1 mark). •2 = x${sup(a)} (1 mark). •3 d/dx(x${sup(a)}y) = x${sup(m + a)}, so x${sup(a)}y = x${sup(e)}/${e} + C (1 mark). •4 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = x${sup(m + 1)}/${m + 1} + C/x${sup(a)}`, `y = x${sup(m + 1)}/${e} + Cx${sup(a)}`]), label: `if ${a}${m}`, skill: "integrating factors" }); };
+  const saIFVal = () => { const k = gfR(2, 5), c = gfR(2, 12), x = pick([0.5, 1, 1.5, 2]), v = c / k * (1 - Math.exp(-k * x)); if (!sqSafe(v, 2)) return {};
+    return gfQ(`Solve dy/dx + ${k}y = ${c}, given y = 0 when x = 0, and find y when x = ${x}, to 2 decimal places.`, sqR(v, 2), 4,
+      `•1 the integrating factor e^(${k}x) (1 mark). •2 ye^(${k}x) = ${saF(c, k, `e^(${k}x)`)} + C (1 mark). •3 C = −${sqFr(c, k)}, so y = ${saF(c, k, `(1 − e^(−${k}x))`)} (1 mark). •4 ${sqR(v, 2)} (1 mark).`,
+      { calc: true, label: `ifv ${k}${c}${x}`, skill: "first-order linear differential equations" }); };
+  const saCooling = () => { const T0 = gfR(70, 95), R = 20, t1 = gfR(5, 15), T1 = gfR(R + 15, T0 - 10), k = Math.log((T0 - R) / (T1 - R)) / t1; if (!sqSafe(k, 3)) return {};
+    return gfQ(`A drink cools so that dT/dt = −k(T − ${R}). It is ${T0}°C at first and ${T1}°C after ${t1} minutes. Find k to 3 decimal places.`, sqR(k, 3), 3,
+      `•1 separate and integrate: ln(T − ${R}) = −kt + C (1 mark). •2 T − ${R} = ${T0 - R}e^(−kt) (1 mark). •3 k = ln(${T0 - R}/${T1 - R}) ÷ ${t1} = ${sqR(k, 3)} (1 mark).`,
+      { calc: true, ps: true, label: `cool ${T0}${T1}${t1}`, skill: "differential equations in context" }); };
+
+  // 7. Second-order differential equations
+  const saDE = (p, q) => `d²y/dx² ${p < 0 ? "−" : "+"} ${Math.abs(p) === 1 ? "" : Math.abs(p)}dy/dx ${q < 0 ? "−" : "+"} ${Math.abs(q) === 1 ? "" : Math.abs(q)}y`.replace(/ \+ 0?dy\/dx| \+ 0y/g, "");
+  const saDistinct = () => { const [r1, r2] = shuffle([-4, -3, -2, -1, 1, 2, 3, 4]).slice(0, 2).sort((a, b) => b - a), p = -(r1 + r2), q = r1 * r2; if (!p) return {};
+    const ans = `y = A${saE(r1)} + B${saE(r2)}`;
+    return gfQ(`Find the general solution of ${saDE(p, q)} = 0.`, ans, 3, `•1 the auxiliary equation m² ${p < 0 ? "−" : "+"} ${saK(Math.abs(p), "m")} ${q < 0 ? "−" : "+"} ${Math.abs(q)} = 0 (1 mark). •2 m = ${gfM(r1)} and m = ${gfM(r2)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = A${saE(-r1)} + B${saE(-r2)}`, `y = (A + Bx)${saE(r1)}`]), label: `de2 ${r1}${r2}`, skill: "second-order equations: distinct roots" }); };
+  const saEqual = () => { const r = sqBig(4), p = -2 * r, q = r * r, ans = `y = (A + Bx)${saE(r)}`;
+    return gfQ(`Find the general solution of ${saDE(p, q)} = 0.`, ans, 3, `•1 the auxiliary equation m² ${p < 0 ? "−" : "+"} ${Math.abs(p)}m + ${q} = 0 (1 mark). •2 m = ${gfM(r)}, a repeated root (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = A${saE(r)} + B${saE(-r)}`, `y = (A + Bx)${saE(-r)}`]), label: `deq ${r}`, skill: "second-order equations: equal roots" }); };
+  const saComplexDE = () => { const al = gfR(-3, 3), be = gfR(1, 4), p = -2 * al, q = al * al + be * be, bx = be === 1 ? "x" : `${be}x`;
+    const ans = `y = ${al ? saE(al) : ""}(A cos ${bx} + B sin ${bx})`;
+    return gfQ(`Find the general solution of ${saDE(p, q)} = 0.`, ans, 3, `•1 the auxiliary equation m²${p ? ` ${p < 0 ? "−" : "+"} ${Math.abs(p)}m` : ""} + ${q} = 0 (1 mark). •2 m = ${saZ(al, be)} and ${saZ(al, -be)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = A${saE(al || be)} + B${saE(-(al || be))}`, `y = ${be === 1 ? "" : saE(be)}(A cos ${al ? `${Math.abs(al) === 1 ? "" : Math.abs(al)}x` : "x"} + B sin ${al ? `${Math.abs(al) === 1 ? "" : Math.abs(al)}x` : "x"})`]), label: `dec ${al}${be}`, skill: "second-order equations: complex roots" }); };
+  const saPI = () => { const [r1, r2] = shuffle([-4, -3, -2, -1, 1, 2, 3, 4]).slice(0, 2), p = -(r1 + r2), q = r1 * r2, u = sqBig(4), v = gfR(-6, 6); if (!p) return {};
+    const k1 = q * u, k0 = p * u + q * v, ans = `y = ${gxE([[u, "x"], [v, ""]])}`;
+    return gfQ(`Find a particular integral of ${saDE(p, q)} = ${gxE([[k1, "x"], [k0, ""]])}.`, ans, 3,
+      `•1 try y = ax + b, so dy/dx = a and d²y/dx² = 0 (1 mark). •2 ${gxE([[p, "a"]])} ${q < 0 ? "−" : "+"} ${Math.abs(q)}(ax + b) = ${gxE([[k1, "x"], [k0, ""]])}, so ${gfM(q)}a = ${gfM(k1)} (1 mark). •3 a = ${gfM(u)}, b = ${gfM(v)}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = ${gxE([[k1, "x"], [k0, ""]])}`, `y = ${gxE([[u, "x"], [-v, ""]])}`, `y = ${gxE([[-u, "x"], [v, ""]])}`]).slice(0, 2), label: `pi ${r1}${r2}${u}${v}`, skill: "particular integrals" }); };
+  const saIVP = () => { const [r1, r2] = shuffle([-3, -2, -1, 1, 2, 3]).slice(0, 2).sort((a, b) => b - a), A = sqBig(4), B = sqBig(4), p = -(r1 + r2), q = r1 * r2; if (!p) return {};
+    const y0 = A + B, d0 = r1 * A + r2 * B, ans = `y = ${saK(A, saE(r1))} ${B < 0 ? "−" : "+"} ${saK(Math.abs(B), saE(r2))}`;
+    return gfQ(`Solve ${saDE(p, q)} = 0, given y = ${gfM(y0)} and dy/dx = ${gfM(d0)} when x = 0.`, ans, 4,
+      `•1 m = ${gfM(r1)} and ${gfM(r2)}, so y = A${saE(r1)} + B${saE(r2)} (1 mark). •2 A + B = ${gfM(y0)} (1 mark). •3 ${gxE([[r1, "A"], [r2, "B"]])} = ${gfM(d0)} (1 mark). •4 A = ${gfM(A)}, B = ${gfM(B)} (1 mark).`,
+      { options: sqUniq(ans, [`y = ${saK(B, saE(r1))} ${A < 0 ? "−" : "+"} ${saK(Math.abs(A), saE(r2))}`, `y = ${saK(A, saE(-r1))} ${B < 0 ? "−" : "+"} ${saK(Math.abs(B), saE(-r2))}`]), label: `ivp ${r1}${r2}${A}${B}`, skill: "second-order equations with conditions" }); };
+
+  // 8. Functions and graphs
+  const saAsym = () => { const a = sqBig(5), b = gfR(-9, 9), c = sqBig(5); if (b === -a * c || !b) return {};
+    const ans = `x = ${gfM(c)} and y = ${gfM(a)}`;
+    return gfQ(`State the equations of the asymptotes of y = (${gxE([[a, "x"], [b, ""]])}) / ${gxB(1, -c)}.`, ans, 2,
+      `•1 vertical: x = ${gfM(c)}, where the bottom is zero (1 mark). •2 horizontal: y = ${gfM(a)}, as x → ±∞ (1 mark).`,
+      { options: sqUniq(ans, [`x = ${gfM(-c)} and y = ${gfM(a)}`, `x = ${gfM(c)} and y = ${sqFr(b, -c)}`]), label: `asy ${a}${b}${c}`, skill: "asymptotes" }); };
+  const saOblique = () => { const d = sqBig(4), b = gfR(-6, 6), c = gfR(-9, 9), r = c + b * d + d * d; if (!r) return {};
+    const ans = `y = ${gxE([[1, "x"], [b + d, ""]])}`;
+    return gfQ(`Find the equation of the non-vertical (slant) asymptote of y = (${sqPoly([1, b, c])}) / ${gxB(1, -d)}.`, ans, 3,
+      `•1 divide: (${sqPoly([1, b, c])}) ÷ ${gxB(1, -d)} (1 mark). •2 = ${gxE([[1, "x"], [b + d, ""]])} + ${gfM(r)}/${gxB(1, -d)} (1 mark). •3 as x → ±∞ the fraction → 0, so ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = ${gxE([[1, "x"], [b - d, ""]])}`, `y = ${gxE([[1, "x"], [b, ""]])}`, `x = ${gfM(d)}`]).slice(0, 2), label: `obl ${d}${b}${c}`, skill: "slant asymptotes" }); };
+  const saOddEven = () => { const [f, ans, why] = pick([["x³ cos x", "odd", "(−x)³cos(−x) = −x³ cos x"], ["x² + cos x", "even", "(−x)² + cos(−x) = x² + cos x"], ["x sin x", "even", "(−x)sin(−x) = x sin x"],
+    ["x/(x² + 1)", "odd", "−x/(x² + 1) = −f(x)"], ["x³ + x²", "neither", "−x³ + x² is neither f(x) nor −f(x)"], ["eˣ + x", "neither", "e⁻ˣ − x is neither f(x) nor −f(x)"], ["x⁴ − 3x²", "even", "(−x)⁴ − 3(−x)² = x⁴ − 3x²"], ["tan x", "odd", "tan(−x) = −tan x"]]);
+    return gfQ(`Is f(x) = ${f} odd, even or neither?`, ans, 2, `•1 f(−x): ${why} (1 mark). •2 ${ans} (1 mark).`, { options: ["odd", "even", "neither"].filter(o => o !== ans), label: `oe ${f}`, skill: "odd and even functions" }); };
+  const saInflect = () => { const a = 3 * sqBig(3), b = gfR(-9, 9), x = -a / 3;
+    return gfQ(`Find the x-coordinate of the point of inflection of y = ${sqPoly([1, a, b, 0])}.`, gfM(x), 2, `•1 d²y/dx² = 6x ${a < 0 ? "−" : "+"} ${Math.abs(2 * a)} (1 mark). •2 = 0 at x = ${gfM(x)}, and it changes sign there (1 mark).`,
+      { label: `inf ${a}${b}`, skill: "points of inflection" }); };
+  const saModEq = () => { const a = gfR(1, 4), b = gfR(-9, 9), c = gfR(1, 9), x1 = sqFr(b + c, a), x2 = sqFr(b - c, a), ans = `x = ${x2} or x = ${x1}`;
+    return gfQ(`Solve |${gxE([[a, "x"], [-b, ""]])}| = ${c}.`, ans, 2, `•1 ${gxE([[a, "x"], [-b, ""]])} = ${c} or ${gxE([[a, "x"], [-b, ""]])} = −${c} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`x = ${x1} only`, `x = ${sqFr(-b - c, a)} or x = ${sqFr(c - b, a)}`]), label: `mod ${a}${b}${c}`, skill: "the modulus function" }); };
+
+  // 9. Sequences, series and Maclaurin expansions
+  const saAPSum = () => { const a = gfR(-10, 20), d = sqBig(7), n = gfR(10, 40), s = n / 2 * (2 * a + (n - 1) * d);
+    return gfQ(`An arithmetic sequence has first term ${gfM(a)} and common difference ${gfM(d)}. Find the sum of its first ${n} terms.`, gfM(s), 2, `•1 Sₙ = n/2(2a + (n − 1)d) = ${n}/2(${2 * a} + ${n - 1} × ${gfM(d)}) (1 mark). •2 ${gfM(s)} (1 mark).`,
+      { label: `ap ${a}${d}${n}`, skill: "arithmetic series" }); };
+  const saGPInf = () => { const a = gfR(2, 60), [p, q] = pick([[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [-1, 2], [-1, 3], [2, 5], [-2, 3]]);
+    return gfQ(`A geometric series has first term ${a} and common ratio ${sqFr(p, q)}. Explain why it has a sum to infinity, and find it.`, sqFr(a * q, q - p), 2,
+      `•1 −1 < r < 1, so the sum to infinity exists (1 mark). •2 S∞ = a/(1 − r) = ${sqFr(a * q, q - p)} (1 mark).`, { accept: sqDec(a * q, q - p), label: `gpi ${a}${p}${q}`, skill: "sum to infinity" }); };
+  const saGPn = () => { const a = gfR(2, 9), r = pick([2, 3, 1.5, 1.2]), S = gfR(500, 9000); let n = 1; while (a * (r ** n - 1) / (r - 1) <= S) n++;
+    return gfQ(`A geometric series has first term ${a} and common ratio ${r}. Find the least number of terms needed for the sum to be more than ${gfBig(S)}.`, String(n), 3,
+      `•1 ${a}(${r}ⁿ − 1)/${gfD(r - 1)} > ${S} (1 mark). •2 ${r}ⁿ > ${gfD(S * (r - 1) / a + 1)}, so n > ${sqR(Math.log(S * (r - 1) / a + 1) / Math.log(r), 2)} using logs (1 mark). •3 n = ${n} (1 mark).`,
+      { calc: true, ps: true, label: `gpn ${a}${r}${S}`, skill: "geometric series" }); };
+  const saSigma = () => { const a = sqBig(6), b = gfR(-9, 9), n = gfR(10, 30), s = a * n * (n + 1) / 2 + b * n;
+    return gfQ(`Evaluate the sum of (${gxE([[a, "r"], [b, ""]])}) for r = 1 to ${n}.`, gfM(s), 2, `•1 ${gfM(a)} × Σr ${b < 0 ? "−" : "+"} ${Math.abs(b)} × ${n}, with Σr = n(n + 1)/2 (1 mark). •2 ${gfM(s)} (1 mark).`,
+      { label: `sig ${a}${b}${n}`, skill: "summation formulae" }); };
+  const saMac = () => { const k = sqBig(3), s = rand(2), k2 = k * k, k3 = k2 * k;
+    const ans = s ? `1 ${k < 0 ? "−" : "+"} ${saK(Math.abs(k), "x")} + ${saF(k2, 2, "x²")}` : `${saK(k, "x")} − ${saF(k2, 2, "x²")} ${k3 < 0 ? "−" : "+"} ${saF(Math.abs(k3), 3, "x³")}`;
+    return gfQ(`Find the first three non-zero terms of the Maclaurin expansion of ${s ? saE(k) : `ln(1 ${k < 0 ? "−" : "+"} ${saK(Math.abs(k), "x")})`}.`, ans, 3,
+      `•1 f(0), f'(0) and f''(0)${s ? "" : " and f'''(0)"} (1 mark). •2 f(x) = f(0) + f'(0)x + f''(0)x²/2! + … (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, s ? [`1 ${k < 0 ? "−" : "+"} ${saK(Math.abs(k), "x")} + ${k2}x²`, `1 ${k < 0 ? "−" : "+"} ${saK(Math.abs(k), "x")} + ${saF(Math.abs(k), 2, "x²")}`] : [`${saK(k, "x")} + ${saF(k2, 2, "x²")} ${k3 < 0 ? "−" : "+"} ${saF(Math.abs(k3), 3, "x³")}`, `${saK(k, "x")} − ${k2}x² ${k3 < 0 ? "−" : "+"} ${Math.abs(k3)}x³`]), label: `mac ${s}${k}`, skill: "Maclaurin expansions" }); };
+
+  // 10. Proof and number theory
+  const saCounter = () => { const [claim, ans, wrong] = pick([["n² + n + 41 is prime for every whole number n ≥ 0.", "n = 40", ["n = 1", "n = 5"]], ["2ⁿ − 1 is prime for every prime number n.", "n = 11", ["n = 3", "n = 7"]],
+    ["n² − n + 11 is prime for every whole number n ≥ 1.", "n = 11", ["n = 2", "n = 5"]], ["n² + 1 is odd for every whole number n.", "n = 3", ["n = 2", "n = 4"]], ["For every real x, x² > x.", "x = ½", ["x = 2", "x = −1"]], ["The sum of two irrational numbers is always irrational.", "√2 and −√2", ["√2 and √3", "π and 1"]]]);
+    return gfQ(`Which disproves this conjecture? “${claim}”`, ans, 1, `•1 ${ans} is a counterexample: it does not satisfy the claim (check it) (1 mark).`, { options: wrong, label: `cx ${claim.slice(0, 12)}`, skill: "disproof by counterexample" }); };
+  const saEuclid = () => { const g = gfR(2, 15), a = g * gfR(8, 40), b = g * gfR(3, 25); if (gcd(a / g, b / g) !== 1 || a <= b) return {};
+    return gfQ(`Use Euclid's algorithm to find the greatest common divisor of ${a} and ${b}.`, String(g), 2, `•1 ${a} = ${Math.floor(a / b)} × ${b} + ${a % b}, and so on until the remainder is 0 (1 mark). •2 gcd = ${g}, the last non-zero remainder (1 mark).`,
+      { label: `euc ${a}${b}`, skill: "Euclid's algorithm" }); };
+  const saLinComb = () => { const a = gfR(20, 90), b = gfR(7, a - 3); if (gcd(a, b) !== 1) return {};
+    // Extended Euclid: x, y with ax + by = 1
+    const ext = (p, q) => { if (!q) return [1, 0]; const [s, t] = ext(q, p % q); return [t, s - Math.floor(p / q) * t]; }, [x, y] = ext(a, b), ans = `x = ${gfM(x)}, y = ${gfM(y)}`;
+    return gfQ(`gcd(${a}, ${b}) = 1. Use Euclid's algorithm to find integers x and y with ${a}x + ${b}y = 1.`, ans, 3, `•1 the steps of the algorithm (1 mark). •2 working back up, 1 = ${a} × ${gfM(x)} + ${b} × ${gfM(y)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`x = ${gfM(-x)}, y = ${gfM(-y)}`, `x = ${gfM(y)}, y = ${gfM(x)}`]), label: `lc ${a}${b}`, skill: "the gcd as a linear combination" }); };
+  const saBase = () => { const base = pick([2, 3, 5, 7, 8]), n = gfR(base * base + 1, base === 2 ? 120 : 400), ans = n.toString(base);
+    return gfQ(`Write the denary (base 10) number ${n} in base ${base}.`, ans, 2, `•1 divide by ${base} repeatedly, noting the remainders (1 mark). •2 ${ans}, reading the remainders from last to first (1 mark).`,
+      { label: `base ${n}${base}`, skill: "number bases" }); };
+  const saNegate = () => { const [s, ans, w1, w2] = pick([["For all n ∈ ℕ, n² ≥ n.", "There exists n ∈ ℕ such that n² < n.", "For all n ∈ ℕ, n² < n.", "There exists n ∈ ℕ such that n² ≥ n."],
+    ["There exists an integer x such that x² = 2.", "For all integers x, x² ≠ 2.", "There exists an integer x such that x² ≠ 2.", "For all integers x, x² = 2."],
+    ["For all real x, eˣ > 0.", "There exists a real x such that eˣ ≤ 0.", "For all real x, eˣ ≤ 0.", "There exists a real x such that eˣ < 0."]]);
+    return gfQ(`Write down the negation of the statement: “${s}”`, ans, 1, `•1 swap “for all” and “there exists”, and negate the condition: ${ans} (1 mark).`, { options: [w1, w2], label: `neg ${s.slice(0, 14)}`, skill: "negating statements" }); };
+  const saInduct = () => { const [sum, f, fk1] = pick([["1 + 2 + … + n", "n(n + 1)/2", "(k + 1)(k + 2)/2"], ["1² + 2² + … + n²", "n(n + 1)(2n + 1)/6", "(k + 1)(k + 2)(2k + 3)/6"], ["1 + 3 + 5 + … + (2n − 1)", "n²", "(k + 1)²"], ["1³ + 2³ + … + n³", "n²(n + 1)²/4", "(k + 1)²(k + 2)²/4"]]);
+    const ans = `sum to k + 1 terms = ${fk1}`;
+    return gfQ(`Proving ${sum} = ${f} by induction: it is true for n = 1, and you assume it for n = k. What do you show next?`, ans, 2,
+      `•1 true for n = k ⇒ true for n = k + 1 (1 mark). •2 so show the ${ans} (1 mark).`, { options: [`sum to k terms = ${f.replace(/n/g, "k")}`, `it is true for n = 2`], label: `ind ${f}`, skill: "proof by induction" }); };
+
+  // 11. Matrices
+  const saM = () => Array.from({ length: 2 }, () => [sqBig(5), gfR(-5, 6) || 1]);
+  const saDetQ = () => { const m = Array.from({ length: 3 }, () => [gfR(-3, 4), gfR(-3, 4), gfR(-3, 4)]), d = saDet3(m);
+    return gfQ(`Find the determinant of the 3 × 3 matrix with ${saRows(m)}.`, gfM(d), 3, `•1 expand along the first row (1 mark). •2 ${gfM(m[0][0])}(${gfM(saDet2([m[1].slice(1), m[2].slice(1)]))}) − ${saX(m[0][1])}(${gfM(saDet2([[m[1][0], m[1][2]], [m[2][0], m[2][2]]]))}) + ${saX(m[0][2])}(${gfM(saDet2([m[1].slice(0, 2), m[2].slice(0, 2)]))}) (1 mark). •3 ${gfM(d)} (1 mark).`,
+      { label: `det ${m}`, skill: "3 × 3 determinants" }); };
+  const saInv = () => { const m = saM(), d = saDet2(m); if (Math.abs(d) < 2) return {};
+    const inv = [[m[1][1], -m[0][1]], [-m[1][0], m[0][0]]], ans = `1/${gfM(d)} × the matrix with ${saRows(inv)}`.replace("1/−", "−1/");
+    return gfQ(`A is the 2 × 2 matrix with ${saRows(m)}. Find A⁻¹.`, ans, 2, `•1 det A = ${gfM(d)} (1 mark). •2 swap the leading diagonal, change the signs of the other two, divide by det A: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`1/${gfM(d)} × the matrix with ${saRows([[m[0][0], -m[0][1]], [-m[1][0], m[1][1]]])}`.replace("1/−", "−1/"), `1/${gfM(-d)} × the matrix with ${saRows(inv)}`.replace("1/−", "−1/")]), label: `inv ${m}`, skill: "inverse matrices" }); };
+  const saSingular = () => { const r1 = gfR(1, 5), r2 = -gfR(1, 5), c = -(r1 + r2), ab = -r1 * r2, a = pick([1, ab].concat(range(2, ab).filter(x => ab % x === 0))), b = ab / a, ans = `k = ${gfM(r2)} or k = ${gfM(r1)}`;
+    return gfQ(`The 2 × 2 matrix with rows (k, ${a}) and (${b}, ${c ? `k ${c < 0 ? "−" : "+"} ${Math.abs(c)}` : "k"}) is singular. Find the possible values of k.`, ans, 3,
+      `•1 singular means det = 0 (1 mark). •2 k(${c ? `k ${c < 0 ? "−" : "+"} ${Math.abs(c)}` : "k"}) − ${ab} = 0 (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`k = ${gfM(-r2)} or k = ${gfM(-r1)}`, `k = ${gfM(r1)} only`]), label: `sing ${r1}${r2}${a}`, skill: "singular matrices" }); };
+  const saProduct = () => { const A = saM(), B = saM(), C = [[0, 1].map(j => A[0][0] * B[0][j] + A[0][1] * B[1][j]), [0, 1].map(j => A[1][0] * B[0][j] + A[1][1] * B[1][j])];
+    const ans = `the matrix with ${saRows(C)}`, BA = [[0, 1].map(j => B[0][0] * A[0][j] + B[0][1] * A[1][j]), [0, 1].map(j => B[1][0] * A[0][j] + B[1][1] * A[1][j])];
+    return gfQ(`A has ${saRows(A)}; B has ${saRows(B)}. Find AB.`, ans, 2, `•1 row by column: the top left is ${gfM(A[0][0])} × ${saX(B[0][0])} + ${saX(A[0][1])} × ${saX(B[1][0])} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`the matrix with ${saRows(BA)}`, `the matrix with ${saRows([[A[0][0] * B[0][0], A[0][1] * B[0][1]], [A[1][0] * B[1][0], A[1][1] * B[1][1]]])}`]).slice(0, 2), label: `mm ${A}${B}`, skill: "multiplying matrices" }); };
+  const saTransform = () => { const [what, m, w1, w2] = pick([["an anticlockwise rotation of 90° about the origin", [[0, -1], [1, 0]], [[0, 1], [-1, 0]], [[1, 0], [0, -1]]],
+    ["a rotation of 180° about the origin", [[-1, 0], [0, -1]], [[1, 0], [0, -1]], [[0, -1], [-1, 0]]], ["a reflection in the line y = x", [[0, 1], [1, 0]], [[0, -1], [-1, 0]], [[1, 0], [0, -1]]],
+    ["a reflection in the x-axis", [[1, 0], [0, -1]], [[-1, 0], [0, 1]], [[0, 1], [1, 0]]], ["a dilatation (enlargement) of scale factor 3 about the origin", [[3, 0], [0, 3]], [[3, 0], [0, 1]], [[1, 3], [3, 1]]]]);
+    return gfQ(`Which matrix represents ${what}?`, `the matrix with ${saRows(m)}`, 1, `•1 its columns are where (1, 0) and (0, 1) go: ${saRows(m)} (1 mark).`, { options: [w1, w2].map(x => `the matrix with ${saRows(x)}`), label: `tr ${what.slice(0, 16)}`, skill: "transformation matrices" }); };
+
+  // 12. Systems of equations
+  const saSys = () => { const s = [sqBig(4), gfR(-4, 4), sqBig(4)], m = [[1, gfR(-2, 3) || 1, gfR(-2, 3) || 2], [gfR(1, 3), gfR(-3, 3), gfR(-3, 3)], [gfR(-2, 3), gfR(-3, 3), gfR(-3, 3) || 1]];
+    if (!saDet3(m)) return {};
+    const rhs = m.map(r => r[0] * s[0] + r[1] * s[1] + r[2] * s[2]), eq = r => `${gxE([[r[0], "x"], [r[1], "y"], [r[2], "z"]])}`, ans = `x = ${gfM(s[0])}, y = ${gfM(s[1])}, z = ${gfM(s[2])}`;
+    return gfQ(`Use Gaussian elimination to solve: ${m.map((r, i) => `${eq(r)} = ${gfM(rhs[i])}`).join("; ")}.`, ans, 4,
+      `•1 the augmented matrix, and zeros below the first leading entry (1 mark). •2 upper triangular form (1 mark). •3 z = ${gfM(s[2])} (1 mark). •4 back-substitute: y = ${gfM(s[1])}, x = ${gfM(s[0])} (1 mark).`,
+      { options: sqUniq(ans, [`x = ${gfM(s[2])}, y = ${gfM(s[1])}, z = ${gfM(s[0])}`, `x = ${gfM(-s[0])}, y = ${gfM(s[1])}, z = ${gfM(-s[2])}`, `x = ${gfM(s[1])}, y = ${gfM(s[0])}, z = ${gfM(s[2])}`]).slice(0, 2), label: `gs ${m}${s}`, skill: "Gaussian elimination" }); };
+  const saNoUnique = () => { const k = gfR(-2, 5), a = gfR(1, 6), b = gfR(1, 9), lam = k + 1;
+    return gfQ(`For which value of λ does this system not have a unique solution? x + y + z = ${a}; x + 2y + ${k === 1 ? "" : k < 0 ? `(${gfM(k)})` : k}z = ${b}; 2x + 3y + λz = 1.`.replace("+ 0z", "+ 0z"), gfM(lam), 3,
+      `•1 R2 − R1: ${gxE([[1, "y"], [k - 1, "z"]])} = ${gfM(b - a)} (1 mark). •2 R3 − 2R1, then minus the new R2: (λ ${k + 1 < 0 ? "+" : "−"} ${Math.abs(k + 1)})z = … (1 mark). •3 no unique solution when λ = ${gfM(lam)} (1 mark).`,
+      { label: `nu ${k}${a}${b}`, skill: "systems with no unique solution" }); };
+  const saIll = () => gfQ("Two equations, x + y = 2 and x + 1.01y = 2.01, have the solution x = 1, y = 1. Changing 2.01 to 2.02 gives x = 0, y = 2. What is this system called?", "ill-conditioned", 1,
+    "•1 a small change in a coefficient or constant makes a large change in the solution: the system is ill-conditioned (the lines are nearly parallel) (1 mark).", { options: ["inconsistent", "redundant"], label: "ill", skill: "ill-conditioning" });
+
+  // 13. Vectors, lines and planes
+  const saV = () => [gfR(-4, 4), gfR(-4, 4), gfR(-4, 4)];
+  const saCrossQ = () => { const a = saV(), b = saV(), c = saCross(a, b); if (!c.some(Boolean)) return {};
+    const ans = sqP(...c);
+    return gfQ(`a = ${sqP(...a)} and b = ${sqP(...b)}. Find a × b, the vector product.`, ans, 2, `•1 the determinant with i, j, k on the top row (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(...c.map(x => -x)), sqP(c[0], -c[1], c[2])]), label: `cr ${a}${b}`, skill: "the vector product" }); };
+  const saPlane3 = () => { const A = saV(), B = A.map(x => x + gfR(-3, 3)), C = A.map(x => x + gfR(-3, 3)), n = saCross(B.map((x, i) => x - A[i]), C.map((x, i) => x - A[i])), g = Math.abs(gcd(gcd(n[0], n[1]), n[2]));
+    if (!g) return {};
+    const N = n.map(x => x / g), d = saDot(N, A), ans = `${gxE([[N[0], "x"], [N[1], "y"], [N[2], "z"]])} = ${gfM(d)}`;
+    return gfQ(`Find the Cartesian equation of the plane through A${sqP(...A)}, B${sqP(...B)} and C${sqP(...C)}.`, ans, 4,
+      `•1 AB = ${sqP(...B.map((x, i) => x - A[i]))} and AC = ${sqP(...C.map((x, i) => x - A[i]))} (1 mark). •2 the normal AB × AC = ${sqP(...n)} (1 mark). •3 the form ${gxE([[N[0], "x"], [N[1], "y"], [N[2], "z"]])} = k (1 mark). •4 k = ${gfM(d)}, using A (1 mark).`,
+      { options: sqUniq(ans, [`${gxE([[N[0], "x"], [N[1], "y"], [N[2], "z"]])} = ${gfM(-d)}`, `${gxE([[A[0], "x"], [A[1], "y"], [A[2], "z"]])} = ${gfM(saDot(A, A))}`]), label: `pl ${A}${B}${C}`, skill: "the equation of a plane" }); };
+  const saLinePlane = () => { const n = saV(), dir = saV(), P = saV(), t = gfR(-3, 3), nd = saDot(n, dir); if (!nd || !n.some(Boolean)) return {};
+    const X = P.map((x, i) => x + t * dir[i]), k = saDot(n, X), ans = sqP(...X);
+    return gfQ(`Find where the line r = ${sqP(...P)} + t${sqP(...dir)} meets the plane ${gxE([[n[0], "x"], [n[1], "y"], [n[2], "z"]])} = ${gfM(k)}.`, ans, 3,
+      `•1 substitute (x, y, z) = ${sqP(...P)} + t${sqP(...dir)} into the plane (1 mark). •2 t = ${gfM(t)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(...P.map((x, i) => x - t * dir[i])), sqP(...P.map((x, i) => x + (t + 1) * dir[i])), sqP(...dir.map((x, i) => x + t * P[i]))]).slice(0, 2), label: `lp ${n}${dir}${P}${t}`, skill: "a line meeting a plane" }); };
+  const saPlaneAngle = () => { const [x, y, z, m] = pick(SQ_TRIPLES), [u, v, w, n] = pick(SQ_TRIPLES), a = shuffle([x, y, z]).map(t => t * pick([1, -1])), b = shuffle([u, v, w]).map(t => t * pick([1, -1]));
+    const dot = Math.abs(saDot(a, b)), th = sqDeg(Math.acos(dot / (m * n))); if (!sqSafe(th, 1) || !dot) return {};
+    return gfQ(`Find the acute angle between the planes ${gxE([[a[0], "x"], [a[1], "y"], [a[2], "z"]])} = 4 and ${gxE([[b[0], "x"], [b[1], "y"], [b[2], "z"]])} = 1, to 1 decimal place. (°)`, sqR(th, 1), 3,
+      `•1 the normals ${sqP(...a)} and ${sqP(...b)} (1 mark). •2 cos θ = ${dot} ÷ (${m} × ${n}) (1 mark). •3 ${sqR(th, 1)}° (1 mark).`, { calc: true, unit: "°", label: `pa ${a}${b}`, skill: "the angle between planes" }); };
+  const saTripleQ = () => { const a = saV(), b = saV(), c = saV(), v = saDot(a, saCross(b, c));
+    return gfQ(`Evaluate the scalar triple product a.(b × c) for a = ${sqP(...a)}, b = ${sqP(...b)} and c = ${sqP(...c)}.`, gfM(v), 2, `•1 b × c = ${sqP(...saCross(b, c))} (1 mark). •2 a.(b × c) = ${gfM(v)} (1 mark).`,
+      { label: `tp ${a}${b}${c}`, skill: "the scalar triple product" }); };
+
+  // 14. Complex numbers
+  const saCMul = () => { const a = sqBig(6), b = sqBig(6), c = sqBig(6), d = sqBig(6), ans = saZ(a * c - b * d, a * d + b * c);
+    return gfQ(`Express (${saZ(a, b)})(${saZ(c, d)}) in the form a + bi.`, ans, 2, `•1 expand, with i² = −1 (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [saZ(a * c + b * d, a * d + b * c), saZ(a * c - b * d, a * d - b * c)]), label: `cm ${a}${b}${c}${d}`, skill: "multiplying complex numbers" }); };
+  const saCDiv = () => { const p = gfR(-5, 5), q = sqBig(5), c = gfR(1, 4), d = sqBig(4), top = [p * c - q * d, p * d + q * c], ans = saZ(p, q);
+    return gfQ(`Express (${saZ(...top)}) / (${saZ(c, d)}) in the form a + bi.`, ans, 3, `•1 multiply top and bottom by the conjugate ${saZ(c, -d)} (1 mark). •2 the bottom becomes ${c * c + d * d} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [saZ(p, -q), saZ(q, p), saZ(-p, q)]).slice(0, 2), label: `cd ${p}${q}${c}${d}`, skill: "dividing complex numbers" }); };
+  const saModArg = () => { const [a, b, r] = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [6, 8, 10]]), sa = pick([1, -1]), sb = pick([1, -1]), x = sa * a, y = sb * b, th = Math.atan2(y, x); if (!sqSafe(th, 2)) return {};
+    const ans = `|z| = ${r}, arg z = ${sqR(th, 2)}`;
+    return gfQ(`z = ${saZ(x, y)}. Find the modulus of z, and its argument in radians (−π < arg z ≤ π) to 2 decimal places.`, ans, 3,
+      `•1 |z| = √(${a}² + ${b}²) = ${r} (1 mark). •2 z is in the ${x > 0 ? (y > 0 ? "first" : "fourth") : y > 0 ? "second" : "third"} quadrant of the Argand diagram (1 mark). •3 arg z = ${sqR(th, 2)} (1 mark).`,
+      { calc: true, options: sqUniq(ans, [`|z| = ${r}, arg z = ${sqR(Math.atan(y / x), 2)}`, `|z| = ${a + b}, arg z = ${sqR(th, 2)}`, `|z| = ${r}, arg z = ${sqR(-th, 2)}`]).slice(0, 2), label: `ma ${x}${y}`, skill: "modulus and argument" }); };
+  const saDeMoivre = () => { const [base, r, step] = pick([["1 + i", Math.SQRT2, 45], ["√3 + i", 2, 30], ["1 − i", Math.SQRT2, -45]]), n = base === "√3 + i" ? pick([3, 6, 9]) : pick([4, 6, 8, 10]);
+    const ang = step * n, R = Math.round(r ** n), re = Math.round(R * Math.cos(sqRad(ang))), im = Math.round(R * Math.sin(sqRad(ang))), ans = saZ(re, im);
+    return gfQ(`Use de Moivre's theorem to find (${base})${sup(n)} in the form a + bi.`, ans, 3,
+      `•1 ${base} = ${base === "√3 + i" ? "2" : "√2"}(cos(${gfM(step)}°) + i sin(${gfM(step)}°)) in polar form (1 mark). •2 ${R}(cos ${gfM(ang)}° + i sin ${gfM(ang)}°) (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [saZ(-re || R, im), saZ(re, -im || R), saZ(im, re)]).slice(0, 2), label: `dm ${base}${n}`, skill: "de Moivre's theorem" }); };
+  const saConj = () => { const a = gfR(-3, 3), b = gfR(1, 4), r = sqBig(5), s = -2 * a, t = a * a + b * b;
+    const cs = [1, s - r, t - r * s, -r * t];
+    return gfQ(`${saZ(a, b)} is a root of z³ ${sqPoly(cs).replace(/^z³|^x³/, "").replace(/x/g, "z").trim()} = 0. Find the real root.`, gfM(r), 4,
+      `•1 the conjugate ${saZ(a, -b)} is also a root (1 mark). •2 the quadratic factor z²${s ? ` ${s < 0 ? "−" : "+"} ${Math.abs(s)}z` : ""} + ${t} (1 mark). •3 divide the cubic by it (1 mark). •4 z = ${gfM(r)} (1 mark).`,
+      { label: `cj ${a}${b}${r}`, skill: "roots of polynomials" }); };
+  const saLocus = () => { const a = gfR(-5, 5), b = gfR(-5, 5), r = gfR(1, 6), w = saZ(a, b), ans = `a circle, centre ${sqP(a, b)}, radius ${r}`;
+    return gfQ(`Describe the locus of z in the Argand diagram for |z − (${w})| = ${r}.`, ans, 2, `•1 the distance from z to ${w} is ${r} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`a circle, centre ${sqP(-a, -b)}, radius ${r}`, `a straight line through ${sqP(a, b)}`]), label: `loc ${a}${b}${r}`, skill: "loci in the Argand diagram" }); };
+
+  const SQ_AH = [
+    ["algebra", "Partial fractions and binomials", "Partial fractions and the binomial theorem", "Patterns and missing numbers", "Partial fractions (including repeated factors), binomial coefficients, and terms of a binomial expansion.", [saPF2, saPFRep, saBinCoeff, saBinFree, saNCrQ]],
+    ["differentiation", "Differentiation", "Differentiation: product, quotient and chain rules", "Patterns and missing numbers", "The product and quotient rules, eˣ and ln x, and the derivatives of tan, sec, cosec and cot.", [saProd, saQuot, saLnGrad, saTrigD, saQuotVal]],
+    ["implicit", "Implicit and parametric", "Implicit, parametric and inverse trig differentiation", "Patterns and missing numbers", "Implicit and parametric differentiation, inverse trig functions, related rates and motion in a plane.", [saImplicit, saParam, saInvTrig, saRates, saSpeed]],
+    ["integration", "Integration", "Integration: standard results, substitution and partial fractions", "Patterns and missing numbers", "Standard integrals, f'(x)/f(x), integrating with partial fractions, and substitution.", [saIntTan, saIntLn, saIntPF, saSubst, saIntExp]],
+    ["parts", "Parts and volumes", "Integration by parts, volumes and integration in context", "Patterns and missing numbers", "Integration by parts, volumes of revolution about either axis, and motion problems.", [saParts, saPartsLn, saVolX, saVolY, saKinem]],
+    ["de1", "First-order DEs", "First-order differential equations", "Patterns and missing numbers", "Separating the variables, integrating factors, and differential equations in context.", [saSepCircle, saSepExp, saIFactor, saIFVal, saCooling]],
+    ["de2", "Second-order DEs", "Second-order differential equations", "Patterns and missing numbers", "The auxiliary equation (distinct, equal and complex roots), particular integrals, and using conditions.", [saDistinct, saEqual, saComplexDE, saPI, saIVP]],
+    ["functions", "Functions and graphs", "Functions and graphs: asymptotes, odd and even, modulus", "Patterns and missing numbers", "Vertical, horizontal and slant asymptotes, odd and even functions, inflection and the modulus function.", [saAsym, saOblique, saOddEven, saInflect, saModEq]],
+    ["series", "Sequences and series", "Sequences, series and Maclaurin expansions", "Patterns and missing numbers", "Arithmetic and geometric series, sums to infinity, summation formulae and Maclaurin expansions.", [saAPSum, saGPInf, saGPn, saSigma, saMac]],
+    ["proof", "Proof and number theory", "Proof and number theory", "Number", "Counterexamples, negation, induction, Euclid's algorithm and number bases.", [saCounter, saEuclid, saLinComb, saBase, saNegate, saInduct]],
+    ["matrices", "Matrices", "Matrices: products, determinants, inverses and transformations", "Shape and angles", "Multiplying matrices, 3 × 3 determinants, inverses, singular matrices and 2 × 2 transformations.", [saDetQ, saInv, saSingular, saProduct, saTransform]],
+    ["systems", "Systems of equations", "Systems of equations: Gaussian elimination", "Patterns and missing numbers", "Solving three equations by Gaussian elimination, systems with no unique solution, and ill-conditioning.", [saSys, saNoUnique, saIll]],
+    ["vectors", "Vectors and planes", "Vectors: the vector product, lines and planes", "Shape and angles", "The vector and scalar triple products, the equation of a plane, lines meeting planes, and angles between planes.", [saCrossQ, saPlane3, saLinePlane, saPlaneAngle, saTripleQ]],
+    ["complex", "Complex numbers", "Complex numbers and de Moivre's theorem", "Number", "Arithmetic with complex numbers, modulus and argument, de Moivre's theorem, roots of polynomials and loci.", [saCMul, saCDiv, saModArg, saDeMoivre, saConj, saLocus]]
+  ].map(([slug, short, title, strand, blurb, makers], i) => ({ id: `ah-${slug}`, n: i + 1, short, title, strand, blurb, makers }));
+
   const SQA_STAGES = [
     { id: "n4-skills", n: 1, key: "n4", course: "National 4", grades: "National 4", goal: "the National 4 / Fourth level skills National 5 takes for granted", title: "Stage 1: National 4 skills", topics: SQ_N4 },
     { id: "national-5", n: 2, key: "n5", course: "National 5", grades: "National 5", goal: "National 5 Mathematics", title: "Stage 2: National 5", topics: SQ_N5 },
-    { id: "higher", n: 3, key: "nh", course: "Higher", grades: "Higher", goal: "Higher Mathematics", title: "Stage 3: Higher", topics: SQ_NH }
+    { id: "higher", n: 3, key: "nh", course: "Higher", grades: "Higher", goal: "Higher Mathematics", title: "Stage 3: Higher", topics: SQ_NH },
+    { id: "advanced-higher", n: 4, key: "ah", course: "Advanced Higher", grades: "Advanced Higher", goal: "Advanced Higher Mathematics", title: "Stage 4: Advanced Higher", topics: SQ_AH }
   ];
   SQA_STAGES.forEach(st => st.topics.forEach(t => { t.stage = st; }));
   const SQ_ALL = SQA_STAGES.flatMap(st => st.topics);
@@ -4440,7 +4787,7 @@ window.PopActivities = (() => {
     { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
     { id: "english-exam", title: "English exam climb (GCSE)", colour: "#1E40AF", icon: "🎓", activities: englishExam("gcse"), assignedOnly: true },
-    { id: "english-exam-sqa", title: "English exam climb (SQA National 5 and Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
+    { id: "english-exam-sqa", title: "English exam climb (SQA National 5 to Advanced Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
     { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary.filter(a => !/^Numeracy/.test(a.organiser)), assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },

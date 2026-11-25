@@ -51,6 +51,7 @@ button, input { font: inherit; color: inherit; }
 .cl-grade { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .cl-grade .cl-btn { background: #fff; color: var(--primary); border-color: #fff; }
 .cl-stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.cl-stages.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cl-stage { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px 8px; }
 .cl-stage.now { border: 2px solid var(--primary); }
 .cl-stage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
@@ -109,7 +110,7 @@ button, input { font: inherit; color: inherit; }
 .cl-do { display: flex; gap: 10px; flex-wrap: wrap; }
 
 @media (max-width: 900px) {
-  .cl-stages { grid-template-columns: 1fr; }
+  .cl-stages, .cl-stages.four { grid-template-columns: 1fr; }
   .cl-next { grid-template-columns: 1fr; }
   .cl-next-do { grid-row: auto; grid-column: 1; }
   .cl-opts, .cl-rows { grid-template-columns: 1fr; }
