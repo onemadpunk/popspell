@@ -195,13 +195,15 @@
 
     add(`paper-gx-${st.key}-check`, L("start-here"), `GCSE maths climb: stage ${st.n} check (${st.tag})`,
       `One exam question on each of the 14 topics for ${st.tag}, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
-        const items = GX().check(st.key);
+        // A rare draw of long questions and mark schemes can push the answers onto a third A4 page, so draw
+        // ten checks and keep the shortest
+        const size = list => list.reduce((t, it) => t + it.q.length + it.scheme.length + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
+        const items = Array.from({ length: 10 }, () => GX().check(st.key)).sort((x, y) => size(x) - size(y))[0];
         return {
           pupil: `${h.sheetHead(`Stage ${st.n} check`, who)}${gxStrip2(st, "", "Calculator allowed", gxTotal(items))}
             <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
             <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
-          answers: `${answersPage(h, `Stage ${st.n} check`, items.map(it => `<b>${it.topic.n}. ${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the stage tracker.")}
-            <p class="gx-note"><b>What to work on first:</b> the topics that lost marks, in the climb's order. A topic with full marks still gets its exam-style sheet as a check before it's ticked off.</p>`
+          answers: `${answersPage(h, `Stage ${st.n} check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the stage tracker. Work first on the topics that lost marks, in the climb's order.")}`
         };
       });
 
