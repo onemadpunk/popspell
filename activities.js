@@ -1017,7 +1017,7 @@ window.PopActivities = (() => {
   // the sounds each pupil has practised.
   const stories = (window.STORIES || []).map(s => ({
     id: `s-${s.id}`, title: s.title, level: spellingLevel(s.stage - 1), organiser: "Literacy · Reading · Tools for reading",
-    blurb: `EA Stage ${s.stage} sounds. Read it by yourself, then answer the questions.`,
+    blurb: s.block ? `The phoneme story for EA Stages 4 to 7, Block ${s.block}. Read it by yourself, then answer the questions.` : `EA Stage ${s.stage} sounds. Read it by yourself, then answer the questions.`,
     passage: s, decodable: true, stage: s.stage, make: storyQuestions(s, false)
   }));
 
@@ -1045,7 +1045,11 @@ window.PopActivities = (() => {
     // The EA Stage 3 sounds: other ways to write the same sound
     ie: ["igh", "ee"], ey: ["ay", "ai"], oe: ["oa", "ow"], dge: ["ge", "j"], dg: ["g", "j"], gn: ["n", "kn"],
     mb: ["m", "mm"], ture: ["cher", "chur"], ti: ["sh", "ch"], ough: ["or", "aw"], oul: ["oo", "u"],
-    se: ["s", "ss"], ve: ["v", "f"], ce: ["s", "se"], ge: ["j", "dge"]
+    se: ["s", "ss"], ve: ["v", "f"], ce: ["s", "se"], ge: ["j", "dge"],
+    // The EA Stages 4 to 7 spellings
+    eigh: ["ay", "ai"], ei: ["ee", "ai"], al: ["ar", "a"], bu: ["b", "bb"], ed: ["d", "t"], ui: ["oo", "ew"],
+    cks: ["x", "ks"], ks: ["x", "cks"], sc: ["s", "sk"], st: ["s", "ss"], sw: ["s", "w"], ffe: ["ff", "f"],
+    ci: ["sh", "ti"], si: ["sh", "zh"], ssi: ["sh", "ti"], tu: ["ch", "t"], el: ["le", "al"], mn: ["m", "mb"]
   };
   const fallbackOptions = token => (/[aeiouy]/.test(token) ? ["a", "e"] : ["s", "t"]);
   const mapOptions = token => shuffle([token, ...(MAP_ALTERNATIVES[token] || fallbackOptions(token))]
@@ -1079,7 +1083,12 @@ window.PopActivities = (() => {
       blurb: "EA Stage 3 sounds. Count the sounds, then choose the right spelling for each one: ie or igh, ey or ay, dge or j, ti or sh.",
       // Only the lists whose words are split into sounds by hand, so every bridge has the right number of sounds
       // (not turkey and valley, whose ey is an ee sound, or badger, whose list splits e-r)
-      make: () => trailWords(["ie-tried", "ea-break", "ey", "ie-field", "oe", "gn", "ture", "dge", "ough", "ti"], it => !/^(turkey|valley|badger)$/i.test(it.spelling)) }
+      make: () => trailWords(["ie-tried", "ea-break", "ey", "ie-field", "oe", "gn", "ture", "dge", "ough", "ti"], it => !/^(turkey|valley|badger)$/i.test(it.spelling)) },
+    { id: "g-hopper-ea47", title: "Sound Hopper: phonics into spelling", level: "Second", organiser: "Literacy · Writing · Tools for writing (spelling)",
+      blurb: "EA Stages 4 to 7 sounds. Count the sounds, then choose how each one is spelled: ai, ay or eigh; oo, ew or ue; ph or ff.",
+      // Words from the Stages 4-5 block lists that say a spelling of their block's sound in every bridge
+      make: () => trailWords(((window.SPELLING_LISTS || []).find(st => /^EA Stages 4-5/.test(st.stage)) || { lists: [] }).lists.filter(l => l.block).map(l => l.id),
+        it => it.tokens.some(t => t.length > 1)) }
   ];
 
   /* ---------- Sound Switch: change one phoneme to open Pip's next door ---------- */
@@ -1781,7 +1790,7 @@ window.PopActivities = (() => {
 
   // Spelling-list words for the games, with the list they come from (its tip names the pattern)
   const LIST_GROUPS = {
-    phonics: () => (window.SPELLING_LISTS || []).slice(1),            // EA Stages 2 and 3: vowel teams, r sounds, endings, more ways to write sounds
+    phonics: () => (window.SPELLING_LISTS || []).slice(1),            // EA Stages 2 to 7: vowel teams, r sounds, endings, more ways to write sounds, phonics into spelling
     y34: () => (window.ENGLAND_LISTS || []).flatMap(st => st.lists).filter(l => /^(wl-y34|cew-y2)/.test(l.id)),
     y56: () => (window.ENGLAND_LISTS || []).flatMap(st => st.lists).filter(l => /^wl-y56/.test(l.id))
   };

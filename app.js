@@ -1420,14 +1420,14 @@
           ${i === here ? `<img class="stop-pip hop" src="assets/brand/pip-hop-small.webp" alt="" width="44" height="44">` : ""}
           <button type="button" class="stop-btn" data-stage="${i}" aria-expanded="${i === homeStage}">
             <span class="stop-num">${done === st.lists.length ? "★" : i + 1}</span>
-            <span class="stop-name">${esc(st.stage.replace(/^(EA )?Stage \d+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
+            <span class="stop-name">${esc(st.stage.replace(/^(EA )?Stages? [\d-]+ · /, "").replace(/\s*\(.*\)$/, ""))}</span>
             <span class="stop-count">${done} of ${st.lists.length} done</span>
           </button></li>`;
       }).join("")}</ol>
       <div class="stop-lists" style="--accent:${esc(STAGES[homeStage].colour)}">
         <h3>${esc(STAGES[homeStage].stage)}</h3>
-        ${blocks.length > 1 ? `<div class="block-tabs">${blocks.map(k => `<button type="button" class="block-tab${k === homeBlock ? " open" : ""}${blockDone(k) ? " done" : ""}"
-          data-block="${k}" aria-pressed="${k === homeBlock}">${k ? `Block ${k}` : "More practice"}${blockDone(k) ? " ✓" : ""}</button>`).join("")}</div>` : ""}
+        ${blocks.length > 1 ? `<div class="block-tabs${blocks.length > 12 ? " many" : ""}">${blocks.length > 12 ? `<span class="block-label">Block</span>` : ""}${blocks.map(k => `<button type="button" class="block-tab${k === homeBlock ? " open" : ""}${blockDone(k) ? " done" : ""}"
+          data-block="${k}" aria-pressed="${k === homeBlock}"${k && blocks.length > 12 ? ` aria-label="Block ${k}${blockDone(k) ? ", done" : ""}"` : ""}>${k ? (blocks.length > 12 ? k : `Block ${k}`) : "More practice"}${blockDone(k) && !(k && blocks.length > 12) ? " ✓" : ""}</button>`).join("")}</div>` : ""}
         <div class="grid">${shown.map(l => `
           <a class="list-card${b.lists[l.id] ? " done" : ""}" href="#/list/${encodeURIComponent(l.id)}">
             <span class="lc-example">${esc(LISTS[l.id].items[0]?.spelling || "")}</span>
@@ -1480,7 +1480,7 @@
       ${!name ? "" : locked ? `<p class="hint locked-note" id="lockedNote">Your teacher chooses your work. Looking for today's work…</p>` : `
         <section class="home-section journey-section">
           <h2>${isOlder() ? "Spelling stages" : "🗺️ Pip's sound journey"}</h2>
-          <p class="hint">${isOlder() ? "The three EA Literacy stages, block by block. Choose a stage, then a block, to see its lists." : "Three stops, block by block. Tap a stop, then a block, to see its lists."}</p>
+          <p class="hint">${isOlder() ? "The EA Literacy stages, block by block: Stages 1 to 3, then Stages 4 to 7 (phonics into spelling). Choose a stage, then a block, to see its lists." : "Six stops, block by block. Tap a stop, then a block, to see its lists."}</p>
           <div id="journey"></div>
         </section>
         <section class="home-section">

@@ -262,6 +262,7 @@ absinth
 absinthe
 absinths
 absolute
+absolutely
 absolve
 absolved
 absolver
@@ -755,6 +756,7 @@ adits
 adjacent
 adjoin
 adjoined
+adjoining
 adjoins
 adjoint
 adjoints
@@ -881,6 +883,7 @@ adverbs
 adverse
 advert
 adverted
+advertise
 adverts
 advice
 advices
@@ -1783,6 +1786,7 @@ allotypy
 allover
 allovers
 allow
+allowance
 allowed
 allowing
 allows
@@ -2551,6 +2555,7 @@ annexes
 annexing
 annotate
 announce
+announcement
 annoy
 annoyed
 annoyer
@@ -3513,6 +3518,7 @@ arteries
 artery
 artful
 artfully
+arthritis
 article
 articled
 articles
@@ -5854,6 +5860,7 @@ begged
 begging
 begin
 beginner
+beginning
 begins
 begird
 begirded
@@ -7664,6 +7671,7 @@ boiloffs
 boils
 boing
 boiserie
+boisterous
 boite
 boites
 bola
@@ -8570,6 +8578,7 @@ break
 breakage
 breaker
 breakers
+breakfast
 breaking
 breakout
 breaks
@@ -8716,6 +8725,7 @@ brightly
 brights
 brigs
 brill
+brilliant
 brills
 brim
 brimful
@@ -14434,6 +14444,7 @@ conscience
 conscious
 consent
 consents
+consequence
 conserve
 consider
 consign
@@ -15092,6 +15103,7 @@ counsels
 count
 counted
 counter
+counterfeit
 counters
 countess
 countian
@@ -15122,6 +15134,7 @@ courant
 courante
 couranto
 courants
+courgette
 courier
 couriers
 courlan
@@ -17668,6 +17681,7 @@ definers
 defines
 defining
 definite
+definitely
 defis
 deflate
 deflated
@@ -19159,6 +19173,8 @@ disagree
 disallow
 disannul
 disappear
+disappoint
+disappointed
 disarm
 disarmed
 disarmer
@@ -21144,6 +21160,7 @@ earthman
 earthmen
 earthnut
 earthpea
+earthquake
 earths
 earthset
 earthy
@@ -21822,6 +21839,7 @@ embrace
 embraced
 embracer
 embraces
+embroider
 embroil
 embroils
 embrown
@@ -22081,6 +22099,7 @@ encore
 encored
 encores
 encoring
+encounter
 encroach
 encrust
 encrusts
@@ -22102,6 +22121,7 @@ endear
 endeared
 endears
 endeavor
+endeavour
 ended
 endemial
 endemic
@@ -22452,6 +22472,7 @@ enthrone
 enthuse
 enthused
 enthuses
+enthusiastic
 entia
 entice
 enticed
@@ -22765,6 +22786,7 @@ equitant
 equites
 equities
 equity
+equivalent
 equivoke
 era
 eradiate
@@ -23492,6 +23514,7 @@ exhalent
 exhales
 exhaling
 exhaust
+exhausted
 exhausts
 exhibit
 exhibits
@@ -25351,6 +25374,7 @@ fjelds
 fjord
 fjords
 flab
+flabbergasted
 flabbier
 flabbily
 flabby
@@ -31722,6 +31746,7 @@ healers
 healing
 heals
 health
+healthily
 healths
 healthy
 heap
@@ -41639,6 +41664,7 @@ mateship
 matey
 mateys
 math
+mathematical
 maths
 matilda
 matildas
@@ -41864,6 +41890,7 @@ meanness
 means
 meant
 meantime
+meanwhile
 meany
 measle
 measled
@@ -48530,6 +48557,7 @@ overwear
 overween
 overwet
 overwets
+overwhelm
 overwide
 overwily
 overwind
@@ -49233,6 +49261,7 @@ paraform
 paragoge
 paragon
 paragons
+paragraph
 parakeet
 parakite
 parallax
@@ -50688,6 +50717,7 @@ phials
 philabeg
 philibeg
 philomel
+philosophy
 philter
 philters
 philtra
@@ -53619,6 +53649,7 @@ prongs
 pronota
 pronotum
 pronoun
+pronounce
 pronouns
 pronto
 pronunciation
@@ -67318,6 +67349,7 @@ streels
 street
 streets
 strength
+strengthen
 strep
 streps
 stress
@@ -70533,6 +70565,7 @@ thermes
 thermic
 thermion
 thermite
+thermometer
 thermos
 therms
 theroid
@@ -72255,6 +72288,7 @@ tray
 trayful
 trayfuls
 trays
+treacherous
 treacle
 treacles
 treacly
@@ -79275,6 +79309,7 @@ xylocarp
 xyloid
 xylol
 xylols
+xylophone
 xylose
 xyloses
 xylotomy
@@ -79537,6 +79572,7 @@ yessed
 yesses
 yessing
 yester
+yesterday
 yestern
 yestreen
 yet
