@@ -2477,7 +2477,7 @@
   // A word in the phoneme colours teachers use with magnetic letters: single vowel letters red,
   // consonants blue, and sounds written with two or more letters (including a_e) green
   function colourWord(spelling) {
-    const a = P().analyse(spelling);
+    const a = typeof spelling === "string" ? P().analyse(spelling) : spelling; // or an item, split as its list writes it
     const tokens = [...new Set(a.chunks.map(ch => ch.g))].map(g => a.chunks.filter(ch => ch.g === g));
     const kind = parts => {
       const text = parts.map(p => p.text).join("");
@@ -2500,7 +2500,9 @@
   function listFocus(list) {
     const count = new Map();
     list.items.forEach(it => new Set(it.tokens).forEach(t => count.set(t, (count.get(t) || 0) + 1)));
-    return [...count.entries()].sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)[0]?.[0] || "";
+    // A list that names its sounds (an EA block names several spellings of one sound): the one most of its words use
+    const own = Array.isArray(list.focus) && list.focus.length ? list.focus : null;
+    return [...count.entries()].filter(([t]) => !own || own.includes(t)).sort((a, b) => b[1] - a[1] || b[0].length - a[0].length)[0]?.[0] || "";
   }
   // Other ways to write the same sound, for "circle the right spelling"
   const SOUND_ALTS = [["ee", "ea", "y", "ey", "e_e", "ie", "e"], ["ai", "ay", "a_e", "a", "ei", "eigh"], ["igh", "ie", "y", "i_e", "i"],
@@ -2641,6 +2643,30 @@
         <table class="ps-speed"><tbody>${[0, 1, 2].map(r => `<tr>${words.slice(r * 4, r * 4 + 4).map(w => `<td>${esc(w)}</td>`).join("")}</tr>`).join("")}</tbody></table>
         <p class="ps-how">Time 1: ______ &nbsp; Time 2: ______ &nbsp; Time 3: ______</p>`; } }
   };
+  // EA Literacy Stages 4 to 7 (Phonics into spelling): the spelling log pupils keep for each list (read and say the word,
+  // the sounds I hear in Elkonin boxes, write it, check it, the tricky part and the strategy that helped), and a phoneme
+  // chart: one column for each spelling of the block's sound, to sort the list's words into and add more of their own.
+  const isEA47 = id => /^ea(45|56|67)-/.test(String(id || ""));
+  const EA47_SHEET = {
+    log: c => {
+      const items = c.shuffle(c.items, "log").slice(0, c.band === "young" ? 5 : 6);
+      return `${c.step("My spelling log")}<p class="ps-how">Read each word and say it. Draw a dot in a box for each sound you hear, then cover the word, write it and check it, letter by letter. Which part is tricky? Which strategy helped you?</p>
+      <table class="ps-lscwc ps-log"><thead><tr><th>Read and say</th><th>Sounds I hear</th><th>Write it</th><th>✓</th><th>Tricky part · strategy</th></tr></thead>
+        <tbody>${items.map(it => `<tr><td class="ps-word">${colourWord(it)}</td><td><span class="ps-elk">${it.tokens.map(() => "<i></i>").join("")}</span></td><td></td><td class="ps-box">☐</td><td></td></tr>`).join("")}</tbody></table>`;
+    },
+    chart: c => {
+      const focus = (Array.isArray(c.list.focus) ? c.list.focus : []).filter(g => c.items.some(it => it.tokens.includes(g)));
+      if (focus.length < 2) return "";
+      const cols = focus.slice(0, 5);
+      const example = g => c.items.find(it => it.tokens.includes(g));
+      const shown = new Set(cols.map(g => example(g).spelling));
+      const bank = c.shuffle(c.items.filter(it => !shown.has(it.spelling) && it.tokens.some(t => cols.includes(t))), "chart").slice(0, 8).map(it => it.spelling);
+      return `${c.step("Phoneme chart")}<p class="ps-how">The same sound, spelled in different ways. Write each word in the right column, then add words of your own.</p>
+        ${bank.length ? `<p class="ps-bank">${bank.map(w => `<span>${esc(w)}</span>`).join("")}</p>` : ""}
+        <table class="ps-sort ps-chart"><thead><tr>${cols.map(g => `<th>${esc(g.replace("_", "–"))}<br><small>${esc(example(g).spelling)}</small></th>`).join("")}</tr></thead>
+        <tbody>${`<tr>${cols.map(() => "<td></td>").join("")}</tr>`.repeat(3)}</tbody></table>`;
+    }
+  };
   // The last activity is always the child's own writing
   const SHEET_FINISH = {
     young: c => `${c.step("Draw and write")}<p class="ps-how">Pick a word from the sheet. Draw it in the box, then write a sentence about it.</p>
@@ -2680,8 +2706,11 @@
       <p class="ps-self">${band === "older" ? "Words I still find tricky: ______________________________" : band === "middle" ? "Rate your work: ☆ ☆ ☆ ☆ ☆" : "How did I do? &nbsp; 😀 &nbsp; 🙂 &nbsp; 😐 &nbsp; (circle one)"}</p>
       </div>`.replace(/<span>§<\/span>/g, () => `<span>${++n}</span>`);
     };
-    // One A4 page: activities are added while the sheet still fits, measured as it will print
-    const parts = [SHEET_ACTIVITIES.build.build(ctx)];
+    // One A4 page: activities are added while the sheet still fits, measured as it will print.
+    // An EA Stages 4 to 7 list starts with the EA spelling log, then the phoneme chart for its sound.
+    const ea47 = isEA47(list.id);
+    const parts = [ea47 ? EA47_SHEET.log(ctx) : SHEET_ACTIVITIES.build.build(ctx)];
+    if (ea47) { const chart = EA47_SHEET.chart(ctx); if (chart && sheetHeight(sheet(parts.concat(chart))) <= PAGE_H * 0.97) parts.push(chart); }
     for (const key of order) {
       if (parts.length >= 4) break;
       const html = SHEET_ACTIVITIES[key].build(ctx);
@@ -3398,7 +3427,11 @@
     what you see in lessons, how the pupil explains their thinking, and whether they can use it in a new context.</p>`;
   // Sound games that practise each spelling stage (stage 1 is short vowels)
   const STAGE_GAMES = [["g-hopper-short", "g-switch-first", "g-hopper-digraphs", "g-switch-digraphs"],
-    ["g-hopper-long-a", "g-switch-build", "g-hopper-r"], ["g-hopper-ea3", "g-switch-build"]]; // EA Stages 1, 2 and 3
+    ["g-hopper-long-a", "g-switch-build", "g-hopper-r"], ["g-hopper-ea3", "g-switch-build"], // EA Stages 1, 2 and 3
+    ["g-hopper-ea47", "g-hopper-ea3"], ["g-hopper-ea47", "g-hopper-ea3"], ["g-hopper-ea47", "g-hopper-ea3"]]; // EA Stages 4 to 7
+  // The starting checks test EA Stages 1 to 3: with no gap, a pupil starts at the first list after them
+  const afterChecks = order => { const st3 = P().STAGES[2]; const last = st3 && st3.lists[st3.lists.length - 1].id; const i = order.indexOf(last);
+    return i >= 0 && order[i + 1] ? order[i + 1] : order[order.length - 1]; };
   const CANOPY_GAMES = { Early: ["g-canopy-flash", "g-canopy-make", "g-canopy-hidden", "g-canopy-compare", "g-canopy-run"], First: ["g-canopy-twenty", "g-canopy-run-20"] };
 
   // Where a pupil's programme starts: the newest of Pip's Sound Quest, a starting check or their
@@ -3413,8 +3446,8 @@
     const spellingCheck = mine.find(s => s.listId === P().CHECKS.spelling.id);
     const spellingPractice = mine.find(s => sOrder.includes(s.listId));
     const spelling = pickNewest([
-      { s: quest.spell, list: quest.spell && (gap(quest.spell) || sOrder[sOrder.length - 1]), why: "Pip's Sound Quest" },
-      { s: spellingCheck, list: spellingCheck && (gap(spellingCheck) || sOrder[sOrder.length - 1]), why: "the spelling starting check" },
+      { s: quest.spell, list: quest.spell && (gap(quest.spell) || afterChecks(sOrder)), why: "Pip's Sound Quest" },
+      { s: spellingCheck, list: spellingCheck && (gap(spellingCheck) || afterChecks(sOrder)), why: "the spelling starting check" },
       { s: spellingPractice, list: spellingPractice && nextAfter(sOrder, spellingPractice), why: "their last spelling result" }]);
     const mathsCheck = mine.find(s => s.listId === P().CHECKS.numbers.id);
     const mathsPractice = mine.find(s => mOrder.includes(s.listId));
@@ -3468,7 +3501,8 @@
         how: "The pupil hears each word, maps its sounds and spells it. Watch which sounds they miss." });
       const stories = A ? A.AREAS.find(a => a.id === "stories").activities : [];
       const passages = A ? A.AREAS.find(a => a.id === "reading").activities.filter(a => a.passage) : [];
-      const fits = stories.filter(s => s.stage === stage + 1);
+      const blockStory = list.block && stage >= 3 ? stories.filter(s => s.passage && s.passage.block === list.block) : [];
+      const fits = blockStory.length ? blockStory : stories.filter(s => s.stage === stage + 1);
       const story = rotate(fits.length ? fits.concat(stage >= 1 ? passages.filter(p => p.level === level) : [])
         : stories.filter(s => s.stage <= stage + 1).concat(passages.filter(p => p.level === level)));
       if (story) parts.push({ key: "read", icon: "📖", where: "device", weight: 2, title: `Read: ${story.title}`, id: story.id, sheet: { kind: "activity", id: story.id },
@@ -4095,7 +4129,7 @@
       const gaps = P().checkGaps(s.words || []);
       if (!gaps.length) return { area, level: "Second", top: "kn-wr", status: "Secure", gap: null,
         detail: `${verb} every stage tested, through EA Stage 3 (more ways to write sounds).`,
-        next: en ? "Move on to the Years 3–4 spelling rules and word list, and longer texts." : "Move on to Second-level spelling rules and longer texts." };
+        next: en ? "Move on to the Years 3–4 spelling rules and word list, and longer texts." : "Move on to EA Stages 4 to 7 (phonics into spelling), Block 1, and longer texts." };
       const g = stageOf(gaps[0]);
       const st = P().STAGES[g];
       return { area, level: levelOfStage(g), id: gaps[0], status: g === 0 ? "Needs support" : "Developing", gap: gaps[0],
