@@ -1,0 +1,1061 @@
+{
+ "section": "England: GCSE English exam climb (Language grades 1 to 9, and Literature)",
+ "lessons": [
+  {
+   "id": "lesson-england-english-climb-e1-retrieve",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 1.1: Finding information (grade 1 to 3)",
+   "intention": "We are learning to find exactly the information a question asks for, in the lines it points to, quickly and accurately.",
+   "criteria": [
+    "I can find four separate, true points in the lines a question names.",
+    "I can tell an explicit point (it says so) from an inference (it suggests).",
+    "I can answer a 4-mark question in about 5 minutes."
+   ],
+   "steps": {
+    "start": "Show a question: \"List four things about the supermarket from lines 1 to 6.\" Ask: what are the two traps in that question? (Only those lines; only the supermarket.)",
+    "teach": "Underline the lines the question names first, and draw a box round them. Read only inside the box. Each point is one short, separate fact, quoted or in your own words; no need to explain. True or false statements (Paper 2 Question 1) work the same way: check each one against the lines, and choose exactly four.",
+    "practise": "The \"English exam practice 1.1: Finding information\" sheet (its exam question is Paper 1 Question 1 and Paper 2 Question 1), then the online practice.",
+    "check": "Give a new 4-point question on a text they haven't seen and time it: 5 minutes, four points, all inside the lines."
+   },
+   "use": [
+    "e1-retrieve"
+   ],
+   "home": "Read the first paragraph of a news article and list four things it tells you, in under three minutes.",
+   "vocab": "explicit, implicit, retrieve, quotation, line reference",
+   "understand": "Why do four points from outside the lines the question names score nothing, even if they're true?",
+   "lookFor": "Says the question tests careful reading of those lines, so the examiner can only credit points from there; reading the wrong lines is the most common way to lose these easy marks."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-infer",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 1.2: Reading between the lines (grade 1 to 3)",
+   "intention": "We are learning to work out what a writer suggests but doesn't say, and to choose the short quotation that proves it.",
+   "criteria": [
+    "I can say what a detail suggests about a person, place or feeling.",
+    "I can choose a short quotation that backs up my inference.",
+    "I can write a point, evidence and explanation in two or three sentences."
+   ],
+   "steps": {
+    "start": "\"He checked the time again, then a third time.\" What do we know, and what do we work out? (We know he checked; we work out he's anxious or waiting.)",
+    "teach": "Inference means reading the clue, not the label. Use a sentence frame: \"This suggests… because the writer says '…', which shows…\". Keep quotations short: two to five words. Practise choosing the best quotation from three: the best one proves the point on its own.",
+    "practise": "The \"English exam practice 1.2: Reading between the lines\" sheet (its exam question is every reading question), then the online practice.",
+    "check": "Give a short paragraph and ask for two inferences about a character, each with a quotation."
+   },
+   "use": [
+    "e1-infer"
+   ],
+   "home": "Watch a scene from a TV drama with the sound off: what can you infer about each person from their actions?",
+   "vocab": "infer, suggest, imply, evidence, quotation",
+   "understand": "Why is a short quotation usually better than a long one?",
+   "lookFor": "Says a short one shows exactly which words prove the point, and leaves room to explain them; a long one makes the examiner find the evidence for you."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-words",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 1.3: Words and their effects (grade 1 to 3)",
+   "intention": "We are learning to spot a writer's method (a simile, a verb, a list, personification) and say what it makes the reader see or feel.",
+   "criteria": [
+    "I can name common methods accurately: simile, metaphor, personification, verb, adjective, list.",
+    "I can explain the effect of a word or image on the reader.",
+    "I can write about language in point, quotation, effect paragraphs."
+   ],
+   "steps": {
+    "start": "Compare: \"the water moved across the street\" and \"the water spread itself across the high street like spilt ink\". Which is stronger, and why?",
+    "teach": "Work in three steps: find a striking word or image; name the method (only if you're sure); say what it makes the reader see, feel or think, and why the writer wants that. \"The simile 'like spilt ink' makes the flood seem dark and impossible to clean up, so the reader feels how hopeless it is.\" The effect is worth far more marks than the name.",
+    "practise": "The \"English exam practice 1.3: Words and their effects\" sheet (its exam question is Paper 1 Question 2 and Paper 2 Question 3), then the online practice.",
+    "check": "Give an unseen paragraph. Ask for one well-explained point about a verb and one about an image."
+   },
+   "use": [
+    "e1-words"
+   ],
+   "home": "Collect three verbs from a song, article or book that do more than an ordinary verb would, and say what each adds.",
+   "vocab": "method, effect, simile, metaphor, personification, verb, connotation",
+   "understand": "Why does naming a technique earn few marks on its own?",
+   "lookFor": "Says the marks are for explaining the effect: what the words make the reader see or feel and why; a name alone shows spotting, not understanding."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-summary",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 1.4: Summing up two texts (grade 1 to 3)",
+   "intention": "We are learning to find the differences between two texts on the same topic and back each difference with evidence from both.",
+   "criteria": [
+    "I can find a clear difference between two texts on the same topic.",
+    "I can support it with evidence from both texts.",
+    "I can use comparison words: whereas, however, on the other hand."
+   ],
+   "steps": {
+    "start": "Two people describe the same holiday: one loved it, one hated it. What's the quickest way to sum up the difference?",
+    "teach": "Paper 2 Question 2 asks what is different (or the same) about the content, not the writer's methods. Plan in a two-column table, one column per text. Each paragraph: a difference, a quotation from text A, a quotation from text B, and what the difference shows. Use \"whereas\" and \"however\" to link them.",
+    "practise": "The \"English exam practice 1.4: Summing up two texts\" sheet (its exam question is Paper 2 Question 2), then the online practice.",
+    "check": "Ask for one full summary paragraph on two short texts, with evidence from both."
+   },
+   "use": [
+    "e1-summary"
+   ],
+   "home": "Read two reviews of the same film or game and note three differences in what the reviewers think.",
+   "vocab": "summary, synthesise, difference, similarity, whereas, however",
+   "understand": "Why does this question want evidence from both texts in every paragraph?",
+   "lookFor": "Says it's marked on how well you bring the two texts together (synthesis); a paragraph about one text isn't a comparison."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-sentences",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: sentences and punctuation",
+   "codes": [],
+   "title": "GCSE English climb 1.5: Sentences: full stops, capitals and Standard English (grade 1 to 3)",
+   "intention": "We are learning to write clear, accurate sentences: capital letters, full stops, no comma splices, and Standard English.",
+   "criteria": [
+    "I can mark sentence boundaries with capitals and full stops.",
+    "I can spot and fix comma splices.",
+    "I can use Standard English: we were, I did, should have."
+   ],
+   "steps": {
+    "start": "Read aloud: \"I was tired, I went to bed.\" Where does your voice stop? That's a full stop, not a comma.",
+    "teach": "Up to 16 marks on each writing question are for accuracy, and sentence ends are the first thing examiners check. Fix comma splices three ways: a full stop, a joining word (because, so, but) or a semicolon. Standard English: we were (not we was), I did (not I done), should have (not should of). Proof-read by reading each sentence on its own.",
+    "practise": "The \"English exam practice 1.5: Sentences: full stops, capitals and Standard English\" sheet (its exam question is the writing question (accuracy marks)), then the online practice.",
+    "check": "Give a paragraph with five mistakes and ask them to find and fix all five."
+   },
+   "use": [
+    "e1-sentences"
+   ],
+   "home": "Read back a text message thread: rewrite three messages in Standard English, with full sentences.",
+   "vocab": "sentence, comma splice, Standard English, capital letter, full stop",
+   "understand": "Why can a comma splice cost marks even when the ideas are good?",
+   "lookFor": "Says accuracy is marked separately (up to 16 marks), and secure sentence boundaries are what the lower bands check first."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-spelling",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Spelling",
+   "codes": [],
+   "title": "GCSE English climb 1.6: Spelling and commonly confused words (grade 1 to 3)",
+   "intention": "We are learning to spell the words examiners see misspelled most, and to choose the right one of words that sound the same.",
+   "criteria": [
+    "I can choose correctly between their, there and they're; to, too and two; your and you're.",
+    "I can spell common tricky words: necessary, definitely, believe, separate.",
+    "I can keep and learn a list of my own most-missed words."
+   ],
+   "steps": {
+    "start": "Quick-fire: \"___ going to ___ house over ___.\" (They're, their, there.) How do you decide?",
+    "teach": "Teach each confusable pair with one test: they're = they are; your/you're: can you say \"you are\"?; affect is the action, effect is the result; then is time, than compares. Tricky words: a memory hook for each (necessary: one collar, two sleeves). Start a personal list of ten most-missed words from the pupil's own writing.",
+    "practise": "The \"English exam practice 1.6: Spelling and commonly confused words\" sheet (its exam question is the writing question (accuracy marks)), then the online practice.",
+    "check": "Dictate six sentences that use the confusable pairs and four tricky words."
+   },
+   "use": [
+    "e1-spelling"
+   ],
+   "home": "Use Look, Say, Cover, Write, Check on the personal list, five words a day.",
+   "vocab": "homophone, confusable, proof-read",
+   "understand": "Why is a personal spelling list better than learning a long list of hard words?",
+   "lookFor": "Says it targets the mistakes you actually make, so every word learnt saves marks in your own writing."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-paragraphs",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 1.7: Paragraphs and linking words (grade 1 to 3)",
+   "intention": "We are learning to organise writing in paragraphs, with linking words that show how ideas connect.",
+   "criteria": [
+    "I can start a new paragraph for a new time, place, person, speaker or idea (TiPToP).",
+    "I can use linking words for time, adding, contrast and cause.",
+    "I can begin a paragraph with a clear topic sentence."
+   ],
+   "steps": {
+    "start": "Show a page of writing with no paragraphs. How does it feel to read? Where would you break it?",
+    "teach": "TiPToP: new paragraph for a change of time, place, topic or person. Linking words by job: time (later, meanwhile), adding (furthermore), contrast (however), cause (as a result). A topic sentence tells the reader what the paragraph is about. In the exam, a plan of four or five boxes is the paragraph plan.",
+    "practise": "The \"English exam practice 1.7: Paragraphs and linking words\" sheet (its exam question is the writing question (content and organisation)), then the online practice.",
+    "check": "Ask them to paragraph a 150-word block and add three linking words."
+   },
+   "use": [
+    "e1-paragraphs"
+   ],
+   "home": "Plan a short email of complaint in three paragraphs: the problem, why it matters, what you want done.",
+   "vocab": "paragraph, topic sentence, linking word, connective, TiPToP",
+   "understand": "Why do examiners reward paragraphs in the content and organisation marks?",
+   "lookFor": "Says paragraphs show the writing is organised and planned, and help the reader follow it, which is half of what those marks are for."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-forms",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 1.8: Letters, articles and speeches (grade 1 to 3)",
+   "intention": "We are learning to write in the form a task asks for (a letter, an article or a speech), for its audience and in the right register.",
+   "criteria": [
+    "I can set out a formal letter, an article and a speech.",
+    "I can choose a formal or informal register to suit the audience.",
+    "I can use persuasive methods: direct address, rhetorical questions, facts, lists of three."
+   ],
+   "steps": {
+    "start": "Who would you write to differently: a friend, a headteacher, readers of a magazine? What changes?",
+    "teach": "Paper 2 Question 5 always names a form and an audience. Letter: Dear Sir or Madam, Yours faithfully. Article: a headline and maybe a strapline. Speech: address the audience and speak to them throughout. Keep the register formal unless the task says otherwise. Use a persuasive method in each paragraph, and end with a call to action.",
+    "practise": "The \"English exam practice 1.8: Letters, articles and speeches\" sheet (its exam question is Paper 2 Question 5), then the online practice.",
+    "check": "Give a task and ask for the opening and closing paragraphs in the right form."
+   },
+   "use": [
+    "e1-forms"
+   ],
+   "home": "Find a letter to a newspaper or an opinion column. Underline three persuasive methods.",
+   "vocab": "form, audience, purpose, register, formal, persuasive",
+   "understand": "Why do most writing tasks expect a formal register, even in an article for young people?",
+   "lookFor": "Says the examiner is the real reader and the task is testing control of Standard English; a lively but formal tone suits almost every audience."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-language",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 2.1: Analysing language: methods and effects (grades 4 and 5)",
+   "intention": "We are learning to analyse language in depth: zooming in on single words, exploring their connotations and explaining the effect.",
+   "criteria": [
+    "I can zoom in on a single word and explore its connotations.",
+    "I can explain the effect of a sentence form (short, long, list).",
+    "I can write analytical paragraphs that explain how, not just what."
+   ],
+   "steps": {
+    "start": "\"The creature crept.\" \"The creature glided.\" \"The creature lurched.\" What does each verb make you picture?",
+    "teach": "Paper 1 Question 2 (8 marks) and Paper 2 Question 3 (12 marks). Grade 5 is clear explanation; the step up is zooming in: pick the single most powerful word in a quotation and explore what it suggests, more than one thing if you can. Comment on sentence forms too: a short sentence after a long one creates a jolt. Use subject terms accurately but sparingly.",
+    "practise": "The \"English exam practice 2.1: Analysing language: methods and effects\" sheet (its exam question is Paper 1 Question 2 and Paper 2 Question 3), then the online practice.",
+    "check": "Ask for one paragraph on an unseen extract that zooms in on a single word and comments on a sentence form."
+   },
+   "use": [
+    "e2-language"
+   ],
+   "home": "Pick a headline and write down every connotation of its key word.",
+   "vocab": "connotation, zoom in, sentence form, effect, imagery, semantic field",
+   "understand": "What makes an analysis \"clear\" rather than \"some understanding\" in the levels?",
+   "lookFor": "Says a clear answer explains the effect of the words on the reader with relevant quotations and accurate terms, rather than just describing what happens."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-structure",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 2.2: Structure: openings, shifts and endings (grades 4 and 5)",
+   "intention": "We are learning to analyse how a writer orders a text to interest the reader: the opening, shifts in focus, and the ending.",
+   "criteria": [
+    "I can say what the writer focuses on at the beginning, and why.",
+    "I can track shifts in focus (wide to narrow, outside to inside, past to present).",
+    "I can explain how the ending links to or changes the beginning."
+   ],
+   "steps": {
+    "start": "A film opens on a city from above, then zooms into one window. Why start wide?",
+    "teach": "Paper 1 Question 3 is about structure, not language: no quoting a simile. Track the text like a camera: where are we at the start, where does the focus shift, and where do we end? Use structure terms: opening, shift, zoom in, flashback, contrast, cyclical ending. Each point: where it happens, what changes, why it interests the reader.",
+    "practise": "The \"English exam practice 2.2: Structure: openings, shifts and endings\" sheet (its exam question is Paper 1 Question 3), then the online practice.",
+    "check": "Ask for a paragraph about one shift in focus in an unseen extract."
+   },
+   "use": [
+    "e2-structure"
+   ],
+   "home": "Watch the first five minutes of a drama and map the shifts in focus.",
+   "vocab": "structure, focus, shift, zoom, flashback, cyclical",
+   "understand": "Why does a structure answer that analyses a simile get no credit?",
+   "lookFor": "Says the question is about the order and shape of the text; a simile is language, which is credited in question 2 instead."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-evaluate",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 2.3: Evaluating a statement (grades 4 and 5)",
+   "intention": "We are learning to evaluate a statement about a text: how far we agree, and how the writer creates the effect.",
+   "criteria": [
+    "I can say how far I agree with a statement about a text.",
+    "I can support my view with evidence and analysis of methods.",
+    "I can keep my judgement clear all the way through."
+   ],
+   "steps": {
+    "start": "\"This film is mostly about friendship.\" Do you agree? Why or why not? Quickly find two reasons.",
+    "teach": "Paper 1 Question 4 (20 marks): a student makes a claim; you judge it. Start with your view (\"I largely agree…\"). Each paragraph: a point about the reader's impression, evidence, how the writer creates the effect, and how it supports or challenges the statement. 20 minutes, three or four paragraphs. Evaluation words: effectively, convincingly, to some extent.",
+    "practise": "The \"English exam practice 2.3: Evaluating a statement\" sheet (its exam question is Paper 1 Question 4), then the online practice.",
+    "check": "Ask for an opening sentence giving a judgement and one full paragraph."
+   },
+   "use": [
+    "e2-evaluate"
+   ],
+   "home": "Read a film review. Does the reviewer convince you? Find one sentence that does it.",
+   "vocab": "evaluate, judgement, to what extent, impression, convincing",
+   "understand": "Why must you refer back to the statement in each paragraph?",
+   "lookFor": "Says the question is about how far you agree, so each paragraph must show its link to the statement, or it becomes general analysis."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-compare",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 2.4: Comparing viewpoints and methods (grades 4 and 5)",
+   "intention": "We are learning to compare two writers' viewpoints on the same topic, and the methods they use to show them.",
+   "criteria": [
+    "I can identify each writer's viewpoint and tone.",
+    "I can compare the methods they use, with evidence from both.",
+    "I can write a comparison paragraph that moves between texts."
+   ],
+   "steps": {
+    "start": "Two people write about learning to drive: one terrified, one excited. How would their writing differ?",
+    "teach": "Paper 2 Question 4 (16 marks) compares perspectives AND methods. Plan: each writer's view in one sentence; then two or three points of comparison. Each paragraph: text A's view, method and evidence, a comparison word, then text B. Context (a 19th-century writer) explains why their view differs.",
+    "practise": "The \"English exam practice 2.4: Comparing viewpoints and methods\" sheet (its exam question is Paper 2 Question 4), then the online practice.",
+    "check": "Ask for one comparison paragraph that covers both texts with evidence."
+   },
+   "use": [
+    "e2-compare"
+   ],
+   "home": "Compare two news stories on the same event from different outlets.",
+   "vocab": "perspective, viewpoint, tone, compare, contrast, method",
+   "understand": "Why is a comparison paragraph that covers both texts stronger than two separate paragraphs?",
+   "lookFor": "Says the marks are for comparing; moving between texts shows the connections, while separate paragraphs leave the examiner to make them."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-punctuation",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: sentences and punctuation",
+   "codes": [],
+   "title": "GCSE English climb 2.5: Punctuation for effect: ; : — and ’ (grades 4 and 5)",
+   "intention": "We are learning to use a range of punctuation accurately and for effect: semicolons, colons, dashes, apostrophes and speech marks.",
+   "criteria": [
+    "I can use a semicolon to join two linked sentences.",
+    "I can use a colon to introduce an explanation or list.",
+    "I can punctuate speech and use apostrophes correctly."
+   ],
+   "steps": {
+    "start": "Read: \"It was late; the streets were empty.\" Why a semicolon, not a comma?",
+    "teach": "A range of punctuation is what lifts accuracy marks from the middle band. Semicolon: joins two complete, linked sentences. Colon: \"here it comes\" (an explanation or list). Dashes: an aside, or a dramatic pause. Apostrophes: missing letters (it's) and possession (the dog's / the dogs'). Speech: new line for each speaker, punctuation inside the speech marks.",
+    "practise": "The \"English exam practice 2.5: Punctuation for effect: ; : — and ’\" sheet (its exam question is the writing question (accuracy marks)), then the online practice.",
+    "check": "Ask for five sentences, each using one of the five correctly."
+   },
+   "use": [
+    "e2-punctuation"
+   ],
+   "home": "Find a semicolon, colon and dash in a book or article and explain what each does.",
+   "vocab": "semicolon, colon, dash, apostrophe, possession, speech marks",
+   "understand": "Why use a semicolon only between two complete sentences?",
+   "lookFor": "Says a semicolon does the job of a full stop for closely linked ideas, so each side has to stand as a sentence on its own."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-sentences",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: sentences and punctuation",
+   "codes": [],
+   "title": "GCSE English climb 2.6: Sentence variety and openers (grades 4 and 5)",
+   "intention": "We are learning to vary sentence length and openers on purpose: short for impact, long for detail.",
+   "criteria": [
+    "I can begin sentences in different ways (an -ing word, an adverb, a preposition, a subordinate clause).",
+    "I can use a short sentence for impact.",
+    "I can explain the effect of my sentence choices."
+   ],
+   "steps": {
+    "start": "Read a paragraph where every sentence starts \"I\" or \"The\". What's it like to read?",
+    "teach": "Openers: -ing (\"Turning the key, …\"), -ly (\"Slowly, …\"), place (\"Under the bridge, …\"), subordinate clause (\"Although it was late, …\"). Vary length: a short sentence after long ones lands hard. Don't overdo it: variety with purpose, not a list of tricks.",
+    "practise": "The \"English exam practice 2.6: Sentence variety and openers\" sheet (its exam question is the writing question), then the online practice.",
+    "check": "Ask them to rewrite a flat paragraph with five different openers and one short sentence."
+   },
+   "use": [
+    "e2-sentences"
+   ],
+   "home": "Read a page of a thriller: find the shortest sentence and say why it's there.",
+   "vocab": "sentence opener, subordinate clause, short sentence, variety, effect",
+   "understand": "Why does a short sentence work best after longer ones?",
+   "lookFor": "Says the contrast in rhythm makes it stand out and creates impact; a page of short sentences loses the effect."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-narrative",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 2.7: Crafting stories and descriptions (grades 4 and 5)",
+   "intention": "We are learning to write a story or description that grips: one setting, few characters, show not tell, and a structure that holds the reader.",
+   "criteria": [
+    "I can plan a story with one setting, one or two characters and one main event.",
+    "I can show feelings through actions and details, not labels.",
+    "I can write an opening that hooks and an ending that links back."
+   ],
+   "steps": {
+    "start": "\"She was scared.\" Show it instead, without the word scared.",
+    "teach": "Paper 1 Question 5: 45 minutes, about 450 to 650 words. Keep it small: one place, one moment, few characters. Show don't tell. Plan five parts: hook, build, turn, climax, resolution, or a description in five zooms. A cyclical ending (back to the opening image) gives control.",
+    "practise": "The \"English exam practice 2.7: Crafting stories and descriptions\" sheet (its exam question is Paper 1 Question 5), then the online practice.",
+    "check": "Ask for a planned opening of about 150 words."
+   },
+   "use": [
+    "e2-narrative"
+   ],
+   "home": "Write the first paragraph of a story set somewhere you know well.",
+   "vocab": "narrative, show not tell, hook, cyclical structure, setting",
+   "understand": "Why does a story with one setting and one main event usually score higher than an action-packed one?",
+   "lookFor": "Says it leaves room for detail, description and control in 45 minutes; too many events turns into a list of what happened."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-argument",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 2.8: Arguing and persuading (grades 4 and 5)",
+   "intention": "We are learning to write a clear, persuasive argument: a strong view, reasons with evidence, the other side dealt with, and a memorable ending.",
+   "criteria": [
+    "I can state a clear view and keep it.",
+    "I can support reasons with evidence (facts, examples, anecdotes).",
+    "I can include and answer a counter-argument."
+   ],
+   "steps": {
+    "start": "\"Homework should be banned.\" One reason for, one against, in 30 seconds each.",
+    "teach": "Paper 2 Question 5: plan your view, three reasons, a counter-argument and an ending. Each paragraph: a reason, evidence, its impact. Counter-argument: \"Some might argue… However…\". Use persuasive methods with control: a rhetorical question, a statistic, a list of three. End by looking forward or calling to action.",
+    "practise": "The \"English exam practice 2.8: Arguing and persuading\" sheet (its exam question is Paper 2 Question 5), then the online practice.",
+    "check": "Ask for a counter-argument paragraph on a new statement."
+   },
+   "use": [
+    "e2-argument"
+   ],
+   "home": "Watch a short debate or opinion video: note the counter-argument and how it's answered.",
+   "vocab": "argument, counter-argument, evidence, rhetorical question, call to action",
+   "understand": "Why does dealing with the other side make an argument more persuasive?",
+   "lookFor": "Says it shows you've thought it through and takes away the reader's objections, so your view seems fairer and stronger."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-perceptive",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 3.1: Perceptive analysis: layers of meaning (grades 6 to 9)",
+   "intention": "We are learning to analyse perceptively: more than one reading of a word, patterns across a text, and what the writer is really saying.",
+   "criteria": [
+    "I can offer alternative interpretations of a word or image.",
+    "I can trace a pattern (a semantic field, a contrast, a motif) across a text.",
+    "I can link methods to the writer's purpose."
+   ],
+   "steps": {
+    "start": "\"Hard and sharp as flint\": what does flint suggest? Then: what else could it suggest?",
+    "teach": "The top level is perceptive and detailed. Go beyond one effect: \"perhaps… or…\"; link a word to a pattern (cold imagery throughout); consider irony and tone; and end each point on the writer's purpose. Short, embedded quotations, precise terms, and depth over coverage.",
+    "practise": "The \"English exam practice 3.1: Perceptive analysis: layers of meaning\" sheet (its exam question is Paper 1 Question 2 and Paper 2 Question 3), then the online practice.",
+    "check": "Ask for one paragraph that offers two readings of a single image."
+   },
+   "use": [
+    "e3-perceptive"
+   ],
+   "home": "Pick a song lyric and find two different ways to read one line.",
+   "vocab": "interpretation, semantic field, motif, irony, ambiguity, purpose",
+   "understand": "Why is exploring one quotation in depth often worth more than mentioning five?",
+   "lookFor": "Says the top levels reward detailed, perceptive analysis; listing many quotations shows coverage but not depth."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-structure",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 3.2: Whole-text structure: shaping the reader’s experience (grades 6 to 9)",
+   "intention": "We are learning to analyse whole-text structure: juxtaposition, withheld information, pace and perspective, and how the ending reframes the beginning.",
+   "criteria": [
+    "I can explain how withholding information builds tension.",
+    "I can analyse shifts in pace and perspective.",
+    "I can explain how an ending changes our view of the opening."
+   ],
+   "steps": {
+    "start": "Why might a writer tell us the ending first?",
+    "teach": "Grade 7+ structure answers see the text as a design. Look for juxtaposition (two contrasting things placed together), withheld information, changes of pace (a long scene slowed, a sudden cut), shifts of perspective, and cyclical or reframing endings. Always link the feature to the reader's experience and the writer's purpose.",
+    "practise": "The \"English exam practice 3.2: Whole-text structure: shaping the reader’s experience\" sheet (its exam question is Paper 1 Question 3), then the online practice.",
+    "check": "Ask for a paragraph on how the ending of an extract changes the opening."
+   },
+   "use": [
+    "e3-structure"
+   ],
+   "home": "Watch a film trailer: what's withheld, and why?",
+   "vocab": "juxtaposition, withholding, pace, perspective, cyclical, reframe",
+   "understand": "How is a structure answer at grade 7 different from one at grade 5?",
+   "lookFor": "Says grade 5 tracks the shifts clearly; grade 7 explains why they're designed that way and how they shape the reader's whole experience."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-critical",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 3.3: Critical evaluation (grades 6 to 9)",
+   "intention": "We are learning to evaluate critically: building a convincing argument about a statement, judging the writer's intentions, with precise evidence.",
+   "criteria": [
+    "I can build a nuanced judgement (largely agree, but…).",
+    "I can choose short, judicious evidence.",
+    "I can evaluate how successfully the writer achieves an effect."
+   ],
+   "steps": {
+    "start": "\"Mostly agree\" and \"completely agree\": which shows more thought, and why?",
+    "teach": "Top-band evaluation is an argument. Open with a nuanced thesis; each paragraph tests the statement against the text, analyses method, and judges the writer's success. Use evaluative language: \"Stevenson's most effective choice is…\". Consider where the statement doesn't fit.",
+    "practise": "The \"English exam practice 3.3: Critical evaluation\" sheet (its exam question is Paper 1 Question 4), then the online practice.",
+    "check": "Ask for a nuanced thesis statement and one critical paragraph."
+   },
+   "use": [
+    "e3-critical"
+   ],
+   "home": "Write a three-sentence review of a book or series that makes a judgement and backs it.",
+   "vocab": "critical, nuanced, thesis, judicious, evaluate, intention",
+   "understand": "Why is a nuanced view often rewarded more than total agreement?",
+   "lookFor": "Says it shows you've weighed the text carefully and considered other readings, which is what \"critical\" means."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-context",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb 3.4: Perspectives and context: 19th-century non-fiction (grades 6 to 9)",
+   "intention": "We are learning to read 19th-century non-fiction with confidence: its style and vocabulary, its context, and how its perspective differs from today's.",
+   "criteria": [
+    "I can work out unfamiliar older words from context.",
+    "I can follow long 19th-century sentences.",
+    "I can explain how context shapes a writer's perspective."
+   ],
+   "steps": {
+    "start": "\"I was impelled to the conclusion…\": what does it mean? How do you work it out?",
+    "teach": "Paper 2 always has a 19th-century text. Read long sentences by the punctuation: each semicolon or dash is a step. Use the words around an unfamiliar word. Context: who's writing, when, for whom and why. Compare its perspective with a modern one, explaining differences by context.",
+    "practise": "The \"English exam practice 3.4: Perspectives and context: 19th-century non-fiction\" sheet (its exam question is Paper 2 Questions 3 and 4), then the online practice.",
+    "check": "Ask them to summarise a long 19th-century sentence in modern English."
+   },
+   "use": [
+    "e3-context"
+   ],
+   "home": "Read a short public-domain 19th-century letter or diary entry and note three words that have changed.",
+   "vocab": "context, perspective, archaic, attitude, 19th century",
+   "understand": "How does knowing context help you explain a writer's viewpoint?",
+   "lookFor": "Says context explains why a writer thought as they did (their time, beliefs, audience), so you can compare views fairly, not just say they're old-fashioned."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-vocab",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 3.5: Vocabulary: precise, ambitious and in control (grades 6 to 9)",
+   "intention": "We are learning to choose precise, ambitious vocabulary, and to avoid overwriting.",
+   "criteria": [
+    "I can replace a plain word with a more precise one.",
+    "I can judge when an ambitious word helps and when it's overwriting.",
+    "I can match vocabulary to register."
+   ],
+   "steps": {
+    "start": "\"The man walked\" against \"The man trudged\": what does the second add?",
+    "teach": "Top-band vocabulary is precise: the exact word for the job. Replace plain words (walked, nice, very) with exact ones. Watch for overwriting: three fancy adjectives are weaker than one exact verb. Check connotations fit the tone.",
+    "practise": "The \"English exam practice 3.5: Vocabulary: precise, ambitious and in control\" sheet (its exam question is the writing questions), then the online practice.",
+    "check": "Ask them to improve a plain paragraph, then defend three changes."
+   },
+   "use": [
+    "e3-vocab"
+   ],
+   "home": "Collect five precise verbs for movement from your reading this week.",
+   "vocab": "precise, ambitious, overwriting, connotation, register",
+   "understand": "Why can an ambitious word lose marks?",
+   "lookFor": "Says if it's wrong for the context or used just to impress, it blurs meaning; the marks are for precision, not difficulty."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-crafted",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: sentences and punctuation",
+   "codes": [],
+   "title": "GCSE English climb 3.6: Crafted sentences and punctuation for meaning (grades 6 to 9)",
+   "intention": "We are learning to craft sentences for meaning: deliberate fragments, balanced sentences, parenthesis, and punctuation that controls pace.",
+   "criteria": [
+    "I can use a deliberate fragment for effect.",
+    "I can write a balanced sentence and use parenthesis.",
+    "I can control pace with sentence length and punctuation."
+   ],
+   "steps": {
+    "start": "\"Silence.\" Is that a sentence? When is that allowed?",
+    "teach": "Grade 7+ accuracy is crafted, not just correct. A fragment is allowed when it's deliberate and rare. Balanced: two halves that mirror. Parenthesis adds an aside. Periodic: save the key word for the end. Pace: lists and commas slow, short sentences speed up.",
+    "practise": "The \"English exam practice 3.6: Crafted sentences and punctuation for meaning\" sheet (its exam question is the writing questions), then the online practice.",
+    "check": "Ask for a paragraph using three of the five crafted forms."
+   },
+   "use": [
+    "e3-crafted"
+   ],
+   "home": "Find a balanced sentence in a speech and explain why it's memorable.",
+   "vocab": "fragment, balanced sentence, parenthesis, periodic sentence, pace",
+   "understand": "What makes a fragment \"deliberate\" rather than a mistake?",
+   "lookFor": "Says it's rare, clearly for effect, in otherwise secure writing; repeated fragments look like errors."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-imagery",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 3.7: Original imagery and controlled description (grades 6 to 9)",
+   "intention": "We are learning to write original imagery and controlled description: fresh images, an extended metaphor or motif, and a tone held throughout.",
+   "criteria": [
+    "I can replace a cliché with an original image.",
+    "I can sustain an extended metaphor or motif.",
+    "I can hold a tone across a whole description."
+   ],
+   "steps": {
+    "start": "\"As cold as ice.\" Why does it do nothing for a reader? Make it new.",
+    "teach": "Top-band description avoids clichés, builds one extended metaphor or motif that returns, uses pathetic fallacy with restraint, and holds a single tone. Structure as a series of zooms, and end with a return to the motif.",
+    "practise": "The \"English exam practice 3.7: Original imagery and controlled description\" sheet (its exam question is Paper 1 Question 5), then the online practice.",
+    "check": "Ask for a 100-word description with one extended metaphor."
+   },
+   "use": [
+    "e3-imagery"
+   ],
+   "home": "Describe the view from a window you know, avoiding every cliché.",
+   "vocab": "cliché, extended metaphor, motif, pathetic fallacy, tone",
+   "understand": "Why does a motif that returns at the end make a description feel crafted?",
+   "lookFor": "Says it gives the piece a deliberate shape and shows control of the whole text, not just good sentences."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-rhetoric",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb 3.8: Sophisticated argument: tone, structure and rhetoric (grades 6 to 9)",
+   "intention": "We are learning to write sophisticated arguments: a distinctive voice, a carefully built structure, counter-arguments dismantled, and rhetoric used with restraint.",
+   "criteria": [
+    "I can create a distinctive, controlled voice.",
+    "I can concede and reframe a counter-argument.",
+    "I can use rhetoric with restraint."
+   ],
+   "steps": {
+    "start": "Think of a speaker you find convincing. Is it what they say or how they say it?",
+    "teach": "Grade 7–9 arguments are crafted for an audience: a confident, possibly ironic voice; a structure that builds (concede, then reframe); evidence chosen for precision; rhetoric that serves the argument rather than decorates it. The ending should resonate.",
+    "practise": "The \"English exam practice 3.8: Sophisticated argument: tone, structure and rhetoric\" sheet (its exam question is Paper 2 Question 5), then the online practice.",
+    "check": "Ask for a paragraph that concedes the opposing point and reframes it."
+   },
+   "use": [
+    "e3-rhetoric"
+   ],
+   "home": "Watch a well-known speech and note how the speaker answers opponents.",
+   "vocab": "voice, concession, reframe, rhetoric, restraint, irony",
+   "understand": "Why does too much rhetoric weaken an argument?",
+   "lookFor": "Says it can sound like shouting and hide a lack of reasoning; restraint makes each device count."
+  },
+  {
+   "id": "lesson-england-english-climb-lit-novel",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb Literature: The 19th-century novel: reading an extract (Literature)",
+   "intention": "We are learning to analyse an extract from a 19th-century novel, link it to the whole novel and use context to deepen our reading.",
+   "criteria": [
+    "I can analyse how a character is presented in an extract.",
+    "I can link the extract to the novel as a whole.",
+    "I can use context to explain the writer's purpose."
+   ],
+   "steps": {
+    "start": "Read the description of Scrooge. What do you already know about him, and how does the writer make you feel it?",
+    "teach": "Literature Paper 1 Section B: about 50 minutes, 30 marks. Spend half the answer on the extract and half on the whole novel. Each paragraph: a point about the character or theme, short quotations, methods, and context woven in (not tacked on). Know the novel's key moments and quotations.",
+    "practise": "The \"English exam practice (Literature): The 19th-century novel: reading an extract\" sheet (its exam question is Literature Paper 1 Section B), then the online practice.",
+    "check": "Ask for a plan: three points, each with one extract quotation and one from elsewhere in the novel."
+   },
+   "use": [
+    "lit-novel"
+   ],
+   "home": "Read one chapter of a 19th-century novel and note three things it shows about its time.",
+   "vocab": "extract, whole text, context, characterisation, theme",
+   "understand": "Why should context be woven into analysis rather than given as a separate paragraph?",
+   "lookFor": "Says context is credited when it helps explain the writer's choices; a separate history paragraph doesn't analyse the text."
+  },
+  {
+   "id": "lesson-england-english-climb-lit-shakespeare",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb Literature: Shakespeare: language, character and context (Literature)",
+   "intention": "We are learning to read Shakespeare's verse with confidence: imagery, soliloquy, dramatic irony and the play in its time.",
+   "criteria": [
+    "I can explain what a soliloquy shows about a character.",
+    "I can analyse imagery in Shakespeare's language.",
+    "I can link a speech to the play as a whole and its context."
+   ],
+   "steps": {
+    "start": "\"Is this a dagger which I see before me?\" Who is he talking to? What does that tell us?",
+    "teach": "Literature Paper 1 Section A: an extract and the whole play. Read verse by sense, not line ends. A soliloquy reveals private thoughts; dramatic irony means we know more than characters. Context: Jacobean beliefs about kingship, the supernatural, ambition.",
+    "practise": "The \"English exam practice (Literature): Shakespeare: language, character and context\" sheet (its exam question is Literature Paper 1 Section A), then the online practice.",
+    "check": "Ask for a paragraph analysing one image from a soliloquy."
+   },
+   "use": [
+    "lit-shakespeare"
+   ],
+   "home": "Watch a filmed scene from a Shakespeare play and say how the actor shows the character's mind.",
+   "vocab": "soliloquy, dramatic irony, imagery, verse, Jacobean",
+   "understand": "What does a soliloquy let an audience see that a conversation can't?",
+   "lookFor": "Says it shows the character's private thoughts and doubts, so the audience knows their true state of mind."
+  },
+  {
+   "id": "lesson-england-english-climb-lit-poetry",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb Literature: Poetry: analysing and comparing poems (Literature)",
+   "intention": "We are learning to analyse a poem's language, form and structure, compare two poems, and approach an unseen poem with confidence.",
+   "criteria": [
+    "I can analyse language, form and structure in a poem.",
+    "I can compare two poems' ideas and methods.",
+    "I can approach an unseen poem with a clear method."
+   ],
+   "steps": {
+    "start": "Read \"Ozymandias\" once aloud. What's the one image you remember? Why that one?",
+    "teach": "Literature Paper 2: an anthology comparison and unseen poems. Read a poem three times: for sense, for mood, then for methods. Form (sonnet, dramatic monologue), structure (volta, enjambment, rhyme), language. Compare in every paragraph: both poems, with connectives.",
+    "practise": "The \"English exam practice (Literature): Poetry: analysing and comparing poems\" sheet (its exam question is Literature Paper 2 Section B and C), then the online practice.",
+    "check": "Ask for a comparison paragraph on two poems' presentation of power."
+   },
+   "use": [
+    "lit-poetry"
+   ],
+   "home": "Choose a song lyric and treat it as a poem: comment on one rhyme and one image.",
+   "vocab": "form, structure, volta, enjambment, imagery, sonnet",
+   "understand": "Why should comparison happen in every paragraph rather than at the end?",
+   "lookFor": "Says the marks reward sustained comparison; leaving it to the end produces two separate essays."
+  },
+  {
+   "id": "lesson-england-english-climb-lit-essay",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb Literature: Writing a literature essay (Literature)",
+   "intention": "We are learning to plan and write a literature essay: a clear argument, embedded quotations, the writer's methods and context woven in.",
+   "criteria": [
+    "I can write a thesis that answers the question.",
+    "I can embed short quotations in my sentences.",
+    "I can conclude by returning to the writer's purpose."
+   ],
+   "steps": {
+    "start": "What's the difference between a summary of the story and an argument about it?",
+    "teach": "A literature essay is an argument: a thesis in the opening, paragraphs that each develop it, short embedded quotations, methods named and analysed, context woven in, and a conclusion on the writer's purpose. Plan for 5 minutes: thesis plus three points. Spelling, punctuation and grammar carry marks on some questions.",
+    "practise": "The \"English exam practice (Literature): Writing a literature essay\" sheet (its exam question is Literature, every question), then the online practice.",
+    "check": "Ask for a thesis and one paragraph with an embedded quotation."
+   },
+   "use": [
+    "lit-essay"
+   ],
+   "home": "Write a thesis about a film or series you know well, and three points that support it.",
+   "vocab": "thesis, embedded quotation, argument, methods, conclusion",
+   "understand": "Why does an essay need a thesis, not just good points?",
+   "lookFor": "Says the thesis gives the essay a line of argument, so each paragraph builds on it instead of becoming a list."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-start-here",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 1: start here (grade 1 to 3)",
+   "intention": "We are finding out which stage 1 topics are secure and which to learn first, learning what the exam expects at grade 1 to 3, and making a plan.",
+   "criteria": [
+    "I can try a question on each stage 1 topic and show what I already know.",
+    "I know what the exam expects at grade 1 to 3, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: grade 3 (or 4) for college. Explain that the writing question is half of each paper, so clear, accurate writing is the biggest step.",
+    "teach": "Read the \"What the exam expects: English grade 1 to 3\" sheet together, and the \"GCSE English Language: the exam in a page\" sheet. Then do the stage check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"GCSE English climb: stage 1 check (grade 1 to 3)\" sheet, or the online stage 1 check.",
+    "check": "Mark the check together. Fill in the \"GCSE English climb: stage 1 tracker (grade 1 to 3)\" sheet: topics marked ✗ go first. Agree the exam date, board and sessions a week."
+   },
+   "use": [
+    "e1-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading.",
+   "vocab": "GCSE, grade, level, mark scheme, Paper 1, Paper 2",
+   "understand": "Why is the writing question worth so much attention at grade 1 to 3?",
+   "lookFor": "Says it's 40 of the 80 marks on each paper, half the exam, and every piece of writing practice improves both papers."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-writing",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb, stage 1: the writing question (grade 1 to 3)",
+   "intention": "We are learning to plan, write and check a full exam answer to the writing question, aiming at grade 1 to 3.",
+   "criteria": [
+    "I can plan for 5 minutes before writing.",
+    "I can write a full answer in about 35 minutes.",
+    "I can check my writing against the stage 1 list and correct it."
+   ],
+   "steps": {
+    "start": "How is the writing question marked? (24 for content and organisation, 16 for accuracy.) What does each half reward?",
+    "teach": "Model the plan on the task sheet: five boxes, one per paragraph. Write for 30 minutes, timed. Then check against the list for 5 minutes. Compare with the model on the answers page and talk about one change that would lift it.",
+    "practise": "The stage's two writing task sheets, one each lesson (\"English writing task: description (grade 1 to 3)\" and \"English writing task: letter (grade 1 to 3)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the two scales. Agree one target for the next piece of writing."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "content and organisation, technical accuracy, plan, proof-read",
+   "understand": "Why spend 5 minutes planning when time is tight?",
+   "lookFor": "Says a plan gives the writing its structure and paragraphs (content and organisation marks), and stops the writing running out of ideas halfway."
+  },
+  {
+   "id": "lesson-england-english-climb-e1-mini-papers",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 1: mini papers (grade 1 to 3)",
+   "intention": "We are practising under exam conditions: an hour, like one paper cut down, marked with the levels.",
+   "criteria": [
+    "I can manage my time across reading and writing questions.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper in an hour, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: fiction (like Paper 1) (grade 1 to 3)\" and \"Mini paper: non-fiction (like Paper 2) (grade 1 to 3)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both writing tasks done, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "e1-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, mark scheme, level",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing; a rushed writing question can lose more marks than a weak reading answer."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-start-here",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 2: start here (grades 4 and 5)",
+   "intention": "We are finding out which stage 2 topics are secure and which to learn first, learning what the exam expects at grades 4 and 5, and making a plan.",
+   "criteria": [
+    "I can try a question on each stage 2 topic and show what I already know.",
+    "I know what the exam expects at grades 4 and 5, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: a standard pass (4) and a strong pass (5). Look back at what's secure from the last stage.",
+    "teach": "Read the \"What the exam expects: English grades 4 and 5\" sheet together. Then do the stage check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"GCSE English climb: stage 2 check (grades 4 and 5)\" sheet, or the online stage 2 check.",
+    "check": "Mark the check together. Fill in the \"GCSE English climb: stage 2 tracker (grades 4 and 5)\" sheet: topics marked ✗ go first. Agree the exam date, board and sessions a week."
+   },
+   "use": [
+    "e2-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading.",
+   "vocab": "GCSE, grade, level, mark scheme, Paper 1, Paper 2",
+   "understand": "Why is the writing question worth so much attention at grades 4 and 5?",
+   "lookFor": "Says it's 40 of the 80 marks on each paper, half the exam, and every piece of writing practice improves both papers."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-writing",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb, stage 2: the writing question (grades 4 and 5)",
+   "intention": "We are learning to plan, write and check a full exam answer to the writing question, aiming at grades 4 and 5.",
+   "criteria": [
+    "I can plan for 5 minutes before writing.",
+    "I can write a full answer in about 35 minutes.",
+    "I can check my writing against the stage 2 list and correct it."
+   ],
+   "steps": {
+    "start": "How is the writing question marked? (24 for content and organisation, 16 for accuracy.) What does each half reward?",
+    "teach": "Model the plan on the task sheet: five boxes, one per paragraph. Write for 30 minutes, timed. Then check against the list for 5 minutes. Compare with the model on the answers page and talk about one change that would lift it.",
+    "practise": "The stage's two writing task sheets, one each lesson (\"English writing task: story (grades 4 and 5)\" and \"English writing task: article (grades 4 and 5)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the two scales. Agree one target for the next piece of writing."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "content and organisation, technical accuracy, plan, proof-read",
+   "understand": "Why spend 5 minutes planning when time is tight?",
+   "lookFor": "Says a plan gives the writing its structure and paragraphs (content and organisation marks), and stops the writing running out of ideas halfway."
+  },
+  {
+   "id": "lesson-england-english-climb-e2-mini-papers",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 2: mini papers (grades 4 and 5)",
+   "intention": "We are practising under exam conditions: an hour, like one paper cut down, marked with the levels.",
+   "criteria": [
+    "I can manage my time across reading and writing questions.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper in an hour, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: fiction (like Paper 1) (grades 4 and 5)\" and \"Mini paper: non-fiction (like Paper 2) (grades 4 and 5)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both writing tasks done, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "e2-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, mark scheme, level",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing; a rushed writing question can lose more marks than a weak reading answer."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-start-here",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 3: start here (grades 6 to 9)",
+   "intention": "We are finding out which stage 3 topics are secure and which to learn first, learning what the exam expects at grades 6 to 9, and making a plan.",
+   "criteria": [
+    "I can try a question on each stage 3 topic and show what I already know.",
+    "I know what the exam expects at grades 6 to 9, in reading and in writing.",
+    "I know which topics I'll work on first, and why."
+   ],
+   "steps": {
+    "start": "Talk about the goal: grades 6 to 9. Look back at what's secure from the last stage.",
+    "teach": "Read the \"What the exam expects: English grades 6 to 9\" sheet together. Then do the stage check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"GCSE English climb: stage 3 check (grades 6 to 9)\" sheet, or the online stage 3 check.",
+    "check": "Mark the check together. Fill in the \"GCSE English climb: stage 3 tracker (grades 6 to 9)\" sheet: topics marked ✗ go first. Agree the exam date, board and sessions a week."
+   },
+   "use": [
+    "e3-check"
+   ],
+   "home": "Look at the tracker together and pick a time each week for 20 minutes of online practice and 10 minutes a day of reading.",
+   "vocab": "GCSE, grade, level, mark scheme, Paper 1, Paper 2",
+   "understand": "Why is the writing question worth so much attention at grades 6 to 9?",
+   "lookFor": "Says it's 40 of the 80 marks on each paper, half the exam, and every piece of writing practice improves both papers."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-writing",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [],
+   "title": "GCSE English climb, stage 3: the writing question (grades 6 to 9)",
+   "intention": "We are learning to plan, write and check a full exam answer to the writing question, aiming at grades 6 to 9.",
+   "criteria": [
+    "I can plan for 5 minutes before writing.",
+    "I can write a full answer in about 35 minutes.",
+    "I can check my writing against the stage 3 list and correct it."
+   ],
+   "steps": {
+    "start": "How is the writing question marked? (24 for content and organisation, 16 for accuracy.) What does each half reward?",
+    "teach": "Model the plan on the task sheet: five boxes, one per paragraph. Write for 30 minutes, timed. Then check against the list for 5 minutes. Compare with the model on the answers page and talk about one change that would lift it.",
+    "practise": "The stage's two writing task sheets, one each lesson (\"English writing task: description (grades 6 to 9)\" and \"English writing task: speech (grades 6 to 9)\" sheets), or the writing tasks on the My next step page.",
+    "check": "Mark with the two scales. Agree one target for the next piece of writing."
+   },
+   "use": [],
+   "home": "Write for 15 minutes on any topic once a week, then check it against the list.",
+   "vocab": "content and organisation, technical accuracy, plan, proof-read",
+   "understand": "Why spend 5 minutes planning when time is tight?",
+   "lookFor": "Says a plan gives the writing its structure and paragraphs (content and organisation marks), and stops the writing running out of ideas halfway."
+  },
+  {
+   "id": "lesson-england-english-climb-e3-mini-papers",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb, stage 3: mini papers (grades 6 to 9)",
+   "intention": "We are practising under exam conditions: an hour, like one paper cut down, marked with the levels.",
+   "criteria": [
+    "I can manage my time across reading and writing questions.",
+    "I can answer each question in the way its marks ask for.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's marks and times. Where would you lose marks if you ran out of time?",
+    "teach": "Sit the mini paper in an hour, timed. Then mark it with the answers page, part by part, and note on the tracker the topics that lost marks.",
+    "practise": "The stage's two mini paper sheets (\"Mini paper: fiction (like Paper 1) (grades 6 to 9)\" and \"Mini paper: non-fiction (like Paper 2) (grades 6 to 9)\" sheets), or the mini paper on the My next step page.",
+    "check": "About 60% or more, with both writing tasks done, means the stage is done. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "e3-mixed"
+   ],
+   "home": "Re-do the part of the mini paper that lost the most marks.",
+   "vocab": "timing, mark scheme, level",
+   "understand": "Why is timing as important as knowing the answers?",
+   "lookFor": "Says unanswered questions score nothing; a rushed writing question can lose more marks than a weak reading answer."
+  },
+  {
+   "id": "lesson-england-english-climb-my-next-step",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "title": "GCSE English climb: my next step (self-guided, grade 1 to 9)",
+   "intention": "We are learning to work through the GCSE English climb on our own: one step a session, marking our own answers honestly against the levels and models.",
+   "criteria": [
+    "I can find my next step on the climb page and do it.",
+    "I can mark my written answers against the levels and a model.",
+    "I know when to move on to the next stage."
+   ],
+   "steps": {
+    "start": "Open popspell.com/english-climb.html together and press My next step.",
+    "teach": "Show how the page works: the stage check, topics in order, writing tasks with a timer and checklist, then a mini paper. Show how to mark a written answer: find its level, compare with the model, note one thing to improve.",
+    "practise": "The \"GCSE English climb: my route from grade 1 to 9\" sheet to keep, then the first step on the page.",
+    "check": "Ask the pupil to explain what secure means and what they'll do next session."
+   },
+   "use": [],
+   "home": "Ten minutes of reading every day, and one climb session two or three times a week.",
+   "vocab": "self-assessment, level, model answer, secure",
+   "understand": "Why should you compare your written answer with the model, not just read the model?",
+   "lookFor": "Says comparing shows the specific gap between your answer and a higher level, so you know exactly what to change next time."
+  }
+ ]
+}

@@ -41,6 +41,28 @@ window.PopPacks = (() => {
         topics: gcseTopics(3), papers: ["paper-gx-gh-mini-noncalc", "paper-gx-gh-mini-calc", "paper-gx-gh-mini-problems"], next: "" }
     ]
   });
+  // The GCSE English climb (exam-english/, PopEnglishExam): only on pages that load its bank. Written
+  // answers can't be marked line by line, so its plan and marking notes are its own (words below).
+  const EN = () => window.PopEnglishExam && window.PopEnglishExam.course("gcse");
+  if (EN()) add({
+    id: "english", title: "GCSE English climb", where: "England, GCSE English Language", online: "english-climb.html",
+    words: {
+      work: "Read the text first, then answer. For the exam question, every point needs a short quotation and what it shows.",
+      again: "Not secure yet? Compare your answer with the levels and the model answer at the back, then try the exam question again a few days later.",
+      papers: "Do each writing task in 45 minutes, then check it against its list. Then the mini papers, an hour each.",
+      pass: "About 60% or more",
+      paperTodo: "An hour, like the real exam. Plan the writing for 5 minutes and check it for the last 5.",
+      writeTodo: "45 minutes: plan, write on lined paper, then tick the checklist honestly.",
+      topicTodo: "Tick the quick questions, then write the exam answer. Mark it with the levels at the back; three-quarters of the quick questions and a good level makes it secure.",
+      marking: "Quick questions have one right answer and a reason. Written answers are marked in levels: find the level that fits best, then compare with the model answer. Writing is marked out of 40: 24 for content and organisation, 16 for accuracy."
+    },
+    stages: () => EN().STAGES.map(st => ({
+      id: `english-${st.n}`, title: st.title, short: `English ${st.goal}`, about: st.about,
+      read: ["paper-ex-route", ...(st.n === 1 ? ["paper-ex-exam"] : []), `paper-ex-${st.key}-expects`], check: `paper-ex-${st.key}-check`, tracker: `paper-ex-${st.key}-tracker`,
+      topics: st.topics.map(t => `paper-ex-${t.id}`),
+      papers: EN().WRITING.filter(w => w.id.startsWith(`${st.key}-`)).map(w => `paper-ex-write-${w.id}`).concat(EN().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
+      next: st.n < 3 ? `stage ${st.n + 1} (${EN().STAGES[st.n].goal})` : "" }))
+  });
   const allStages = () => PACKS.flatMap(p => p.stages().map(st => Object.assign({ pack: p }, st)));
   const sheetsOf = st => [...st.read, st.check, st.tracker, ...st.topics, ...st.papers];
 
@@ -51,7 +73,9 @@ window.PopPacks = (() => {
   };
   const stamp = (html, line) => html.replace("</header>", `</header><p class="ws-code">${line}</p>`);
   // What each part asks the pupil to do, for the plan
-  const todo = (st, id) => id === st.check ? "Do it on your own, then mark it with its answers at the back. Copy the marks onto the tracker."
+  const todo = (st, id) => st.pack.words && st.topics.includes(id) ? st.pack.words.topicTodo
+    : st.pack.words && st.papers.includes(id) ? (/-write-/.test(id) ? st.pack.words.writeTodo : st.pack.words.paperTodo)
+    : id === st.check ? "Do it on your own, then mark it with its answers at the back. Copy the marks onto the tracker."
     : id === st.tracker ? "Keep it at the front. Fill it in as you go."
     : st.read.includes(id) ? (id === st.read[0] ? "Read it and fill in your exam date and target." : /calculator|command/.test(id) ? "Read the tips, then do the questions." : "Read it, then talk it through with an adult.")
     : st.papers.includes(id) ? "Like the real exam: about 20 minutes. Half the marks or more is a good paper."
@@ -61,7 +85,7 @@ window.PopPacks = (() => {
     const c = code(), ids = sheetsOf(st).filter(id => PAPER.get(id));
     const parts = ids.map((id, i) => {
       const sh = PAPER.get(id), b = sh.build(who, kit), n = i + 1;
-      const plain = sh.title.replace(/^GCSE maths climb: /, "").replace(/ \((grades 4 and 5|Higher)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
+      const plain = sh.title.replace(/^GCSE (maths|English) climb: /, "").replace(/ \((grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
       return { id, n, title, todo: todo(st, id),
         work: K.ageLook(stamp(b.pupil, `Pack ${c} · Part ${n} of ${ids.length}`), "older"),
         answers: b.answers ? stamp(b.answers, `Pack ${c} · Answers for part ${n}: ${esc(title)}`) : "" };
@@ -70,6 +94,7 @@ window.PopPacks = (() => {
   }
 
   function cover(st, c, parts, who) {
+    const w = st.pack.words || {};
     const first = parts.find(p => st.topics.includes(p.id));
     const check = parts.find(p => p.id === st.check);
     const papers = parts.filter(p => st.papers.includes(p.id));
@@ -78,9 +103,9 @@ window.PopPacks = (() => {
       <div class="pk-how"><b>How to use this pack</b>
         <ol><li>Start with part 1: where you're heading, and how long you have.</li>
           <li>Do the check (part ${check ? check.n : ""}) on your own. Mark it with the answers at the back: they're for the adult, or for you once a part is finished.</li>
-          <li>Work through the topics from part ${first ? first.n : ""}, in order, but do the ones that lost marks in the check first. Show every step: the marks are for the working.</li>
-          <li>Not secure yet? Read the mark scheme, then do the questions you lost again a few days later. Make a new pack for fresh numbers.</li>
-          <li>When every topic is ticked, do the mini papers (parts ${papers.map(p => p.n).join(", ")}).${st.next ? ` About half the marks or more: you're ready for ${esc(st.next)}.` : ""}</li></ol>
+          <li>Work through the topics from part ${first ? first.n : ""}, in order, but do the ones that lost marks in the check first. ${w.work || "Show every step: the marks are for the working."}</li>
+          <li>${w.again || "Not secure yet? Read the mark scheme, then do the questions you lost again a few days later. Make a new pack for fresh numbers."}</li>
+          <li>When every topic is ticked: ${w.papers ? `${w.papers} (parts ${papers.map(p => p.n).join(", ")})` : `do the mini papers (parts ${papers.map(p => p.n).join(", ")}).`}${st.next ? ` ${w.pass || "About half the marks"} or more: you're ready for ${esc(st.next)}.` : ""}</li></ol>
         <p>The answers only match pages with the same pack code, <b>${c}</b>. Online, <b>popspell.com/${esc(st.pack.online)}</b> marks your answers and picks your next step.</p></div>
       <table class="pk-plan"><thead><tr><th>Part</th><th>My plan: tick off as you go</th><th>Done</th><th>Date</th><th>Marks</th></tr></thead>
         <tbody>${parts.map(row).join("")}</tbody></table>`;
@@ -89,7 +114,7 @@ window.PopPacks = (() => {
     const with_ = parts.filter(p => p.answers);
     return `${K.brandHead("Answers and mark schemes", `${esc(st.pack.title)}: ${esc(st.title)}. For the adult, or for marking a part once it's finished.`)}<p class="ws-code">Pack ${c}</p>
       <div class="pk-how"><b>Marking like an examiner</b>
-        <p>Each answer shows where the marks come from. Give the method marks for each right step of working, even when the final answer is wrong. A right answer with no working gets full marks; a wrong answer with no working gets none.</p>
+        <p>${st.pack.words ? st.pack.words.marking : "Each answer shows where the marks come from. Give the method marks for each right step of working, even when the final answer is wrong. A right answer with no working gets full marks; a wrong answer with no working gets none."}</p>
         <p>Keep these pages apart from the work, and look only after a part is finished. These answers match pack <b>${c}</b> only.</p></div>
       <table class="pk-plan"><thead><tr><th>Part</th><th>Answers in this section</th></tr></thead>
         <tbody>${with_.map(p => `<tr><td class="pk-n">${p.n}</td><td>${esc(p.title)}</td></tr>`).join("")}</tbody></table>`;
@@ -145,18 +170,18 @@ window.PopPacks = (() => {
     const st = stages.find(s => s.id === chosen);
     const count = made && made.st.id === st.id ? made.parts.length : sheetsOf(st).filter(id => PAPER.get(id)).length;
     app.innerHTML = `<header class="pk-top"><a class="pk-brand" href="./"><img src="assets/brand/app-icon-192.png" alt="" width="32" height="32"><span>PopSpell</span></a>
-        <span class="pk-crumb">Maths packs to download</span><a class="pk-link" href="climb.html">GCSE maths climb online →</a></header>
+        <span class="pk-crumb">Exam packs to download</span><a class="pk-link" href="${esc(st.pack.online)}">${esc(st.pack.title)} online →</a></header>
       <main class="pk-main">
         <section class="pk-intro">
-          <h1>Download a maths pack</h1>
-          <p>Everything for one stage on paper, to work on at home with no login and no internet: a plan to tick off, a check, a tracker, exam-style practice on every topic, mini papers, and the answers and mark schemes at the back. Each pack has new numbers.</p>
+          <h1>Download an exam pack</h1>
+          <p>Everything for one stage on paper, to work on at home with no login and no internet: a plan to tick off, a check, a tracker, exam-style practice on every topic, mini papers, and the answers and mark schemes at the back. Each pack has new questions.</p>
         </section>
         ${PACKS.map(p => `<section class="pk-pack"><h2>${esc(p.title)} <span>${esc(p.where)}</span></h2>
           <div class="pk-stages" role="radiogroup" aria-label="${esc(p.title)} stage">${p.stages().map(s => `<button class="pk-stage${s.id === chosen ? " on" : ""}" role="radio" aria-checked="${s.id === chosen}" data-stage="${s.id}">
             <b>${esc(s.title)}</b><span>${esc(s.about)}</span></button>`).join("")}</div></section>`).join("")}
         <section class="pk-make">
           <label class="pk-who">Name on the sheets (optional) <input id="who" maxlength="40" autocomplete="off" value="${esc((made && made.who) || "")}"></label>
-          <button class="pk-btn primary" id="make">${made && made.st.id === st.id ? "Make a new pack (new numbers)" : `Make the ${esc(st.short)} pack`}</button>
+          <button class="pk-btn primary" id="make">${made && made.st.id === st.id ? "Make a new pack (new questions)" : `Make the ${esc(st.short)} pack`}</button>
           ${made && made.st.id === st.id ? `<div class="pk-ready" aria-live="polite">
             <p><b>Pack ${made.code} is ready:</b> ${made.parts.length} parts, ${made.parts.filter(p => p.answers).length} answer pages. In the print window, choose <b>Save as PDF</b> as the printer to download it, with A4 paper and the default margins.</p>
             <div class="pk-do"><button class="pk-btn primary" data-print="all">Save or print the whole pack</button>

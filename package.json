@@ -9,6 +9,7 @@
     "audio-check": "node tools/audio_check.mjs",
     "rules": "cd firebase && npm install --no-audit --no-fund && npx --yes firebase-tools@13.35.1 emulators:exec --only firestore --project demo-popspell \"node rules.test.mjs\"",
     "sheet-check": "node tools/sheet-fit.mjs",
-    "english-check": "node tools/english-fit.mjs"
+    "english-check": "node tools/english-fit.mjs",
+    "exam-check": "node tools/exam-fit.mjs"
   }
 }
