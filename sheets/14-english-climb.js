@@ -10,55 +10,61 @@
      Texts are PopSpell's own or out of copyright; nothing comes from a past paper. Pages that print sheets
      without that bank (it loads before paper-sheets.js in index.html) just don't list these. */
 
-  if (window.PopEnglishExam && window.PopEnglishExam.course("gcse")) {
-    const EX = window.PopEnglishExam, EC = EX.course("gcse");
+  // Shared by both English climbs' sheets (this file, GCSE; 15-sqa-english-climb.js, SQA), so they're out here
+  const EXB = window.PopEnglishExam;
+  const exEsc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const exMk = n => `${n} mark${n === 1 ? "" : "s"}`;
+  const exStrip = (what, how, marks, label = "GCSE English climb") => `<p class="qd-strip gx-strip"><b>${label}</b><span>${what}</span><span>${how}</span>${marks ? `<span>Total ___ / ${marks}</span>` : "<span>Done ☐</span>"}</p>`;
+  // Prose in paragraphs (a blank line between), lines of a poem or play kept as lines
+  const exParas = s => String(s).split(/\n\s*\n/).map(p => `<p>${exEsc(p).replace(/\n/g, "<br>")}</p>`).join("");
+  // A text as the exam prints it: title, writer and date, then the extract
+  const exText = (id, cls = "") => {
+    const t = EXB.text(id);
+    // a long poem (over 20 lines) goes in two columns, so it leaves room for the questions
+    const long = t && t.kind === "poem" && t.text.split("\n").length > 20 ? "ex-long" : "";
+    return t ? `<div class="ex-text ${t.kind === "poem" || t.kind === "play" ? "ex-verse" : ""} ${long} ${cls}"><p class="ex-src"><b>${exEsc(t.title)}</b> · ${exEsc(t.by)}</p>${exParas(t.text)}</div>` : "";
+  };
+  const exTexts = ids => ids.length > 1 ? `<div class="ex-two">${ids.map(id => exText(id)).join("")}</div>` : ids.map(id => exText(id)).join("");
+  const exTextsOf = w => (w.texts || (w.t ? [w.t] : []));
+
+  // A quick question on paper: a question about a text on the sheet, about no text, or about lines quoted
+  // from another text (printed with it). A question about the whole of a text that isn't on the sheet can't be asked.
+  const exUsable = (it, on) => !it.t || on.includes(it.t) || it.x;
+  const exQuick = (it, i, on) => {
+    const quote = it.t && !on.includes(it.t) ? `<p class="ex-quote">From “${exEsc(EXB.text(it.t).title)}”: “${exEsc(it.x)}”</p>` : "";
+    return `<div class="pp-q ex-q"><p><b>${i}.</b> ${exEsc(it.q)}</p>${quote}
+      <p class="ex-opts">${shuffle([it.a].concat(it.o)).map(o => `<span>☐ ${exEsc(o)}</span>`).join("")}</p></div>`;
+  };
+  const exQuickAns = it => `<b>${exEsc(it.a)}</b><br><span class="gx-how">${exEsc(it.why)}</span>`;
+  // Quick questions for a sheet: the ones about its own texts first, then the rest, in the bank's order
+  const exPick = (t, on, n) => {
+    const ok = shuffle(t.items.filter(it => exUsable(it, on)));
+    return ok.filter(it => it.t && on.includes(it.t)).concat(ok.filter(it => !(it.t && on.includes(it.t)))).slice(0, n).sort((a, b) => a.n - b.n);
+  };
+  const exLevels = levels => levels && levels.length ? `<table class="ex-levels">${levels.map(([m, d]) => `<tr><th>${exEsc(m)}</th><td>${exEsc(d)}</td></tr>`).join("")}</table>` : "";
+  const exModel = (label, s) => s ? `<div class="pp-box ex-model"><b>${label}</b>${exParas(s)}</div>` : "";
+  const exList = (items, cls = "ex-look") => `<ul class="${cls}">${items.map(s => `<li>${exEsc(s)}</li>`).join("")}</ul>`;
+  const exTicks = items => `<ul class="ex-ticks">${items.map(s => `<li>☐ ${exEsc(s)}</li>`).join("")}</ul>`;
+  const exLinesFor = marks => marks >= 8 ? 8 : marks >= 4 ? 5 : 7; // the page's spare room is added as more lines
+  // The exam question part of a sheet: the task (and a paragraph to correct, for an edit), then room to write
+  const exWritten = (w, n) => {
+    const more = w.marks >= 8 || w.kind === "write" ? `<p class="ex-more">Carry on on lined paper if you need more room.</p>` : "";
+    return `<div class="ex-task"><p><b>${n}.</b> ${exEsc(w.q)}${w.marks ? ` <span class="gx-mk">(${exMk(w.marks)})</span>` : ""}</p>
+      ${w.given ? `<div class="ex-given">${exParas(w.given)}</div>` : ""}
+      ${w.tip ? `<p class="ex-tip"><b>Tip:</b> ${exEsc(w.tip)}</p>` : ""}
+      ${lines(exLinesFor(w.marks))}${more}
+      ${w.check ? `<div class="ex-self"><b>Check your answer:</b>${exTicks(w.check)}</div>` : ""}</div>`;
+  };
+  const exWrittenAns = (w, n) => `<div class="ex-ans-part"><p class="ex-h"><b>${n}. The exam question${w.marks ? `, ${exMk(w.marks)}` : ""}</b></p>
+    ${w.look && w.look.length ? `<p class="ex-sub">${w.kind === "edit" ? "The corrections" : "Look for"}</p>${exList(w.look)}` : ""}
+    ${exLevels(w.levels)}${exModel(w.kind === "write" ? "A model to compare with" : w.kind === "edit" ? "Corrected" : "A model answer", w.model)}</div>`;
+
+  const exTrack = rows => `<table class="gx-track"><thead><tr><th>Topic, in climb order</th><th>Check<br>✓ / ✗</th><th>Lesson<br>(date)</th><th>Online<br>best %</th><th>Exam sheet<br>marks</th><th>Secure<br>✓</th></tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${r}</td>${'<td class="gx-cell"></td>'.repeat(5)}</tr>`).join("")}</tbody></table>`;
+
+  if (EXB && EXB.course("gcse")) {
+    const EX = EXB, EC = EX.course("gcse");
     const EX_LESSON = slug => `lesson-england-english-climb-${slug}`;
-    const exEsc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const exMk = n => `${n} mark${n === 1 ? "" : "s"}`;
-    const exStrip = (what, how, marks) => `<p class="qd-strip gx-strip"><b>GCSE English climb</b><span>${what}</span><span>${how}</span>${marks ? `<span>Total ___ / ${marks}</span>` : "<span>Done ☐</span>"}</p>`;
-    // Prose in paragraphs (a blank line between), lines of a poem or play kept as lines
-    const exParas = s => String(s).split(/\n\s*\n/).map(p => `<p>${exEsc(p).replace(/\n/g, "<br>")}</p>`).join("");
-    // A text as the exam prints it: title, writer and date, then the extract
-    const exText = (id, cls = "") => {
-      const t = EX.text(id);
-      return t ? `<div class="ex-text ${t.kind === "poem" || t.kind === "play" ? "ex-verse" : ""} ${cls}"><p class="ex-src"><b>${exEsc(t.title)}</b> · ${exEsc(t.by)}</p>${exParas(t.text)}</div>` : "";
-    };
-    const exTexts = ids => ids.length > 1 ? `<div class="ex-two">${ids.map(id => exText(id)).join("")}</div>` : ids.map(id => exText(id)).join("");
-    const textsOf = w => (w.texts || (w.t ? [w.t] : []));
-    const stageOf = key => EC.STAGES.find(s => s.key === key);
-
-    // A quick question on paper: a question about a text on the sheet, about no text, or about lines quoted
-    // from another text (printed with it). A question about the whole of a text that isn't on the sheet can't be asked.
-    const usable = (it, on) => !it.t || on.includes(it.t) || it.x;
-    const exQuick = (it, i, on) => {
-      const quote = it.t && !on.includes(it.t) ? `<p class="ex-quote">From “${exEsc(EX.text(it.t).title)}”: “${exEsc(it.x)}”</p>` : "";
-      return `<div class="pp-q ex-q"><p><b>${i}.</b> ${exEsc(it.q)}</p>${quote}
-        <p class="ex-opts">${shuffle([it.a].concat(it.o)).map(o => `<span>☐ ${exEsc(o)}</span>`).join("")}</p></div>`;
-    };
-    const exQuickAns = it => `<b>${exEsc(it.a)}</b><br><span class="gx-how">${exEsc(it.why)}</span>`;
-    // Quick questions for a sheet: the ones about its own texts first, then the rest, in the bank's order
-    const exPick = (t, on, n) => {
-      const ok = shuffle(t.items.filter(it => usable(it, on)));
-      return ok.filter(it => it.t && on.includes(it.t)).concat(ok.filter(it => !(it.t && on.includes(it.t)))).slice(0, n).sort((a, b) => a.n - b.n);
-    };
-    const exLevels = levels => levels && levels.length ? `<table class="ex-levels">${levels.map(([m, d]) => `<tr><th>${exEsc(m)}</th><td>${exEsc(d)}</td></tr>`).join("")}</table>` : "";
-    const exModel = (label, s) => s ? `<div class="pp-box ex-model"><b>${label}</b>${exParas(s)}</div>` : "";
-    const exList = (items, cls = "ex-look") => `<ul class="${cls}">${items.map(s => `<li>${exEsc(s)}</li>`).join("")}</ul>`;
-    const exTicks = items => `<ul class="ex-ticks">${items.map(s => `<li>☐ ${exEsc(s)}</li>`).join("")}</ul>`;
-    const linesFor = marks => marks >= 8 ? 8 : marks >= 4 ? 5 : 7; // the page's spare room is added as more lines
-    // The exam question part of a sheet: the task (and a paragraph to correct, for an edit), then room to write
-    const exWritten = (w, n) => {
-      const more = w.marks >= 8 || w.kind === "write" ? `<p class="ex-more">Carry on on lined paper if you need more room.</p>` : "";
-      return `<div class="ex-task"><p><b>${n}.</b> ${exEsc(w.q)}${w.marks ? ` <span class="gx-mk">(${exMk(w.marks)})</span>` : ""}</p>
-        ${w.given ? `<div class="ex-given">${exParas(w.given)}</div>` : ""}
-        ${w.tip ? `<p class="ex-tip"><b>Tip:</b> ${exEsc(w.tip)}</p>` : ""}
-        ${lines(linesFor(w.marks))}${more}
-        ${w.check ? `<div class="ex-self"><b>Check your answer:</b>${exTicks(w.check)}</div>` : ""}</div>`;
-    };
-    const exWrittenAns = (w, n) => `<div class="ex-ans-part"><p class="ex-h"><b>${n}. The exam question${w.marks ? `, ${exMk(w.marks)}` : ""}</b></p>
-      ${w.look && w.look.length ? `<p class="ex-sub">${w.kind === "edit" ? "The corrections" : "Look for"}</p>${exList(w.look)}` : ""}
-      ${exLevels(w.levels)}${exModel(w.kind === "write" ? "A model to compare with" : w.kind === "edit" ? "Corrected" : "A model answer", w.model)}</div>`;
-
     // Writing is marked in two parts on every paper: content and organisation (24), accuracy (16)
     const EX_WRITING_LEVELS = [
       ["Content and organisation, 24 marks", ""],
@@ -76,7 +82,7 @@
 
     // ---------- An exam practice sheet for each topic (stages 1 to 3, then Literature) ----------
     EX.stagesOf(EC).forEach(st => st.topics.forEach(t => {
-      const w = t.written, on = textsOf(w), where = st.optional ? "English Literature" : `Stage ${st.n}, topic ${t.n} of ${st.topics.length}`;
+      const w = t.written, on = exTextsOf(w), where = st.optional ? "English Literature" : `Stage ${st.n}, topic ${t.n} of ${st.topics.length}`;
       const nQuick = on.length > 1 ? 3 : on.length ? 4 : w.given ? 4 : 5;
       add(`paper-ex-${t.id}`, EX_LESSON(t.id), `English exam practice ${st.optional ? "(Literature)" : `${st.n}.${t.n}`}: ${t.title}`,
         `${on.length ? `${on.length > 1 ? "Two texts" : "A text"} to read, ` : ""}${nQuick} quick questions, then an exam-style question (${t.paper}). The answers page has the reasons, what to look for, the marking levels and a model answer.`, (who, h) => {
@@ -93,9 +99,6 @@
     }));
 
     // ---------- Each stage: the check, the tracker, what the exam expects, the writing tasks and the mini papers ----------
-    const exTrack = rows => `<table class="gx-track"><thead><tr><th>Topic, in climb order</th><th>Check<br>✓ / ✗</th><th>Lesson<br>(date)</th><th>Online<br>best %</th><th>Exam sheet<br>marks</th><th>Secure<br>✓</th></tr></thead>
-      <tbody>${rows.map(r => `<tr><td>${r}</td>${'<td class="gx-cell"></td>'.repeat(5)}</tr>`).join("")}</tbody></table>`;
-
     EC.STAGES.forEach(st => {
       const tag = `grade${st.n === 1 ? " 1 to 3" : st.n === 2 ? "s 4 and 5" : "s 6 to 9"}`;
       const L = slug => EX_LESSON(`${st.key}-${slug}`);
@@ -104,7 +107,7 @@
 
       add(`paper-ex-${st.key}-check`, L("start-here"), `GCSE English climb: stage ${st.n} check (${tag})`,
         `One question on each of the ${st.topics.length} stage ${st.n} topics, in the order of the climb, with the reasons on the answers page. It shows which topics to work on first.`, (who, h) => {
-          const items = st.topics.map(t => shuffle(t.items.filter(it => usable(it, [])))[0]);
+          const items = st.topics.map(t => shuffle(t.items.filter(it => exUsable(it, [])))[0]);
           return {
             pupil: `${h.sheetHead(`Stage ${st.n} check`, who)}${exStrip(st.title, "About 15 minutes", items.length)}
               <p class="gx-intro">Tick one answer for each question. A question you can't do yet is useful to know, not a fail: leave it and move on.</p>
@@ -172,7 +175,7 @@
         // The parts of a mini paper, as questions: a written question of its own, a topic's question (ref),
         // true-or-false statements (tf), or a writing task (write)
         const parts = m.parts.map(p => {
-          if (p.ref) { const w = EX.topic(p.ref).written; return { kind: "read", ref: p.ref, q: w.q, marks: w.marks, minutes: p.minutes, w, texts: textsOf(w) }; }
+          if (p.ref) { const w = EX.topic(p.ref).written; return { kind: "read", ref: p.ref, q: w.q, marks: w.marks, minutes: p.minutes, w, texts: exTextsOf(w) }; }
           if (p.write) { const w = EC.WRITING.find(x => x.id === p.write); return { kind: "write", q: w.q, marks: 40, minutes: p.minutes, writing: w }; }
           if (p.tf) return { kind: "tf", q: `Read “${EX.text(p.tf).title}” again. Choose four statements below that are TRUE. Tick the boxes of the ones you think are true; choose a maximum of four.`, marks: 4, minutes: p.minutes, statements: p.statements };
           return { kind: "read", q: p.q, marks: p.marks, minutes: p.minutes, w: p, texts: p.texts || (p.t ? [p.t] : []) };

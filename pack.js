@@ -63,6 +63,27 @@ window.PopPacks = (() => {
       papers: EN().WRITING.filter(w => w.id.startsWith(`${st.key}-`)).map(w => `paper-ex-write-${w.id}`).concat(EN().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
       next: st.n < 3 ? `stage ${st.n + 1} (${EN().STAGES[st.n].goal})` : "" }))
   });
+  // Scotland's SQA English climb (National 4 skills, National 5, Higher): the same shape, SQA's marking
+  const SQ = () => window.PopEnglishExam && window.PopEnglishExam.course("sqa");
+  if (SQ()) add({
+    id: "english-sqa", title: "SQA English climb", where: "Scotland, National 5 and Higher English", online: "english-climb.html?course=sqa",
+    words: {
+      work: "Read the passage first, then answer. Every analysis point needs a reference (a short quotation) and a comment on it.",
+      again: "Not secure yet? Count your marks with the marking at the back and compare with the model answer, then try the exam question again a few days later.",
+      papers: "Draft each folio task, check it against its list, and redraft once. Then the mini papers, timed.",
+      pass: "About 60% or more",
+      paperTodo: "Timed, like the real exam: about a minute a mark.",
+      writeTodo: "Plan, draft on lined paper, tick the checklist honestly, then redraft once.",
+      topicTodo: "Tick the quick questions, then write the exam answer. Count its marks with the marking at the back; three-quarters of the quick questions and good marks makes it secure.",
+      marking: "Quick questions have one right answer and a reason. Analysis answers get up to 2 marks for each reference with its comment: a quotation alone gets nothing. The Scottish text's last question is out of 10, the critical essay out of 20 and each folio piece out of 15."
+    },
+    stages: () => SQ().STAGES.map(st => ({
+      id: `english-sqa-${st.n}`, title: st.title, short: st.n === 1 ? "National 4 skills" : st.goal, about: st.about,
+      read: ["paper-ex-sqa-route", ...(st.n === 2 ? ["paper-ex-sqa-exam"] : []), `paper-ex-${st.key}-expects`], check: `paper-ex-${st.key}-check`, tracker: `paper-ex-${st.key}-tracker`,
+      topics: st.topics.map(t => `paper-ex-${t.id}`),
+      papers: SQ().WRITING.filter(w => w.stage === st.key).map(w => `paper-ex-write-${w.id}`).concat(SQ().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
+      next: st.n < 3 ? `stage ${st.n + 1} (${SQ().STAGES[st.n].goal})` : "" }))
+  });
   const allStages = () => PACKS.flatMap(p => p.stages().map(st => Object.assign({ pack: p }, st)));
   const sheetsOf = st => [...st.read, st.check, st.tracker, ...st.topics, ...st.papers];
 
@@ -85,7 +106,7 @@ window.PopPacks = (() => {
     const c = code(), ids = sheetsOf(st).filter(id => PAPER.get(id));
     const parts = ids.map((id, i) => {
       const sh = PAPER.get(id), b = sh.build(who, kit), n = i + 1;
-      const plain = sh.title.replace(/^GCSE (maths|English) climb: /, "").replace(/ \((grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
+      const plain = sh.title.replace(/^(GCSE|SQA) (maths|English) climb: /, "").replace(/ \((grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
       return { id, n, title, todo: todo(st, id),
         work: K.ageLook(stamp(b.pupil, `Pack ${c} · Part ${n} of ${ids.length}`), "older"),
         answers: b.answers ? stamp(b.answers, `Pack ${c} · Answers for part ${n}: ${esc(title)}`) : "" };
