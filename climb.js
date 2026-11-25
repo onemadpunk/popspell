@@ -68,6 +68,7 @@
         <div class="cl-stages">${X.STAGES.map(stageCard).join("")}</div>
         <div class="cl-foot"><p>Questions are PopSpell's own, ${SQA ? "in the SQA exam style, marked one step a mark" : "in the GCSE (9 to 1) exam style, with mark schemes"}. Your progress stays in this browser on this device.
           <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 and Higher climb"}</a></p>
+          ${SQA ? "" : `<a class="cl-btn small" href="pack.html?stage=gcse-${data.stage || 1}">Work on paper: download a pack</a>`}
           <button class="cl-btn small" id="reset">Start again</button></div>
       </main>`;
     app.querySelectorAll("[data-start]").forEach(b => b.onclick = () => { data.stage = Number(b.dataset.start); save(); home(); });
