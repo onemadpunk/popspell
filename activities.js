@@ -4332,9 +4332,9 @@ window.PopActivities = (() => {
     ["For all real x, eˣ > 0.", "There exists a real x such that eˣ ≤ 0.", "For all real x, eˣ ≤ 0.", "There exists a real x such that eˣ < 0."]]);
     return gfQ(`Write down the negation of the statement: “${s}”`, ans, 1, `•1 swap “for all” and “there exists”, and negate the condition: ${ans} (1 mark).`, { options: [w1, w2], label: `neg ${s.slice(0, 14)}`, skill: "negating statements" }); };
   const saInduct = () => { const [sum, f, fk1] = pick([["1 + 2 + … + n", "n(n + 1)/2", "(k + 1)(k + 2)/2"], ["1² + 2² + … + n²", "n(n + 1)(2n + 1)/6", "(k + 1)(k + 2)(2k + 3)/6"], ["1 + 3 + 5 + … + (2n − 1)", "n²", "(k + 1)²"], ["1³ + 2³ + … + n³", "n²(n + 1)²/4", "(k + 1)²(k + 2)²/4"]]);
-    const ans = `the sum to k + 1 terms = ${fk1}`;
-    return gfQ(`You are proving by induction that ${sum} = ${f}. You have shown it is true for n = 1 and assumed it for n = k. What must you show next?`, ans, 2,
-      `•1 the inductive step: true for n = k ⇒ true for n = k + 1 (1 mark). •2 so show ${ans} (1 mark).`, { options: [`the sum to k terms = ${f.replace(/n/g, "k")}`, `it is true for n = 2`], label: `ind ${f}`, skill: "proof by induction" }); };
+    const ans = `sum to k + 1 terms = ${fk1}`;
+    return gfQ(`Proving ${sum} = ${f} by induction: it is true for n = 1, and you assume it for n = k. What do you show next?`, ans, 2,
+      `•1 true for n = k ⇒ true for n = k + 1 (1 mark). •2 so show the ${ans} (1 mark).`, { options: [`sum to k terms = ${f.replace(/n/g, "k")}`, `it is true for n = 2`], label: `ind ${f}`, skill: "proof by induction" }); };
 
   // 11. Matrices
   const saM = () => Array.from({ length: 2 }, () => [sqBig(5), gfR(-5, 6) || 1]);
@@ -4787,7 +4787,7 @@ window.PopActivities = (() => {
     { id: "england-maths", title: "More maths from England's curriculum", colour: "#9333EA", icon: "📐", activities: englandMaths, assignedOnly: true, england: true },
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
     { id: "english-exam", title: "English exam climb (GCSE)", colour: "#1E40AF", icon: "🎓", activities: englishExam("gcse"), assignedOnly: true },
-    { id: "english-exam-sqa", title: "English exam climb (SQA National 5 and Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
+    { id: "english-exam-sqa", title: "English exam climb (SQA National 5 to Advanced Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
     { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary.filter(a => !/^Numeracy/.test(a.organiser)), assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },

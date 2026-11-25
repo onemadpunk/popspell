@@ -4572,11 +4572,11 @@ window.PopPaper = (() => {
 
     add(`paper-sq-${st.key}-check`, L("start-here"), `SQA maths climb: ${st.course} check`,
       `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
-        // A rare draw of long questions and mark schemes can push a page onto another sheet, so draw again (up to 80 times)
-        // until the questions are no longer than a normal check
+        // A draw of long questions and mark schemes can push a page onto another sheet, so draw again (up to 80 times)
+        // and keep the shortest, stopping once the questions are no longer than a normal check
         const size = list => list.reduce((t, it) => t + it.q.length + it.scheme.length + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
         let items = SQX().check(st.key);
-        for (let i = 0; i < 80 && size(items) > 2150; i++) items = SQX().check(st.key);
+        for (let i = 0; i < 80 && size(items) > 2150; i++) { const next = SQX().check(st.key); if (size(next) < size(items)) items = next; }
         return {
           pupil: `${h.sheetHead(`${st.course} check`, who)}${sqStrip(st.name, "Calculator allowed", gxTotal(items))}
             <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
@@ -4975,7 +4975,8 @@ window.PopPaper = (() => {
   }
   /* ===================== SQA English exam climb (Scotland) =====================
      The GCSE English climb's sheets (14-english-climb.js), for Scotland: stage 1 builds the National 4
-     skills that National 5 takes for granted, stage 2 is National 5, stage 3 is Higher. For each stage: a
+     skills that National 5 takes for granted, stage 2 is National 5, stage 3 is Higher, stage 4 is Advanced
+     Higher (textual analysis, the Literary Study essay, the dissertation and one portfolio piece). For each stage: a
      check, a tracker and "what the exam expects"; an exam practice sheet for each topic (the passage, quick
      questions, then an RUAE, Scottish text or critical essay question, with an answers page of reasons,
      what to look for, SQA-style marking and a model answer); two portfolio (folio) writing tasks with a
@@ -4997,6 +4998,10 @@ window.PopPaper = (() => {
       ["6–4", "Some attempt: purpose and structure unclear in places; plain expression; errors that sometimes get in the way."],
       ["3–1", "Little sense of purpose or structure; errors that make it hard to follow."]];
     const seEssayLevels = `<p class="ex-sub">How a full critical essay is marked (out of 20)</p>${exLevels(SC.ESSAY_20)}`;
+    // Advanced Higher's written tasks: the Literary Study essay has its own bands; the portfolio piece has the folio's
+    const seWriteLevels = t => t.stage.key !== "enah" ? seEssayLevels
+      : t.id === "enah-essay" ? `<p class="ex-sub">How a Literary Study essay is marked (out of 20)</p>${exLevels(SC.LIT_20)}`
+      : t.id === "enah-portfolio" ? `<p class="ex-sub">How the portfolio piece is marked (out of 15, doubled to 30)</p>${exLevels(SE_FOLIO)}` : "";
 
     // ---------- An exam practice sheet for each topic ----------
     SC.STAGES.forEach(st => st.topics.forEach(t => {
@@ -5012,7 +5017,7 @@ window.PopPaper = (() => {
               <div class="ex-quick">${quick.map((it, i) => exQuick(it, i + 1, on)).join("")}</div>
               <p class="ex-h"><b>Exam question</b></p>${exWritten(w, quick.length + 1)}`,
             answers: answersPage(h, `Exam practice: ${t.title}`, quick.map(exQuickAns), "Quick questions: the answer, and why.",
-              exWrittenAns(w, quick.length + 1) + (w.kind === "write" ? seEssayLevels : ""))
+              exWrittenAns(w, quick.length + 1) + (w.kind === "write" ? seWriteLevels(t) : ""))
           };
         });
     }));
@@ -5048,6 +5053,7 @@ window.PopPaper = (() => {
             "Plan with the check: start with the topics marked ✗, in the climb's order. Reading topics and writing topics alternate well: one of each a session.",
             "Each topic: the lesson, then the online practice (aim for 75% or more), then the exam practice sheet. Mark its exam question with the marking on the answers page, then compare with the model together.",
             st.n === 1 ? "National 4 is assessed in class, with no exam. The two writing pieces here are good evidence for it, and the habit National 5's folio needs."
+              : st.n === 4 ? "The portfolio piece and the dissertation are 30% of the course mark each, written over the year. Use the two writing tasks to practise for the portfolio (only one piece is submitted), and the dissertation topic to plan early."
               : "The two folio pieces are 30% of the course mark, written in class over weeks. Use these tasks to practise: plan, draft, self-check, then redraft once.",
             "Then the mini papers. About 50% or more on a mini paper is roughly a C; 60% or more is a good sign the stage is done.",
             "Marks here come from PopSpell's work and your marking. They are a guide for planning, not a predicted grade."])
@@ -5061,17 +5067,19 @@ window.PopPaper = (() => {
             ${box("This stage", `<p>${exEsc(st.about)}</p>
               ${st.n === 1 ? "<p>National 4 has no exam: your teacher assesses reading, writing, talking and listening in class, plus an added value unit. Every skill here is one National 5's RUAE and essay expect you to have already.</p>"
                 : st.n === 2 ? "<p>National 5 is two exam papers (RUAE 30 marks, Critical Reading 40) plus the folio (30). Most RUAE marks come from own-words and analysis questions: a reference plus a clear comment, every time.</p>"
-                : "<p>Higher has the same three parts as National 5, but the RUAE has two passages and ends with a 5-mark comparison, and every answer needs more precise, insightful comment.</p>"}`)}
+                : st.n === 3 ? "<p>Higher has the same three parts as National 5, but the RUAE has two passages and ends with a 5-mark comparison, and every answer needs more precise, insightful comment.</p>"
+                : "<p>Advanced Higher is four parts: two question papers of 1 hour 30 minutes and 20 marks each (Literary Study: one critical essay on texts you've studied; Textual Analysis: a critical analysis of one unseen text), a portfolio piece (30 marks) and a 2,500 to 3,500 word dissertation (30 marks).</p>"}`)}
             ${box("How answers are marked", st.n === 1
               ? `<p><b>Own words:</b></p>${exLevels(SC.OWN_WORDS)}<p><b>Analysis (word choice, imagery, sentence structure, tone):</b></p>${exLevels(SC.MARKS_2)}`
+              : st.n === 4 ? `<p><b>Textual Analysis</b> (out of 20):</p>${exLevels(SC.TA_20)}<p><b>Literary Study</b> (out of 20):</p>${exLevels(SC.LIT_20)}`
               : `<p><b>Analysis:</b> up to 2 marks for each reference with its comment.</p>${exLevels(SC.MARKS_2)}<p><b>The Scottish text's final 10-mark question:</b></p>${exLevels(SC.FINAL_10)}<p><b>The critical essay</b> is marked out of 20; 10 is about a pass.</p>`)}
-            ${box(st.n === 1 ? "Writing: what to check" : "The folio: two pieces, 15 marks each", `${st.n === 1 ? "" : `<p>${exEsc(SC.EXAM.writing)}</p>`}
+            ${box(st.n === 1 ? "Writing: what to check" : st.n === 4 ? "The portfolio: one piece, 15 marks doubled" : "The folio: two pieces, 15 marks each", `${st.n === 1 ? "" : `<p>${exEsc((SC.writingFor || {})[st.key] || SC.EXAM.writing)}</p>`}
               <div class="ex-cols">${exTicks(SC.CHECK[st.key].content)}${exTicks(SC.CHECK[st.key].accuracy)}</div>`)}`,
           answers: lookForPage(h, `What the exam expects: ${tag}`, [
             `Read the "${grade[0]}" box together and ask the pupil to put it in their own words: what does their reading need, and their writing?`,
             "Look at how analysis is marked: a reference alone gets nothing. Take an answer the pupil wrote recently and count its marks together: which comment was basic (1) and which detailed (2)?",
             "The writing checklist is the same one on the stage's folio task sheets and on the My next step page. Use it before every draft is handed in.",
-            "Exam facts are from SQA's published course specifications for National 5 and Higher English. Check SQA's website for this year's dates and set Scottish texts.",
+            `Exam facts are from SQA's published course specifications for ${st.n === 4 ? "Advanced Higher English (2025 onwards)" : "National 5 and Higher English"}. Check SQA's website for this year's dates${st.n === 4 ? " and rules" : " and set Scottish texts"}.`,
             "Grade descriptions and marking here are PopSpell's plain-words summary, not SQA's own wording."])
         }));
 
@@ -5080,7 +5088,7 @@ window.PopPaper = (() => {
         add(`paper-ex-write-${w.id}`, L("writing"), `SQA English folio task: ${w.kind.toLowerCase()} (${tag})`,
           `${w.paper}: plan, draft in about ${w.minutes} minutes, then check against the stage's list. The answers page has a model with notes and the 15-mark folio bands.`, (who, h) => ({
             pupil: `${h.sheetHead(`Folio task: ${w.kind.toLowerCase()}`, who)}${seStrip(`${st.title}, aiming at ${w.grade}`, `${w.paper} · first draft ${w.minutes} minutes`, w.marks)}
-              ${box("The task", `<p class="ex-big">${exEsc(w.q)}</p><p><i>(${w.marks} marks: content, structure, expression and technical accuracy${st.n === 1 ? "" : `. A final folio piece is up to ${st.n === 2 ? "1,000" : "1,300"} words`})</i></p>`)}
+              ${box("The task", `<p class="ex-big">${exEsc(w.q)}</p><p><i>(${w.marks} marks: content, structure, expression and technical accuracy${st.n === 1 ? "" : st.n === 4 ? ". At Advanced Higher there is no word limit, and the mark is doubled" : `. A final folio piece is up to ${st.n === 2 ? "1,000" : "1,300"} words`})</i></p>`)}
               ${box("Plan (10 minutes)", `<ol class="ex-plan">${w.plan.map(p => `<li>${exEsc(p)}</li>`).join("")}</ol><div class="pp-draw ex-planbox"></div>`)}
               <p class="ex-more"><b>Draft</b> on lined paper, or on the My next step page. Then <b>check</b>: tick each line you can honestly tick, and fix what you can't. A folio piece is redrafted: one redraft after feedback is normal.</p>
               <div class="ex-cols ex-self">${exTicks(check.content)}${exTicks(check.accuracy)}</div>`,
@@ -5137,15 +5145,15 @@ window.PopPaper = (() => {
           "Level descriptions are PopSpell's plain-words summary, not SQA's own wording."])
       }));
 
-    add("paper-ex-sqa-route", SE_LESSON("my-next-step"), "SQA English climb: my route from National 4 to Higher",
-      "One page for a pupil working on their own (at home, or homeschooled): the three stages, what to do each session, marking your own answers honestly, and when to move on.", (who, h) => ({
-        pupil: `${h.sheetHead("My route: SQA English, National 4 to Higher", who)}${seStrip("SQA English climb", "Self-guided", 0)}
-          ${box("The three stages", `${SC.STAGES.map(s => `<p><b>${exEsc(s.title)}.</b> ${exEsc(s.about)}</p>`).join("")}<p>Start where your check says. You don't have to go to the top: a National 5 pass is a fine place to stop.</p>`)}
+    add("paper-ex-sqa-route", SE_LESSON("my-next-step"), "SQA English climb: my route from National 4 to Advanced Higher",
+      "One page for a pupil working on their own (at home, or homeschooled): the four stages, what to do each session, marking your own answers honestly, and when to move on.", (who, h) => ({
+        pupil: `${h.sheetHead("My route: SQA English, National 4 to Advanced Higher", who)}${seStrip("SQA English climb", "Self-guided", 0)}
+          ${box("The four stages", `${SC.STAGES.map(s => `<p><b>${exEsc(s.title)}.</b> ${exEsc(s.about)}</p>`).join("")}<p>Start where your check says. You don't have to go to the top: a National 5 pass is a fine place to stop.</p>`)}
           ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/english-climb.html?course=sqa</b> and press <b>My next step</b>. <b>2.</b> Do what it says: a check, a topic's questions, a folio task, or a mini paper. <b>3.</b> Read the reason after every question, even when you were right. <b>4.</b> For written answers, count your marks honestly: a reference with no comment scores nothing.</p>`)}
           ${box("Reading every day", `<p>Ten minutes a day of good journalism (a long read in a Scottish or UK newspaper) is the best RUAE practice there is. Pick one sentence a day and ask: why did the writer choose that word?</p>`)}
           ${box("When to move on", `<p>A topic is <b>secure</b> when you get about three-quarters of a set of its questions right. When a stage's topics are secure and you've drafted its two folio pieces, take a mini paper. About 60% or more? Start the next stage.</p>`)}
           <p class="gx-plan">My exam date: ${blank(7)} &nbsp; My course: ${blank(5)} &nbsp; My Scottish text: ${blank(6)} &nbsp; Stage I'm on: ${blank(3)}</p>`,
-        answers: lookForPage(h, "My route: SQA English, National 4 to Higher", [
+        answers: lookForPage(h, "My route: SQA English, National 4 to Advanced Higher", [
           "For the adult at home: the climb page keeps progress on this device only, in this browser. Nothing is sent anywhere, so use the same device each time.",
           "Once a week, ask to see one written answer and count its marks together with the marking on the answers page.",
           "Folio pieces and essays can't mark themselves. The bands and models make self-marking honest, but a teacher or tutor's look now and then is worth a lot.",

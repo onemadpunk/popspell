@@ -59,7 +59,7 @@ window.PopPacks = (() => {
       id: `sqa-${st.n}`, title: st.title, short: st.n === 1 ? "National 4 skills" : st.course,
       about: { n4: "What National 5 takes for granted: number, fractions, percentages, ratio, equations, Pythagoras and SOH CAH TOA.", n5: "The full National 5 course, from surds and quadratics to trigonometry, vectors and statistics.",
         nh: "Higher: the straight line, functions, calculus, trigonometric formulae, circles, vectors and logs.", ah: "Advanced Higher: more calculus, differential equations, proof, matrices, vectors and complex numbers." }[st.key],
-      read: ["paper-sq-route", `paper-sq-${st.key}-expects`, ...(st.n > 1 ? ["paper-sq-technique"] : [])], check: `paper-sq-${st.key}-check`, tracker: `paper-sq-${st.key}-tracker`,
+      read: ["paper-sq-route", `paper-sq-${st.key}-expects`], check: `paper-sq-${st.key}-check`, tracker: `paper-sq-${st.key}-tracker`,
       topics: st.topics.map(t => `paper-sq-${t.id}`), papers: ["noncalc", "calc", "reasoning"].map(k => `paper-sq-${st.key}-mini-${k}`),
       next: st.n < SQX().STAGES.length ? `stage ${st.n + 1} (${SQX().STAGES[st.n].course})` : "" }))
   });
@@ -104,7 +104,7 @@ window.PopPacks = (() => {
       read: ["paper-ex-sqa-route", ...(st.n === 2 ? ["paper-ex-sqa-exam"] : []), `paper-ex-${st.key}-expects`], check: `paper-ex-${st.key}-check`, tracker: `paper-ex-${st.key}-tracker`,
       topics: st.topics.map(t => `paper-ex-${t.id}`),
       papers: SQ().WRITING.filter(w => w.stage === st.key).map(w => `paper-ex-write-${w.id}`).concat(SQ().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
-      next: st.n < 3 ? `stage ${st.n + 1} (${SQ().STAGES[st.n].goal})` : "" }))
+      next: st.n < SQ().STAGES.length ? `stage ${st.n + 1} (${SQ().STAGES[st.n].goal})` : "" }))
   });
   const allStages = () => PACKS.flatMap(p => p.stages().map(st => Object.assign({ pack: p }, st)));
   const sheetsOf = st => [...st.read, st.check, st.tracker, ...st.topics, ...st.papers];
@@ -128,7 +128,7 @@ window.PopPacks = (() => {
     const c = code(), ids = sheetsOf(st).filter(id => PAPER.get(id));
     const parts = ids.map((id, i) => {
       const sh = PAPER.get(id), b = sh.build(who, kit), n = i + 1;
-      const plain = sh.title.replace(/^(GCSE|SQA) (maths|English) climb: /, "").replace(/ \((grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
+      const plain = sh.title.replace(/^(GCSE|SQA) (maths|English) climb: /, "").replace(/ \((?:SQA )?(grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9|National 4|National 5|Advanced Higher)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
       return { id, n, title, todo: todo(st, id),
         work: K.ageLook(stamp(b.pupil, `Pack ${c} · Part ${n} of ${ids.length}`), "older"),
         answers: b.answers ? stamp(b.answers, `Pack ${c} · Answers for part ${n}: ${esc(title)}`) : "" };

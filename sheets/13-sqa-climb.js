@@ -46,11 +46,11 @@
 
     add(`paper-sq-${st.key}-check`, L("start-here"), `SQA maths climb: ${st.course} check`,
       `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
-        // A rare draw of long questions and mark schemes can push a page onto another sheet, so draw again (up to 80 times)
-        // until the questions are no longer than a normal check
+        // A draw of long questions and mark schemes can push a page onto another sheet, so draw again (up to 80 times)
+        // and keep the shortest, stopping once the questions are no longer than a normal check
         const size = list => list.reduce((t, it) => t + it.q.length + it.scheme.length + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
         let items = SQX().check(st.key);
-        for (let i = 0; i < 80 && size(items) > 2150; i++) items = SQX().check(st.key);
+        for (let i = 0; i < 80 && size(items) > 2150; i++) { const next = SQX().check(st.key); if (size(next) < size(items)) items = next; }
         return {
           pupil: `${h.sheetHead(`${st.course} check`, who)}${sqStrip(st.name, "Calculator allowed", gxTotal(items))}
             <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>

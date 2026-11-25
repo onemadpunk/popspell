@@ -49,7 +49,7 @@
     start: () => ["Where are you starting?", `Pick the ${C.key === "sqa" ? "level" : "grade"} you’re working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know.`],
     check: s => [`Take the stage ${s.st.n} check`, `${s.st.n === 1 ? "Two questions" : "One question"} on each of the ${s.st.topics.length} topics for ${s.st.goal}. It shows which topics to work on first.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Eight exam-style questions; six or more right makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
-    write: s => [`Writing task: ${s.w.kind.toLowerCase()}`, `${C.writingWhy || "Half of every paper is the writing question."} Plan, write for about ${s.w.minutes - 10} minutes, check your work against a list, then compare it with a model answer at ${s.w.grade}.`],
+    write: s => [`Writing task: ${s.w.kind.toLowerCase()}`, `${(C.writingWhyFor || {})[s.w.stage] || C.writingWhy || "Half of every paper is the writing question."} Plan, write for about ${s.w.minutes - 10} minutes, check your work against a list, then compare it with a model answer at ${s.w.grade}.`],
     paper: s => ["Do a mini paper", `Every stage ${s.st.n} topic is secure. Ten mixed questions: six or more right and you’re ready for the next stage. Topics that lose marks go back on your list. For a full paper with longer answers, print the mini paper from your teacher’s pack.`],
     stage: s => [`Move up to stage ${s.to.n}`, `You’ve finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}: ${s.to.about}`],
     done: () => ["Keep your marks sharp", "You’ve climbed every stage. Keep doing mini papers and writing tasks, and go back to any topic that loses marks."]
@@ -69,7 +69,7 @@
           <p>${esc(about)}</p>${action}
           ${go ? `<div class="cl-next-do"><button class="cl-btn big" id="go">${go} →</button>${s.kind === "topic" ? `<button class="cl-btn ghost" id="skip">I know this: test me</button>` : ""}</div>` : ""}
         </section>
-        <div class="cl-stages">${STAGES.map(stageCard).join("")}</div>
+        <div class="cl-stages${STAGES.length === 4 ? " four" : ""}">${STAGES.map(stageCard).join("")}</div>
         ${LIT ? litCard() : ""}
         <div class="cl-foot"><p>Questions are PopSpell’s own, on PopSpell’s own texts and public-domain extracts, in the ${esc(C.exam)} exam style. Your progress stays in this browser on this device.${C.other ? ` <a href="${C.other[1]}">${esc(C.other[0])}</a>` : ""}</p>
           <button class="cl-btn small" id="reset">Start again</button></div>
@@ -218,7 +218,7 @@
       let body = "", foot = "";
       if (step === "plan") {
         body = `${head}<div class="ec-cols"><section><h2>Plan (about 5 minutes)</h2><ol class="ec-list">${w.plan.map(p => `<li>${esc(p)}</li>`).join("")}</ol></section>
-          <section><h2>How it’s marked</h2><p class="ec-small">${esc(C.EXAM.writing)}</p><h2>This stage’s list (${esc(list.goal)})</h2><ul class="ec-list ec-small">${list.content.slice(0, 4).concat(list.accuracy.slice(0, 3)).map(p => `<li>${esc(p)}</li>`).join("")}</ul></section></div>`;
+          <section><h2>How it’s marked</h2><p class="ec-small">${esc((C.writingFor || {})[w.stage] || C.EXAM.writing)}</p><h2>This stage’s list (${esc(list.goal)})</h2><ul class="ec-list ec-small">${list.content.slice(0, 4).concat(list.accuracy.slice(0, 3)).map(p => `<li>${esc(p)}</li>`).join("")}</ul></section></div>`;
         foot = `<button class="cl-btn" id="paper">I’ll write on paper</button><button class="cl-btn primary" id="here">Write it here →</button>`;
       } else if (step === "write") {
         body = `${head}<textarea id="draft" class="ec-draft" spellcheck="false" aria-label="Your writing">${esc(draft())}</textarea>`;
