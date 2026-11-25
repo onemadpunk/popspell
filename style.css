@@ -1367,6 +1367,31 @@ a.me-card:hover { border-color: var(--primary); }
   .story-read .hint { margin: 2px 0; }
 }
 
+/* An English exam question: its text on the left, the question and answers on the right, all in one
+   1366 × 650 window (texts are 200 words or fewer). Plain, smaller print, as on an exam paper; the lines
+   a question is about are highlighted in the whole text. */
+.exam-text p { font-family: var(--reading-font); font-size: 1rem; line-height: 1.45; margin: 0 0 7px; }
+.exam-text .ex-head { font-family: inherit; font-size: .88rem; line-height: 1.3; color: var(--muted); margin-bottom: 6px; }
+.exam-text .ex-head b { color: var(--ink); }
+.exam-text mark { background: #fff1a8; color: inherit; padding: 0 2px; border-radius: 3px; box-shadow: 0 0 0 2px #fff1a8; }
+.exam-q .q-side { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.exam-q .q-side > * { flex-basis: 100%; }
+.exam-q .q-prompt { font-size: 1.12rem; line-height: 1.4; margin: 0; flex: 1 1 0; flex-basis: auto; }
+.exam-q .q-side > .row:has(#hearQ) { flex: 0 0 auto; margin: 0; }
+.exam-q #hearQ { min-width: 0; padding: 4px 10px !important; font-size: .8rem; }
+.exam-q #hearQ span { font-size: 1.1rem; }
+.exam-q .q-options { display: grid; gap: 6px; margin-top: 4px; }
+.exam-q .q-option { flex: 1; font-size: 1rem; text-align: left; min-height: 0; padding: 7px 14px; border-radius: 14px; border-width: 2px; }
+.exam-q .feedback { font-size: .98rem; margin: 2px 0; }
+.exam-q .feedback:empty { display: none; }
+.exam-has-text .q-prompt, .exam-has-text .feedback { text-align: left; }
+@media (min-width: 900px) and (orientation: landscape) {
+  .panel.exam-q { max-width: 1280px; padding-top: 14px; padding-bottom: 16px; }
+  .panel.exam-q:not(.exam-has-text) { max-width: 900px; }
+  .exam-has-text .q-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .exam-has-text .passage.exam-text { margin: 0; padding: 10px 16px; }
+}
+
 /* Read along: the sentence being read lights up; pupils pick the speed */
 .ra-s { cursor: pointer; border-radius: 6px; transition: background .2s; }
 .ra-s:hover { background: var(--primary-soft); }
@@ -1735,6 +1760,54 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .gx-track th { background: #eef3fa; font-size: 9.5pt; }
 .gx-track td.gx-cell { width: 11%; height: 7mm; }
 .gx-papers { margin-top: 8px; }
+/* GCSE English climb sheets (sheets/14-english-climb.js): the text as the exam prints it, tick questions,
+   the exam question with lines, and answers pages with levels and a model */
+.ex-text { font: 10.5pt/1.45 var(--reading-font, var(--font)); border: 1px solid #b6c0cc; border-radius: 6px; padding: 4px 10px; margin: 0 0 8px; break-inside: avoid; }
+.ex-text p { margin: 0 0 4px !important; }
+.ex-text .ex-src { font: 9.5pt var(--font); color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px; }
+.ex-verse p:not(.ex-src) { margin-bottom: 6px !important; }
+.ex-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ex-two .ex-text { font-size: 9.5pt; margin: 0 0 8px; }
+.ex-h { margin: 6px 0 3px !important; font-size: 10.5pt; }
+.ex-h b { color: #0b2e6b; margin-right: 6px; }
+.ex-q { margin: 0 0 5px; break-inside: avoid; }
+.ex-q > p:first-child { margin-bottom: 1px !important; }
+.ex-quote { margin: 1px 0 1px 1.4em !important; font-size: 9.5pt; font-style: italic; color: #1f2937; }
+.ex-opts { margin: 1px 0 2px 1.4em !important; font-size: 10pt; }
+.ex-opts span { display: block; }
+.ex-tf span { display: inline-block; width: 49%; vertical-align: top; }
+.ex-task > p:first-child { margin-bottom: 3px !important; }
+.ex-given { font-size: 10pt; border-left: 3px solid #94a3b8; padding: 2px 8px; margin: 3px 0 4px; background: #f8fafc; }
+.ex-given p { margin: 0 0 3px !important; }
+.ex-tip { font-size: 9.5pt; color: #334155; margin: 2px 0 4px !important; }
+.ex-more { font-size: 9.5pt; color: #475569; margin: 2px 0 4px !important; }
+.ex-ticks { list-style: none; padding: 0; margin: 2px 0; font-size: 9.5pt; }
+.ex-ticks li { margin: 0 0 1px; }
+.ex-self { margin-top: 4px; }
+.ex-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.ex-levels { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 4px 0 6px; }
+.ex-levels th, .ex-levels td { border: 1px solid #b6c0cc; padding: 2px 6px; text-align: left; vertical-align: top; }
+.ex-levels th { width: 17%; background: #eef3fa; white-space: nowrap; }
+.ex-levels th.ex-band { width: auto; background: #dbe5f3; }
+.ex-model { font-size: 9.5pt; }
+.ex-wlevels .ex-levels th { width: auto; }
+.ex-wlevels .ex-levels { font-size: 8.5pt; }
+.ex-model p { margin: 2px 0 4px !important; }
+.ex-sub { font-weight: 700; color: #0b2e6b; margin: 6px 0 2px !important; font-size: 10pt; }
+.ex-look { margin: 0 0 4px; padding-left: 1.2em; font-size: 10pt; }
+.ex-ans-part { margin-top: 6px; break-inside: avoid; }
+.ex-check { display: grid; grid-template-columns: 22% 1fr; gap: 8px; border-top: 1px solid #e2e8f0; padding-top: 3px; }
+.ex-topic { font-weight: 700; color: #0b2e6b; font-size: 10pt; margin: 0 !important; }
+.ex-big { font-size: 12pt; }
+.ex-plan { margin: 2px 0; padding-left: 1.3em; font-size: 10pt; }
+.ex-planbox { min-height: 35mm; border: 1px dashed #94a3b8; border-radius: 6px; margin-top: 4px; }
+.ex-paper { width: 100%; border-collapse: collapse; font-size: 10pt; }
+.ex-paper th, .ex-paper td { border: 1px solid #b6c0cc; padding: 2px 6px; text-align: left; }
+.ex-paper th { background: #eef3fa; }
+.ex-mq { margin: 6px 0; }
+.ex-mini { font-size: 9.5pt; }
+.ex-mini .ex-look, .ex-mini .ex-model { font-size: 9pt; }
+.ex-mini .ex-levels { font-size: 8.5pt; }
 .gx-words th, .gx-words td { border: 1px solid #b6c0cc; padding: 3px 6px; text-align: left; vertical-align: top; }
 .gx-words th { width: 30%; background: #eef3fa; }
 .md-answers { columns: 2; column-gap: 24px; font-size: 10.5pt; list-style: none; padding-left: 0; }

@@ -937,6 +937,78 @@
     "g5-mixed":["ma-y10-11-number-5","ma-y10-11-ratio-proportion-and-rates-of-change-6","ma-y10-11-algebra-2","ma-y10-11-geometry-and-measures-10","ma-y10-11-probability-3"],
     "gh-check":["ma-y10-11-number-4","ma-y10-11-algebra-13","ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-4","ma-y10-11-statistics-3"],
     "gh-mixed":["ma-y10-11-number-4","ma-y10-11-algebra-13","ma-y10-11-geometry-and-measures-12","ma-y10-11-geometry-and-measures-4","ma-y10-11-statistics-3"],
+    "e1-retrieve":["en-y10-11-reading-8","en-y10-11-gcse-english-language-1"],
+    "lesson-england-english-climb-e1-retrieve":["en-y10-11-reading-8","en-y10-11-gcse-english-language-1"],
+    "e1-infer":["en-y10-11-gcse-english-language-1","en-y10-11-reading-10"],
+    "lesson-england-english-climb-e1-infer":["en-y10-11-gcse-english-language-1","en-y10-11-reading-10"],
+    "e1-words":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "lesson-england-english-climb-e1-words":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "e1-summary":["en-y10-11-gcse-english-language-2","en-y10-11-reading-6"],
+    "lesson-england-english-climb-e1-summary":["en-y10-11-gcse-english-language-2","en-y10-11-reading-6"],
+    "e1-sentences":["en-y10-11-writing-9","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e1-sentences":["en-y10-11-writing-9","en-y10-11-gcse-english-language-5"],
+    "e1-spelling":["en-y10-11-writing-9"],
+    "lesson-england-english-climb-e1-spelling":["en-y10-11-writing-9"],
+    "e1-paragraphs":["en-y10-11-gcse-english-language-5","en-y10-11-writing-4"],
+    "lesson-england-english-climb-e1-paragraphs":["en-y10-11-gcse-english-language-5","en-y10-11-writing-4"],
+    "e1-forms":["en-y10-11-gcse-english-language-5","en-y10-11-writing-2"],
+    "lesson-england-english-climb-e1-forms":["en-y10-11-gcse-english-language-5","en-y10-11-writing-2"],
+    "e2-language":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12","en-y10-11-grammar-and-vocabulary-5"],
+    "lesson-england-english-climb-e2-language":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12","en-y10-11-grammar-and-vocabulary-5"],
+    "e2-structure":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "lesson-england-english-climb-e2-structure":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "e2-evaluate":["en-y10-11-gcse-english-language-1","en-y10-11-reading-14"],
+    "lesson-england-english-climb-e2-evaluate":["en-y10-11-gcse-english-language-1","en-y10-11-reading-14"],
+    "e2-compare":["en-y10-11-gcse-english-language-4","en-y10-11-reading-13"],
+    "lesson-england-english-climb-e2-compare":["en-y10-11-gcse-english-language-4","en-y10-11-reading-13"],
+    "e2-punctuation":["en-y10-11-writing-9","en-y10-11-gcse-english-language-6"],
+    "lesson-england-english-climb-e2-punctuation":["en-y10-11-writing-9","en-y10-11-gcse-english-language-6"],
+    "e2-sentences":["en-y10-11-gcse-english-language-6","en-y10-11-writing-4"],
+    "lesson-england-english-climb-e2-sentences":["en-y10-11-gcse-english-language-6","en-y10-11-writing-4"],
+    "e2-narrative":["en-y10-11-gcse-english-language-5","en-y10-11-writing-2"],
+    "lesson-england-english-climb-e2-narrative":["en-y10-11-gcse-english-language-5","en-y10-11-writing-2"],
+    "e2-argument":["en-y10-11-gcse-english-language-6","en-y10-11-writing-3"],
+    "lesson-england-english-climb-e2-argument":["en-y10-11-gcse-english-language-6","en-y10-11-writing-3"],
+    "e3-perceptive":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "lesson-england-english-climb-e3-perceptive":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "e3-structure":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "lesson-england-english-climb-e3-structure":["en-y10-11-gcse-english-language-3","en-y10-11-reading-12"],
+    "e3-critical":["en-y10-11-gcse-english-language-1","en-y10-11-reading-14"],
+    "lesson-england-english-climb-e3-critical":["en-y10-11-gcse-english-language-1","en-y10-11-reading-14"],
+    "e3-context":["en-y10-11-gcse-english-language-1","en-y10-11-reading-7"],
+    "lesson-england-english-climb-e3-context":["en-y10-11-gcse-english-language-1","en-y10-11-reading-7"],
+    "e3-vocab":["en-y10-11-gcse-english-language-6","en-y10-11-writing-4"],
+    "lesson-england-english-climb-e3-vocab":["en-y10-11-gcse-english-language-6","en-y10-11-writing-4"],
+    "e3-crafted":["en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
+    "lesson-england-english-climb-e3-crafted":["en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
+    "e3-imagery":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6"],
+    "lesson-england-english-climb-e3-imagery":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6"],
+    "e3-rhetoric":["en-y10-11-gcse-english-language-6","en-y10-11-writing-3"],
+    "lesson-england-english-climb-e3-rhetoric":["en-y10-11-gcse-english-language-6","en-y10-11-writing-3"],
+    "lit-novel":["en-y10-11-reading-9","en-y10-11-reading-7","en-y10-11-reading-2"],
+    "lesson-england-english-climb-lit-novel":["en-y10-11-reading-9","en-y10-11-reading-7","en-y10-11-reading-2"],
+    "lit-shakespeare":["en-y10-11-reading-1","en-y10-11-reading-7"],
+    "lesson-england-english-climb-lit-shakespeare":["en-y10-11-reading-1","en-y10-11-reading-7"],
+    "lit-poetry":["en-y10-11-reading-13","en-y10-11-reading-3"],
+    "lesson-england-english-climb-lit-poetry":["en-y10-11-reading-13","en-y10-11-reading-3"],
+    "lit-essay":["en-y10-11-reading-10","en-y10-11-writing-3"],
+    "lesson-england-english-climb-lit-essay":["en-y10-11-reading-10","en-y10-11-writing-3"],
+    "e1-check":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "e1-mixed":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e1-start-here":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e1-mini-papers":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e1-writing":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
+    "e2-check":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "e2-mixed":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e2-start-here":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e2-mini-papers":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e2-writing":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
+    "e3-check":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "e3-mixed":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e3-start-here":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e3-mini-papers":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-e3-writing":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
+    "lesson-england-english-climb-my-next-step":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
     "g-hopper-short":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-digraphs":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-long-a":["en-y1-reading-word-reading-2","en-y1-writing-transcription-spelling-2"],
@@ -1472,14 +1544,18 @@
     const pick = list => (list.some(s => s.year !== "1-6") ? list.filter(s => s.year !== "1-6") : list);
     const years = pick(lesson(id) ? lessonYears() : [main]).flatMap(s => span(s.year)).filter(n => !Number.isNaN(n));
     const lo = Math.min(...years), hi = Math.max(...years);
-    // The GCSE maths exam climb practises key stage 3 content for the GCSE exam, so it sits with key stage 4
+    // The GCSE exam climbs (maths, which practises key stage 3 content for the exam, and English) sit with key stage 4
     if (climb(id)) return { lo: 10, hi: 11, label: climbLabel(id), strand: strandOf(main.domain), domain: domainLabel(main.domain), statements };
     return { lo, hi, label: lesson(id) ? rangeLabel(lo, hi) : yearLabel(main.year), strand: strandOf(main.domain),
       domain: domainLabel(main.domain), statements };
   }
   const lesson = id => Boolean(window.PopLessons && window.PopLessons.get(id));
-  const climb = id => /^(gf-|g5-|gh-|paper-gx-|lesson-england-gcse-climb-)/.test(String(id));
-  const climbLabel = id => (/(^|-)g5-/.test(id) ? "GCSE exam climb (grades 4 and 5)" : /(^|-)gh-/.test(id) ? "GCSE exam climb (Higher, grades 6 to 9)"
+  const climb = id => /^(gf-|g5-|gh-|paper-gx-|lesson-england-gcse-climb-|e[123]-|lit-|paper-ex-|lesson-england-english-climb-)/.test(String(id));
+  // The English climb's ids name their stage: e1- (grade 1 to 3), e2- (4 and 5), e3- (6 to 9), lit- (Literature)
+  const englishClimb = id => /^(e[123]-|lit-|paper-ex-|lesson-england-english-climb-)/.test(String(id));
+  const englishLabel = id => (/(^|-)e2-/.test(id) ? "GCSE English climb (grades 4 and 5)" : /(^|-)e3-/.test(id) ? "GCSE English climb (grades 6 to 9)"
+    : /(^|-)lit-/.test(id) ? "GCSE English climb (Literature)" : /(^|-)e1-/.test(id) ? "GCSE English climb (grade 1 to 3)" : "GCSE English climb (grade 1 to 9)");
+  const climbLabel = id => englishClimb(id) ? englishLabel(id) : (/(^|-)g5-/.test(id) ? "GCSE exam climb (grades 4 and 5)" : /(^|-)gh-/.test(id) ? "GCSE exam climb (Higher, grades 6 to 9)"
     : /my-next-step|gx-route/.test(id) ? "GCSE exam climb (grade 1 to 9)" : "GCSE exam climb (Foundation, grade 1 to 3)");
 
   // What England expects for a year group

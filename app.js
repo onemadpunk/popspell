@@ -2389,6 +2389,12 @@
   // with its speaker: "Get the cat!" said Mum. Keep in step with split_sentences in tools/make_audio.py
   const sentencesOf = text => (text.match(/[\s\S]+?[.!?]+["”]?(?=\s+["“]?[A-Z]|\s*$)/g) || [text]).map(s => s.trim()).filter(Boolean);
   const sentenceClipOf = (p, n) => `audio/passages/${encodeURIComponent(p.id)}-s${n + 1}.mp3`;
+  // An exam text beside its question: the title and source, then the text (poems and plays keep their lines)
+  const examTextHTML = p => {
+    const mark = html => (p.mark ? html.replace(esc(p.mark), m => `<mark>${m}</mark>`) : html);
+    return `<div class="passage exam-text" id="examText"><p class="ex-head"><b>${esc(p.title)}</b> · ${esc(p.by)}</p>
+    ${mark(p.text.split(/\n\n+/).map(par => `<p>${esc(par).replace(/\n/g, "<br>")}</p>`).join(""))}</div>`;
+  };
   const readAlongHTML = p => sentencesOf(p.text).map((s, n) => `<span class="ra-s" data-s="${n}">${esc(s)}</span>`).join(" ");
 
   let readRun = 0; // each reading gets a number, so a newer one (or Stop) ends the old one
@@ -2487,10 +2493,12 @@
     const hearOptions = q.kind === "choice" && q.sayOptions !== false && (q.sayOptions || q.options.some(o => /[a-z]{2}/i.test(o)));
     const wrong = [];
     let missed = [];
-    const passage = act.passage;
+    // An exam question (the English exam climb) brings its own text: shown beside it, always open,
+    // to be read by the pupil as in the exam (it isn't read aloud)
+    const passage = act.passage || q.passage;
     // A story the child reads by themselves can be read again with its sound buttons, but not
     // read to them: otherwise "I've read it" and "Read it to me" would answer it by listening
-    const passageBox = passage ? (act.listen
+    const passageBox = passage && passage.exam ? examTextHTML(passage) : passage ? (act.listen
       ? `<div class="passage listen" id="passageBox">${readControlsHTML("🔊 Play the story again")}</div>`
       : act.decodable
       ? `<details class="passage" id="storyBox"><summary>📖 ${esc(passage.title)} — read it again</summary>
@@ -2503,7 +2511,7 @@
         ${hearOptions ? `<button type="button" class="q-hear" data-hear="${i}" aria-label="Hear ${esc(opt)}">🔊</button>` : ""}
       </div>`;
     app.innerHTML = `
-      <section class="panel practice activity${passage && !act.listen ? " with-story" : ""}" style="--accent:${esc(act.colour)}">
+      <section class="panel practice activity${passage && !act.listen ? " with-story" : ""}${q.exam ? ` exam-q${passage ? " exam-has-text" : ""}` : ""}" style="--accent:${esc(act.colour)}">
         <h1 class="sr-only">${esc(session.list.title)}</h1>
         ${progressHTML()}
         ${time ? `<div class="mtc-bar" aria-hidden="true"><span style="animation-duration:${time}s"></span></div>` : ""}

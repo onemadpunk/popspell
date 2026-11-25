@@ -1,0 +1,47 @@
+/* The English exam climb (english-climb.html): climb.css's look, plus the text beside each question, the
+   writing task and the exam page. Every screen fits a 1366 × 650 window without scrolling. */
+.ec-lit { padding-bottom: 6px; }
+.ec-lit .cl-stage-head span { white-space: normal; text-align: right; max-width: 70%; }
+.ec-lit-topics { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+
+/* A question with its text: the text on the left, the question on the right */
+.ec-run { max-width: 1280px; display: grid; grid-template-columns: 1fr; gap: 14px 22px; align-content: start; }
+.ec-run.with-text { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.ec-side { display: flex; flex-direction: column; gap: 10px; }
+.ec-run .cl-q { font-size: 1.12rem; }
+.ec-opts { grid-template-columns: 1fr; gap: 6px; }
+.ec-opts .cl-opt { font-size: .98rem; padding: 7px 12px; }
+.ec-run .cl-mark { font-size: .92rem; padding: 7px 12px; }
+.ec-text { background: #fffdf7; border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font-family: Georgia, "Times New Roman", serif; font-size: .95rem; line-height: 1.45; }
+.ec-text p { margin: 0 0 7px; }
+.ec-text .ec-src { font-family: var(--font); font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+.ec-text .ec-src b { color: var(--ink); }
+.ec-text mark { background: #fff1a8; padding: 0 2px; border-radius: 3px; box-shadow: 0 0 0 2px #fff1a8; }
+
+/* A writing task */
+.ec-write { max-width: 1200px; gap: 10px; }
+.ec-task h1 { font-size: 1.15rem; margin-top: 4px; color: var(--ink); }
+.ec-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+.ec-cols section { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; }
+.ec-cols h2 { font-size: .98rem; margin: 0 0 6px; }
+.ec-list { margin: 0 0 6px; padding-left: 1.2em; font-size: .92rem; }
+.ec-list li { margin: 2px 0; }
+.ec-small { font-size: .85rem; margin: 0 0 6px; }
+.ec-draft { flex: 1; min-height: 300px; width: 100%; resize: none; font: 1rem/1.5 Georgia, "Times New Roman", serif; padding: 12px 16px; border: 2px solid var(--line); border-radius: 12px; background: #fffdf7; }
+.ec-draft:focus { outline: none; border-color: var(--primary); }
+.ec-foot { justify-content: flex-end; }
+.ec-clock { margin-right: auto; color: var(--muted); font-size: .9rem; }
+.ec-tick { display: flex; gap: 8px; align-items: flex-start; font-size: .88rem; padding: 3px 0; cursor: pointer; }
+.ec-tick input { margin-top: 3px; width: 18px; height: 18px; }
+.ec-model-cols { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.ec-model p { font-family: Georgia, "Times New Roman", serif; font-size: .8rem; line-height: 1.4; margin: 0 0 5px; }
+
+/* What the exam expects */
+.ec-exam { max-width: 1250px; gap: 10px; }
+.ec-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.ec-table th, .ec-table td { text-align: left; border-bottom: 1px solid var(--line); padding: 2px 6px; }
+
+@media (max-width: 900px) {
+  .ec-run.with-text, .ec-cols, .ec-model-cols { grid-template-columns: 1fr; }
+  .ec-lit-topics { grid-template-columns: 1fr; }
+}

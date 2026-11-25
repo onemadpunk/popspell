@@ -4,7 +4,7 @@ name: Make recordings
 
 on:
   push:
-    paths: ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "speech-text.js", "app.js",
+    paths: ["words.js", "sentences.js", "passages.js", "stories.js", "activities.js", "exam-english/**", "speech-text.js", "app.js",
             "tools/make_audio.py", "tools/activity_lines.mjs", "tools/spoken.mjs", ".github/workflows/audio.yml"]
   workflow_dispatch:
 
