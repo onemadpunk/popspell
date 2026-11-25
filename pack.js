@@ -218,6 +218,7 @@ window.PopPacks = (() => {
         <section class="pk-intro">
           <h1>Download an exam pack</h1>
           <p>Everything for one stage on paper, to work on at home with no login and no internet: a plan to tick off, a check, a tracker, exam-style practice on every topic, mini papers, and the answers and mark schemes at the back. Each pack has new questions.</p>
+          <p>Tutoring a pupil from GCSE grade 1 to 3? <a href="course.html">The full tutor course</a> has 60 sessions with tutor plans, sheets, progress checks, two sets of mock papers and every mark scheme.</p>
         </section>
         ${PACKS.map(p => `<section class="pk-pack"><h2>${esc(p.title)} <span>${esc(p.where)}</span></h2>
           <div class="pk-stages" role="radiogroup" aria-label="${esc(p.title)} stage">${p.stages().map(s => `<button class="pk-stage${s.id === chosen ? " on" : ""}" role="radio" aria-checked="${s.id === chosen}" data-stage="${s.id}">

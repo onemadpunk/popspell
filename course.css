@@ -1,0 +1,31 @@
+/* Tutor courses to print (course.html): the page uses pack.css; this styles the course's own pages on paper */
+.cs-form { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.cs-form select, .cs-form input[type="date"] { font: inherit; font-weight: 400; padding: 6px 10px; border: 1px solid #b9c3d6; border-radius: 8px; }
+.cs-copy { border: 0; padding: 0; margin: 8px 0; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.cs-copy legend { font-weight: 700; padding: 0; margin-bottom: 4px; }
+.cs-sessions { columns: 2 300px; font-size: .92rem; color: #33405a; padding-left: 2em; }
+:is(.worksheet-print, .sheet-preview-page) .cs-block { break-inside: avoid; }
+:is(.worksheet-print, .sheet-preview-page) .cs-h { font: 700 12pt var(--font, Arial), sans-serif; color: #0b2e6b; margin: 8px 0 4px; padding-bottom: 2px; border-bottom: 1.5px solid #0b2e6b; }
+:is(.worksheet-print, .sheet-preview-page) .cs-h span { font-weight: 400; font-size: 9.5pt; color: #475569; margin-left: 8px; }
+:is(.worksheet-print, .sheet-preview-page) .cs-aim, :is(.worksheet-print, .sheet-preview-page) .cs-skills { font-size: 10.5pt; margin: 0 0 4px !important; }
+:is(.worksheet-print, .sheet-preview-page) .cs-list { margin: 2px 0 4px 1.2em; padding: 0; font-size: 10.5pt; }
+:is(.worksheet-print, .sheet-preview-page) .cs-list li { margin: 2px 0; }
+:is(.worksheet-print, .sheet-preview-page) .cs-block > p { font-size: 10.5pt; margin: 3px 0 !important; }
+:is(.worksheet-print, .sheet-preview-page) .cs-say { font-size: 10pt; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-time, :is(.worksheet-print, .sheet-preview-page) table.cs-quick, :is(.worksheet-print, .sheet-preview-page) table.cs-plan { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 2px 0 4px; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-time th, :is(.worksheet-print, .sheet-preview-page) table.cs-time td,
+:is(.worksheet-print, .sheet-preview-page) table.cs-plan th, :is(.worksheet-print, .sheet-preview-page) table.cs-plan td { border: 1px solid #b6c0cc; padding: 2px 6px; text-align: left; vertical-align: top; height: auto; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-time th, :is(.worksheet-print, .sheet-preview-page) table.cs-plan th { background: #eef3fa; font-size: 9.5pt; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-time td:first-child { width: 20mm; white-space: nowrap; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-plan td { height: 6.5mm; }
+:is(.worksheet-print, .sheet-preview-page) .cs-plan .cs-n { width: 13mm; text-align: center; }
+:is(.worksheet-print, .sheet-preview-page) .cs-plan .cs-d { width: 24mm; }
+:is(.worksheet-print, .sheet-preview-page) .cs-plan .cs-tick { width: 14mm; text-align: center; font-size: 13pt; }
+:is(.worksheet-print, .sheet-preview-page) .cs-tag { font-size: 8.5pt; font-weight: 700; color: #0b2e6b; border: 1px solid #0b2e6b; border-radius: 4px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
+:is(.worksheet-print, .sheet-preview-page) table.cs-quick td { border: 1px solid #b6c0cc; padding: 4px 6px; vertical-align: top; width: 50%; }
+:is(.worksheet-print, .sheet-preview-page) .cs-line { display: block; text-align: right; margin-top: 4px; }
+:is(.worksheet-print, .sheet-preview-page) .cs-example p { font-size: 10.5pt; }
+:is(.worksheet-print, .sheet-preview-page) .cs-answers { list-style: none; padding-left: 0; margin: 2px 0; }
+:is(.worksheet-print, .sheet-preview-page) .cs-answers li { margin-bottom: 4px; }
+:is(.worksheet-print, .sheet-preview-page) .cs-home, :is(.worksheet-print, .sheet-preview-page) .cs-rate { font-size: 10.5pt; }
+:is(.worksheet-print, .sheet-preview-page) .cs-notes { border: 1.5px dashed #8a9ab4; border-radius: 6px; padding: 4px 8px; min-height: 30mm; font-size: 10pt; color: #33405a; margin-top: 6px; }

@@ -10,6 +10,7 @@
     "rules": "cd firebase && npm install --no-audit --no-fund && npx --yes firebase-tools@13.35.1 emulators:exec --only firestore --project demo-popspell \"node rules.test.mjs\"",
     "sheet-check": "node tools/sheet-fit.mjs",
     "english-check": "node tools/english-fit.mjs",
-    "exam-check": "node tools/exam-fit.mjs"
+    "exam-check": "node tools/exam-fit.mjs",
+    "course-pdf": "node tools/course-pdf.mjs"
   }
 }
