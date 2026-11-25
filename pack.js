@@ -8,8 +8,8 @@
    back. Every page carries the pack's code, because each pack has new numbers and its answers only
    match pages with the same code.
 
-   PACKS lists the climbs. Another climb (for example Scotland's National 5 and Higher) joins with one
-   more add({...}) below: each stage names its sheet ids from paper-sheets.js, in the order to work
+   PACKS lists the climbs (GCSE maths, SQA maths, and the English climbs where their bank is loaded).
+   Another climb joins with one more add({...}) below: each stage names its sheet ids from paper-sheets.js, in the order to work
    through them, and the page, the plan and the answers section follow from those. */
 window.PopPacks = (() => {
   "use strict";
@@ -40,6 +40,28 @@ window.PopPacks = (() => {
         read: ["paper-gx-route", "paper-gx-gh-expects"], check: "paper-gx-gh-check", tracker: "paper-gx-gh-tracker",
         topics: gcseTopics(3), papers: ["paper-gx-gh-mini-noncalc", "paper-gx-gh-mini-calc", "paper-gx-gh-mini-problems"], next: "" }
     ]
+  });
+  // Scotland's SQA maths climb: the same four-part stages, marked the SQA way (one bullet a step)
+  const SQX = () => X().scotland;
+  add({
+    id: "sqa", title: "SQA maths climb", where: "Scotland, National 5 to Advanced Higher", online: "climb.html?course=sqa",
+    words: {
+      work: "Show every step: in SQA marking each step earns its own bullet.",
+      again: "Not secure yet? Read the marking, then do the questions you lost again a few days later. Make a new pack for fresh numbers.",
+      papers: "do the mini papers, about 20 minutes each, like the real exam",
+      pass: "About half the marks",
+      paperTodo: "Like the real exam: about 20 minutes. Half the marks or more is a good paper.",
+      writeTodo: "",
+      topicTodo: "Show your working. Three-quarters of the marks makes the topic secure: tick it on the tracker.",
+      marking: "Marked the SQA way: each bullet (•1, •2…) is one mark for one step. Give every bullet the working shows, even after a slip, because errors are followed through. A wrong answer with no working gets no marks."
+    },
+    stages: () => SQX().STAGES.map(st => ({
+      id: `sqa-${st.n}`, title: st.title, short: st.n === 1 ? "National 4 skills" : st.course,
+      about: { n4: "What National 5 takes for granted: number, fractions, percentages, ratio, equations, Pythagoras and SOH CAH TOA.", n5: "The full National 5 course, from surds and quadratics to trigonometry, vectors and statistics.",
+        nh: "Higher: the straight line, functions, calculus, trigonometric formulae, circles, vectors and logs.", ah: "Advanced Higher: more calculus, differential equations, proof, matrices, vectors and complex numbers." }[st.key],
+      read: ["paper-sq-route", `paper-sq-${st.key}-expects`, ...(st.n > 1 ? ["paper-sq-technique"] : [])], check: `paper-sq-${st.key}-check`, tracker: `paper-sq-${st.key}-tracker`,
+      topics: st.topics.map(t => `paper-sq-${t.id}`), papers: ["noncalc", "calc", "reasoning"].map(k => `paper-sq-${st.key}-mini-${k}`),
+      next: st.n < SQX().STAGES.length ? `stage ${st.n + 1} (${SQX().STAGES[st.n].course})` : "" }))
   });
   // The GCSE English climb (exam-english/, PopEnglishExam): only on pages that load its bank. Written
   // answers can't be marked line by line, so its plan and marking notes are its own (words below).

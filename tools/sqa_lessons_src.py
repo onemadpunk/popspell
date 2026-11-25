@@ -35,11 +35,106 @@ STAGES = [
         ("integration", "Integration and area", "Patterns and missing numbers"), ("trig", "Radians, exact values and trigonometric equations", "Shape and angles"),
         ("formulae", "Addition and double angle formulae, and the wave function", "Shape and angles"), ("circles", "The circle", "Shape and angles"),
         ("vectors", "Vectors in three dimensions", "Shape and angles"), ("logs", "Logarithms and exponentials", "Patterns and missing numbers")]),
+    ("ah", "Advanced Higher", "Advanced Higher", [
+        ("algebra", "Partial fractions and the binomial theorem", "Patterns and missing numbers"), ("differentiation", "Differentiation: product, quotient and chain rules", "Patterns and missing numbers"),
+        ("implicit", "Implicit, parametric and inverse trig differentiation", "Patterns and missing numbers"), ("integration", "Integration: standard results, substitution and partial fractions", "Patterns and missing numbers"),
+        ("parts", "Integration by parts, volumes and integration in context", "Patterns and missing numbers"), ("de1", "First-order differential equations", "Patterns and missing numbers"),
+        ("de2", "Second-order differential equations", "Patterns and missing numbers"), ("functions", "Functions and graphs: asymptotes, odd and even, modulus", "Patterns and missing numbers"),
+        ("series", "Sequences, series and Maclaurin expansions", "Patterns and missing numbers"), ("proof", "Proof and number theory", "Number"),
+        ("matrices", "Matrices: products, determinants, inverses and transformations", "Shape and angles"), ("systems", "Systems of equations: Gaussian elimination", "Patterns and missing numbers"),
+        ("vectors", "Vectors: the vector product, lines and planes", "Shape and angles"), ("complex", "Complex numbers and de Moivre's theorem", "Number")]),
 ]
 
 # National 4 skills reuse the GCSE climb's Foundation lessons (the same questions), told the SQA way
 N4_FROM = {"number": "number", "calc": "calc", "fractions": "fractions", "percent": "percent", "ratio": "ratio", "algebra": "algebra", "equations": "equations",
            "graphs": "graphs", "measures": "measures", "angles": "angles", "area": "area", "pythagoras": "g5-pythagoras", "trig": "g5-trig", "data": "statistics"}
+
+AH_NEW = {
+ "ah-algebra": ("We are learning to split a rational function into partial fractions and to use the binomial theorem to expand brackets and find a given term.",
+   ["I can write a fraction with distinct linear factors as partial fractions.", "I can handle a repeated linear factor (A/(x − a) + B/(x − a)²).", "I can evaluate a binomial coefficient ⁿCᵣ.", "I can find a given term, or the term independent of x, in a binomial expansion."],
+   "Ask: what is 1/(x − 1) − 1/(x + 1) as one fraction? Then ask how you would go backwards.",
+   "Partial fractions undo adding fractions. Factorise the bottom, write the form (A/(x − a) + B/(x − b), or A/(x − a) + B/(x − a)² for a repeated factor), multiply through, then substitute the roots or compare coefficients. An improper fraction needs dividing first. The binomial theorem: (a + b)ⁿ = Σ ⁿCᵣ aⁿ⁻ʳ bʳ. For a given term, write the general term, collect the powers of x, then choose r.",
+   "Ask them to express (5x + 1)/((x − 1)(x + 2)) in partial fractions, and to find the term independent of x in (x + 2/x)⁶.", "Build Pascal's triangle to row 8 and check three binomial coefficients from it.",
+   "partial fractions, proper, improper, repeated factor, binomial coefficient, general term", "Why does a repeated factor (x − 2)² need both A/(x − 2) and B/(x − 2)²?", "Says adding fractions over (x − 2) and (x − 2)² can give any linear top over (x − 2)², so both are needed to reach every numerator."),
+ "ah-differentiation": ("We are learning to differentiate products, quotients and compositions, including eˣ, ln x, and tan, sec, cosec and cot.",
+   ["I can use the product rule and the quotient rule.", "I can use the chain rule, including more than once.", "I can differentiate eˣ, ln x, and functions of them.", "I can differentiate tan x, sec x, cosec x and cot x."],
+   "Ask: is the derivative of x²eˣ just 2x × eˣ? Test it with a graph or a nearby point.",
+   "Product rule: (uv)' = u'v + uv'. Quotient rule: (u/v)' = (u'v − uv')/v². Chain rule: differentiate the outside, keep the inside, times the derivative of the inside. (eˣ)' = eˣ and (ln x)' = 1/x. tan x → sec²x, sec x → sec x tan x, cosec x → −cosec x cot x, cot x → −cosec²x (derive them from sin and cos with the quotient rule). Write u, v, u' and v' down before combining: each is a mark.",
+   "Ask them to differentiate x³ ln x and (2x + 1)/(x − 3).", "Prove that the derivative of tan x is sec²x using the quotient rule.",
+   "product rule, quotient rule, chain rule, exponential, natural logarithm, secant, cosecant, cotangent", "Why does the quotient rule have a minus sign while the product rule has a plus?", "Says the bottom's derivative works against the fraction: a bigger bottom makes the fraction smaller, so its term is subtracted."),
+ "ah-implicit": ("We are learning to differentiate implicitly and parametrically, to differentiate inverse trig functions, and to use derivatives for related rates and motion in a plane.",
+   ["I can differentiate an equation in x and y implicitly, using the product rule on xy terms.", "I can find dy/dx from parametric equations.", "I can differentiate sin⁻¹, cos⁻¹ and tan⁻¹ of a function.", "I can solve related rates problems and find speed in a plane."],
+   "Show x² + y² = 25. Ask: how could you find the gradient at (3, 4) without making y the subject?",
+   "Implicit: differentiate every term with respect to x; a y term gets × dy/dx (y² → 2y dy/dx), and xy needs the product rule. Collect the dy/dx terms and factorise. Parametric: dy/dx = (dy/dt) ÷ (dx/dt). Inverse trig: sin⁻¹x → 1/√(1 − x²), tan⁻¹x → 1/(1 + x²), with the chain rule. Related rates: chain the rates together (dV/dt = dV/dr × dr/dt). Speed in a plane: √((dx/dt)² + (dy/dt)²).",
+   "Ask them for the gradient of x² + 3xy + y² = 11 at (1, 2), and dy/dx for x = t², y = t³ at t = 2.", "Time a filling bottle and use dV/dt to estimate how fast the water level rises.",
+   "implicit, parametric, parameter, inverse function, related rates, speed", "Why does differentiating y² give 2y dy/dx and not just 2y?", "Says y depends on x, so the chain rule multiplies by the derivative of y with respect to x."),
+ "ah-integration": ("We are learning to integrate with standard results, the f'(x)/f(x) form, partial fractions and a given substitution.",
+   ["I can use standard integrals, including 1/(a² + x²) and 1/√(a² − x²).", "I can spot and integrate f'(x)/f(x) and g'(f(x))f'(x).", "I can integrate a rational function by splitting it into partial fractions.", "I can integrate by a given substitution, changing the limits."],
+   "Ask: which function has derivative 2x/(x² + 1)? How did you know?",
+   "Check the list of standard integrals first. If the top is (a multiple of) the derivative of the bottom, ∫ f'(x)/f(x) dx = ln|f(x)| + c. For a rational function, use partial fractions, then each part gives a ln. For a substitution: write du in terms of dx, change every x (and the limits, for a definite integral), integrate in u, then substitute back or use the new limits. Always + c for an indefinite integral.",
+   "Ask them to find ∫ 3/(9 + x²) dx and ∫ 1/((x − 1)(x + 3)) dx.", "Check an integral by differentiating your answer: you should get back the question.",
+   "standard integral, substitution, limits, partial fractions, natural logarithm, modulus", "Why do the limits change when you substitute u = x² + 1 in a definite integral?", "Says the limits were values of x; once the integral is in u, the limits must be the matching values of u."),
+ "ah-parts": ("We are learning to integrate by parts, and to use integration to find volumes of revolution and to solve problems about motion.",
+   ["I can integrate by parts, choosing u well, and use it twice if needed.", "I can find a volume of revolution about the x-axis or the y-axis.", "I can find areas using integration with respect to y.", "I can use integration for displacement, velocity and acceleration."],
+   "Ask: the product rule differentiates uv. What happens if you integrate both sides of it?",
+   "∫ u dv/dx dx = uv − ∫ v du/dx dx. Choose u to be the part that gets simpler when differentiated (a power of x), except with ln x, which is always u. Volume about the x-axis: π∫ y² dx; about the y-axis: π∫ x² dy. Motion: v = ∫ a dt and s = ∫ v dt, using the starting values to find each constant.",
+   "Ask them to find ∫ x sin x dx and the volume when y = √x, 0 ≤ x ≤ 4, is rotated about the x-axis.", "Use a glass or vase: model its side as a curve and estimate its volume by integration, then check with water.",
+   "integration by parts, volume of revolution, solid, displacement, velocity, acceleration", "Why is ln x chosen as u in ∫ x ln x dx?", "Says ln x is hard to integrate but easy to differentiate (1/x), which makes the second integral simple."),
+ "ah-de1": ("We are learning to solve first-order differential equations by separating the variables or with an integrating factor, and to use them in context.",
+   ["I can solve a differential equation with variables separable.", "I can find and use an integrating factor for dy/dx + P(x)y = Q(x).", "I can use a starting condition to find the particular solution.", "I can model growth, decay and cooling with a differential equation."],
+   "Ask: a population grows at a rate proportional to its size. Can you write that as an equation?",
+   "Separable: get all the y on one side with dy and all the x on the other with dx, integrate both sides, and put one constant on one side. Linear: write it as dy/dx + P(x)y = Q(x); the integrating factor is e^(∫P dx); multiply through, and the left side becomes d/dx(y × the factor). Then integrate and divide. Use the condition to find the constant, and answer the question asked.",
+   "Ask them to solve dy/dx = 2xy with y = 3 when x = 0, and dy/dx + 2y = 4 with y = 0 when x = 0.", "Measure a mug of tea cooling every five minutes and fit Newton's law of cooling to the data.",
+   "differential equation, separable, integrating factor, general solution, particular solution, initial condition", "Why does the integrating factor make the left side a single derivative?", "Says multiplying by e^(∫P dx) makes the left side exactly the product rule result for d/dx(ye^(∫P dx))."),
+ "ah-de2": ("We are learning to solve second-order linear differential equations with constant coefficients, homogeneous and non-homogeneous.",
+   ["I can write the auxiliary equation and solve it.", "I can write the general solution for distinct real, equal and complex roots.", "I can find a particular integral and add it to the complementary function.", "I can use two conditions to find both constants."],
+   "Ask: what number m makes y = eᵐˣ a solution of d²y/dx² − 5dy/dx + 6y = 0?",
+   "Try y = eᵐˣ: the auxiliary equation am² + bm + c = 0. Distinct real roots p, q: y = Aeᵖˣ + Beᑫˣ. Equal roots p: y = (A + Bx)eᵖˣ. Complex roots α ± βi: y = e^(αx)(A cos βx + B sin βx). Non-homogeneous: the general solution is the complementary function plus a particular integral, found by trying the same type as the right side (a constant, ax + b, ae^(kx), or a cos + b sin). Use the two conditions last, on the full solution.",
+   "Ask them to solve d²y/dx² + 4y = 0 with y = 1 and dy/dx = 2 when x = 0.", "Use a spring or pendulum video to discuss why complex roots give oscillation.",
+   "auxiliary equation, complementary function, particular integral, homogeneous, general solution", "Why do complex roots give sines and cosines?", "Says e^(iβx) = cos βx + i sin βx, so the real solutions are combinations of cos βx and sin βx (times e^(αx))."),
+ "ah-functions": ("We are learning to find asymptotes, decide whether functions are odd or even, find points of inflection and sketch related graphs, including the modulus function.",
+   ["I can find vertical, horizontal and slant asymptotes of a rational function.", "I can show a function is odd, even or neither using f(−x).", "I can find points of inflection and stationary points.", "I can sketch |f(x)|, f⁻¹(x) and f'(x) from the graph of f(x)."],
+   "Show y = 1/x. Ask: what happens as x gets near 0, and as x gets very large?",
+   "Vertical asymptotes are where the bottom is zero (and the top isn't). As x → ±∞, divide to find the horizontal or slant asymptote: if the top's degree is one more than the bottom's, there is a slant asymptote y = mx + c. Even: f(−x) = f(x) (symmetric in the y-axis); odd: f(−x) = −f(x) (rotational symmetry about the origin). A point of inflection is where the concavity changes: f''(x) = 0 and changes sign. |f(x)| reflects the parts below the x-axis.",
+   "Ask them for the asymptotes of y = (2x² + 3x)/(x − 1), and whether x³ sin x is odd or even.", "Sketch y = (x² + 1)/x by hand, then check with graphing software.",
+   "asymptote, slant asymptote, odd, even, point of inflection, modulus, concavity", "Why is f''(x) = 0 not enough to prove a point of inflection?", "Says f''(x) must change sign there too: y = x⁴ has f''(0) = 0 but a minimum, not an inflection."),
+ "ah-series": ("We are learning to work with arithmetic and geometric sequences and series, sums to infinity, summation formulae and Maclaurin expansions.",
+   ["I can find the nth term and the sum of n terms of an arithmetic or geometric series.", "I can find a sum to infinity and state when it exists.", "I can use Σr, Σr² and Σr³ formulae.", "I can find a Maclaurin expansion and combine expansions."],
+   "Ask: if you keep adding half of what's left (1/2 + 1/4 + 1/8 + …), where do you end up?",
+   "Arithmetic: uₙ = a + (n − 1)d and Sₙ = n/2(2a + (n − 1)d). Geometric: uₙ = arⁿ⁻¹ and Sₙ = a(1 − rⁿ)/(1 − r); the sum to infinity a/(1 − r) exists only when −1 < r < 1. Σr = n(n + 1)/2, Σr² = n(n + 1)(2n + 1)/6, Σr³ = n²(n + 1)²/4. Maclaurin: f(x) = f(0) + f'(0)x + f''(0)x²/2! + f'''(0)x³/3! + …; combine known expansions by multiplying or substituting.",
+   "Ask them for the sum to infinity of 12 + 8 + 16/3 + …, and the first three terms of the Maclaurin expansion of e^(2x).", "Use a spreadsheet to add the terms of a geometric series and watch it approach its limit.",
+   "arithmetic, geometric, common difference, common ratio, sum to infinity, convergent, Maclaurin series", "Why does a geometric series with r = 2 have no sum to infinity?", "Says the terms get bigger and bigger, so the total grows without limit."),
+ "ah-proof": ("We are learning to prove and disprove statements, using counterexamples, direct proof, contradiction and induction, and to use Euclid's algorithm and number bases.",
+   ["I can disprove a statement with a counterexample and write a negation.", "I can write a direct proof, a proof by contradiction or by the contrapositive.", "I can write a full proof by induction.", "I can use Euclid's algorithm, write the gcd as a linear combination, and change number bases."],
+   "Ask: n² + n + 41 is prime for n = 0, 1, 2, 3, … Is it always prime? How would you know?",
+   "One counterexample disproves an 'all' statement. The negation swaps ∀ and ∃ and negates the condition. Direct proof: start from what you know and reason step by step (an even number is 2k, an odd number 2k + 1). Contradiction: assume the opposite and reach something impossible (√2 is irrational). Induction: prove it for n = 1; assume it for n = k; show it then holds for n = k + 1; write the conclusion. Euclid's algorithm: divide, keep the remainder, repeat; the last non-zero remainder is the gcd; work back up to write it as ax + by.",
+   "Ask them to prove by induction that 1 + 3 + 5 + … + (2n − 1) = n², and to find gcd(252, 198).", "Find a famous conjecture that held for millions of cases and then failed.",
+   "conjecture, counterexample, negation, contradiction, contrapositive, induction, greatest common divisor, base", "Why does a proof by induction need both the first case and the step from k to k + 1?", "Says the first case starts the chain and the step lets each case push over the next, like dominoes; without either, the chain breaks."),
+ "ah-matrices": ("We are learning to multiply matrices, find determinants and inverses, decide when a matrix is singular, and use 2 × 2 matrices for transformations.",
+   ["I can add and multiply matrices up to order 3, and know AB ≠ BA in general.", "I can find the determinant of a 2 × 2 and a 3 × 3 matrix.", "I can find the inverse of a 2 × 2 matrix and know when a matrix is singular.", "I can write and combine 2 × 2 transformation matrices."],
+   "Ask: does multiplying matrices work like multiplying numbers? Try AB and BA for two 2 × 2 matrices.",
+   "Multiply rows of the first by columns of the second. det of (a, b; c, d) is ad − bc; for a 3 × 3, expand along a row with the signs + − +. A matrix with determinant 0 is singular: it has no inverse. The 2 × 2 inverse is 1/(ad − bc) × (d, −b; −c, a). Transformation matrices: the columns are the images of (1, 0) and (0, 1). Combining: the transformation done first goes on the right. det(AB) = det A × det B.",
+   "Ask them to find the inverse of the matrix with rows (3, 1) and (5, 2), and the matrix for a 90° rotation then a reflection in the x-axis.", "Draw a shape, apply a matrix to its corners, and see how its area changes compared with the determinant.",
+   "matrix, order, determinant, singular, inverse, identity, transpose, transformation", "Why does a singular matrix have no inverse?", "Says its determinant is 0, so 1/det can't be found; the transformation squashes the plane flat, so it can't be undone."),
+ "ah-systems": ("We are learning to solve three equations in three unknowns by Gaussian elimination, and to recognise when there is no solution, infinitely many, or ill-conditioning.",
+   ["I can write a system as an augmented matrix.", "I can use row operations to reach upper triangular form and back-substitute.", "I can find when a system has no unique solution, and say whether it has none or infinitely many.", "I can explain ill-conditioning."],
+   "Ask: two equations in two unknowns have one solution, none, or infinitely many. What does each look like on a graph?",
+   "Write the augmented matrix. Use row operations (swap rows, multiply a row, add a multiple of one row to another) to get zeros below the leading diagonal. Then solve from the bottom row up. A bottom row of 0 0 0 | k with k ≠ 0 means no solution (inconsistent); 0 0 0 | 0 means infinitely many. Ill-conditioned: a tiny change in a coefficient makes a big change in the answer, as the planes (or lines) are nearly parallel.",
+   "Ask them to solve x + y + z = 6, 2x − y + z = 3, x + 2y − z = 2.", "Use software to solve a system, then change one number slightly and compare the answers.",
+   "augmented matrix, row operation, upper triangular, back-substitution, inconsistent, ill-conditioned", "What does a row 0 0 0 | 5 tell you?", "Says it means 0 = 5, which is impossible, so the system has no solution."),
+ "ah-vectors": ("We are learning to use the vector product and the scalar triple product, and the equations of lines and planes in three dimensions.",
+   ["I can find a × b and use it for a vector perpendicular to two others.", "I can find the equation of a plane in Cartesian, vector or parametric form.", "I can find where a line meets a plane, and whether two lines intersect.", "I can find the angle between two planes, or a line and a plane."],
+   "Ask: how could you find a vector at right angles to both edges of a sloping roof?",
+   "a × b is the determinant with i, j, k on the top row; it is perpendicular to a and b, and |a × b| = |a||b| sin θ. The scalar triple product a.(b × c) is a volume. A plane with normal n through A: n.r = n.a, i.e. ax + by + cz = d. For three points, the normal is AB × AC. A line r = a + td meets a plane where substituting gives t. The angle between planes is the angle between their normals; between a line and a plane it is 90° minus the angle to the normal.",
+   "Ask them for the equation of the plane through (1, 0, 2), (2, 1, 0) and (0, 3, 1).", "Use a book and pencils to model two planes and their line of intersection.",
+   "vector product, normal, plane, Cartesian equation, parametric, scalar triple product", "Why is AB × AC normal to the plane ABC?", "Says the vector product is perpendicular to both AB and AC, which both lie in the plane."),
+ "ah-complex": ("We are learning to calculate with complex numbers, use the Argand diagram, modulus and argument, de Moivre's theorem and complex roots of polynomials.",
+   ["I can add, subtract, multiply and divide complex numbers.", "I can find the modulus and argument and write z in polar form.", "I can use de Moivre's theorem for powers and nth roots.", "I can solve polynomials with a given complex root, and describe loci in the Argand diagram."],
+   "Ask: x² = −1 has no real solution. What if we invent a number i with i² = −1?",
+   "Treat i like a letter, replacing i² with −1. To divide, multiply top and bottom by the conjugate of the bottom. On the Argand diagram, |z| is the distance from 0 and arg z the angle from the positive real axis (−π < arg z ≤ π; check the quadrant). Polar form z = r(cos θ + i sin θ); de Moivre: zⁿ = rⁿ(cos nθ + i sin nθ). A real polynomial's complex roots come in conjugate pairs. |z − a| = r is a circle centre a, radius r.",
+   "Ask them to express (3 + 2i)/(1 − i) in the form a + bi, and to find (1 + i)⁸.", "Plot z, iz, i²z and i³z for one z and describe what multiplying by i does.",
+   "complex number, real part, imaginary part, conjugate, modulus, argument, Argand diagram, polar form", "Why do complex roots of a polynomial with real coefficients come in conjugate pairs?", "Says taking the conjugate of the whole equation leaves the real coefficients unchanged, so the conjugate of a root is a root too."),
+}
 
 # National 5 and Higher: intention, criteria, start, teach, check, home, vocab, understand, lookFor
 NEW = {
@@ -228,7 +323,7 @@ def topic_lesson(key, course, name, n, slug, title, strand):
             teach = teach + " Probability: a value from 0 to 1, as a fraction or decimal; it is the number of ways the event can happen out of all the equally likely outcomes, and P(not A) = 1 − P(A)."
             intention = intention.rstrip(".") + ", and to work out simple probabilities."
     else:
-        intention, criteria, start, teach, check, home, vocab, understand, look = NEW[f"{key}-{slug}"]
+        intention, criteria, start, teach, check, home, vocab, understand, look = (AH_NEW if key == "ah" else NEW)[f"{key}-{slug}"]
     return {"id": lid, "level": "Senior", "subject": "Maths", "strand": strand, "codes": [],
             "title": f"SQA maths climb ({course}) {n}: {title}", "intention": intention, "criteria": criteria,
             "steps": {"start": start, "teach": teach,
@@ -238,14 +333,15 @@ def topic_lesson(key, course, name, n, slug, title, strand):
 
 lessons = []
 for key, course, name, topics in STAGES:
-    expects = {"n4": ("n4-what-national-5-expects", "What National 5 expects: the National 4 skills"), "n5": ("n5-what-the-exam-expects", "What the exam expects: National 5"), "nh": ("nh-what-the-exam-expects", "What the exam expects: Higher")}[key]
+    expects = {"n4": ("n4-what-national-5-expects", "What National 5 expects: the National 4 skills"), "n5": ("n5-what-the-exam-expects", "What the exam expects: National 5"), "nh": ("nh-what-the-exam-expects", "What the exam expects: Higher"), "ah": ("ah-what-the-exam-expects", "What the exam expects: Advanced Higher")}[key]
     lessons.append({"id": f"lesson-sqa-climb-{key}-start-here", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
         "title": f"SQA maths climb ({course}) start here: check and plan",
         "intention": f"We are finding out which of the {name} topics are already secure and which to learn first, and making a plan.",
         "criteria": [f"I can try one exam question on each of the 14 {name} topics.", "I know which topics I will work on first, and why.", "I know how each topic works: lesson, online practice, exam-style sheet, then mini papers."],
         "steps": {"start": {"n4": "Talk about the goal: the skills National 5 takes for granted, so the National 5 course itself is about National 5.",
                             "n5": "Talk about the goal: a pass at National 5 (and an A or B if Higher comes next). Most marks come from steps of working, not just answers.",
-                            "nh": "Talk about the goal: Higher. Higher marks come from complete, clearly set-out working on long, multi-part questions."}[key],
+                            "nh": "Talk about the goal: Higher. Higher marks come from complete, clearly set-out working on long, multi-part questions.",
+                            "ah": "Talk about the goal: Advanced Higher. It builds on Higher's calculus, algebra and vectors, so a slip in a Higher skill costs marks here too."}[key],
                   "teach": f"Explain the stage: 14 topics in order, each with a lesson, online practice and an exam-style sheet; mini papers every few sessions. Do the {course} check (online or on paper), with a calculator but no help: it is a map, not a test.",
                   "practise": f"The \"SQA maths climb: {course} check\" sheet, or the online {course} check.",
                   "check": f"Mark the check together and fill in the \"SQA maths climb: {course} tracker\" sheet: the topics that lost marks go first, in climb order."},
@@ -259,7 +355,8 @@ for key, course, name, topics in STAGES:
         "title": f"SQA maths climb: what the exam expects ({course})" if key != "n4" else "SQA maths climb: what National 5 expects (National 4 skills)",
         "intention": {"n4": "We are learning how National 4 is passed, what National 5 assumes we can already do, and the habits of setting out working that SQA marking rewards.",
                       "n5": "We are learning how the National 5 exam is set out and marked: the two papers, what a pass takes, bullet marks and follow-through, and the formulae list.",
-                      "nh": "We are learning how the Higher exam is set out and marked, and where marks are won and lost: statements, exact values, nature tables and multi-part questions."}[key],
+                      "nh": "We are learning how the Higher exam is set out and marked, and where marks are won and lost: statements, exact values, nature tables and multi-part questions.",
+                      "ah": "We are learning how the Advanced Higher exam is set out and marked, and where marks are won and lost: naming the method, constants of integration, full proofs and exact answers."}[key],
         "criteria": ["I know the papers, their times and their marks." if key != "n4" else "I know National 4 is passed in school, with no exam.", "I know each step of working earns its own mark (one bullet a mark).", "I know an error is followed through, so I never leave a question blank."],
         "steps": {"start": "Show an answer with a slip in the middle. Ask how many marks it should keep.",
                   "teach": f"Go through the \"{expects[1]}\" sheet, then mark its model answers together.",
@@ -290,28 +387,28 @@ lessons.append({"id": "lesson-sqa-climb-exam-technique", "level": "Senior", "sub
               "teach": "Go through the command words on the \"SQA exam technique: command words and setting out\" sheet. Show how a marking scheme gives one bullet a step, so a step that isn't written can't be marked.",
               "practise": "The \"SQA exam technique: command words and setting out\" sheet: three questions set out step by step, then compared with the marking.",
               "check": "Ask them what 'show that' and 'justify your answer' each need."},
-    "use": ["n5-mixed", "nh-mixed"], "home": "Pick any three online exam questions and write out the working as bullets before checking.",
+    "use": ["n5-mixed", "nh-mixed", "ah-mixed"], "home": "Pick any three online exam questions and write out the working as bullets before checking.",
     "vocab": "command word, hence, show that, justify, nature, sketch",
     "understand": "Why is writing 'dy/dx = 0' worth a mark even though it's obvious?",
     "lookFor": "Says the marker can only give marks for what is written, and that statement is the strategy step."})
 lessons.append({"id": "lesson-sqa-climb-my-next-step", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
-    "title": "SQA maths climb: my next step (working on your own, National 5 and Higher)",
+    "title": "SQA maths climb: my next step (working on your own, National 5 to Advanced Higher)",
     "intention": "We are learning to follow the climb on our own: take the check, practise the next topic, mark our work the SQA way and know when to move on.",
     "criteria": ["I can open the climb page and follow My next step.", "I read the marking after every question, even when I was right.", "I can mark my own working one bullet a step.", "I know when a topic is secure and when to move to the next stage."],
     "steps": {"start": "Ask: when you study on your own, how do you decide what to do next? Talk about why guessing wastes time.",
               "teach": "Open popspell.com/climb.html?course=sqa together. Show My next step: it starts with the stage check, then picks the first topic that needs work, in the climb's order, and suggests a mini paper when a stage is nearly done. Show where the marking appears after each answer and how a topic becomes secure (three-quarters of the marks on a practice set). Explain that progress stays on this device only.",
-              "practise": "The \"SQA maths climb: my route to National 5 and Higher\" sheet: fill in the exam and target together, then do one practice set on the climb page.",
+              "practise": "The \"SQA maths climb: my route from National 5 to Advanced Higher\" sheet: fill in the exam and target together, then do one practice set on the climb page.",
               "check": "Ask them to show you their next step on the climb page and explain why that topic comes next."},
-    "use": ["n4-check", "n5-check", "nh-check"], "home": "Two or three sessions a week on the climb page, about 45 minutes each, with a notebook for working.",
+    "use": ["n4-check", "n5-check", "nh-check", "ah-check"], "home": "Two or three sessions a week on the climb page, about 45 minutes each, with a notebook for working.",
     "vocab": "self-guided, marking, secure, stage, next step",
     "understand": "Why read the marking even when you got the answer right?",
     "lookFor": "Says it shows which steps earn marks, so you can write them in the exam even when the last step goes wrong."})
 
-SQA = {"n4": "National 4 Mathematics", "n5": "National 5 Mathematics", "nh": "Higher Mathematics"}
+SQA = {"n4": "National 4 Mathematics", "n5": "National 5 Mathematics", "nh": "Higher Mathematics", "ah": "Advanced Higher Mathematics"}
 for l in lessons:
     k = l["id"].replace("lesson-sqa-climb-", "")[:2]
-    l["sqa"] = SQA.get(k, "National 5 and Higher Mathematics")
-out = {"section": "Scotland: SQA maths exam climb (National 4 skills, National 5, Higher)", "lessons": lessons}
+    l["sqa"] = SQA.get(k, "National 5, Higher and Advanced Higher Mathematics")
+out = {"section": "Scotland: SQA maths exam climb (National 4 skills, National 5, Higher, Advanced Higher)", "lessons": lessons}
 with open(HERE("content", "lessons", "17-sqa-climb.json"), "w") as f:
     json.dump(out, f, ensure_ascii=False, indent=1)
     f.write("\n")

@@ -4527,7 +4527,7 @@ window.PopPaper = (() => {
 
   /* ===================== SQA maths exam climb (Scotland) =====================
      The GCSE climb's sheets in Scotland's terms, for S4 to S6: National 4 skills, then National 5, then
-     Higher. For each stage: a check, a tracker, an exam-style sheet for each of its 14 topics, "what the
+     Higher, then Advanced Higher. For each stage: a check, a tracker, an exam-style sheet for each of its 14 topics, "what the
      exam expects", and mini papers; then an exam technique sheet and a route for a pupil working alone.
      Questions come from PopActivities.examBank.scotland (activities.js), so every print is a fresh set, and
      the answers pages are marked the SQA way, one bullet a mark. Questions are PopSpell's own, never SQA
@@ -4551,12 +4551,19 @@ window.PopPaper = (() => {
         ["fractions", "Algebraic fractions"], ["equations", "Equations, inequations and changing the subject"], ["simultaneous", "Simultaneous equations"], ["lines", "Straight lines and gradient"],
         ["quadratics", "Quadratic functions and equations"], ["shapes", "Pythagoras, angles and similarity"], ["solids", "Arcs, sectors and volumes"],
         ["trig", "Trigonometry: area, sine rule, cosine rule and bearings"], ["trigeq", "Trigonometric graphs, equations and identities"], ["vectors", "Vectors"], ["statistics", "Statistics: comparing data and lines of best fit"]] },
-    { key: "nh", n: 3, course: "Higher", name: "Higher", next: "",
+    { key: "nh", n: 3, course: "Higher", name: "Higher", next: "Advanced Higher",
       topics: [["lines", "The straight line"], ["functions", "Functions: composite, inverse and domain"], ["graphs", "Graphs of functions and transformations"],
         ["polynomials", "Polynomials and the factor theorem"], ["quadratics", "Quadratic theory: discriminant, inequations and tangency"], ["recurrence", "Recurrence relations"],
         ["differentiation", "Differentiation"], ["calculus", "Stationary points, optimisation and rates of change"], ["integration", "Integration and area"],
         ["trig", "Radians, exact values and trigonometric equations"], ["formulae", "Addition and double angle formulae, and the wave function"], ["circles", "The circle"],
-        ["vectors", "Vectors in three dimensions"], ["logs", "Logarithms and exponentials"]] }
+        ["vectors", "Vectors in three dimensions"], ["logs", "Logarithms and exponentials"]] },
+    { key: "ah", n: 4, course: "Advanced Higher", name: "Advanced Higher", next: "",
+      topics: [["algebra", "Partial fractions and the binomial theorem"], ["differentiation", "Differentiation: product, quotient and chain rules"],
+        ["implicit", "Implicit, parametric and inverse trig differentiation"], ["integration", "Integration: standard results, substitution and partial fractions"],
+        ["parts", "Integration by parts, volumes and integration in context"], ["de1", "First-order differential equations"], ["de2", "Second-order differential equations"],
+        ["functions", "Functions and graphs: asymptotes, odd and even, modulus"], ["series", "Sequences, series and Maclaurin expansions"], ["proof", "Proof and number theory"],
+        ["matrices", "Matrices: products, determinants, inverses and transformations"], ["systems", "Systems of equations: Gaussian elimination"],
+        ["vectors", "Vectors: the vector product, lines and planes"], ["complex", "Complex numbers and de Moivre's theorem"]] }
   ];
 
   SQ_STAGE_LIST.forEach(st => {
@@ -4595,7 +4602,8 @@ window.PopPaper = (() => {
             "Every three or four sessions, a mini paper. Note the topics it shows up and go back to them.",
             st.n === 1 ? "When most topics are secure and mini papers score about half or more, the pupil has the skills National 5 assumes. Move on to the National 5 stage."
               : st.n === 2 ? "Most topics secure and mini papers at about two-thirds or more: the pupil is working at a secure pass. Higher needs a strong National 5 (usually an A or B), so talk about that before moving on."
-              : "Higher marks come from complete, accurate working on long questions: re-do the mini paper questions that lost marks, not just new ones.",
+              : st.n === 3 ? "Higher marks come from complete, accurate working on long questions: re-do the mini paper questions that lost marks, not just new ones. Advanced Higher usually follows a Higher at grade A or B."
+              : "Advanced Higher questions are long and build on Higher's calculus and algebra: when a topic loses marks, check the Higher skill under it (differentiation, integration, vectors, logs) before practising more.",
             "Scores here come from PopSpell's work and your marking. They are a guide for planning, not an estimate of an SQA grade."])
         };
       });
@@ -4680,6 +4688,22 @@ window.PopPaper = (() => {
         "Paper times and marks are from SQA's Higher Mathematics course specification (2023 onwards). Check SQA's site for the current formulae list and grade boundaries."])
     }));
 
+  add("paper-sq-ah-expects", SQ_LESSON("ah-what-the-exam-expects"), "What the exam expects: Advanced Higher",
+    "The Advanced Higher Mathematics exam in a page: the two papers, what a pass takes, where marks are won and lost, and a model answer marked bullet by bullet.", (who, h) => ({
+      pupil: `${h.sheetHead("What the exam expects: Advanced Higher", who)}${sqStrip("Advanced Higher", "Read, then talk it through", 0)}
+        ${box("The exam", `<p>Two papers. <b>Paper 1</b>: non-calculator, <b>1 hour</b>, <b>35 marks</b>. <b>Paper 2</b>: calculator allowed, <b>2 hours 30 minutes</b>, <b>80 marks</b>. That's 115 marks, all from the exam, graded A to D (A to C are passes). Boundaries are set each year after marking.</p>`)}
+        ${box("What it builds on", `<p>Almost every question uses Higher as a step: differentiating and integrating, the laws of logs, exact values, vectors and solving equations. A slip in a Higher skill costs Advanced Higher marks, so keep those sharp. The new ideas are the three areas of the course: <b>calculus</b> (more rules, integration methods, differential equations); <b>algebra, proof and number theory</b>; and <b>matrices, vectors and complex numbers</b>.</p>`)}
+        ${box("Where marks are won and lost", `<p><b>Name the method:</b> "by parts, u = x", "the integrating factor is e^(2x)", "the auxiliary equation is…" are each a mark. <b>Constants:</b> + c on every indefinite integral, and find it when you're given a condition. <b>Proof:</b> in induction, write all of it: the base case, the assumption for n = k, the step to n = k + 1, and a conclusion sentence. <b>Exact answers</b> in Paper 1: fractions, surds, ln and π, not decimals.</p>`)}
+        ${box("The formulae list", `<p>The paper gives a list of formulae, including some standard derivatives and integrals. Look at it in a past paper on SQA's website, so you know what is given and what you must know, such as the integrating factor method and the Maclaurin expansion.</p>`)}
+        ${box("A model answer", `<p><b>Question:</b> Use integration by parts to find ∫ xe^(2x) dx. <i>(3 marks)</i></p>
+          <p><b>Answer A</b> (3 marks): •1 u = x, dv/dx = e^(2x) •2 (1/2)xe^(2x) − ∫ (1/2)e^(2x) dx •3 (1/2)xe^(2x) − (1/4)e^(2x) + c.</p>
+          <p><b>Answer B</b> (2 marks): •1 ✓ •2 ✓ •3 (1/2)xe^(2x) − (1/4)e^(2x): the + c is missing, so the last mark is lost.</p>`)}`,
+      answers: lookForPage(h, "What the exam expects: Advanced Higher", [
+        "Talk through answer B: one missing + c cost a mark. Ask the pupil where else a small habit (a constant, a modulus sign, a conclusion) is a mark on its own.",
+        "Ask which Higher topics they feel least sure of: differentiation, integration, logs and vectors come up inside most Advanced Higher questions.",
+        "Paper times and marks are from SQA's Advanced Higher Mathematics course specification (2019 onwards). Check SQA's site for the current formulae list and grade boundaries."])
+    }));
+
   // ---------- Exam technique: SQA command words, then three questions to set out properly ----------
 
   const SQ_WORDS = [["State / Write down", "The answer only, usually 1 mark."], ["Calculate / Find / Evaluate", "Working, then the answer. Evaluate means give a value."],
@@ -4703,19 +4727,19 @@ window.PopPaper = (() => {
 
   // ---------- A route for a pupil working on their own ----------
 
-  add("paper-sq-route", SQ_LESSON("my-next-step"), "SQA maths climb: my route to National 5 and Higher",
-    "One page for a pupil working on their own (at home, homeschooled or resitting): the three stages, what to do each session, how to mark their own work and when to move on.", (who, h) => ({
-      pupil: `${h.sheetHead("My route: National 5 and Higher", who)}${sqStrip("SQA maths climb", "Self-guided", 0)}
-        ${box("The three stages", `<p><b>Stage 1, National 4 skills</b>: what National 5 takes for granted, from fractions and percentages to Pythagoras and SOH CAH TOA. <b>Stage 2, National 5</b>: the full course, from surds to standard deviation. <b>Stage 3, Higher</b>: from the straight line to calculus, vectors and logs. Start where your check says.</p>`)}
+  add("paper-sq-route", SQ_LESSON("my-next-step"), "SQA maths climb: my route from National 5 to Advanced Higher",
+    "One page for a pupil working on their own (at home, homeschooled or resitting): the four stages, what to do each session, how to mark their own work and when to move on.", (who, h) => ({
+      pupil: `${h.sheetHead("My route: National 5 to Advanced Higher", who)}${sqStrip("SQA maths climb", "Self-guided", 0)}
+        ${box("The four stages", `<p><b>Stage 1, National 4 skills</b>: what National 5 takes for granted, from fractions and percentages to Pythagoras and SOH CAH TOA. <b>Stage 2, National 5</b>: the full course, from surds to standard deviation. <b>Stage 3, Higher</b>: from the straight line to calculus, vectors and logs. <b>Stage 4, Advanced Higher</b>: more calculus, differential equations, proof, matrices and complex numbers. Start where your check says.</p>`)}
         ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/climb.html?course=sqa</b> and press <b>My next step</b>. <b>2.</b> Do what it says: a check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the marking, even when you were right: it shows which steps earn marks. <b>4.</b> Copy any question you got wrong into your notebook with the right working, and try it again next session.</p>`)}
         ${box("Marking your own work", `<p>Each question says its marks, and the marking lists one bullet (•1, •2…) for each. Give yourself every bullet your working shows, even after a slip: SQA follows errors through. No working, wrong answer: no marks.</p>`)}
         ${box("When to move on", `<p>A topic is <b>secure</b> at about three-quarters of the marks in one set of its practice. When all of a stage's topics are secure, do a mini paper: about half or more, and you're ready for the next stage.</p>`)}
         <p class="gx-plan">My exam: ${blank(6)} &nbsp; Date: ${blank(6)} &nbsp; Target grade: ${blank(3)} &nbsp; Sessions a week: ${blank(3)}</p>`,
-      answers: lookForPage(h, "My route: National 5 and Higher", [
+      answers: lookForPage(h, "My route: National 5 to Advanced Higher", [
         "For the adult at home: the climb page keeps progress on this device only, in this browser. Nothing is sent anywhere, so use the same device each time.",
         "Check in once a week: look at the topics marked secure, and ask the pupil to explain one question they got wrong and how they fixed it.",
         "If a topic stays below half its marks after three sessions, it needs teaching, not more practice: use the topic's lesson in PopSpell's library, or ask a tutor.",
-        "A pupil sitting National 5 or Higher as a private candidate needs an SQA exam centre: ask a local school or college early in the year.",
+        "A pupil sitting National 5, Higher or Advanced Higher as a private candidate needs an SQA exam centre: ask a local school or college early in the year.",
         "Scores are a guide for planning, not an estimate of an SQA grade."])
     }));
   /* ===================== GCSE English exam climb (England) =====================

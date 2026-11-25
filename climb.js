@@ -1,5 +1,5 @@
 /* The maths exam climb for a pupil working on their own (climb.html): the GCSE climb, grade 1 to 9 in three
-   stages, or with ?course=sqa Scotland's SQA climb (National 4 skills, National 5, Higher).
+   stages, or with ?course=sqa Scotland's SQA climb (National 4 skills, National 5, Higher, Advanced Higher).
    "My next step" says what to do: the stage check first, then each topic that needs work in the climb's
    order (practice until about three-quarters of the marks), then a mini paper, then the next stage.
    Questions come from the same bank as the teacher's sheets (PopActivities.examBank); every answer shows
@@ -39,7 +39,7 @@
     if (t) return { kind: "topic", st, t };
     const papers = data.papers[st.key] || [];
     if (!papers.some(p => p.got / p.of >= PAPER_PASS)) return { kind: "paper", st };
-    if (st.n < 3) return { kind: "stage", st, to: stageOf(st.n + 1) };
+    if (st.n < X.STAGES.length) return { kind: "stage", st, to: stageOf(st.n + 1) };
     return { kind: "done", st };
   }
   const STEP_TEXT = {
@@ -47,15 +47,15 @@
     check: s => [`Take the stage ${s.st.n} check`, `One question on each of the ${s.st.topics.length} topics for ${goal(s.st)} (${!SQA && s.st.n === 1 ? 28 : s.st.topics.length} questions). It shows which topics to work on first. Write your working on paper as you go.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Ten exam questions; about three-quarters of the marks makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
     paper: s => ["Do a mini paper", `Every stage ${s.st.n} topic is secure. Ten mixed questions, like the real exam: about half the marks or more and you're ready for the next stage. Topics that lose marks go back on your list.`],
-    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${SQA ? (s.to.n === 3 ? " Higher usually follows a National 5 at grade A or B." : "") : s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
-    done: () => ["Keep your marks sharp", "You've climbed all three stages. Keep doing mini papers, and go back to any topic that loses marks."]
+    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${SQA ? (s.to.n === 3 ? " Higher usually follows a National 5 at grade A or B." : s.to.n === 4 ? " Advanced Higher usually follows a Higher at grade A or B." : "") : s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
+    done: () => ["Keep your marks sharp", `You've climbed all ${["", "", "two", "three", "four"][X.STAGES.length]} stages. Keep doing mini papers, and go back to any topic that loses marks.`]
   };
 
   // ---------- Home ----------
   function home() {
     document.title = `${NAME} · PopSpell`;
     const s = nextStep(), [title, about] = STEP_TEXT[s.kind](s);
-    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${(SQA ? ["National 4, or not sure", "National 5", "Higher"] : ["Grade 1 to 3, or not sure", "Grade 4 or 5", "Grade 6 or above"])[st.n - 1]}</button>`).join("")}</div>` : "";
+    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${(SQA ? ["National 4, or not sure", "National 5", "Higher", "Advanced Higher"] : ["Grade 1 to 3, or not sure", "Grade 4 or 5", "Grade 6 or above"])[st.n - 1]}</button>`).join("")}</div>` : "";
     const go = { check: "Start the check", topic: "Start practising", paper: "Start the mini paper", stage: `Go to stage ${s.to ? s.to.n : ""}`, done: "Mini paper" }[s.kind];
     app.innerHTML = `${top("My next step")}
       <main class="cl-home">
@@ -65,10 +65,10 @@
           <p>${esc(about)}</p>${action}
           ${go ? `<div class="cl-next-do"><button class="cl-btn big" id="go">${go} →</button>${s.kind === "topic" ? `<button class="cl-btn ghost" id="skip">I know this: test me</button>` : ""}</div>` : ""}
         </section>
-        <div class="cl-stages">${X.STAGES.map(stageCard).join("")}</div>
+        <div class="cl-stages${X.STAGES.length === 4 ? " four" : ""}">${X.STAGES.map(stageCard).join("")}</div>
         <div class="cl-foot"><p>Questions are PopSpell's own, ${SQA ? "in the SQA exam style, marked one step a mark" : "in the GCSE (9 to 1) exam style, with mark schemes"}. Your progress stays in this browser on this device.
-          <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 and Higher climb"}</a></p>
-          ${SQA ? "" : `<a class="cl-btn small" href="pack.html?stage=gcse-${data.stage || 1}">Work on paper: download a pack</a>`}
+          <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 to Advanced Higher climb"}</a></p>
+          <a class="cl-btn small" href="pack.html?stage=${SQA ? "sqa" : "gcse"}-${data.stage || 1}">Work on paper: download a pack</a>
           <button class="cl-btn small" id="reset">Start again</button></div>
       </main>`;
     app.querySelectorAll("[data-start]").forEach(b => b.onclick = () => { data.stage = Number(b.dataset.start); save(); home(); });
