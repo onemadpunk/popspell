@@ -3095,7 +3095,7 @@ window.PopActivities = (() => {
       () => { const g = gfR(2, 6), p = gfR(2, 5), q = gfR(1, 7); if (gcd(p, q) !== 1) return { label: "skip" }; const ans = `${g}x(${p}x + ${q})`;
         return gfQ(`Factorise fully ${g * p}x² + ${g * q}x.`, ans, 2, `Take out the common factor ${g}x (1 mark): ${ans} (1 mark). Taking out only ${g} or only x is not "fully".`, { options: [`${g}(${p}x² + ${q}x)`, `x(${g * p}x + ${g * q})`], label: `ff ${g},${p},${q}`, skill: "factorising fully" }); },
       () => { const a = gfR(2, 6), b = gfR(1, 9), c = gfR(2, 5), d = gfR(1, 9), k = rand(2) ? 1 : -1, ans = gxE([[a * 2 - c * k, "x"], [-a * b + c * d * k, ""]]);
-        if (Math.abs(a * 2 - c * k) < 2) return { label: "skip" };
+        if (Math.abs(a * 2 - c * k) < 2 || -a * b + c * d * k === 0) return { label: "skip" };
         return gfQ(`Expand and simplify ${a}(2x − ${b}) ${k > 0 ? "−" : "+"} ${c}(x − ${d}).`, ans, 2, `${a * 2}x − ${a * b} ${k > 0 ? `− ${c}x + ${c * d}` : `+ ${c}x − ${c * d}`} (1 mark): watch the sign in front of the second bracket. ${ans} (1 mark).`, { options: [gxE([[a * 2 - c * k, "x"], [-a * b - c * d * k, ""]]), gxE([[a * 2 + c * k, "x"], [-a * b + c * d * k, ""]])].filter((o, i, l) => o !== ans && l.indexOf(o) === i), label: `exs ${a}${b}${c}${d}${k}`, skill: "expanding brackets" }); },
       () => { const a = gfR(2, 12), ans = `(x + ${a})(x − ${a})`;
         return gfQ(`Factorise x² − ${a * a}.`, ans, 1, `The difference of two squares: x² − ${a}² = ${ans} (1 mark).`, { options: [`(x − ${a})²`, `(x + ${a})²`], label: `dots ${a}`, skill: "difference of two squares" }); },
@@ -3546,6 +3546,576 @@ window.PopActivities = (() => {
   // A later stage's check: one short question from every topic, in the order of the climb
   const gfCheck = st => st.n === 1 ? gfBaseline() : st.topics.map(t => Object.assign(gfItems(t, 1, it => it.marks <= 2 && !it.pic)[0] || gfItems(t, 1)[0], { topic: t }));
   const GX_NAME = { gf: "", g5: " (grades 4 and 5)", g5n: "grade 4 and 5", gh: " (Higher)", ghn: "Higher" };
+  /* ---------- SQA maths exam climb (Scotland): National 4 skills, National 5, then Higher ---------- */
+  // Scotland's version of the climb, for S4 to S6 (and adults resitting): the same shape as the GCSE climb
+  // above (a check, 14 topics a stage in climb order, exam-style questions with marks and a mark scheme,
+  // mini papers), with SQA's course content and names. Stage 1 is the National 4 / Fourth level skills that
+  // National 5 takes for granted, so it reuses the climb's own Foundation questions; stage 2 is National 5
+  // (it shares much with the GCSE grade 4 to 9 topics, so it reuses those questions where they match the
+  // SQA course and adds its own); stage 3 is Higher, all new. New questions write their mark schemes the SQA
+  // way, one bullet a mark (•1, •2...). Questions are PopSpell's own, never SQA past papers.
+  const SQ = "Mathematics · SQA maths exam climb (Scotland)";
+  // Makers borrowed from a GCSE climb topic: all of them, or the ones at these places
+  const sqFrom = (id, at) => { const m = gfTopic(id).makers; return at ? at.map(i => m[i]) : m.slice(); };
+  // A signed fraction in its simplest form: −3/2, 4, 1/3
+  const sqFr = (n, d) => { if (d < 0) { n = -n; d = -d; } const s = fracW(Math.abs(n), d); return n < 0 && n !== 0 ? `−${s}` : s; };
+  // The decimal a pupil may type for a fraction that ends: −3/2 → −1.5
+  const sqDec = (n, d) => { const v = n / d; return Number.isInteger(v) || Math.round(v * 1000) / 1000 !== v ? [] : [gfD(v)]; };
+  // x − 3, x + 2, x (for the equation of a line through a point)
+  const sqMinus = (v, a) => (a === 0 ? v : a > 0 ? `${v} − ${a}` : `${v} + ${-a}`);
+  // y − b = m(x − a), with m a fraction [n, d]
+  const sqLine = (n, d, a, b) => { const m = sqFr(n, d), x = a === 0 || m === "1" ? sqMinus("x", a) : `(${sqMinus("x", a)})`;
+    return `${sqMinus("y", b)} = ${m === "1" ? "" : m === "−1" ? "−" : m}${x}`; };
+  // Rounding that won't sit on a knife edge (so the answer can't depend on how a calculator rounds)
+  const sqSafe = (x, dp) => { const f = Math.abs(x) * 10 ** dp % 1; return f > 0.06 && f < 0.44 || f > 0.56 && f < 0.94; };
+  const sqR = (x, dp) => x.toFixed(dp).replace("-", "−");
+  const sqDeg = r => r * 180 / Math.PI, sqRad = d => d * Math.PI / 180;
+  const sqUniq = (ans, list) => [...new Set(list.map(String))].filter(o => o !== String(ans));
+  // A point (a, b)
+  const sqP = (a, b, c) => `(${gfM(a)}, ${gfM(b)}${c === undefined ? "" : `, ${gfM(c)}`})`;
+  // Mixed numbers: 49/12 → 4 1/12
+  const sqMix = (n, d) => { const g = gcd(n, d); n /= g; d /= g; const w = Math.floor(n / d), r = n % d; return r ? (w ? `${w} ${r}/${d}` : `${r}/${d}`) : String(w); };
+
+  // ----- Stage 1: National 4 skills (Fourth level), the climb's Foundation questions with SQA names -----
+  const SQ_N4 = [
+    ["number", "Number", "Whole numbers, negatives, rounding and significant figures", "Number", "Place value, negative numbers, rounding to decimal places and significant figures, and estimating.", sqFrom("gf-number")],
+    ["calc", "Calculating", "Calculating without a calculator", "Number", "Written methods, decimals, the order of operations and problems with remainders, as Paper 1 needs.", sqFrom("gf-calc")],
+    ["fractions", "Fractions", "Fractions and mixed numbers", "Fractions, decimals and percentages", "Fractions of amounts, simplifying, the four operations and mixed numbers.", sqFrom("gf-fractions")],
+    ["percent", "Percentages", "Percentages", "Fractions, decimals and percentages", "Percentages of amounts, increases and decreases, VAT, interest and percentage change.", sqFrom("gf-percent")],
+    ["ratio", "Ratio", "Ratio and proportion", "Number", "Simplifying and sharing in a ratio, recipes, best buys and exchange rates.", sqFrom("gf-ratio")],
+    ["algebra", "Expressions", "Expressions and formulae", "Patterns and missing numbers", "Simplifying, substituting into formulae, expanding brackets and factorising.", sqFrom("gf-algebra")],
+    ["equations", "Equations", "Equations and inequations", "Patterns and missing numbers", "Solving equations and inequations, and patterns and sequences.", sqFrom("gf-equations")],
+    ["graphs", "Graphs", "Coordinates, straight-line graphs and gradient", "Patterns and missing numbers", "Coordinates, drawing and reading straight-line graphs, and the gradient of a line.", sqFrom("gf-graphs").concat(sqFrom("g5-lines", [0, 1]))],
+    ["measures", "Measures", "Time, speed and measurement", "Measurement", "Units, time intervals, and speed, distance and time.", sqFrom("gf-measures")],
+    ["angles", "Angles", "Angles, shapes, bearings and scale", "Shape and angles", "Angle facts, shapes, three-figure bearings and scale drawings.", sqFrom("gf-angles").concat(sqFrom("g5-polygons", [3, 5]))],
+    ["area", "Area and volume", "Area, volume and circles", "Measurement", "Perimeter and area, circles, and volumes of prisms and cylinders.", sqFrom("gf-area").concat(sqFrom("g5-circles", [0, 1, 4]))],
+    ["pythagoras", "Pythagoras", "Pythagoras' theorem", "Shape and angles", "Finding a missing side in a right-angled triangle, and the distance between two points.", sqFrom("g5-pythagoras")],
+    ["trig", "Trigonometry", "Right-angled trigonometry", "Shape and angles", "SOH CAH TOA: missing sides and angles in right-angled triangles.", sqFrom("g5-trig")],
+    ["data", "Statistics and chance", "Statistics and probability", "Data and chance", "Averages and range, charts, scatter graphs and probability.", sqFrom("gf-statistics").concat(sqFrom("gf-probability"))]
+  ].map(([slug, short, title, strand, blurb, makers], i) => ({ id: `n4-${slug}`, n: i + 1, short, title, strand, blurb, makers }));
+
+  // ----- Stage 2: National 5 -----
+  // Scientific notation, as SQA calls standard form
+  const sqSci1 = () => { const m = gfR(11, 99) / 10, e = rand(2) ? -gfR(3, 4) : gfR(4, 8), ord = e < 0 ? (m * 10 ** e).toFixed(1 - e).replace(/0+$/, "") : gfBig(Math.round(m * 10 ** e));
+    const ans = gxSF(m, e);
+    return gfQ(`Write ${ord} in scientific notation.`, ans, 1, `•1 ${ans}: a number from 1 up to 10, times a power of 10; the decimal point moves ${Math.abs(e)} places, and ${e < 0 ? "a small number has a negative power" : "a big number has a positive power"} (1 mark).`,
+      { options: sqUniq(ans, [gxSF(m, -e), `${gfD(m * 10)} × 10${sup(e - 1)}`]), label: `sci ${ord}`, skill: "scientific notation" }); };
+  const sqSci2 = () => { const [what, s] = pick([["a day", 8.64], ["an hour", 3.6], ["a week", 6.05], ["a year", 3.15]]), p = { "a day": 4, "an hour": 3, "a week": 5, "a year": 7 }[what];
+    let m = 3 * s, e = 5 + p; if (m >= 10) { m /= 10; e += 1; } const ans = gxSF(Number(m.toFixed(3)), e);
+    return gfQ(`Light travels about 3 × 10⁵ km in one second. There are ${gfD(s)} × 10${sup(p)} seconds in ${what}. How far does light travel in ${what}? Give your answer in scientific notation. (km)`, ans, 2,
+      `•1 multiply: 3 × 10⁵ × ${gfD(s)} × 10${sup(p)} (1 mark). •2 ${ans} km, in scientific notation (1 mark).`,
+      { calc: true, options: sqUniq(ans, [gxSF(Number(m.toFixed(3)), 5 * p), `${gfD(Number((3 * s).toFixed(3)))} × 10${sup(5 + p)}`, gxSF(Number(m.toFixed(3)), e - 1)]).slice(0, 2), label: `light ${what}`, skill: "scientific notation in context" }); };
+  // Mixed numbers: add, subtract, multiply, divide
+  const sqMixQ = () => { const k = rand(4), d1 = pick([2, 3, 4, 5, 6]), d2 = pick([2, 3, 4, 5, 8].filter(x => x !== d1)), w1 = gfR(1, 4), w2 = gfR(1, 3), n1 = gfR(1, d1 - 1), n2 = gfR(1, d2 - 1);
+    const A = [w1 * d1 + n1, d1], B = [w2 * d2 + n2, d2], show = (w, n, d) => `${w} ${n}/${d}`;
+    let N, D, op;
+    if (k === 0) { N = A[0] * B[1] + B[0] * A[1]; D = A[1] * B[1]; op = "+"; }
+    else if (k === 1) { if (A[0] * B[1] <= B[0] * A[1]) return {}; N = A[0] * B[1] - B[0] * A[1]; D = A[1] * B[1]; op = "−"; }
+    else if (k === 2) { N = A[0] * B[0]; D = A[1] * B[1]; op = "×"; }
+    else { N = A[0] * B[1]; D = A[1] * B[0]; op = "÷"; }
+    const ans = sqMix(N, D), imp = fracW(N, D);
+    return gfQ(`Work out ${show(w1, n1, d1)} ${op} ${show(w2, n2, d2)}. Give your answer as a mixed number in its simplest form.`, ans, 3,
+      `•1 ${k < 2 ? "a common denominator, or " : ""}improper fractions: ${A[0]}/${A[1]} and ${B[0]}/${B[1]} (1 mark). •2 ${k === 3 ? `flip and multiply: ${A[0]}/${A[1]} × ${B[1]}/${B[0]} = ` : ""}${N}/${D} (1 mark). •3 ${ans}, as a mixed number in its simplest form (1 mark).`,
+      { accept: imp !== ans ? [imp] : [], label: `mix ${w1}${n1}${d1}${op}${w2}${n2}${d2}`, skill: "mixed numbers" }); };
+  // (x + a)(x² + bx + c)
+  const sqCubicExp = () => { let a, b, c; // both middle coefficients 0 or ±1 would make rare spoken lines
+    do { a = gfR(-5, 5) || 2; b = gfR(-4, 4) || -1; c = gfR(-6, 6) || 3; } while (Math.abs(a + b) <= 1 && Math.abs(a * b + c) <= 1);
+    const ans = gxE([[1, "x³"], [a + b, "x²"], [a * b + c, "x"], [a * c, ""]]);
+    return gfQ(`Expand and simplify ${gxB(1, a)}(${gxE([[1, "x²"], [b, "x"], [c, ""]])}).`, ans, 3,
+      `•1 x × each term: ${gxE([[1, "x³"], [b, "x²"], [c, "x"]])} (1 mark). •2 ${gfM(a)} × each term: ${gxE([[a, "x²"], [a * b, "x"], [a * c, ""]])} (1 mark). •3 collect like terms: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [gxE([[1, "x³"], [a + b, "x²"], [c, "x"], [a * c, ""]]), gxE([[1, "x³"], [b, "x²"], [a * b + c, "x"], [a * c, ""]]), gxE([[1, "x³"], [a + b, "x²"], [a * b - c, "x"], [a * c, ""]])]).slice(0, 2), label: `cubexp ${a},${b},${c}`, skill: "expanding brackets" }); };
+  const sqCtsq = () => { const p = pick([-10, -8, -6, -4, -2, 2, 4, 6, 8, 10]), q = gfR(-9, 15), h = p / 2, k = q - h * h;
+    const sq = `${gxB(1, h)}²`, ans = `${sq}${k ? ` ${k < 0 ? "−" : "+"} ${Math.abs(k)}` : ""}`;
+    return gfQ(`Write x² ${p < 0 ? "−" : "+"} ${Math.abs(p)}x ${q < 0 ? "−" : "+"} ${Math.abs(q)} in the form (x + p)² + q.`, ans, 2,
+      `•1 the bracket: half of ${gfM(p)} is ${gfM(h)}, so ${sq} (1 mark). •2 take away the ${h * h} that ${sq} adds: ${gfM(q)} − ${h * h} = ${gfM(k)} (1 mark).`,
+      { options: sqUniq(ans, [`${sq} ${q + h * h < 0 ? "−" : "+"} ${Math.abs(q + h * h)}`, `${gxB(1, p)}² ${q - p * p < 0 ? "−" : "+"} ${Math.abs(q - p * p)}`]), label: `ctsq ${p},${q}`, skill: "completing the square" }); };
+  // Algebraic fractions
+  const sqAf1 = () => { const a = gfR(1, 7), b = gfR(-6, 6) || 4; if (a === -b) return {};
+    const ans = `${gxB(1, a)} / ${gxB(1, b)}`.replace(/^\((.*)\) \/ /, "($1) / ");
+    return gfQ(`Simplify ${gxB(1, a)}² / (${gxE([[1, "x²"], [a + b, "x"], [a * b, ""]])}).`, ans, 2,
+      `•1 factorise the denominator: ${gxB(1, a)}${gxB(1, b)} (1 mark). •2 cancel the common factor ${gxB(1, a)}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${gxB(1, a)} / ${gxB(1, -b)}`, `${gxB(1, a)}² / ${gxB(1, b)}`]), label: `af1 ${a},${b}`, skill: "simplifying algebraic fractions" }); };
+  const sqAf2 = () => { const a = gfR(2, 9), b = gfR(2, 9), [u, v] = pick([["x", "y"], ["a", "b"], ["p", "q"]]), op = rand(2) ? "+" : "−";
+    const ans = `(${a}${v} ${op} ${b}${u}) / ${u}${v}`;
+    return gfQ(`Express ${a}/${u} ${op} ${b}/${v} as a single fraction in its simplest form.`, ans, 2,
+      `•1 common denominator ${u}${v} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`(${a} ${op} ${b}) / (${u} + ${v})`, `(${a}${u} ${op} ${b}${v}) / ${u}${v}`]), label: `af2 ${a}${b}${u}${op}`, skill: "adding algebraic fractions" }); };
+  const sqAf3 = () => { const a = gfR(2, 9), b = gfR(2, 9) * pick([1, 2]); if (a === b) return {};
+    const g = gcd(a, b), top = a / g === 1 ? "x" : `${a / g}x`, ans = b / g === 1 ? top : `${top} / ${b / g}`;
+    return gfQ(`Simplify ${a}/x ÷ ${b}/x².`, ans, 2, `•1 flip and multiply: ${a}/x × x²/${b} (1 mark). •2 cancel: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [b / g === 1 ? `${a / g} / x` : `${a / g} / ${b / g}x`, `${a * b}/x³`]), label: `af3 ${a},${b}`, skill: "dividing algebraic fractions" }); };
+  const sqAf4 = () => { const p = pick([2, 3, 4, 5]), q = pick([3, 4, 5, 6].filter(x => x !== p && gcd(x, p) === 1)), r = gfR(1, 6), s = gfR(1, 6);
+    const c = q * r + p * s, ord = t => (q - p < 0 ? t.reverse() : t), ans = `(${gxE(ord([[q - p, "x"], [c, ""]]))}) / ${p * q}`;
+    return gfQ(`Express (x + ${r})/${p} − (x − ${s})/${q} as a single fraction in its simplest form.`, ans, 3,
+      `•1 common denominator ${p * q}: ${q}(x + ${r}) − ${p}(x − ${s}) over ${p * q} (1 mark). •2 expand: ${q}x + ${q * r} − ${p}x + ${p * s} (1 mark). Watch the sign: − × − is +. •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`(${gxE(ord([[q - p, "x"], [q * r - p * s, ""]]))}) / ${p * q}`, `(${gxE(ord([[q - p, "x"], [c, ""]]))}) / ${p + q}`]), label: `af4 ${p}${q}${r}${s}`, skill: "subtracting algebraic fractions" }); };
+  const sqIneq = () => { const b = gfR(2, 6), x = gfR(-6, 6), a = gfR(1, 12), c = a - b * x, gt = rand(2), sym = gt ? ">" : "<", flip = gt ? "<" : ">";
+    const ans = `x ${flip} ${gfM(x)}`;
+    return gfQ(`Solve the inequation ${a} − ${b}x ${sym} ${gfM(c)}.`, ans, 2, `•1 −${b}x ${sym} ${gfM(c - a)} (1 mark). •2 divide by −${b}, which turns the sign round: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`x ${sym} ${gfM(x)}`, `x ${flip} ${gfM(-x)}`]), label: `ineq ${a},${b},${c}`, skill: "inequations" }); };
+  // Simultaneous equations
+  const sqSimWord = () => { const [thing, A, B] = pick([["tickets", "adult", "child"], ["meals", "large", "small"], ["coffees", "large", "regular"]]);
+    const a = gfR(4, 12), c = gfR(2, a - 1), p = gfR(2, 5), q = gfR(1, 4), r = gfR(1, 3), s = gfR(2, 5); if (p * s === q * r) return {};
+    const T1 = p * a + q * c, T2 = r * a + s * c, ans = `${A} £${a}, ${B} £${c}`;
+    return gfQ(`${p} ${A} and ${q} ${B} ${thing} cost £${T1}. ${r} ${A} and ${s} ${B} ${thing} cost £${T2}. Find the cost of one ${A} and one ${B} ${thing.replace(/s$/, "")}.`, ans, 4,
+      `•1 form the equations: ${p}a + ${q}c = ${T1} and ${r}a + ${s}c = ${T2} (1 mark). •2 scale and eliminate one letter (1 mark). •3 one value (1 mark). •4 the other value, both stated in context: ${ans} (1 mark).`,
+      { calc: rand(2) === 0, ps: true, options: sqUniq(ans, [`${A} £${c}, ${B} £${a}`, `${A} £${a + 1}, ${B} £${c - 1}`]), label: `simw ${p}${q}${r}${s}${a}${c}`, skill: "simultaneous equations in context" }); };
+  const sqSimGraph = () => { const m1 = gfR(1, 4), m2 = -gfR(1, 3), x = gfR(-3, 4), c1 = gfR(-5, 5), y = m1 * x + c1, c2 = y - m2 * x; if (!x || !y || x === y || x === -y) return {};
+    const ans = sqP(x, y), line = (m, c) => `y = ${gxE([[m, "x"], [c, ""]])}`;
+    return gfQ(`The lines ${line(m1, c1)} and ${line(m2, c2)} are drawn on the same axes. Find the point where they cross.`, ans, 2,
+      `•1 equate: ${gxE([[m1, "x"], [c1, ""]])} = ${gxE([[m2, "x"], [c2, ""]])}, so x = ${gfM(x)} (1 mark). •2 y = ${gfM(y)}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(y, x), sqP(x, -y), sqP(-x, y)]).slice(0, 2), label: `simg ${m1},${c1},${m2}`, skill: "simultaneous equations by graph" }); };
+  // Straight lines
+  const sqYbm = () => { const n = gfR(-5, 5) || 3, d = pick([1, 1, 2, 3]), a = gfR(-6, 6) || 2, b = gfR(-6, 6) || -3; if (gcd(n, d) !== 1 || a === b) return {};
+    const ans = sqLine(n, d, a, b);
+    return gfQ(`Find the equation of the line with gradient ${sqFr(n, d)} that passes through ${sqP(a, b)}. Give it in the form y − b = m(x − a).`, ans, 2,
+      `•1 substitute m = ${sqFr(n, d)} and the point ${sqP(a, b)} into y − b = m(x − a) (1 mark). •2 ${ans}, signs right (1 mark).`,
+      { options: sqUniq(ans, [sqLine(n, d, -a, -b), sqLine(n, d, b, a)]), label: `ybm ${n}/${d},${a},${b}`, skill: "the equation of a line" }); };
+  const sqGradEq = () => { const a = gfR(1, 6) * pick([1, -1]), b = gfR(1, 6), c = gfR(1, 30), m = sqFr(-a, b);
+    return gfQ(`Find the gradient of the line ${gxE([[a, "x"], [b, "y"]])} = ${c}.`, m, 2, `•1 make y the subject: y = ${sqFr(-a, b)}x + ${sqFr(c, b)} (1 mark). •2 the gradient is the number in front of x: ${m} (1 mark).`,
+      { accept: sqDec(-a, b), label: `grad ${a},${b},${c}`, skill: "gradient from an equation" }); };
+  // Quadratics
+  const sqTp = () => { const a = gfR(-6, 6), b = gfR(-9, 9), up = rand(2), core = a ? `${gxB(1, -a)}²` : "x²";
+    const eq = `y = ${up ? "" : "−"}${core}${b ? ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}` : ""}`;
+    const ans = `${up ? "minimum" : "maximum"} turning point ${sqP(a, b)}; axis of symmetry x = ${gfM(a)}`;
+    return gfQ(`A parabola has equation ${eq}. Write down the nature and coordinates of its turning point, and the equation of its axis of symmetry.`, ans, 2,
+      `•1 turning point ${sqP(a, b)}, a ${up ? "minimum (the x² term is positive)" : "maximum (the x² term is negative)"} (1 mark). •2 axis of symmetry x = ${gfM(a)} (1 mark).`,
+      { options: sqUniq(ans, [`${up ? "minimum" : "maximum"} turning point ${sqP(-a, b)}; axis of symmetry x = ${gfM(-a)}`, `${up ? "maximum" : "minimum"} turning point ${sqP(a, b)}; axis of symmetry y = ${gfM(b)}`]), label: `tp ${a},${b},${up}`, skill: "turning points" }); };
+  const SQ_ROOTS = ["two real and distinct roots", "equal roots (one repeated root)", "no real roots"];
+  const sqNature = () => { const k = rand(3); let a, b, c;
+    if (k === 1) { const m = gfR(1, 4), n = gfR(-5, 5) || 1; a = m * m; b = 2 * m * n; c = n * n; } else { a = gfR(1, 4); b = gfR(-7, 7); c = gfR(-8, 8) || 2; }
+    const D = b * b - 4 * a * c, ans = SQ_ROOTS[D > 0 ? 0 : D === 0 ? 1 : 2];
+    return gfQ(`Use the discriminant to find the nature of the roots of ${gxE([[a, "x²"], [b, "x"], [c, ""]])} = 0.`, ans, 2,
+      `•1 b² − 4ac = ${b < 0 ? `(${gfM(b)})` : b}² − 4 × ${a} × ${gfM(c)} = ${gfM(D)} (1 mark). •2 ${D > 0 ? "positive" : D === 0 ? "zero" : "negative"}, so ${ans} (1 mark).`,
+      { options: SQ_ROOTS.filter(o => o !== ans), label: `nat ${a},${b},${c}`, skill: "the discriminant" }); };
+  const sqKx2 = () => { const k = gfR(-5, 6) || 2, p = gfR(2, 5) * pick([1, -1]), q = k * p * p;
+    return gfQ(`The parabola y = kx² passes through the point ${sqP(p, q)}. Find the value of k.`, gfM(k), 2, `•1 substitute: ${gfM(q)} = k × ${gfM(p)}² = ${p * p}k (1 mark). •2 k = ${gfM(k)} (1 mark).`,
+      { label: `kx2 ${p},${q}`, skill: "equations of parabolas" }); };
+  // Shape: the chord in a circle (the classic pipe question)
+  const sqChord = () => { const [h, d, r] = pick([[12, 5, 13], [8, 6, 10], [24, 7, 25], [15, 8, 17], [12, 9, 15], [16, 12, 20], [20, 15, 25]]), s = pick([1, 2, 3]);
+    const R = r * s, half = h * s, dist = d * s, depth = R - dist;
+    return gfQ(`A pipe has a circular cross-section of radius ${R} cm. The water surface is a chord ${2 * half} cm wide, below the centre. How deep is the water? (cm)`, depth, 3,
+      `•1 half the chord is ${half} cm, and a radius to its end makes a right angle (1 mark). •2 Pythagoras: √(${R}² − ${half}²) = ${dist} cm from the centre to the surface (1 mark). •3 depth ${R} − ${dist} = ${depth} cm (1 mark).`,
+      { ps: true, unit: "cm", label: `chord ${R},${half}`, skill: "Pythagoras in circles" }); };
+  // Solids
+  const sqPyramid = () => { const x = gfR(3, 12), h = 3 * gfR(2, 8), v = x * x * h / 3;
+    return gfQ(`A pyramid has a square base ${x} cm by ${x} cm and a height of ${h} cm. Find its volume. (cm³)`, v, 2, `•1 V = ⅓ × base area × height = ⅓ × ${x * x} × ${h} (1 mark). •2 ${v} cm³ (1 mark).`,
+      { unit: "cm³", label: `pyr ${x},${h}`, skill: "volume of a pyramid" }); };
+  const sqArcAngle = () => { const r = gfR(4, 15), ang = gfR(25, 160), L = Number((ang / 360 * 2 * Math.PI * r).toFixed(1)), back = L / (2 * Math.PI * r) * 360;
+    if (Math.round(back) !== ang || !sqSafe(back, 0)) return {};
+    return gfQ(`A sector of a circle of radius ${r} cm has an arc length of ${gfD(L)} cm. Find the angle at the centre, to the nearest degree. (°)`, ang, 3,
+      `•1 arc = angle/360 × πd: ${gfD(L)} = angle/360 × π × ${2 * r} (1 mark). •2 angle = ${gfD(L)} ÷ (π × ${2 * r}) × 360 (1 mark). •3 ${ang}° (1 mark).`,
+      { calc: true, unit: "°", label: `arcang ${r},${ang}`, skill: "working back from an arc" }); };
+  // Trig graphs and equations
+  const sqTrigGraph = () => { const a = gfR(2, 9), b = pick([2, 3, 4, 5, 6]), f = pick(["sin", "cos"]), P = 360 / b;
+    const ans = `maximum ${a}, period ${gfD(P)}°`;
+    return gfQ(`For the graph of y = ${a} ${f} ${b}x°, write down its maximum value and its period.`, ans, 2,
+      `•1 the maximum is the amplitude, ${a} (1 mark). •2 the period is 360° ÷ ${b} = ${gfD(P)}° (1 mark).`,
+      { options: sqUniq(ans, [`maximum ${b}, period ${gfD(360 / a)}°`, `maximum ${a}, period ${360 * b}°`, `maximum ${a * b}, period ${gfD(P)}°`]).slice(0, 2), label: `tg ${a}${f}${b}`, skill: "trigonometric graphs" }); };
+  const sqTrigEq = () => { const f = pick(["sin", "cos", "tan"]), a = gfR(2, 7), b = gfR(-4, 4), c = gfR(-5, 9); const s = (c - b) / a;
+    if (s === 0 || (f !== "tan" && Math.abs(s) >= 1)) return {};
+    const base = f === "sin" ? sqDeg(Math.asin(Math.abs(s))) : f === "cos" ? sqDeg(Math.acos(Math.abs(s))) : sqDeg(Math.atan(Math.abs(s)));
+    if (!sqSafe(base, 1)) return {};
+    const q = {
+      sin: s > 0 ? [base, 180 - base] : [180 + base, 360 - base],
+      cos: s > 0 ? [base, 360 - base] : [180 - base, 180 + base],
+      tan: s > 0 ? [base, 180 + base] : [180 - base, 360 - base] }[f], show = l => `x = ${sqR(l[0], 1)} or x = ${sqR(l[1], 1)}`;
+    const ans = show(q), wrong = [show([base, 360 - base]), show([base, 180 + base]), show([180 - base, 360 - base]), show([base, 180 - base])];
+    return gfQ(`Solve ${a} ${f} x° ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${gfM(c)}, for 0 ≤ x < 360.`.replace(/ \+ 0 =/, " ="), ans, 3,
+      `•1 ${f} x° = ${sqFr(c - b, a)} (1 mark). •2 the first solution, x = ${sqR(q[0], 1)} (1 mark). •3 the second, from the quadrants where ${f} is ${s > 0 ? "positive" : "negative"}: x = ${sqR(q[1], 1)} (1 mark).`,
+      { calc: true, options: sqUniq(ans, wrong).slice(0, 2), label: `teq ${f}${a}${b}${c}`, skill: "trigonometric equations" }); };
+  const sqTrigId = () => { const [q, ans, wrong] = pick([["sin²x° / (1 − sin²x°)", "tan²x°", ["1", "cos²x°"]], ["sin x° / tan x°", "cos x°", ["sin²x°", "1"]], ["(1 − cos²x°) / cos²x°", "tan²x°", ["sin²x°", "1"]],
+      ["sin²x° + cos²x° + tan x° cos x°", "1 + sin x°", ["2 sin x°", "1 + tan x°"]], ["cos x° tan x°", "sin x°", ["1", "cos²x°"]]]);
+    return gfQ(`Simplify ${q}.`, ans, 2, `•1 use sin²x° + cos²x° = 1 or tan x° = sin x° / cos x° (1 mark). •2 ${ans} (1 mark).`, { options: wrong, label: `tid ${q}`, skill: "trigonometric identities" }); };
+  const sqTrigFit = () => { const a = gfR(2, 8), c = pick([20, 30, 40, 45, 50, 60, 70, 80]), f = rand(2) ? "cos" : "sin", at = f === "cos" ? c : c + 90;
+    const ans = `y = ${a} ${f}(x − ${c})°`;
+    return gfQ(`A graph has the shape of y = ${f} x°, stretched and moved to the right. Its maximum value is ${a}, at x = ${at}. Which is its equation?`, ans, 2,
+      `•1 the amplitude: ${a} (1 mark). •2 y = ${f} x° has its maximum at x = ${f === "cos" ? 0 : 90}, so it has moved ${c}° right: (x − ${c}) (1 mark).`,
+      { options: [`y = ${a} ${f}(x + ${c})°`, `y = ${c} ${f}(x − ${a})°`], label: `tfit ${a}${f}${c}`, skill: "trigonometric graphs" }); };
+  // Vectors in three dimensions
+  const SQ_TRIPLES = [[1, 2, 2, 3], [2, 3, 6, 7], [1, 4, 8, 9], [4, 4, 7, 9], [2, 6, 9, 11], [6, 6, 7, 11], [2, 10, 11, 15], [3, 4, 12, 13]];
+  const sqMag3 = () => { const [a, b, c, m] = pick(SQ_TRIPLES), s = pick([1, 1, 2]), v = shuffle([a, b, c]).map(x => x * s * pick([1, -1]));
+    return gfQ(`Find the magnitude of the vector ${sqP(...v)}, written across as (x, y, z).`, m * s, 2, `•1 √(${v.map(x => `${gfM(x)}²`).join(" + ")}) = √${v.reduce((t, x) => t + x * x, 0)} (1 mark). •2 ${m * s} (1 mark).`,
+      { label: `mag ${v}`, skill: "magnitude of a vector" }); };
+  const sqComp3 = () => { const A = [gfR(-5, 6), gfR(-5, 6), gfR(0, 6)], B = [gfR(-5, 6), gfR(-5, 6), gfR(0, 8)], ab = B.map((b, i) => b - A[i]), ans = sqP(...ab);
+    return gfQ(`A is the point ${sqP(...A)} and B is ${sqP(...B)}. Find the components of the vector AB, written across as (x, y, z).`, ans, 2,
+      `•1 AB = b − a (1 mark). •2 ${ans} (1 mark).`, { options: sqUniq(ans, [sqP(...ab.map(x => -x)), sqP(...B.map((b, i) => b + A[i]))]), label: `comp ${A}${B}`, skill: "vector components" }); };
+  // Statistics: standard deviation, comparing, and the line of best fit
+  const sqSd = () => { const n = gfR(5, 6), xs = Array.from({ length: n }, () => gfR(2, 30)), mean = xs.reduce((t, x) => t + x, 0) / n;
+    const sd = Math.sqrt(xs.reduce((t, x) => t + (x - mean) ** 2, 0) / (n - 1)); if (!sqSafe(sd, 1) || !Number.isInteger(mean * 10)) return {};
+    return gfQ(`Find the standard deviation of ${xs.join(", ")}. Give your answer to 1 decimal place.`, sqR(sd, 1), 3,
+      `•1 the mean: ${gfD(mean)} (1 mark). •2 Σ(x − mean)² = ${gfD(xs.reduce((t, x) => t + (x - mean) ** 2, 0))} (1 mark). •3 s = √(${gfD(xs.reduce((t, x) => t + (x - mean) ** 2, 0))} ÷ ${n - 1}) = ${sqR(sd, 1)} (1 mark).`,
+      { calc: true, label: `sd ${xs}`, skill: "standard deviation" }); };
+  const sqSdCompare = () => { const [what, A, B] = pick([["Test marks", "Class A", "Class B"], ["Delivery times in minutes", "Van A", "Van B"], ["Daily sales", "Shop A", "Shop B"]]);
+    const m1 = gfR(30, 70), m2 = m1 + pick([-1, 1]) * gfR(3, 9), s1 = gfR(20, 60) / 10, s2 = s1 + pick([-1, 1]) * gfR(15, 40) / 10; if (s2 <= 0.5) return {};
+    const hi = m1 > m2 ? A : B, steady = s1 < s2 ? A : B, ans = `On average ${hi} is higher, and ${steady} is more consistent (smaller standard deviation)`;
+    return gfQ(`${what}. ${A}: mean ${m1}, standard deviation ${gfD(s1)}. ${B}: mean ${m2}, standard deviation ${gfD(s2)}. Which comparison is right?`, ans, 2,
+      `•1 compare the means, in context (1 mark). •2 compare the standard deviations: the smaller one is more consistent (1 mark).`,
+      { options: [`On average ${hi} is higher, and ${steady === A ? B : A} is more consistent (bigger standard deviation)`, `On average ${hi === A ? B : A} is higher, and ${steady} is more consistent (smaller standard deviation)`], label: `sdc ${m1}${m2}${s1}${s2}`, skill: "comparing data sets" }); };
+  const sqBestFit = () => { const c = gfR(5, 40), m = gfR(2, 9), p = gfR(4, 10), r = gfR(2, 12); if (r === p) return {};
+    const q = c + m * p, est = c + m * r;
+    return gfQ(`On a scattergraph of hours of revision (x) against test mark (y), a line of best fit passes through (0, ${c}) and (${p}, ${q}). Find its equation, and use it to estimate the mark for ${r} hours.`, est, 3,
+      `•1 gradient (${q} − ${c}) ÷ ${p} = ${m} (1 mark). •2 y = ${m}x + ${c} (1 mark). •3 ${m} × ${r} + ${c} = ${est} (1 mark).`,
+      { label: `bf ${c},${m},${p},${r}`, skill: "the line of best fit" }); };
+
+  const SQ_N5 = [
+    ["surds", "Surds and indices", "Surds, indices and scientific notation", "Number", "Simplifying surds, rationalising denominators, the laws of indices, and scientific notation.", sqFrom("gh-surds").concat(sqFrom("g5-indices", [0, 1, 2, 3]), [sqSci1, sqSci2])],
+    ["percent", "Percentages and fractions", "Percentages, appreciation and depreciation, and mixed numbers", "Fractions, decimals and percentages", "Reverse percentages, compound interest, appreciation and depreciation, and calculating with mixed numbers.", sqFrom("g5-growth", [0, 1, 2, 3, 4, 6]).concat([sqMixQ, sqMixQ])],
+    ["brackets", "Brackets", "Expanding, factorising and completing the square", "Patterns and missing numbers", "Expanding brackets, factorising (common factor, difference of two squares, trinomials) and completing the square.", sqFrom("g5-brackets", [0, 1, 2, 4, 5]).concat(sqFrom("gh-quadratics", [0]), [sqCubicExp, sqCtsq])],
+    ["fractions", "Algebraic fractions", "Algebraic fractions", "Patterns and missing numbers", "Simplifying algebraic fractions, and adding, subtracting, multiplying and dividing them.", sqFrom("gh-algebra", [0, 1]).concat([sqAf1, sqAf2, sqAf3, sqAf4])],
+    ["equations", "Equations", "Equations, inequations and changing the subject", "Patterns and missing numbers", "Linear equations and inequations, equations with fractions, and changing the subject of a formula.", sqFrom("g5-solving", [0, 1, 3, 5]).concat(sqFrom("gh-algebra", [2, 3]), [sqIneq])],
+    ["simultaneous", "Simultaneous equations", "Simultaneous equations", "Patterns and missing numbers", "Solving simultaneous equations by elimination and by graph, and in context.", sqFrom("g5-solving", [2, 2]).concat([sqSimWord, sqSimGraph])],
+    ["lines", "Straight lines", "Straight lines and gradient", "Patterns and missing numbers", "Gradient, y = mx + c, y − b = m(x − a), and the gradient from an equation.", sqFrom("g5-lines", [0, 1, 2, 3]).concat([sqYbm, sqGradEq])],
+    ["quadratics", "Quadratics", "Quadratic functions and equations", "Patterns and missing numbers", "Parabolas and turning points, solving quadratics by factorising and the formula, and the discriminant.", sqFrom("g5-brackets", [6]).concat(sqFrom("gh-quadratics", [1, 2]), [sqTp, sqNature, sqKx2])],
+    ["shapes", "Shape", "Pythagoras, angles and similarity", "Shape and angles", "Pythagoras in 2D and 3D and its converse, angles in polygons and circles, and similar shapes.", sqFrom("g5-pythagoras", [3]).concat(sqFrom("gh-trig", [6]), sqFrom("g5-polygons", [1, 4]), sqFrom("gh-circles", [1, 4]), sqFrom("gh-similar", [0, 1, 2]), [sqChord])],
+    ["solids", "Arcs and volumes", "Arcs, sectors and volumes", "Measurement", "Arc length and sector area, and volumes of spheres, cones, pyramids and cylinders.", sqFrom("gh-solids", [0, 1, 2, 3]).concat(sqFrom("g5-circles", [4]), [sqPyramid, sqArcAngle])],
+    ["trig", "Trigonometry", "Trigonometry: area, sine rule, cosine rule and bearings", "Shape and angles", "Area = ½ab sin C, the sine rule, the cosine rule, and bearings.", sqFrom("gh-trig", [0, 1, 2, 3, 4, 5]).concat(sqFrom("g5-polygons", [3]))],
+    ["trigeq", "Trig graphs and equations", "Trigonometric graphs, equations and identities", "Shape and angles", "Amplitude and period, the equation of a trig graph, solving trig equations from 0° to 360°, and simple identities.", [sqTrigGraph, sqTrigEq, sqTrigEq, sqTrigId, sqTrigFit]],
+    ["vectors", "Vectors", "Vectors", "Shape and angles", "Vectors in two and three dimensions: components, adding, magnitude and paths.", sqFrom("gh-vectors", [0, 1, 2, 3]).concat([sqMag3, sqComp3])],
+    ["statistics", "Statistics", "Statistics: comparing data and lines of best fit", "Data and chance", "Mean, interquartile range and standard deviation, comparing data sets in context, and the line of best fit.", sqFrom("gf-statistics", [0]).concat(sqFrom("gh-statistics", [2]), [sqSd, sqSdCompare, sqBestFit])]
+  ].map(([slug, short, title, strand, blurb, makers], i) => ({ id: `n5-${slug}`, n: i + 1, short, title, strand, blurb, makers }));
+
+  // ----- Stage 3: Higher -----
+  // Polynomials in x from coefficients, highest power first: [1, −2, 0, 5] is x³ − 2x² + 5
+  const sqPoly = cs => gxE(cs.map((c, i) => [c, ["", "x", "x²", "x³", "x⁴"][cs.length - 1 - i]]));
+  // A coefficient of 2 to n either way: a 1 or 0 makes rare spoken pieces ("x³ add x² add x") nobody recorded
+  const sqBig = n => gfR(2, n) * pick([1, -1]);
+  const sqAt = (cs, x) => cs.reduce((t, c) => t * x + c, 0);
+  const sqFact = rs => rs.slice().sort((a, b) => (a === 0 ? -1 : b === 0 ? 1 : b - a)).map(r => (r === 0 ? "x" : gxB(1, -r))).join("");
+  const sqRoots3 = () => { const rs = shuffle([-4, -3, -2, -1, 1, 2, 3, 4, 5]).slice(0, 3); return { rs, cs: [1, -(rs[0] + rs[1] + rs[2]), rs[0] * rs[1] + rs[1] * rs[2] + rs[0] * rs[2], -rs[0] * rs[1] * rs[2]] }; };
+  // A fraction coefficient for x: 3/2x → "3/2x"
+  const sqC = (n, d, v) => { const f = sqFr(n, d); return f === "1" ? v : f === "−1" ? `−${v}` : `${f}${v}`; };
+
+  // 1. Straight lines
+  const shPerp = () => { const [p, q] = pick([[1, 1], [2, 1], [1, 2], [3, 1], [1, 3], [3, 2], [2, 3], [4, 1]]), sg = pick([1, -1]), A = [gfR(-6, 2), gfR(-6, 4)], k = gfR(1, 2);
+    const B = [A[0] + q * k, A[1] + sg * p * k], C = [gfR(-5, 6), gfR(-5, 6)], ans = sqLine(-sg * q, p, C[0], C[1]);
+    return gfQ(`A is ${sqP(...A)}, B is ${sqP(...B)} and C is ${sqP(...C)}. Find the equation of the line through C perpendicular to AB.`, ans, 3,
+      `•1 gradient of AB = ${sqFr(sg * p, q)} (1 mark). •2 perpendicular gradient ${sqFr(-sg * q, p)}, as m₁ × m₂ = −1 (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqLine(sg * p, q, C[0], C[1]), sqLine(sg * q, p, C[0], C[1])]), label: `perp ${A}${B}${C}`, skill: "perpendicular lines" }); };
+  const shAngle = () => { const A = [gfR(-5, 3), gfR(-5, 3)], dx = gfR(1, 6), dy = gfR(-7, 7) || 3, B = [A[0] + dx, A[1] + dy], m = dy / dx;
+    let th = sqDeg(Math.atan(m)); if (th < 0) th += 180; if (!sqSafe(th, 1)) return {};
+    return gfQ(`Find the angle the line through ${sqP(...A)} and ${sqP(...B)} makes with the positive direction of the x-axis, to 1 decimal place. (°)`, sqR(th, 1), 3,
+      `•1 m = ${sqFr(dy, dx)} (1 mark). •2 m = tan θ, so θ = tan⁻¹(${sqFr(dy, dx)})${m < 0 ? `, which is negative, so add 180°` : ""} (1 mark). •3 ${sqR(th, 1)}° (1 mark).`,
+      { calc: true, unit: "°", label: `ang ${A}${B}`, skill: "gradient and angle" }); };
+  const shCollinear = () => { const A = [gfR(-5, 2), gfR(-5, 2)], d = [gfR(1, 3), gfR(-3, 3) || 2], k = gfR(1, 3), j = gfR(1, 3), yes = rand(2);
+    const B = [A[0] + k * d[0], A[1] + k * d[1]], C = [B[0] + j * d[0], B[1] + j * d[1] + (yes ? 0 : pick([1, -1]))];
+    const ans = yes ? "Yes: AB and BC have the same gradient and share the point B" : "No: AB and BC have different gradients";
+    return gfQ(`Are the points A${sqP(...A)}, B${sqP(...B)} and C${sqP(...C)} collinear?`, ans, 2,
+      `•1 gradient AB = ${sqFr(d[1], d[0])} and gradient BC = ${sqFr(C[1] - B[1], C[0] - B[0])} (1 mark). •2 ${yes ? "equal, with B common to both, so collinear" : "different, so not collinear"} (1 mark).`,
+      { options: [yes ? "No: AB and BC have different gradients" : "Yes: AB and BC have the same gradient and share the point B", "Yes: the three points have whole-number coordinates"], label: `col ${A}${B}${C}`, skill: "collinearity" }); };
+  const shPerpBis = () => { const A = [gfR(-6, 4), gfR(-6, 4)], dx = 2 * gfR(1, 4), dy = 2 * (gfR(-4, 4) || 1), B = [A[0] + dx, A[1] + dy], M = [A[0] + dx / 2, A[1] + dy / 2];
+    const ans = sqLine(-dx, dy, M[0], M[1]);
+    return gfQ(`A is ${sqP(...A)} and B is ${sqP(...B)}. Find the equation of the perpendicular bisector of AB.`, ans, 3,
+      `•1 midpoint of AB ${sqP(...M)} (1 mark). •2 gradient of AB ${sqFr(dy, dx)}, so the perpendicular gradient is ${sqFr(-dx, dy)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqLine(dy, dx, M[0], M[1]), sqLine(-dx, dy, A[0], A[1])]), label: `pb ${A}${B}`, skill: "perpendicular bisectors" }); };
+  const shMedian = () => { const A = [gfR(-6, 0), gfR(-4, 6)], B = [A[0] + 2 * gfR(2, 5), gfR(-4, 6) * 2 - A[1] % 2], C = [gfR(-4, 6), gfR(-8, 8)];
+    if ((A[1] + B[1]) % 2) B[1] += 1; const M = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2]; if (M[0] === C[0]) return {};
+    const ans = sqFr(M[1] - C[1], M[0] - C[0]);
+    return gfQ(`Triangle ABC has vertices A${sqP(...A)}, B${sqP(...B)} and C${sqP(...C)}. Find the gradient of the median from C.`, ans, 2,
+      `•1 the median goes to the midpoint of AB: ${sqP(...M)} (1 mark). •2 gradient ${ans} (1 mark).`,
+      { accept: sqDec(M[1] - C[1], M[0] - C[0]), label: `med ${A}${B}${C}`, skill: "medians" }); };
+
+  // 2. Functions
+  const shComp = () => { const a = gfR(2, 5) * pick([1, -1]), b = gfR(-6, 6) || 1, c = gfR(-5, 5) || 2;
+    const ans = gxE([[a, "x²"], [a * c + b, ""]]), gf = `${gxB(a, b)}² ${c < 0 ? "−" : "+"} ${Math.abs(c)}`;
+    return gfQ(`f(x) = ${gxE([[a, "x"], [b, ""]])} and g(x) = ${gxE([[1, "x²"], [c, ""]])}. Find an expression for f(g(x)).`, ans, 2,
+      `•1 substitute g(x) into f: ${gfM(a)}(${gxE([[1, "x²"], [c, ""]])}) ${b < 0 ? "−" : "+"} ${Math.abs(b)} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [gf, gxE([[a, "x²"], [c + b, ""]])]), label: `comp ${a},${b},${c}`, skill: "composite functions" }); };
+  const shEval = () => { const a = gfR(2, 5), b = gfR(-6, 6), c = gfR(-9, 9), p = gfR(-3, 4), fp = a * p + b, ans = fp * fp + c;
+    return gfQ(`f(x) = ${gxE([[a, "x"], [b, ""]])} and g(x) = ${gxE([[1, "x²"], [c, ""]])}. Evaluate g(f(${gfM(p)})).`, gfM(ans), 2,
+      `•1 f(${gfM(p)}) = ${gfM(fp)} (1 mark). •2 g(${gfM(fp)}) = ${gfM(ans)} (1 mark).`, { label: `ev ${a}${b}${c}${p}`, skill: "composite functions" }); };
+  const shInv = () => { const a = gfR(2, 7), b = gfR(-9, 9) || 4, ans = `f⁻¹(x) = (${gxE([[1, "x"], [-b, ""]])}) / ${a}`;
+    return gfQ(`f(x) = ${gxE([[a, "x"], [b, ""]])}. Find the inverse function f⁻¹(x).`, ans, 3,
+      `•1 write y = ${gxE([[a, "x"], [b, ""]])} and swap, or start to change the subject (1 mark). •2 x = (${gxE([[1, "y"], [-b, ""]])}) / ${a} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`f⁻¹(x) = (${gxE([[1, "x"], [b, ""]])}) / ${a}`, `f⁻¹(x) = 1 / (${gxE([[a, "x"], [b, ""]])})`]), label: `inv ${a},${b}`, skill: "inverse functions" }); };
+  const shDomain = () => { const k = gfR(2, 9), [q, ans, wrong] = pick([[`f(x) = 1 / (x² − ${k * k})`, `x = ${k} and x = −${k}`, [`x = ${k * k} only`, `x = ${k} only`]], [`f(x) = √(x − ${k})`, `x ≥ ${k}`, [`x > ${k}`, `x ≤ ${k}`]], [`f(x) = 3 / (x + ${k})`, `x = −${k}`, [`x = ${k}`, `x = 0`]]]);
+    return gfQ(`${q}. ${q.includes("√") ? "Which values of x can be in a suitable domain?" : "Which value or values of x must be left out of the domain?"}`, ans, 2,
+      `•1 ${q.includes("√") ? "the square root needs a number that is not negative" : "the denominator can't be zero"} (1 mark). •2 ${ans} (1 mark).`, { options: wrong, label: `dom ${q}`, skill: "domain" }); };
+  const shExpInv = () => { const b = pick([2, 3, 4, 5, 10]), ans = b === 10 ? "f⁻¹(x) = log₁₀ x" : `f⁻¹(x) = log${String(b).replace(/\d/g, d => "₀₁₂₃₄₅₆₇₈₉"[d])} x`;
+    return gfQ(`f(x) = ${b}ˣ. Write down f⁻¹(x).`, ans, 1, `•1 the inverse of an exponential is a logarithm to the same base: ${ans} (1 mark).`,
+      { options: [`f⁻¹(x) = x^(1/${b})`, `f⁻¹(x) = 1 / ${b}ˣ`], label: `expinv ${b}`, skill: "inverse functions" }); };
+
+  // 3. Graphs and transformations
+  const shShift = () => { const a = gfR(-5, 5), b = gfR(-5, 5), h = gfR(-4, 4) || 2, k = gfR(-4, 4) || -1, ans = sqP(a + h, b + k);
+    const inner = h > 0 ? `x − ${h}` : `x + ${-h}`;
+    return gfQ(`The point ${sqP(a, b)} lies on the graph of y = f(x). Where is its image on the graph of y = f(${inner}) ${k < 0 ? "−" : "+"} ${Math.abs(k)}?`, ans, 2,
+      `•1 f(${inner}) moves the graph ${Math.abs(h)} ${h > 0 ? "right" : "left"}: x becomes ${gfM(a + h)} (1 mark). •2 ${k < 0 ? "−" : "+"} ${Math.abs(k)} moves it ${Math.abs(k)} ${k > 0 ? "up" : "down"}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(a - h, b + k), sqP(a + h, b - k), sqP(a - h, b - k)]).slice(0, 2), label: `shift ${a}${b}${h}${k}`, skill: "graph transformations" }); };
+  const shReflect = () => { const a = gfR(-6, 6) || 3, b = gfR(-6, 6) || -2, [f, img, how] = pick([["−f(x)", [a, -b], "reflects in the x-axis"], ["f(−x)", [-a, b], "reflects in the y-axis"], ["2f(x)", [a, 2 * b], "doubles every y-coordinate"], ["f(x) + 3", [a, b + 3], "moves it 3 up"]]);
+    const ans = sqP(...img);
+    return gfQ(`The point ${sqP(a, b)} lies on y = f(x). Write down its image on y = ${f}.`, ans, 1, `•1 y = ${f} ${how}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(-a, b), sqP(a, -b), sqP(-a, -b), sqP(2 * a, b)]).slice(0, 2), label: `refl ${a}${b}${f}`, skill: "graph transformations" }); };
+  const shExpBase = () => { const a = pick([2, 3, 4, 5, 6, 7]), n = gfR(2, 3);
+    return gfQ(`The graph of y = aˣ passes through the point (${n}, ${a ** n}). Find a.`, a, 2, `•1 ${a ** n} = a${sup(n)} (1 mark). •2 a = ${a} (1 mark).`, { label: `expb ${a}${n}`, skill: "exponential graphs" }); };
+  const shLogBase = () => { const a = pick([2, 3, 4, 5]), n = gfR(2, 4);
+    return gfQ(`The graph of y = logₐ x passes through the point (${a ** n}, ${n}). Find a.`, a, 2, `•1 ${n} = logₐ ${a ** n}, so a${sup(n)} = ${a ** n} (1 mark). •2 a = ${a} (1 mark).`, { label: `logb ${a}${n}`, skill: "logarithmic graphs" }); };
+
+  // 4. Polynomials
+  const shRem = () => { const cs = [1, sqBig(5), sqBig(9), sqBig(9)], k = gfR(-3, 3) || 2, r = sqAt(cs, k);
+    return gfQ(`Find the remainder when ${sqPoly(cs)} is divided by ${gxB(1, -k)}.`, gfM(r), 2, `•1 synthetic division by ${gfM(k)}, or f(${gfM(k)}) (1 mark). •2 remainder ${gfM(r)} (1 mark).`,
+      { label: `rem ${cs}${k}`, skill: "the remainder theorem" }); };
+  const shFactorK = () => { const { rs, cs } = sqRoots3(), r = rs[0];
+    return gfQ(`${gxB(1, -r)} is a factor of x³ + px² ${cs[2] < 0 ? "−" : "+"} ${Math.abs(cs[2])}x ${cs[3] < 0 ? "−" : "+"} ${Math.abs(cs[3])}. Find the value of p.`, gfM(cs[1]), 3,
+      `•1 f(${gfM(r)}) = 0, because ${gxB(1, -r)} is a factor (1 mark). •2 ${gfM(r ** 3)} + ${r * r}p ${cs[2] * r + cs[3] < 0 ? "−" : "+"} ${Math.abs(cs[2] * r + cs[3])} = 0 (1 mark). •3 p = ${gfM(cs[1])} (1 mark).`,
+      { label: `fk ${rs}`, skill: "the factor theorem" }); };
+  const shFactorise = () => { const { rs, cs } = sqRoots3(), ans = sqFact(rs);
+    return gfQ(`${gxB(1, -rs[0])} is a factor of ${sqPoly(cs)}. Factorise ${sqPoly(cs)} fully.`, ans, 3,
+      `•1 synthetic division by ${gfM(rs[0])}, remainder 0 (1 mark). •2 the quotient: ${sqPoly([1, -(rs[1] + rs[2]), rs[1] * rs[2]])} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqFact(rs.map(r => -r)), sqFact([rs[0], -rs[1], -rs[2]])]), label: `fz ${rs}`, skill: "factorising cubics" }); };
+  const shSolve3 = () => { const { rs, cs } = sqRoots3(), so = rs.slice().sort((a, b) => a - b), show = l => `x = ${l.map(gfM).join(", ")}`, ans = show(so);
+    return gfQ(`Solve ${sqPoly(cs)} = 0.`, ans, 4, `•1 find a root by trying factors of ${Math.abs(cs[3])}: f(${gfM(rs[0])}) = 0 (1 mark). •2 synthetic division: ${sqPoly([1, -(rs[1] + rs[2]), rs[1] * rs[2]])} (1 mark). •3 factorise fully: ${sqFact(rs)} (1 mark). •4 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [show(so.map(r => -r).sort((a, b) => a - b)), show([so[0], so[1], -so[2]].sort((a, b) => a - b))]), label: `s3 ${rs}`, skill: "solving cubics" }); };
+
+  // 5. Quadratic theory
+  const shEqualRoots = () => { const m = gfR(1, 7), c = m * m;
+    return gfQ(`x² + kx + ${c} = 0 has equal roots, and k is positive. Find k.`, 2 * m, 3, `•1 equal roots: b² − 4ac = 0 (1 mark). •2 k² − ${4 * c} = 0 (1 mark). •3 k = ${2 * m} (1 mark).`, { label: `eq ${c}`, skill: "the discriminant" }); };
+  const shNoRoots = () => { const b = 2 * gfR(1, 6) * pick([1, -1]), lim = b * b / 4, ans = `p > ${lim}`;
+    return gfQ(`Find the values of p for which x² ${b < 0 ? "−" : "+"} ${Math.abs(b)}x + p = 0 has no real roots.`, ans, 3,
+      `•1 no real roots: b² − 4ac < 0 (1 mark). •2 ${b * b} − 4p < 0 (1 mark). •3 ${ans} (1 mark).`, { options: [`p < ${lim}`, `p > ${b * b}`], label: `nr ${b}`, skill: "the discriminant" }); };
+  const shQIneq = () => { const a = gfR(-6, 3), b = a + gfR(1, 7); if (a + b === 0) return {}; const lt = rand(2), ans = lt ? `${gfM(a)} < x < ${gfM(b)}` : `x < ${gfM(a)} or x > ${gfM(b)}`;
+    return gfQ(`Solve ${sqPoly([1, -(a + b), a * b])} ${lt ? "<" : ">"} 0.`, ans, 3,
+      `•1 roots ${gfM(a)} and ${gfM(b)}, by factorising: ${sqFact([a, b])} (1 mark). •2 a sketch: a U-shape crossing at ${gfM(a)} and ${gfM(b)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: [lt ? `x < ${gfM(a)} or x > ${gfM(b)}` : `${gfM(a)} < x < ${gfM(b)}`, lt ? `${gfM(-b)} < x < ${gfM(-a)}` : `x < ${gfM(-b)} or x > ${gfM(-a)}`], label: `qi ${a}${b}${lt}`, skill: "quadratic inequations" }); };
+  const shTangent = () => { const p = gfR(-4, 4), q = gfR(-5, 5), x0 = gfR(-3, 3), y0 = x0 * x0 + p * x0 + q, m = 2 * x0 + p, c = y0 - m * x0, ans = sqP(x0, y0); if (!x0 || !y0 || x0 === y0) return {};
+    return gfQ(`Show that the line y = ${gxE([[m, "x"], [c, ""]])} is a tangent to the curve y = ${sqPoly([1, p, q])}, and find the point of contact.`, ans, 4,
+      `•1 equate and rearrange: ${sqPoly([1, p - m, q - c])} = 0 (1 mark). •2 the discriminant is 0, so one point of contact: a tangent (1 mark). •3 x = ${gfM(x0)} (1 mark). •4 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(-x0, y0), sqP(x0, -y0), sqP(y0, x0)]).slice(0, 2), label: `tan ${p}${q}${x0}`, skill: "tangency" }); };
+
+  // 6. Recurrence relations
+  const shRec = () => { const a = pick([0.5, 0.2, 0.4, 2, 3, 0.8]), b = gfR(-6, 12), u0 = gfR(1, 20), u1 = a * u0 + b, u2 = a * u1 + b;
+    return gfQ(`A sequence is defined by uₙ₊₁ = ${gfD(a)}uₙ ${b < 0 ? "−" : "+"} ${Math.abs(b)}, with u₀ = ${u0}. Find u₂.`, gfD(u2), 2, `•1 u₁ = ${gfD(a)} × ${u0} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${gfD(u1)} (1 mark). •2 u₂ = ${gfD(u2)} (1 mark).`,
+      { label: `rec ${a}${b}${u0}`, skill: "recurrence relations" }); };
+  const shLimit = () => { const a = pick([0.2, 0.25, 0.4, 0.5, 0.6, 0.75, 0.8]), L = gfR(2, 15) * 20, b = Number((L * (1 - a)).toFixed(2));
+    return gfQ(`uₙ₊₁ = ${gfD(a)}uₙ + ${gfD(b)}. Explain why this sequence has a limit, and find it.`, String(L), 3,
+      `•1 a limit exists because −1 < ${gfD(a)} < 1 (1 mark). •2 L = ${gfD(a)}L + ${gfD(b)} (1 mark). •3 L = ${gfD(b)} ÷ ${gfD(1 - a)} = ${L} (1 mark).`, { label: `lim ${a}${L}`, skill: "limits of sequences" }); };
+  const shWhichLimit = () => { const good = pick([0.3, 0.6, 0.9, -0.5]), bad = shuffle([1.2, -1.5, 2, 1.05]).slice(0, 2), f = a => `uₙ₊₁ = ${gfD(a)}uₙ + 4`;
+    return gfQ(`Which of these recurrence relations has a limit?`, f(good), 1, `•1 a limit exists only when −1 < a < 1: ${f(good)} (1 mark).`, { options: bad.map(f), label: `wl ${good}${bad}`, skill: "limits of sequences" }); };
+  const shTank = () => { const p = pick([20, 25, 40, 50]), L = gfR(3, 20) * 40, add = L * p / 100, keep = (100 - p) / 100;
+    return gfQ(`A pond loses ${p}% of its water each week, and then ${add} litres are added. In the long run, how much water will the pond hold? (litres)`, L, 3,
+      `•1 uₙ₊₁ = ${gfD(keep)}uₙ + ${add} (1 mark). •2 −1 < ${gfD(keep)} < 1, so a limit exists; L = ${gfD(keep)}L + ${add} (1 mark). •3 L = ${add} ÷ ${gfD(1 - keep)} = ${L} litres (1 mark).`,
+      { ps: true, unit: "litres", label: `tank ${p}${L}`, skill: "recurrence relations in context" }); };
+
+  // 7. Differentiation
+  const shDiffPoly = () => { const a = gfR(1, 5) * pick([1, -1]), b = sqBig(6), c = sqBig(9), d = sqBig(9);
+    const ans = sqPoly([3 * a, 2 * b, c]);
+    return gfQ(`Differentiate y = ${sqPoly([a, b, c, d])} with respect to x.`, `dy/dx = ${ans}`, 2, `•1 multiply by the power and take 1 off it, term by term (1 mark). •2 dy/dx = ${ans}: the constant goes (1 mark).`,
+      { options: sqUniq(`dy/dx = ${ans}`, [`dy/dx = ${sqPoly([3 * a, 2 * b, c, d])}`, `dy/dx = ${sqPoly([a, b, c])}`, `dy/dx = ${sqPoly([3 * a, 2 * b, 0])}`]).slice(0, 2), label: `dp ${a}${b}${c}${d}`, skill: "differentiating" }); };
+  const shDiffIdx = () => { if (rand(2)) { const p = gfR(1, 3), k = gfR(1, 4), a = k * p * p;
+      return gfQ(`f(x) = ${a}/x, x ≠ 0. Find f′(${p}).`, sqFr(-a, p * p), 3,
+        `•1 write f(x) = ${a}x⁻¹ (1 mark). •2 f′(x) = −${a}x⁻² (1 mark). •3 f′(${p}) = −${a}/${p * p} = ${sqFr(-a, p * p)} (1 mark).`, { accept: sqDec(-a, p * p), label: `di1 ${a}${p}`, skill: "differentiating negative powers" }); }
+    const s = gfR(1, 4), k = gfR(1, 3), a = 2 * s * k;
+    return gfQ(`f(x) = ${a}√x. Find f′(${s * s}).`, String(k), 3, `•1 write f(x) = ${a}x^(1/2) (1 mark). •2 f′(x) = ${a / 2}x^(−1/2) (1 mark). •3 f′(${s * s}) = ${a / 2} ÷ ${s} = ${k} (1 mark).`,
+      { label: `di2 ${a}${s}`, skill: "differentiating fractional powers" }); };
+  const shTanLine = () => { const p = gfR(-5, 5), q = gfR(-6, 6), x0 = gfR(-3, 3), y0 = x0 * x0 + p * x0 + q, m = 2 * x0 + p, ans = sqLine(m, 1, x0, y0).replace(/= 0\(.*\)$/, "= 0");
+    if (!m) return {};
+    return gfQ(`Find the equation of the tangent to the curve y = ${sqPoly([1, p, q])} at the point where x = ${gfM(x0)}.`, ans, 4,
+      `•1 y = ${gfM(y0)} at x = ${gfM(x0)} (1 mark). •2 dy/dx = ${sqPoly([2, p])} (1 mark). •3 gradient at x = ${gfM(x0)}: ${gfM(m)} (1 mark). •4 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqLine(2 * x0, 1, x0, y0), sqLine(m, 1, -x0, -y0), sqLine(-1, m, x0, y0)]).slice(0, 2), label: `tl ${p}${q}${x0}`, skill: "equations of tangents" }); };
+  const shChain = () => { const a = gfR(2, 5), b = gfR(-7, 7) || 1, n = gfR(3, 6), co = n * a, ans = `dy/dx = ${co}${gxB(a, b)}${sup(n - 1)}`;
+    return gfQ(`Differentiate y = ${gxB(a, b)}${sup(n)}.`, ans, 2, `•1 the power: ${n}${gxB(a, b)}${sup(n - 1)} (1 mark). •2 the chain rule: × ${a}, so ${ans.replace("dy/dx = ", "")} (1 mark).`,
+      { options: [`dy/dx = ${n}${gxB(a, b)}${sup(n - 1)}`, `dy/dx = ${co}${gxB(a, b)}${sup(n + 1)}`], label: `ch ${a}${b}${n}`, skill: "the chain rule" }); };
+  const shDiffTrig = () => { const a = gfR(2, 6), b = gfR(2, 5), sn = rand(2), ans = sn ? `${a * b} cos ${b}x` : `−${a * b} sin ${b}x`;
+    return gfQ(`Differentiate ${a} ${sn ? "sin" : "cos"} ${b}x with respect to x.`, ans, 2, `•1 ${sn ? "sin → cos" : "cos → −sin"} (1 mark). •2 × ${b} by the chain rule: ${ans} (1 mark).`,
+      { options: sn ? [`${a} cos ${b}x`, `−${a * b} cos ${b}x`] : [`${a * b} sin ${b}x`, `−${a} sin ${b}x`], label: `dt ${a}${b}${sn}`, skill: "differentiating sin and cos" }); };
+
+  // 8. Using differentiation
+  const shCubicSP = () => { const r1 = gfR(-4, 2), r2 = r1 + 2 * gfR(1, 3), d = gfR(-9, 9), cs = [1, -1.5 * (r1 + r2), 3 * r1 * r2, d], y1 = sqAt(cs, r1), y2 = sqAt(cs, r2);
+    return { cs, r1, r2, y1, y2 }; };
+  const shStat = () => { const { cs, r1, r2, y1, y2 } = shCubicSP(), ans = `${sqP(r1, y1)} and ${sqP(r2, y2)}`;
+    return gfQ(`Find the coordinates of the stationary points on the curve y = ${sqPoly(cs)}.`, ans, 4,
+      `•1 dy/dx = ${sqPoly([3, 2 * cs[1], cs[2]])} (1 mark). •2 set dy/dx = 0 (1 mark). •3 x = ${gfM(r1)} and x = ${gfM(r2)} (1 mark). •4 the y-values: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${sqP(r1, y2)} and ${sqP(r2, y1)}`, `${sqP(r1, -y1)} and ${sqP(r2, -y2)}`]), label: `st ${cs}`, skill: "stationary points" }); };
+  const shNature = () => { const { cs, r1, r2, y1, y2 } = shCubicSP(), ans = `${sqP(r1, y1)} is a maximum and ${sqP(r2, y2)} is a minimum`;
+    return gfQ(`The curve y = ${sqPoly(cs)} has stationary points ${sqP(r1, y1)} and ${sqP(r2, y2)}. Determine their nature.`, ans, 2,
+      `•1 a nature table (or the second derivative) for dy/dx = 3${sqFact([r1, r2])} (1 mark). •2 ${ans} (1 mark).`,
+      { options: [`${sqP(r1, y1)} is a minimum and ${sqP(r2, y2)} is a maximum`, "both are points of inflection"], label: `na ${cs}`, skill: "the nature of stationary points" }); };
+  const shIncr = () => { const p = 2 * gfR(-5, 5), q = gfR(-9, 9), up = rand(2), v = -p / 2, ans = `x ${up ? ">" : "<"} ${gfM(v)}`;
+    return gfQ(`For which values of x is y = ${sqPoly([1, p, q])} ${up ? "increasing" : "decreasing"}?`, ans, 2, `•1 dy/dx = ${sqPoly([2, p])} (1 mark). •2 dy/dx ${up ? ">" : "<"} 0 when ${ans} (1 mark).`,
+      { options: [`x ${up ? "<" : ">"} ${gfM(v)}`, `x ${up ? ">" : "<"} ${gfM(-v)}`].filter(o => o !== ans), label: `inc ${p}${q}${up}`, skill: "increasing and decreasing functions" }); };
+  const shOptim = () => { const L = 4 * gfR(5, 25), x = L / 4, A = L * L / 8;
+    return gfQ(`A farmer has ${L} m of fencing to make a rectangular pen against a wall, so only three sides need fencing. With width x m, the area is A = x(${L} − 2x). Find the largest possible area. (m²)`, A, 4,
+      `•1 A = ${L}x − 2x² (1 mark). •2 dA/dx = ${L} − 4x (1 mark). •3 dA/dx = 0 when x = ${x}, a maximum (1 mark). •4 A = ${x} × ${L - 2 * x} = ${A} m² (1 mark).`,
+      { ps: true, unit: "m²", label: `opt ${L}`, skill: "optimisation" }); };
+  const shRate = () => { const a = gfR(10, 40), b = gfR(2, 5), t = gfR(1, 4), r = a - 2 * b * t;
+    return gfQ(`The height of a ball t seconds after it is thrown is h(t) = ${a}t − ${b}t² metres. Find the rate of change of its height when t = ${t}. (m/s)`, gfM(r), 2,
+      `•1 h′(t) = ${a} − ${2 * b}t (1 mark). •2 h′(${t}) = ${gfM(r)} m/s (1 mark).`, { unit: "m/s", label: `rate ${a}${b}${t}`, skill: "rates of change" }); };
+
+  // 9. Integration
+  const shIntPoly = () => { const a = 3 * gfR(1, 4), b = 2 * (gfR(-5, 5) || 1), c = gfR(-9, 9) || 2, ans = `${sqPoly([a / 3, b / 2, c, 0])} + C`;
+    return gfQ(`Find ∫(${sqPoly([a, b, c])}) dx.`, ans, 2, `•1 add 1 to each power and divide by the new power (1 mark). •2 ${ans}, with the constant of integration (1 mark).`,
+      { options: [`${sqPoly([a / 3, b / 2, c, 0])}`, `${sqPoly([2 * a, b])} + C`, `${sqPoly([a, b, c, 0])} + C`].filter(o => o !== ans).slice(0, 2), label: `ip ${a}${b}${c}`, skill: "integrating" }); };
+  const shDefInt = () => { const k = gfR(1, 4), b = gfR(-4, 4), v = k ** 3 + b * k * k;
+    return gfQ(`Evaluate the integral of ${sqPoly([3, 2 * b, 0])} with respect to x, from x = 0 to x = ${k}.`, gfM(v), 3,
+      `•1 integrate: ${sqPoly([1, b, 0, 0])} (1 mark). •2 substitute the limits: (${k ** 3} ${b * k * k < 0 ? "−" : "+"} ${Math.abs(b * k * k)}) − 0 (1 mark). •3 ${gfM(v)} (1 mark).`, { label: `di ${k}${b}`, skill: "definite integrals" }); };
+  const shArea = () => { const r1 = gfR(-3, 2), d = gfR(1, 6), r2 = r1 + d, ans = sqFr(d ** 3, 6);
+    return gfQ(`The curve y = ${sqPoly([1, -(r1 + r2), r1 * r2])} crosses the x-axis at x = ${gfM(r1)} and x = ${gfM(r2)}. Find the area enclosed by the curve and the x-axis. (square units)`, ans, 4,
+      `•1 integrate between ${gfM(r1)} and ${gfM(r2)} (1 mark). •2 the integral: ${sqC(1, 3, "x³")} ${-(r1 + r2) / 2 < 0 ? "−" : "+"} ${sqC(Math.abs(r1 + r2), 2, "x²")} ${r1 * r2 < 0 ? "−" : "+"} ${Math.abs(r1 * r2)}x (1 mark). •3 the value ${sqFr(-(d ** 3), 6)}: negative, as the region is below the x-axis (1 mark). •4 area ${ans} square units (1 mark).`.replace(/ \+ 0x| [+−] 0x²|  /g, " "),
+      { accept: sqDec(d ** 3, 6).concat([sqMix(d ** 3, 6)]), label: `ar ${r1}${d}`, skill: "area under a curve" }); };
+  const shDiffEq = () => { const a = 3 * gfR(1, 3), b = 2 * gfR(-3, 3), x0 = gfR(-2, 2) || 1, base = sqAt([a / 3, b / 2, 0, 0], x0), y0 = base + (gfR(-9, 9) || 4), c = y0 - base, ans = `y = ${sqPoly([a / 3, b / 2, 0, c])}`;
+    return gfQ(`dy/dx = ${sqPoly([a, b, 0])}, and the curve passes through ${sqP(x0, y0)}. Find y in terms of x.`, ans, 3,
+      `•1 integrate: y = ${sqPoly([a / 3, b / 2, 0, 0])} + C (1 mark). •2 substitute ${sqP(x0, y0)} (1 mark). •3 C = ${gfM(c)}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = ${sqPoly([a / 3, b / 2, 0, y0])}`, `y = ${sqPoly([a / 3, b / 2, 0, -c])}`, `y = ${sqPoly([a, b, 0, c])}`]).slice(0, 2), label: `de ${a}${b}${x0}${y0}`, skill: "differential equations" }); };
+  const shIntChain = () => { const a = gfR(2, 5), b = gfR(-6, 6) || 1, n = gfR(2, 5), den = a * (n + 1), ans = `${gxB(a, b)}${sup(n + 1)} / ${den} + C`;
+    return gfQ(`Find ∫${gxB(a, b)}${sup(n)} dx.`, ans, 2, `•1 ${gxB(a, b)}${sup(n + 1)} ÷ ${n + 1} (1 mark). •2 ÷ ${a} as well (the coefficient of x): ${ans} (1 mark).`,
+      { options: [`${gxB(a, b)}${sup(n + 1)} / ${n + 1} + C`, `${a * n}${gxB(a, b)}${sup(n - 1)} + C`], label: `ic ${a}${b}${n}`, skill: "integrating (ax + b)ⁿ" }); };
+  const shIntTrig = () => { const b = gfR(2, 5), a = b * gfR(1, 4), cs = rand(2), ans = cs ? `${a / b === 1 ? "" : a / b} sin ${b}x + C` : `−${a / b === 1 ? "" : a / b} cos ${b}x + C`;
+    return gfQ(`Find ∫${a} ${cs ? "cos" : "sin"} ${b}x dx.`, ans, 2, `•1 ${cs ? "cos → sin" : "sin → −cos"} (1 mark). •2 ÷ ${b}: ${ans} (1 mark).`,
+      { options: sqUniq(ans, cs ? [`${a * b} sin ${b}x + C`, `−${a / b === 1 ? "" : a / b} sin ${b}x + C`] : [`${a / b === 1 ? "" : a / b} cos ${b}x + C`, `−${a * b} cos ${b}x + C`]), label: `it ${a}${b}${cs}`, skill: "integrating sin and cos" }); };
+
+  // 10. Trigonometry: radians, exact values and equations
+  const SQ_RAD = { 30: "π/6", 45: "π/4", 60: "π/3", 90: "π/2", 120: "2π/3", 135: "3π/4", 150: "5π/6", 180: "π", 210: "7π/6", 225: "5π/4", 240: "4π/3", 270: "3π/2", 300: "5π/3", 315: "7π/4", 330: "11π/6" };
+  const shRadians = () => { const d = pick(Object.keys(SQ_RAD).map(Number)), ans = SQ_RAD[d];
+    return gfQ(`Write ${d}° in radians.`, ans, 1, `•1 × π/180: ${ans} (1 mark).`, { options: sqUniq(ans, [SQ_RAD[d === 30 ? 60 : 30], SQ_RAD[(d + 90) % 360] || "2π"]), label: `rad ${d}`, skill: "radians" }); };
+  const SQ_EXACT = [["sin", 30, "1/2"], ["cos", 60, "1/2"], ["sin", 60, "√3/2"], ["cos", 30, "√3/2"], ["tan", 45, "1"], ["tan", 60, "√3"], ["tan", 30, "1/√3"], ["sin", 45, "1/√2"], ["cos", 45, "1/√2"],
+    ["sin", 150, "1/2"], ["cos", 120, "−1/2"], ["sin", 240, "−√3/2"], ["cos", 330, "√3/2"], ["tan", 135, "−1"], ["sin", 225, "−1/√2"], ["cos", 150, "−√3/2"]];
+  const shExact = () => { const [f, d, ans] = pick(SQ_EXACT);
+    return gfQ(`Find the exact value of ${f}(${SQ_RAD[d]}).`, ans, 2, `•1 ${SQ_RAD[d]} is ${d}°, and the related acute angle gives the size (1 mark). •2 the quadrant gives the sign: ${ans} (1 mark).`,
+      { options: sqUniq(ans, [ans.startsWith("−") ? ans.slice(1) : `−${ans}`, { "1/2": "√3/2", "√3/2": "1/2", "1": "√3", "√3": "1/√3", "1/√3": "√3", "1/√2": "1/2" }[ans.replace("−", "")] || "1/2"]), label: `ex ${f}${d}`, skill: "exact values" }); };
+  const shRadEq = () => { const [f, v, ds] = pick([["sin", "1/2", [30, 150]], ["sin", "√3/2", [60, 120]], ["cos", "1/2", [60, 300]], ["cos", "√3/2", [30, 330]], ["cos", "−1/2", [120, 240]], ["sin", "−1/2", [210, 330]], ["tan", "1", [45, 225]], ["tan", "√3", [60, 240]]]);
+    const show = l => `x = ${l.map(d => SQ_RAD[d]).join(" or x = ")}`, ans = show(ds), k = { "1/2": 2, "√3/2": 2, "−1/2": 2 }[v], lhs = k ? `${k} ${f} x` : `${f} x`, rhs = k ? v.replace("/2", "") : v;
+    return gfQ(`Solve ${lhs} = ${rhs} for 0 ≤ x < 2π.`, ans, 3, `•1 ${f} x = ${v} (1 mark). •2 the first solution ${SQ_RAD[ds[0]]} (1 mark). •3 the second, from the right quadrant: ${SQ_RAD[ds[1]]} (1 mark).`,
+      { options: sqUniq(ans, [show([ds[0], (360 - ds[0]) % 360 || 180]), show([ds[0], (180 + ds[0]) % 360])]).slice(0, 2), label: `re ${f}${v}`, skill: "trigonometric equations in radians" }); };
+  const shDoubleEq = () => { const a = gfR(2, 5), b = gfR(1, a - 1) * pick([1, -1]), s = b / a, base = sqDeg(Math.acos(s)), x1 = base / 2, x2 = (360 - base) / 2;
+    if (!sqSafe(x1, 1) || !sqSafe(x2, 1)) return {};
+    const show = (p, q) => `x = ${sqR(p, 1)} or x = ${sqR(q, 1)}`, ans = show(x1, x2);
+    return gfQ(`Solve ${a} cos 2x° = ${gfM(b)}, for 0 ≤ x ≤ 180.`, ans, 3, `•1 cos 2x° = ${sqFr(b, a)} (1 mark). •2 2x = ${sqR(base, 1)} or ${sqR(360 - base, 1)} (1 mark). •3 ${ans} (1 mark).`,
+      { calc: true, options: sqUniq(ans, [show(base, 360 - base), show(x1, 180 - x1)]), label: `de2 ${a}${b}`, skill: "trigonometric equations with 2x" }); };
+  const shQuadTrig = () => { const [q, fac, ans, wrong] = pick([
+      ["2sin²x° − sin x° − 1 = 0", "(2 sin x° + 1)(sin x° − 1) = 0", "x = 90, 210 or 330", ["x = 30, 150 or 270", "x = 90 or 210"]],
+      ["2cos²x° − cos x° − 1 = 0", "(2 cos x° + 1)(cos x° − 1) = 0", "x = 0, 120 or 240", ["x = 0, 60 or 300", "x = 120 or 240"]],
+      ["2sin²x° + 3 sin x° + 1 = 0", "(2 sin x° + 1)(sin x° + 1) = 0", "x = 210, 270 or 330", ["x = 30, 90 or 150", "x = 210 or 330"]],
+      ["2cos²x° + cos x° − 1 = 0", "(2 cos x° − 1)(cos x° + 1) = 0", "x = 60, 180 or 300", ["x = 120, 180 or 240", "x = 60 or 300"]]]);
+    return gfQ(`Solve ${q}, for 0 ≤ x < 360.`, ans, 4, `•1 treat it as a quadratic (1 mark). •2 factorise: ${fac} (1 mark). •3 the solutions from one bracket (1 mark). •4 all of them: ${ans} (1 mark).`,
+      { options: wrong, label: `qt ${q}`, skill: "quadratic trigonometric equations" }); };
+
+  // 11. Trig formulae and the wave function
+  const SQ_PY = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]];
+  const shWave = () => { const [p, q, k] = pick(SQ_PY), [a, b] = shuffle([p, q]).map(x => x * pick([1, -1]));
+    let al = sqDeg(Math.atan2(b, a)); if (al < 0) al += 360; if (!sqSafe(al, 1)) return {};
+    const show = x => `k = ${k}, α = ${sqR(x, 1)}°`, ans = show(al);
+    return gfQ(`Write ${gfM(a)} cos x° ${b < 0 ? "−" : "+"} ${Math.abs(b)} sin x° in the form k cos(x − α)°, where k > 0 and 0 ≤ α < 360.`, ans, 4,
+      `•1 expand: k cos x° cos α° + k sin x° sin α° (1 mark). •2 compare: k cos α = ${gfM(a)}, k sin α = ${gfM(b)} (1 mark). •3 k = √(${a * a} + ${b * b}) = ${k} (1 mark). •4 tan α = ${sqFr(b, a)}, in the quadrant where cos is ${a > 0 ? "+" : "−"} and sin is ${b > 0 ? "+" : "−"}: α = ${sqR(al, 1)} (1 mark).`,
+      { calc: true, options: sqUniq(ans, [show((al + 180) % 360), show(360 - al), `k = ${Math.abs(a) + Math.abs(b)}, α = ${sqR(al, 1)}°`]).slice(0, 2), label: `wave ${a}${b}`, skill: "the wave function" }); };
+  const shDouble = () => { const [p, q, r] = pick(SQ_PY), s = rand(2), ans = s ? sqFr(2 * p * q, r * r) : sqFr(q * q - p * p, r * r);
+    return gfQ(`A is an acute angle with sin A = ${p}/${r}. Find the exact value of ${s ? "sin 2A" : "cos 2A"}.`, ans, 3,
+      `•1 cos A = ${q}/${r}, from a right-angled triangle (1 mark). •2 ${s ? "sin 2A = 2 sin A cos A" : "cos 2A = cos²A − sin²A"} (1 mark). •3 ${ans} (1 mark).`, { label: `dbl ${p}${r}${s}`, skill: "double angle formulae" }); };
+  const shAdd = () => { const [[a, b, c], [d, e, f]] = shuffle(SQ_PY).slice(0, 2), s = rand(2), top = s ? a * e + b * d : b * e - a * d, ans = sqFr(top, c * f);
+    return gfQ(`P and Q are acute angles. sin P = ${a}/${c}, cos P = ${b}/${c}, sin Q = ${d}/${f} and cos Q = ${e}/${f}. Find the exact value of ${s ? "sin(P + Q)" : "cos(P + Q)"}.`, ans, 3,
+      `•1 ${s ? "sin P cos Q + cos P sin Q" : "cos P cos Q − sin P sin Q"} (1 mark). •2 substitute: ${s ? `${a}/${c} × ${e}/${f} + ${b}/${c} × ${d}/${f}` : `${b}/${c} × ${e}/${f} − ${a}/${c} × ${d}/${f}`} (1 mark). •3 ${ans} (1 mark).`,
+      { label: `add ${a}${d}${s}`, skill: "addition formulae" }); };
+  const shIdent = () => { const [q, ans, wrong] = pick([["cos 2x", "2cos²x − 1", ["2cos x − 1", "cos²x + sin²x"]], ["sin 2x", "2 sin x cos x", ["2 sin x", "sin²x − cos²x"]], ["cos 2x", "1 − 2sin²x", ["1 − 2sin x", "2sin²x − 1"]], ["sin(x + 90)°", "cos x°", ["sin x° + 1", "−cos x°"]]]);
+    return gfQ(`Which of these is equal to ${q}?`, ans, 1, `•1 ${q} = ${ans} (1 mark).`, { options: wrong, label: `id ${q}${ans}`, skill: "trigonometric identities" }); };
+  const shWaveMax = () => { const k = gfR(2, 13), al = gfR(10, 80), c = gfR(-5, 5), ans = `maximum ${k + c}, at x = ${al}`;
+    return gfQ(`f(x) = ${k} cos(x − ${al})° ${c < 0 ? "−" : "+"} ${Math.abs(c)}, for 0 ≤ x < 360. Find the maximum value of f(x) and the value of x where it occurs.`, ans, 2,
+      `•1 cos is at most 1, so the maximum is ${k} ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${k + c} (1 mark). •2 when x − ${al} = 0: x = ${al} (1 mark).`,
+      { options: [`maximum ${k + c}, at x = ${180 + al}`, `maximum ${k}, at x = ${al}`].filter(o => o !== ans), label: `wm ${k}${al}${c}`, skill: "the wave function" }); };
+
+  // 12. Circles
+  const shCentre = () => { const a = gfR(-6, 6) || 3, b = gfR(-6, 6), r = gfR(2, 9), c = a * a + b * b - r * r, ans = `centre ${sqP(a, b)}, radius ${r}`;
+    return gfQ(`A circle has equation ${gxE([[1, "x²"], [1, "y²"], [-2 * a, "x"], [-2 * b, "y"], [c, ""]])} = 0. Write down its centre and radius.`, ans, 2,
+      `•1 centre (−g, −f) = ${sqP(a, b)} (1 mark). •2 radius √(g² + f² − c) = √(${a * a} + ${b * b} ${c < 0 ? "+" : "−"} ${Math.abs(c)}) = ${r} (1 mark).`,
+      { options: sqUniq(ans, [`centre ${sqP(-a, -b)}, radius ${r}`, `centre ${sqP(2 * a, 2 * b)}, radius ${r * r}`]), label: `cen ${a}${b}${r}`, skill: "the equation of a circle" }); };
+  const shCircEq = () => { const a = gfR(-5, 5), b = gfR(-5, 5), [p, q, r] = pick([[3, 4, 5], [0, 5, 5], [5, 12, 13], [6, 8, 10], [0, 3, 3], [2, 0, 2]]), P = [a + p, b + q], ans = `${a ? gxB(1, -a) : "x"}² + ${b ? gxB(1, -b).replace("x", "y") : "y"}² = ${r * r}`;
+    return gfQ(`A circle has centre ${sqP(a, b)} and passes through ${sqP(...P)}. Find its equation.`, ans, 2,
+      `•1 radius² = ${p}² + ${q}² = ${r * r} (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${a ? gxB(1, a) : "x"}² + ${b ? gxB(1, b).replace("x", "y") : "y"}² = ${r * r}`, ans.replace(/= \d+$/, `= ${r}`)]), label: `ce ${a}${b}${p}${q}`, skill: "the equation of a circle" }); };
+  const shCircTan = () => { const a = gfR(-4, 4), b = gfR(-4, 4), [p, q] = pick([[3, 4], [4, 3], [-3, 4], [3, -4], [-4, -3], [5, 12], [12, -5]]), P = [a + p, b + q], ans = sqLine(-p, q, P[0], P[1]);
+    return gfQ(`The point P${sqP(...P)} lies on the circle with centre C${sqP(a, b)}. Find the equation of the tangent at P.`, ans, 3,
+      `•1 gradient of the radius CP: ${sqFr(q, p)} (1 mark). •2 the tangent is perpendicular: ${sqFr(-p, q)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqLine(q, p, P[0], P[1]), sqLine(-p, q, a, b)]), label: `ct ${a}${b}${p}${q}`, skill: "tangents to circles" }); };
+  const shTwoCircles = () => { const [p, q, d] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [0, 7, 7], [8, 6, 10]]), r1 = gfR(1, d - 1), k = rand(3), r2 = k === 0 ? d - r1 : k === 1 ? d - r1 + gfR(1, 3) : Math.max(1, d - r1 - gfR(1, 2));
+    if ((k === 2 && r1 + r2 >= d) || Math.abs(r1 - r2) >= d) return {};
+    const ans = ["They touch externally", "They meet at two points", "They don't meet"][k];
+    return gfQ(`Circle A has centre (0, 0) and radius ${r1}. Circle B has centre ${sqP(p, q)} and radius ${r2}. How do the circles meet?`, ans, 3,
+      `•1 distance between centres √(${p}² + ${q}²) = ${d} (1 mark). •2 the sum of the radii: ${r1} + ${r2} = ${r1 + r2} (1 mark). •3 ${k === 0 ? "the same as the distance" : k === 1 ? "more than the distance" : "less than the distance"}, so: ${ans} (1 mark).`,
+      { options: ["They touch externally", "They meet at two points", "They don't meet"].filter(o => o !== ans), label: `tc ${p}${q}${r1}${r2}`, skill: "intersecting circles" }); };
+  const shInside = () => { const a = gfR(-4, 4), b = gfR(-4, 4), r = gfR(3, 8), P = [a + gfR(-4, 4), b + gfR(-4, 4)], d2 = (P[0] - a) ** 2 + (P[1] - b) ** 2;
+    const ans = d2 < r * r ? "inside the circle" : d2 === r * r ? "on the circle" : "outside the circle";
+    return gfQ(`Is the point ${sqP(...P)} inside, on or outside the circle ${a ? gxB(1, -a) : "x"}² + ${b ? gxB(1, -b).replace("x", "y") : "y"}² = ${r * r}?`, ans, 2,
+      `•1 substitute: (${gfM(P[0])} ${a < 0 ? "+" : "−"} ${Math.abs(a)})² + (${gfM(P[1])} ${b < 0 ? "+" : "−"} ${Math.abs(b)})² = ${d2} (1 mark). •2 compare with ${r * r}: ${ans} (1 mark).`,
+      { options: ["inside the circle", "on the circle", "outside the circle"].filter(o => o !== ans), label: `in ${a}${b}${r}${P}`, skill: "points and circles" }); };
+
+  // 13. Vectors in three dimensions
+  const shDot = () => { const a = [gfR(-5, 5), gfR(-5, 5), gfR(-5, 5)], b = [gfR(-5, 5), gfR(-5, 5), gfR(-5, 5)], v = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    return gfQ(`a = ${sqP(...a)} and b = ${sqP(...b)}, written across. Find the scalar product a.b.`, gfM(v), 2, `•1 a₁b₁ + a₂b₂ + a₃b₃ (1 mark). •2 ${gfM(v)} (1 mark).`, { label: `dot ${a}${b}`, skill: "the scalar product" }); };
+  const shVAngle = () => { const [x, y, z, m] = pick(SQ_TRIPLES), [u, v, w, n] = pick(SQ_TRIPLES), a = shuffle([x, y, z]).map(t => t * pick([1, -1])), b = shuffle([u, v, w]).map(t => t * pick([1, -1]));
+    const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2], th = sqDeg(Math.acos(dot / (m * n))); if (!sqSafe(th, 1)) return {};
+    return gfQ(`Find the angle between the vectors ${sqP(...a)} and ${sqP(...b)}, written across, to 1 decimal place. (°)`, sqR(th, 1), 4,
+      `•1 a.b = ${gfM(dot)} (1 mark). •2 |a| = ${m} and |b| = ${n} (1 mark). •3 cos θ = ${gfM(dot)} ÷ ${m * n} (1 mark). •4 θ = ${sqR(th, 1)}° (1 mark).`, { calc: true, unit: "°", label: `va ${a}${b}`, skill: "the angle between vectors" }); };
+  const shPerpV = () => { const p = pick([1, 2, 3, -1, -2]), a = [p, gfR(-5, 5) || 1, gfR(-5, 5) || 2], s = gfR(-4, 4), u = gfR(-4, 4), t = gfR(-6, 6), need = -(a[1] * s + a[2] * u) / p;
+    if (!Number.isInteger(need)) return {};
+    return gfQ(`a = ${sqP(...a)} and b = (t, ${gfM(s)}, ${gfM(u)}). Find t so that a and b are perpendicular.`, gfM(need), 3,
+      `•1 perpendicular means a.b = 0 (1 mark). •2 ${p}t ${a[1] * s + a[2] * u < 0 ? "−" : "+"} ${Math.abs(a[1] * s + a[2] * u)} = 0 (1 mark). •3 t = ${gfM(need)} (1 mark).`, { label: `pv ${a}${s}${u}${t}`, skill: "perpendicular vectors" }); };
+  const shColV = () => { const A = [gfR(-4, 4), gfR(-4, 4), gfR(-4, 4)], d = [gfR(-3, 3) || 1, gfR(-3, 3), gfR(1, 3)], k = gfR(1, 4), m = gfR(1, 4), g = gcd(k, m);
+    const B = A.map((x, i) => x + k * d[i]), C = B.map((x, i) => x + m * d[i]), ans = `${k / g} : ${m / g}`;
+    return gfQ(`A is ${sqP(...A)}, B is ${sqP(...B)} and C is ${sqP(...C)}. Show that A, B and C are collinear, and find the ratio in which B divides AC.`, ans, 3,
+      `•1 AB = ${sqP(...d.map(x => k * x))} and BC = ${sqP(...d.map(x => m * x))} (1 mark). •2 AB = ${sqFr(k, m)} BC, parallel with B in common, so collinear (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`${m / g} : ${k / g}`, `${k / g} : ${(k + m) / g}`]), label: `cv ${A}${d}${k}${m}`, skill: "collinearity in 3D" }); };
+  const shDivide = () => { const m = gfR(1, 3), n = gfR(1, 3), A = [gfR(-4, 4), gfR(-4, 4), gfR(-4, 4)], d = [gfR(-2, 2) || 1, gfR(-2, 2), gfR(1, 2)].map(x => x * (m + n));
+    const B = A.map((x, i) => x + d[i]), P = A.map((x, i) => x + d[i] * m / (m + n)), ans = sqP(...P);
+    return gfQ(`A is ${sqP(...A)} and B is ${sqP(...B)}. P divides AB in the ratio ${m} : ${n}. Find the coordinates of P.`, ans, 3,
+      `•1 AP = ${m}/${m + n} of AB (1 mark). •2 AB = ${sqP(...d)} (1 mark). •3 P = A + ${m}/${m + n} AB = ${ans} (1 mark).`,
+      { options: sqUniq(ans, [sqP(...A.map((x, i) => x + d[i] * n / (m + n))), sqP(...A.map((x, i) => x - d[i] * m / (m + n)))]).slice(0, 2), label: `dv ${A}${d}${m}${n}`, skill: "dividing a line in a ratio" }); };
+
+  // 14. Logarithms and exponentials
+  const SQ_SUB = n => String(n).replace(/\d/g, d => "₀₁₂₃₄₅₆₇₈₉"[d]);
+  const shLogVal = () => { const b = pick([2, 3, 4, 5, 10]), n = gfR(-2, 4), x = n >= 0 ? String(b ** n) : `1/${b ** -n}`;
+    return gfQ(`Evaluate log${SQ_SUB(b)} ${x}.`, gfM(n), 1, `•1 ${b}${sup(n)} = ${x}, so log${SQ_SUB(b)} ${x} = ${gfM(n)} (1 mark).`, { label: `lv ${b}${n}`, skill: "logarithms" }); };
+  const shLogLaws = () => { const b = pick([2, 3, 5]), k = gfR(1, 3), z = pick([2, 3, 4, 5, 6]), y = pick([2, 3, 4, 6]), xy = b ** k * z; if (xy % y || y === z || xy / y === z) return {};
+    const x = xy / y;
+    return gfQ(`Evaluate log${SQ_SUB(b)} ${x} + log${SQ_SUB(b)} ${y} − log${SQ_SUB(b)} ${z}.`, String(k), 3,
+      `•1 add the logs: log${SQ_SUB(b)} ${x * y} (1 mark). •2 subtract: log${SQ_SUB(b)} ${x * y / z} (1 mark). •3 ${k} (1 mark).`, { label: `ll ${b}${x}${y}${z}`, skill: "laws of logarithms" }); };
+  const shExpEq = () => { const a = pick([2, 3, 4, 5, 6, 7]), b = gfR(5, 200), x = Math.log(b) / Math.log(a); if (!sqSafe(x, 2) || Number.isInteger(x)) return {};
+    return gfQ(`Solve ${a}ˣ = ${b}. Give x to 2 decimal places.`, sqR(x, 2), 2, `•1 take logs: x log ${a} = log ${b} (1 mark). •2 x = ${sqR(x, 2)} (1 mark).`, { calc: true, label: `ee ${a}${b}`, skill: "exponential equations" }); };
+  const shLogEq = () => { const b = pick([2, 3, 5]), n = gfR(2, 4), c = gfR(-5, 6) || 1, x = b ** n - c;
+    return gfQ(`Solve log${SQ_SUB(b)}(x ${c < 0 ? "−" : "+"} ${Math.abs(c)}) = ${n}.`, gfM(x), 2, `•1 write it without logs: x ${c < 0 ? "−" : "+"} ${Math.abs(c)} = ${b}${sup(n)} (1 mark). •2 x = ${gfM(x)} (1 mark).`, { label: `le ${b}${n}${c}`, skill: "logarithmic equations" }); };
+  const shHalfLife = () => { const k = pick([0.012, 0.025, 0.031, 0.045, 0.058, 0.07, 0.085]), t = Math.log(2) / k; if (!sqSafe(t, 1)) return {};
+    return gfQ(`A substance decays so that Mₜ = M₀e^(−${k}t), with t in years. How long does it take for half of it to decay? Give your answer to 1 decimal place. (years)`, sqR(t, 1), 3,
+      `•1 ½M₀ = M₀e^(−${k}t) (1 mark). •2 ln ½ = −${k}t (1 mark). •3 t = ${sqR(t, 1)} years (1 mark).`, { calc: true, ps: true, unit: "years", label: `hl ${k}`, skill: "exponential decay" }); };
+  const shLogLine = () => { const c = gfR(0, 2), n = gfR(2, 4), k = 10 ** c, ans = `y = ${k === 1 ? "" : k}x${sup(n)}`;
+    return gfQ(`The graph of log₁₀y against log₁₀x is a straight line through (0, ${c}) with gradient ${n}. Express y in terms of x.`, ans, 3,
+      `•1 log₁₀y = ${n} log₁₀x + ${c} (1 mark). •2 log₁₀y = log₁₀x${sup(n)} + log₁₀${k} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`y = x${sup(n)} + ${k}`, `y = ${k * n}x`]), label: `lline ${c}${n}`, skill: "logarithmic graphs" }); };
+
+  const SQ_NH = [
+    ["lines", "Straight lines", "The straight line", "Patterns and missing numbers", "Gradients and angles, perpendicular lines, collinearity, and medians, altitudes and perpendicular bisectors.", [shPerp, shAngle, shCollinear, shPerpBis, shMedian]],
+    ["functions", "Functions", "Functions: composite, inverse and domain", "Patterns and missing numbers", "Composite and inverse functions, and suitable domains.", [shComp, shEval, shInv, shDomain, shExpInv]],
+    ["graphs", "Graphs", "Graphs of functions and transformations", "Patterns and missing numbers", "Transforming graphs (f(x + a), f(x) + a, −f(x), f(−x), kf(x)), and exponential and log graphs.", [shShift, shReflect, shExpBase, shLogBase]],
+    ["polynomials", "Polynomials", "Polynomials and the factor theorem", "Patterns and missing numbers", "Synthetic division, the remainder and factor theorems, factorising and solving cubics.", [shRem, shFactorK, shFactorise, shSolve3]],
+    ["quadratics", "Quadratic theory", "Quadratic theory: discriminant, inequations and tangency", "Patterns and missing numbers", "The discriminant and the nature of roots, quadratic inequations, and tangency.", [shEqualRoots, shNoRoots, shQIneq, shTangent]],
+    ["recurrence", "Recurrence relations", "Recurrence relations", "Patterns and missing numbers", "Linear recurrence relations, when a limit exists, finding it, and using them in context.", [shRec, shLimit, shWhichLimit, shTank]],
+    ["differentiation", "Differentiation", "Differentiation", "Patterns and missing numbers", "Differentiating powers (negative and fractional too), the chain rule, sin and cos, and tangents.", [shDiffPoly, shDiffIdx, shTanLine, shChain, shDiffTrig]],
+    ["calculus", "Using differentiation", "Stationary points, optimisation and rates of change", "Patterns and missing numbers", "Stationary points and their nature, increasing and decreasing functions, optimisation and rates of change.", [shStat, shNature, shIncr, shOptim, shRate]],
+    ["integration", "Integration", "Integration and area", "Patterns and missing numbers", "Integrating powers, (ax + b)ⁿ, sin and cos, definite integrals, areas and differential equations.", [shIntPoly, shDefInt, shArea, shDiffEq, shIntChain, shIntTrig]],
+    ["trig", "Trig equations", "Radians, exact values and trigonometric equations", "Shape and angles", "Radians, exact values, and solving trig equations, including with 2x and quadratic ones.", [shRadians, shExact, shRadEq, shDoubleEq, shQuadTrig]],
+    ["formulae", "Trig formulae", "Addition and double angle formulae, and the wave function", "Shape and angles", "Addition and double angle formulae, identities, and writing a cos x + b sin x as k cos(x − α).", [shWave, shDouble, shAdd, shIdent, shWaveMax]],
+    ["circles", "Circles", "The circle", "Shape and angles", "Equations of circles, centre and radius, tangents, and how lines and circles meet.", [shCentre, shCircEq, shCircTan, shTwoCircles, shInside]],
+    ["vectors", "Vectors", "Vectors in three dimensions", "Shape and angles", "The scalar product, the angle between vectors, perpendicular vectors, collinearity and dividing a line.", [shDot, shVAngle, shPerpV, shColV, shDivide]],
+    ["logs", "Logs and exponentials", "Logarithms and exponentials", "Patterns and missing numbers", "The laws of logs, exponential and log equations, exponential growth and decay, and log graphs.", [shLogVal, shLogLaws, shExpEq, shLogEq, shHalfLife, shLogLine]]
+  ].map(([slug, short, title, strand, blurb, makers], i) => ({ id: `nh-${slug}`, n: i + 1, short, title, strand, blurb, makers }));
+
+  const SQA_STAGES = [
+    { id: "n4-skills", n: 1, key: "n4", course: "National 4", grades: "National 4", goal: "the National 4 / Fourth level skills National 5 takes for granted", title: "Stage 1: National 4 skills", topics: SQ_N4 },
+    { id: "national-5", n: 2, key: "n5", course: "National 5", grades: "National 5", goal: "National 5 Mathematics", title: "Stage 2: National 5", topics: SQ_N5 },
+    { id: "higher", n: 3, key: "nh", course: "Higher", grades: "Higher", goal: "Higher Mathematics", title: "Stage 3: Higher", topics: SQ_NH }
+  ];
+  SQA_STAGES.forEach(st => st.topics.forEach(t => { t.stage = st; }));
+  const SQ_ALL = SQA_STAGES.flatMap(st => st.topics);
+  const sqTopic = id => SQ_ALL.find(t => t.id === id);
+  const sqStage = key => SQA_STAGES.find(st => st.key === key || st.id === key || st.n === key);
+  // A stage's check: one short question from each topic, in climb order
+  const sqCheck = st => st.topics.map(t => Object.assign(gfItems(t, 1, it => it.marks <= 2 && !it.pic)[0] || gfItems(t, 1)[0], { topic: t }));
+  const numeracySQA = [
+    ...SQA_STAGES.map(st => ({ id: `${st.key}-check`, title: `SQA maths climb: ${st.course} check`, level: "Senior", organiser: SQ, check: false,
+      blurb: `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The results show which topics to work on first.`,
+      make: () => sqCheck(st).map((it, i) => Object.assign(gfOnline(it, `${it.topic.n}. ${it.topic.short}: `), { skill: `${it.topic.n}. ${it.topic.short}`, diff: i })) })),
+    ...SQ_ALL.map(t => ({ id: t.id, title: `SQA maths climb (${t.stage.course}) ${t.n}: ${t.title}`, level: "Senior", organiser: SQ, check: false, blurb: `${t.blurb} Exam-style questions with marks and SQA-style marking.`,
+      make: () => gfItems(t, 10).map(it => Object.assign(gfOnline(it), { diff: it.marks * 100 + (it.ps ? 50 : 0) + rand(50) })) })),
+    ...SQA_STAGES.map(st => ({ id: `${st.key}-mixed`, title: `SQA maths climb: mixed exam questions (${st.course})`, level: "Senior", organiser: SQ, check: false,
+      blurb: `Twelve exam-style questions from across the 14 ${st.course} topics, a new mix every time, for revision once topics have been taught.`,
+      make: () => shuffle(st.topics).slice(0, 12).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }))
+  ];
+
   const numeracyExam = [
     { id: "gf-baseline", title: "GCSE maths climb: baseline check (grade 1 to 3)", level: "Fourth", organiser: GF, check: false,
       blurb: "Two quick questions on each of the 14 Foundation topics, in the order of the climb. The results show which topics to teach first.",
@@ -3874,7 +4444,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -3986,7 +4556,9 @@ window.PopActivities = (() => {
     AREAS,
     // The GCSE maths exam climb's question bank, for the A4 sheets (paper-sheets.js): its stages and topics,
     // n questions from a topic (keep filters them), and the baseline's two one-mark questions a topic
-    examBank: { STAGES: EXAM_STAGES, TOPICS: GF_TOPICS, ALL: GX_ALL, topic: gfTopic, stage: gfStage, items: (id, n, keep) => gfItems(gfTopic(id), n, keep), baseline: gfBaseline, check: key => gfCheck(gfStage(key)), online: gfOnline },
+    examBank: { STAGES: EXAM_STAGES, TOPICS: GF_TOPICS, ALL: GX_ALL, topic: gfTopic, stage: gfStage, items: (id, n, keep) => gfItems(gfTopic(id), n, keep), baseline: gfBaseline, check: key => gfCheck(gfStage(key)), online: gfOnline,
+      // Scotland's version: the SQA climb (National 4 skills, National 5, Higher), the same shape
+      scotland: { STAGES: SQA_STAGES, TOPICS: SQ_N4, ALL: SQ_ALL, topic: sqTopic, stage: sqStage, items: (id, n, keep) => gfItems(sqTopic(id), n, keep), baseline: () => sqCheck(SQA_STAGES[0]), check: key => sqCheck(sqStage(key)), online: gfOnline } },
     demand, // how demanding a question is: activities put their questions easy to hard by this
     // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
     alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),

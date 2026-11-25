@@ -1391,7 +1391,7 @@
     <a class="list-card tile-card" href="${a.href || `#/activity/${encodeURIComponent(a.id)}`}" style="--accent:${esc(a.colour || colour)}">
       <span class="lc-icon" aria-hidden="true">${a.icon}</span>
       <span class="lc-title">${esc(a.title)}</span>
-      <span class="lc-count">${esc(a.level)}${a.level && !/level|minutes/i.test(a.level) ? " level" : ""}</span>
+      <span class="lc-count">${esc(a.level === "Senior" ? "Senior phase" : a.level)}${a.level && !/level|minutes|Senior/i.test(a.level) ? " level" : ""}</span>
     </a>`;
   // Big areas (numbers has dozens) are shown in groups by curriculum organiser
   function exploreGrid(area) {
@@ -2300,7 +2300,7 @@
         ${TRIAL_MODE ? "" : `<a class="back" href="#/">← All activities</a>`}
         ${previewBanner()}
         ${plainGame(act) ? "" : `<div class="start-pip">${pipHTML("small", "bob", previewMode ? "" : START_LINE, "listen")}</div>`}
-        ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level)} level · ${esc(act.organiser)}</p>` : ""}
+        ${forTeacher() ? `<p class="eyebrow">${act.icon} ${esc(act.level === "Senior" ? "Senior phase" : `${act.level} level`)} · ${esc(act.organiser)}</p>` : ""}
         <h1>${act.icon ? `<span aria-hidden="true">${act.icon}</span> ` : ""}${esc(act.title)}</h1>
         ${forTeacher() ? `<p class="tip">${esc(act.blurb)}</p>` : ""}
         ${/^g-canopy-run/.test(act.id) ? `<div class="canopy-mission"><strong>🌲 Pip's mission: reach the owl!</strong>

@@ -1,0 +1,318 @@
+# One-off source for content/lessons/17-sqa-climb.json (the SQA maths climb's lessons).
+# Run: python3 tools/sqa_lessons_src.py   (then npm run build). Kept so the lessons can be regenerated.
+import json, os
+
+ROOT = os.path.join(os.path.dirname(__file__), "..")
+HERE = lambda *p: os.path.join(ROOT, *p)
+
+src = {}
+for f in ["15-gcse-climb.json", "16-gcse-climb-higher.json"]:
+    for l in json.load(open(HERE("content", "lessons", f)))["lessons"]:
+        src[l["id"]] = l
+
+STAGES = [
+    ("n4", "National 4", "National 4 skills", [
+        ("number", "Whole numbers, negatives, rounding and significant figures", "Number"), ("calc", "Calculating without a calculator", "Number"),
+        ("fractions", "Fractions and mixed numbers", "Fractions, decimals and percentages"), ("percent", "Percentages", "Fractions, decimals and percentages"),
+        ("ratio", "Ratio and proportion", "Number"), ("algebra", "Expressions and formulae", "Patterns and missing numbers"),
+        ("equations", "Equations and inequations", "Patterns and missing numbers"), ("graphs", "Coordinates, straight-line graphs and gradient", "Patterns and missing numbers"),
+        ("measures", "Time, speed and measurement", "Measurement"), ("angles", "Angles, shapes, bearings and scale", "Shape and angles"),
+        ("area", "Area, volume and circles", "Measurement"), ("pythagoras", "Pythagoras' theorem", "Shape and angles"),
+        ("trig", "Right-angled trigonometry", "Shape and angles"), ("data", "Statistics and probability", "Data and chance")]),
+    ("n5", "National 5", "National 5", [
+        ("surds", "Surds, indices and scientific notation", "Number"), ("percent", "Percentages, appreciation and depreciation, and mixed numbers", "Fractions, decimals and percentages"),
+        ("brackets", "Expanding, factorising and completing the square", "Patterns and missing numbers"), ("fractions", "Algebraic fractions", "Patterns and missing numbers"),
+        ("equations", "Equations, inequations and changing the subject", "Patterns and missing numbers"), ("simultaneous", "Simultaneous equations", "Patterns and missing numbers"),
+        ("lines", "Straight lines and gradient", "Patterns and missing numbers"), ("quadratics", "Quadratic functions and equations", "Patterns and missing numbers"),
+        ("shapes", "Pythagoras, angles and similarity", "Shape and angles"), ("solids", "Arcs, sectors and volumes", "Measurement"),
+        ("trig", "Trigonometry: area, sine rule, cosine rule and bearings", "Shape and angles"), ("trigeq", "Trigonometric graphs, equations and identities", "Shape and angles"),
+        ("vectors", "Vectors", "Shape and angles"), ("statistics", "Statistics: comparing data and lines of best fit", "Data and chance")]),
+    ("nh", "Higher", "Higher", [
+        ("lines", "The straight line", "Patterns and missing numbers"), ("functions", "Functions: composite, inverse and domain", "Patterns and missing numbers"),
+        ("graphs", "Graphs of functions and transformations", "Patterns and missing numbers"), ("polynomials", "Polynomials and the factor theorem", "Patterns and missing numbers"),
+        ("quadratics", "Quadratic theory: discriminant, inequations and tangency", "Patterns and missing numbers"), ("recurrence", "Recurrence relations", "Patterns and missing numbers"),
+        ("differentiation", "Differentiation", "Patterns and missing numbers"), ("calculus", "Stationary points, optimisation and rates of change", "Patterns and missing numbers"),
+        ("integration", "Integration and area", "Patterns and missing numbers"), ("trig", "Radians, exact values and trigonometric equations", "Shape and angles"),
+        ("formulae", "Addition and double angle formulae, and the wave function", "Shape and angles"), ("circles", "The circle", "Shape and angles"),
+        ("vectors", "Vectors in three dimensions", "Shape and angles"), ("logs", "Logarithms and exponentials", "Patterns and missing numbers")]),
+]
+
+# National 4 skills reuse the GCSE climb's Foundation lessons (the same questions), told the SQA way
+N4_FROM = {"number": "number", "calc": "calc", "fractions": "fractions", "percent": "percent", "ratio": "ratio", "algebra": "algebra", "equations": "equations",
+           "graphs": "graphs", "measures": "measures", "angles": "angles", "area": "area", "pythagoras": "g5-pythagoras", "trig": "g5-trig", "data": "statistics"}
+
+# National 5 and Higher: intention, criteria, start, teach, check, home, vocab, understand, lookFor
+NEW = {
+ "n5-surds": ("We are learning to simplify surds, rationalise denominators, use the laws of indices (including negative and fractional powers) and calculate in scientific notation.",
+   ["I can simplify a surd such as √72 = 6√2, and add and subtract like surds.", "I can rationalise a denominator.", "I can use the laws of indices, including negative and fractional indices.", "I can write numbers in scientific notation and calculate with them."],
+   "Ask: is √8 + √2 the same as √10? Try it on a calculator, then find out why not.",
+   "Simplify a surd by taking out the biggest square factor: √72 = √36 × √2 = 6√2. Only like surds add. To rationalise, multiply top and bottom by the surd on the bottom. Laws of indices: add powers to multiply, subtract to divide, multiply for a power of a power; a⁰ = 1, a⁻ⁿ = 1/aⁿ, a^(1/n) is the nth root. Scientific notation: a number from 1 up to 10 times a power of 10; on Paper 2 use the calculator's ×10ˣ key, then write the answer properly (not the calculator's E).",
+   "Ask them to simplify √50 − √8 and to evaluate 27^(2/3) without a calculator.", "Find the mass of the Earth and of an electron, and write the ratio in scientific notation.",
+   "surd, rationalise, index, power, reciprocal, root, scientific notation", "Why is √12 + √3 = 3√3, but √12 + √5 can't be simplified?", "Says √12 = 2√3, so it's like terms (2 lots of √3 plus 1), but √5 is a different surd."),
+ "n5-percent": ("We are learning to work out appreciation and depreciation over several years, find the original amount before a percentage change, and calculate with mixed numbers.",
+   ["I can use a multiplier for a percentage increase or decrease.", "I can work out compound interest, appreciation and depreciation over several years.", "I can find the original amount after a percentage change (reverse percentages).", "I can add, subtract, multiply and divide mixed numbers."],
+   "A car loses 15% of its value each year. Ask: after two years, has it lost 30%?",
+   "Every change is one multiplication: up 4% is × 1.04, down 15% is × 0.85; over n years, × 0.85ⁿ. To go back to the original, divide by the multiplier (a price after a 20% rise is 120%, so ÷ 1.2), never take 20% off. Mixed numbers: make them improper fractions; for + and − use a common denominator, for × multiply across, for ÷ flip the second and multiply; give the answer as a mixed number in its simplest form. Paper 1 can ask any of these without a calculator.",
+   "Ask them to find the price before a 12% rise to £336, and to work out 2⅓ ÷ 1¾.", "Look up the value of a used car now and new, and work out its average yearly depreciation.",
+   "multiplier, appreciation, depreciation, compound interest, original amount, mixed number, improper fraction", "Why is the original price of a £96 coat after 20% off not £96 + 20%?", "Says the 20% was of the original price, not £96: £96 is 80%, so the original is £96 ÷ 0.8 = £120."),
+ "n5-brackets": ("We are learning to expand brackets (including a bracket times a trinomial), factorise fully and complete the square.",
+   ["I can expand and simplify two brackets, and a bracket times a trinomial.", "I can factorise with a common factor, a difference of two squares and a trinomial.", "I can always check for a common factor first, to factorise fully.", "I can write x² + bx + c in the form (x + p)² + q."],
+   "Ask them to expand (x + 3)(x − 3) and (x + 3)², and spot the difference.",
+   "Expand every term by every term, then collect like terms; for (x + 2)(x² − 3x + 4) that's six terms. Factorise in this order: a common factor, then a difference of two squares (a² − b² = (a + b)(a − b)), then a trinomial (find two numbers that multiply to c and add to b; for 2x² + …, test the pairs). Check by expanding. Completing the square: halve the x coefficient for the bracket, then take away its square.",
+   "Ask them to factorise 2x² − 18 fully, and to write x² − 10x + 7 in the form (x + p)² + q.", "Make a card sort: expressions on one set, their factorised forms on the other.",
+   "expand, factorise, common factor, difference of two squares, trinomial, completing the square", "Why is 2x² − 18 = (2x + 6)(x − 3) correct but not fully factorised?", "Says 2 is a common factor of 2x + 6, so it should be 2(x + 3)(x − 3)."),
+ "n5-fractions": ("We are learning to simplify algebraic fractions by factorising, and to add, subtract, multiply and divide them.",
+   ["I can simplify an algebraic fraction by factorising and cancelling a common factor.", "I can add and subtract algebraic fractions with a common denominator.", "I can multiply and divide algebraic fractions."],
+   "Ask: can you cancel the x in (x + 3)/x? Try x = 2.",
+   "Only whole factors cancel, never parts of a sum: factorise top and bottom first, then cancel a bracket that is on both. To add or subtract, find a common denominator (multiply the denominators), multiply each top by what its bottom was multiplied by, then combine; take care with a minus in front of a bracket. To multiply, multiply tops and bottoms; to divide, flip the second fraction and multiply, then cancel.",
+   "Ask them to simplify (x² − 9)/(x² + x − 6) and to write 3/x − 2/(x + 1) as a single fraction.", "Test a simplified fraction by putting in x = 5 before and after: the values should match.",
+   "algebraic fraction, factor, cancel, common denominator, simplest form", "Why can't you cancel the 3s in (x + 3)/3?", "Says the 3 on top is part of a sum (x + 3), not a factor of the whole top, so cancelling changes the value."),
+ "n5-equations": ("We are learning to solve linear equations and inequations (including with brackets and fractions) and to change the subject of a formula.",
+   ["I can solve equations with brackets, letters on both sides and fractions.", "I can solve an inequation, turning the sign when I multiply or divide by a negative.", "I can change the subject of a formula, including ones with powers, roots and fractions."],
+   "Ask: if −2x > 6, is x > −3? Try x = 0.",
+   "Do the same to both sides; clear brackets first, and clear fractions by multiplying every term by the denominator. Inequations work the same, except that multiplying or dividing by a negative turns the sign round. To change the subject, undo what has been done to the letter in reverse order: a square is undone by a square root, a fraction by multiplying.",
+   "Ask them to solve (2x + 1)/3 = x − 4 and to make r the subject of V = πr²h.", "Find a formula from science (such as v = u + at) and change its subject two ways.",
+   "equation, inequation, solve, subject, inverse operation", "Why does the sign turn round when you divide an inequation by −2?", "Says it swaps which side is bigger, e.g. 4 > 2 but −2 < −1."),
+ "n5-simultaneous": ("We are learning to solve simultaneous equations by elimination and from a graph, and to form them from a problem.",
+   ["I can solve simultaneous equations by elimination.", "I can find the solution from where two lines cross.", "I can form two equations from a problem in words and answer in context."],
+   "Two coffees and a cake cost £8; one coffee and a cake cost £5.50. Ask for the cost of a coffee before any method.",
+   "Elimination: scale one or both equations so one letter has the same coefficient, then add or subtract to remove it; solve, then substitute back. Check in the other equation. On a graph, the solution is the point where the lines cross. In a problem, say what the letters stand for, form both equations, and finish with a sentence in context. SQA marks: forming the equations, eliminating, each value.",
+   "Ask them to solve 3x + 2y = 16 and 2x − y = 6, and check in both.", "Use two shopping receipts with the same items in different amounts to find each price.",
+   "simultaneous, eliminate, substitute, coefficient, point of intersection", "Why do the two equations need to be solved together, not one at a time?", "Says each equation alone has endless solutions; only one pair of values works in both."),
+ "n5-lines": ("We are learning to find gradients and the equation of a straight line in the forms y = mx + c and y − b = m(x − a).",
+   ["I can find the gradient between two points.", "I can find the gradient and y-intercept from an equation, rearranging if needed.", "I can find the equation of a line from its gradient and a point, or from two points."],
+   "Show the line 2y = 6x + 4. Ask: is its gradient 6?",
+   "Gradient = change in y ÷ change in x (vertical ÷ horizontal). In y = mx + c, m is the gradient and c the y-intercept, so make y the subject first. Through a point (a, b) with gradient m: y − b = m(x − a), which SQA accepts as the answer unless a form is asked for. Parallel lines have equal gradients.",
+   "Ask them for the equation of the line through (2, 5) and (6, 13).", "Find a real gradient (a road sign's 10% or a ramp) and draw it to scale.",
+   "gradient, intercept, y = mx + c, parallel", "Why must 2y = 6x + 4 be divided by 2 before reading the gradient?", "Says y = mx + c needs y on its own, so y = 3x + 2 and the gradient is 3."),
+ "n5-quadratics": ("We are learning to sketch and read parabolas, solve quadratic equations by factorising and the formula, and use the discriminant.",
+   ["I can find the turning point and axis of symmetry from y = (x − a)² + b.", "I can find the equation of a parabola from its graph.", "I can solve a quadratic by factorising or by the quadratic formula.", "I can use the discriminant to state the nature of the roots."],
+   "Ask: where does y = (x − 2)² + 1 reach its lowest point, and how do you know?",
+   "y = (x − a)² + b has its turning point at (a, b), a minimum if x² is positive and a maximum if negative; the axis of symmetry is x = a. To sketch: roots, y-intercept, turning point. Solve by making one side 0, then factorise; if it won't factorise (or the question asks for rounded answers), use the formula from the formulae list. The discriminant b² − 4ac: positive, two real distinct roots; zero, equal roots; negative, no real roots.",
+   "Ask them to solve 2x² + 3x − 4 = 0 to 1 decimal place, and state the nature of the roots of x² + 4x + 5 = 0.", "Photograph a curve shaped like a parabola (a bridge, a fountain) and estimate its turning point.",
+   "parabola, turning point, axis of symmetry, root, discriminant, quadratic formula", "How can you tell, without solving, that x² + 4x + 5 = 0 has no real roots?", "Works out b² − 4ac = 16 − 20 = −4, negative, so no real roots (the parabola doesn't cross the x-axis)."),
+ "n5-shapes": ("We are learning to use Pythagoras in 2D and 3D and its converse, angle properties of polygons and circles in several steps, and similar shapes.",
+   ["I can use Pythagoras in a 2D or 3D problem, including chords in circles.", "I can use the converse of Pythagoras to decide if a triangle is right-angled.", "I can find angles in several steps with reasons (polygons, tangents, semicircles).", "I can use the scale factor of similar shapes for lengths, areas and volumes."],
+   "Show a pipe with water in it. Ask how you could find the depth from the width of the surface.",
+   "In a circle, a radius to a tangent is at 90°, the angle in a semicircle is 90°, and a radius perpendicular to a chord bisects it: each gives a right-angled triangle for Pythagoras. Converse: if a² + b² = c², the angle is 90° (state it). For similar shapes: lengths scale by k, areas by k², volumes by k³.",
+   "Ask them to decide whether a 9, 12, 15 triangle is right-angled, and to find the area of a similar shape twice as long.", "Measure a phone screen's width and height, and check its diagonal by Pythagoras.",
+   "Pythagoras, converse, hypotenuse, chord, tangent, similar, scale factor", "Why does a doubled photo need four times the paper?", "Says area scales by the square of the length scale factor: 2² = 4."),
+ "n5-solids": ("We are learning to find arc lengths and sector areas, and the volumes of spheres, cones, pyramids and composite solids.",
+   ["I can find an arc length and a sector area from the angle.", "I can work backwards from an arc or sector to the angle.", "I can find the volume of a sphere, cone, pyramid and prism.", "I can find the volume of a composite solid and round sensibly."],
+   "Ask: what fraction of a pizza is a slice with a 60° angle? So what fraction of the crust?",
+   "Arc length = angle/360 × πd; sector area = angle/360 × πr². Volumes: sphere 4/3πr³, cone 1/3πr²h, pyramid 1/3 × base area × height (on the formulae list), cylinder πr²h. For composite solids, add or subtract parts; keep full values on the calculator and round only at the end, to the accuracy asked (often 3 significant figures).",
+   "Ask them to find the volume of a cone of radius 4 cm and height 9 cm, and the angle of a sector with arc 10 cm and radius 6 cm.", "Measure a ball and estimate its volume; then fill a jug to check.",
+   "arc, sector, sphere, cone, pyramid, composite, significant figures", "Why is a cone's volume a third of a cylinder's with the same base and height?", "Says three cones' worth fill the cylinder (shown by filling, or by the formula 1/3πr²h)."),
+ "n5-trig": ("We are learning to use the sine rule, the cosine rule and ½ab sin C in triangles without a right angle, and bearings.",
+   ["I can choose the sine rule, the cosine rule or the area formula from what I know.", "I can find a side or an angle with the sine and cosine rules.", "I can find a triangle's area with ½ab sin C.", "I can solve bearings problems with these rules."],
+   "Show a triangle with no right angle. Ask: can SOH CAH TOA find the third side?",
+   "Label sides a, b, c opposite angles A, B, C. Area = ½ab sin C (two sides and the angle between). Sine rule (pairs of side and opposite angle): use it when you know a side and its opposite angle. Cosine rule: two sides and the angle between, to find the third side, or three sides to find an angle. All are on the formulae list. For bearings, draw north lines and use parallel-line angles to find the angle in the triangle.",
+   "Ask them to find the area of a triangle with sides 7 cm and 9 cm and an angle of 50° between them, then the third side.", "Use a map to find the bearing and distance between two towns, then check with the cosine rule.",
+   "sine rule, cosine rule, included angle, bearing, area", "How do you choose between the sine rule and the cosine rule?", "Says the sine rule needs a side and its opposite angle; otherwise, with two sides and the angle between or three sides, use the cosine rule."),
+ "n5-trigeq": ("We are learning to read and sketch trig graphs, solve trig equations from 0° to 360°, and simplify with the trig identities.",
+   ["I can state the amplitude and period of y = a sin bx° and y = a cos bx°.", "I can find the equation of a trig graph that is stretched or moved.", "I can solve a trig equation, finding all the solutions from 0° to 360°.", "I can simplify with sin²x + cos²x = 1 and tan x = sin x / cos x."],
+   "Ask: sin 30° = 0.5. Is there another angle under 360° with sine 0.5?",
+   "y = a sin bx°: amplitude a (the maximum), b waves in 360°, so the period is 360° ÷ b. y = sin(x − c)° moves the graph c° right. To solve, rearrange to sin x° = k, find the calculator's angle, then use the quadrant diagram (All, Sin, Tan, Cos) to find the second solution in 0° to 360°. Identities: replace sin²x + cos²x with 1, and sin x / cos x with tan x.",
+   "Ask them to solve 4 cos x° + 1 = −1 for 0 ≤ x < 360, and to simplify sin x° / tan x°.", "Sketch the graph of daylight hours over a year and say what its period is.",
+   "amplitude, period, phase, quadrant, identity", "Why does 2 sin x° = 1 have two solutions between 0° and 360°?", "Says sine is positive in two quadrants (first and second), so x = 30° and 180° − 30° = 150°."),
+ "n5-vectors": ("We are learning to add, subtract and scale vectors in two and three dimensions, find their magnitude and write vectors along a path.",
+   ["I can add, subtract and multiply vectors by a number, using components.", "I can find the magnitude of a 2D or 3D vector.", "I can find the components of AB from the coordinates of A and B.", "I can write a vector along a path in terms of other vectors."],
+   "Ask: from A to B, if you know the vectors OA and OB, which way do you go?",
+   "Work component by component. Magnitude is Pythagoras: |v| = √(x² + y² + z²). AB = b − a (B's coordinates take away A's). In a diagram, travel along known vectors: going backwards reverses the sign. In 3D, read coordinates (x, y, z) from a cuboid diagram carefully.",
+   "Ask them to find |AB| for A(1, −2, 3) and B(5, 2, 1).", "Describe a route around the house as a sum of vectors.",
+   "vector, component, magnitude, resultant, 3D coordinates", "Why is AB equal to b − a?", "Says from A you go back to O (−a) and then out to B (+b)."),
+ "n5-statistics": ("We are learning to compare data sets with the mean, median, interquartile range and standard deviation, and to use a line of best fit.",
+   ["I can find the standard deviation of a small data set.", "I can find quartiles and the interquartile range.", "I can compare two data sets in context: one statement on average, one on spread.", "I can find the equation of a line of best fit and use it to estimate."],
+   "Two pupils both average 60%. One scores 58 to 62, the other 30 to 90. Ask: who is more consistent, and how could a number show it?",
+   "Standard deviation measures spread about the mean: find the mean, the deviations, square, add, divide by n − 1, square root (the formula is on the formulae list; set out a table). The interquartile range is the upper quartile minus the lower. Comparing: one sentence about the average (mean or median) and one about the spread (standard deviation or IQR), both in context: 'On average… scored higher; …'s scores were more consistent.' Line of best fit: gradient from two points on it, then y = mx + c (or y − b = m(x − a)); use it to estimate.",
+   "Ask them to compare two shops' daily sales given their means and standard deviations.", "Time the bus or walk to school for a week and find the mean and standard deviation.",
+   "mean, standard deviation, quartile, interquartile range, consistent, line of best fit", "Why does a smaller standard deviation mean more consistent?", "Says the values are closer to the mean, so they vary less."),
+
+ "nh-lines": ("We are learning to use gradients, collinearity and perpendicular lines, including medians, altitudes and perpendicular bisectors in triangles.",
+   ["I can find a gradient from two points or from an angle (m = tan θ).", "I can show points are collinear.", "I can find the equation of a line perpendicular to another (m₁ × m₂ = −1).", "I can find the equations of medians, altitudes and perpendicular bisectors, and where lines meet."],
+   "Show a triangle on a grid. Ask: where would you draw the line from a corner to the middle of the opposite side?",
+   "m = (y₂ − y₁)/(x₂ − x₁) = tan θ, θ measured from the positive x-axis. Collinear: equal gradients and a point in common (say both). Perpendicular gradients multiply to −1. A median joins a vertex to the midpoint of the opposite side; an altitude is perpendicular to the opposite side through the vertex; a perpendicular bisector goes through a side's midpoint at right angles. Find each with y − b = m(x − a), and solve simultaneously for where two meet.",
+   "Ask them for the altitude from C in triangle A(1, 1), B(7, 3), C(2, 8).", "Find the steepest street nearby on a map and the angle it makes with the horizontal.",
+   "gradient, collinear, perpendicular, median, altitude, perpendicular bisector", "What's the difference between a median and an altitude?", "Says a median goes to the midpoint of the opposite side; an altitude meets the opposite side at a right angle."),
+ "nh-functions": ("We are learning to form composite functions, find inverse functions and state suitable domains.",
+   ["I can find f(g(x)) and g(f(x)) and know they are usually different.", "I can find the inverse of a function and know its graph is the reflection in y = x.", "I can state a suitable domain (no division by zero, no square root of a negative)."],
+   "Ask: f doubles, g adds 3. Is 'double then add 3' the same as 'add 3 then double'?",
+   "f(g(x)) means do g first, then put the result into f: replace every x in f with g(x). To find an inverse, write y = f(x), swap x and y (or rearrange for x), then write f⁻¹(x). The inverse of aˣ is logₐx. A domain excludes values that give division by zero or the square root of a negative.",
+   "Ask them to find f(g(x)) for f(x) = 3x − 1, g(x) = x² + 2, and the inverse of f.", "Make a function machine pair (a code and its decoder) and test it on a friend.",
+   "function, composite, inverse, domain, range", "Why is f(g(x)) usually different from g(f(x))?", "Says the order changes what is done first, e.g. (x + 3)² is not x² + 3."),
+ "nh-graphs": ("We are learning to sketch transformations of graphs and to work with exponential and logarithmic graphs.",
+   ["I can sketch y = f(x) + a, f(x + a), −f(x), f(−x) and kf(x) from y = f(x).", "I can find the image of a point under a transformation.", "I can sketch and find the base of exponential and log graphs through a point."],
+   "Show y = x². Ask where y = (x − 3)² and y = x² − 3 sit.",
+   "Changes outside the bracket act on y and do what they say (f(x) + 3 is up 3, 2f(x) doubles heights, −f(x) reflects in the x-axis). Changes inside act on x and do the opposite (f(x − 3) moves right 3, f(−x) reflects in the y-axis). Track the key points (roots, turning points, intercepts) and label them. y = aˣ passes through (0, 1) and (1, a); y = logₐx through (1, 0) and (a, 1).",
+   "Ask them to sketch y = 2 − f(x) for a given f, labelling the images of its turning points.", "Sketch a graph, then predict and check its transformations on a free graphing app.",
+   "transformation, translation, reflection, stretch, exponential, logarithm", "Why does f(x − 3) move the graph right, not left?", "Says x has to be 3 bigger to give the same input to f, so every point moves 3 right."),
+ "nh-polynomials": ("We are learning to use synthetic division and the factor theorem to factorise and solve cubic and quartic equations.",
+   ["I can use synthetic division to divide a polynomial by (x − a).", "I can use the factor and remainder theorems.", "I can factorise a cubic fully and solve the equation.", "I can find an unknown coefficient from a known factor."],
+   "Ask: how could you find a factor of x³ − 6x² + 11x − 6 without a calculator?",
+   "Synthetic division by a: bring the first coefficient down, multiply by a, add, and repeat; the last number is the remainder f(a). Remainder 0 means (x − a) is a factor. Try factors of the constant term. Once one factor is found, the quotient is a quadratic: factorise it, then solve. State 'remainder 0, so (x − a) is a factor': it's a mark.",
+   "Ask them to show (x − 2) is a factor of x³ − 3x² − 4x + 12, then factorise fully.", "Write a cubic from three chosen roots, then give it to someone to solve.",
+   "polynomial, synthetic division, quotient, remainder, factor theorem", "Why are the roots of a cubic among the factors of its constant term (when the x³ coefficient is 1)?", "Says the constant is the product of the roots (with signs), so whole-number roots must divide it."),
+ "nh-quadratics": ("We are learning to use the discriminant, solve quadratic inequations and show a line is a tangent to a curve.",
+   ["I can use the discriminant to find the nature of roots, and conditions for equal, real or no real roots.", "I can solve a quadratic inequation with a sketch.", "I can show a line is a tangent to a curve and find the point of contact."],
+   "Ask: how many times can a straight line meet a parabola? Sketch the cases.",
+   "b² − 4ac > 0: two real distinct roots; = 0: equal roots; < 0: no real roots; ≥ 0: real roots. Form an inequation for an unknown and solve it (sketch it if it's quadratic). A quadratic inequation: find the roots, sketch the parabola, read the part above or below the axis. Tangency: substitute the line into the curve, rearrange to = 0, show the discriminant is 0 (say 'so the line is a tangent'), then solve for the point.",
+   "Ask them for the values of k for which x² + kx + 9 = 0 has no real roots.", "Sketch three lines and a parabola that meet it 0, 1 and 2 times, and write the discriminant condition for each.",
+   "discriminant, nature of roots, inequation, tangent, point of contact", "Why does a discriminant of 0 mean the line touches the curve?", "Says the equation for where they meet has one repeated root, so there is only one meeting point."),
+ "nh-recurrence": ("We are learning to use linear recurrence relations uₙ₊₁ = auₙ + b, decide when they have a limit, and find it, including in context.",
+   ["I can find terms of a recurrence relation.", "I can state the condition for a limit (−1 < a < 1).", "I can find the limit with L = aL + b.", "I can set up and interpret a recurrence relation in context."],
+   "A pond loses a quarter of its water each week and 100 litres are added. Ask: does it fill up for ever, or settle?",
+   "Each term comes from the one before: uₙ₊₁ = auₙ + b. A limit exists only when −1 < a < 1 (write this down: it's a mark). Then L = aL + b, so L = b/(1 − a). In context, a is what is kept (losing 25% keeps 0.75), b what is added; interpret the limit in words and units.",
+   "Ask them for the limit of uₙ₊₁ = 0.6uₙ + 12 and what it means in context.", "Use a spreadsheet (or calculator's ANS key) to watch a sequence approach its limit.",
+   "recurrence relation, term, limit, converge", "Why does uₙ₊₁ = 1.2uₙ + 5 have no limit?", "Says 1.2 is not between −1 and 1, so the terms keep growing."),
+ "nh-differentiation": ("We are learning to differentiate powers (including negative and fractional), use the chain rule, differentiate sin and cos, and find tangents.",
+   ["I can rewrite terms as powers of x and differentiate them.", "I can find the gradient of a curve at a point.", "I can find the equation of a tangent.", "I can use the chain rule and differentiate sin ax and cos ax."],
+   "Ask: how steep is y = x² at x = 3? Zoom in on a graph until it looks straight.",
+   "Rewrite first: √x = x^(1/2), 4/x² = 4x⁻². Then multiply by the power and subtract 1. The derivative gives the gradient at a point; a tangent goes through the point with that gradient (find y too), so y − b = m(x − a). Chain rule: differentiate the bracket's power, then multiply by the derivative of the inside. d/dx sin ax = a cos ax, d/dx cos ax = −a sin ax (on the formulae list); x is in radians.",
+   "Ask them for the tangent to y = x³ − 2x at x = 1, and to differentiate (3x − 1)⁵.", "Find the speed of a falling ball from its distance formula s = 4.9t² at several times.",
+   "derivative, gradient, tangent, chain rule, rate of change", "Why must 4/x² be written as 4x⁻² before differentiating?", "Says the rule works on powers of x, so the term must be a power first."),
+ "nh-calculus": ("We are learning to find stationary points and their nature, where a function increases or decreases, and to solve optimisation and rate of change problems.",
+   ["I can find stationary points and use a nature table to decide their nature.", "I can find where a function is increasing or decreasing.", "I can sketch a curve from its stationary points and intercepts.", "I can solve optimisation problems with a justification."],
+   "A pen against a wall uses 40 m of fence. Ask: which width gives the biggest area? Try some.",
+   "Stationary points: write dy/dx = 0, solve for x, then find y. A nature table shows the sign of dy/dx just either side: + then − is a maximum, − then + a minimum. Increasing where dy/dx > 0. In optimisation, write the formula in one variable, differentiate, set to 0, and justify it's a maximum or minimum with a nature table before answering in context.",
+   "Ask them to find and justify the nature of the stationary points of y = x³ − 6x² + 9x + 1.", "Make an open box from a square of card by cutting corners; find the best cut by experiment, then by calculus.",
+   "stationary point, nature table, maximum, minimum, increasing, optimise", "Why do you need a nature table and not just dy/dx = 0?", "Says dy/dx = 0 only finds where the slope is flat; the signs either side say whether it's a maximum, minimum or point of inflection."),
+ "nh-integration": ("We are learning to integrate powers, (ax + b)ⁿ, sin and cos, to evaluate definite integrals, to find areas, and to solve simple differential equations.",
+   ["I can integrate powers of x, adding the constant of integration.", "I can integrate (ax + b)ⁿ, sin ax and cos ax.", "I can evaluate a definite integral and find the area under or between curves.", "I can solve dy/dx = f(x) given a point."],
+   "Ask: what did we differentiate to get 6x? Is there only one answer?",
+   "Integration undoes differentiation: add 1 to the power and divide by the new power, and + C for an indefinite integral. (ax + b)ⁿ: raise the power, divide by the new power and by a. ∫cos ax = (1/a) sin ax, ∫sin ax = −(1/a) cos ax. Definite: integrate, put in the top limit minus the bottom. Area below the x-axis comes out negative: give the area as positive, and split at the roots if needed. Between curves: integrate (top − bottom). Given a point, use it to find C.",
+   "Ask them for the area between y = x² − 4x and the x-axis.", "Estimate the area under a speed-time graph by counting squares, then by integration.",
+   "integral, constant of integration, definite, limits, area, differential equation", "Why can a definite integral be negative but an area can't?", "Says area below the x-axis gives a negative value; the area is its size, so make it positive."),
+ "nh-trig": ("We are learning to use radians and exact values, and to solve trig equations, including with multiple angles and quadratic forms.",
+   ["I can change between degrees and radians.", "I can give exact values from the special triangles.", "I can solve trig equations in degrees or radians in a given interval.", "I can solve equations with 2x or 3x, and quadratic trig equations."],
+   "Ask: sin x = 1/2. How many solutions are there between 0 and 2π?",
+   "π radians = 180°. Learn the two special triangles (45°, 45°, 90° and 30°, 60°, 90°) for exact values. To solve: rearrange, find the first angle, use the quadrant diagram for the rest. For sin 2x, solve for 2x over double the interval, then halve. For 2sin²x − sin x − 1 = 0, factorise like a quadratic in sin x, then solve each bracket. Answer in the same units as the interval.",
+   "Ask them to solve 2 cos 2x = 1 for 0 ≤ x < 2π.", "Make the two special triangles from card and label every exact value.",
+   "radian, exact value, interval, quadrant, multiple angle", "Why must you double the interval when solving sin 2x = k?", "Says 2x runs over twice the range that x does, so solutions for 2x up to 720° give x up to 360°."),
+ "nh-formulae": ("We are learning to use the addition and double angle formulae, prove identities, and write a cos x + b sin x as k cos(x − α).",
+   ["I can expand sin(A ± B) and cos(A ± B) and find exact values.", "I can use sin 2A and cos 2A in its three forms.", "I can write a cos x + b sin x as k cos(x − α) or k sin(x ± α).", "I can find the maximum and minimum of a wave function and where they occur."],
+   "Ask: is sin(30° + 60°) = sin 30° + sin 60°? Check with exact values.",
+   "The addition and double angle formulae are on the formulae list: substitute carefully, using a right-angled triangle for the other ratio when given one. For the wave function: expand k cos(x − α) = k cos x cos α + k sin x sin α, compare coefficients (k cos α = a, k sin α = b), k = √(a² + b²), and tan α = b/a in the quadrant given by the signs. The maximum of k cos(x − α) is k, when x = α.",
+   "Ask them to write cos x − √3 sin x in the form k cos(x − α) with α in degrees.", "Use a graphing app to check that 3 cos x + 4 sin x and 5 cos(x − 53.1°) give the same graph.",
+   "addition formula, double angle, identity, wave function, amplitude", "Why must α's quadrant come from the signs of k cos α and k sin α, not just tan α?", "Says tan α is the same in two quadrants, so the signs of cos α and sin α pick the right one."),
+ "nh-circles": ("We are learning to use the equation of a circle, find its centre and radius, find tangents, and decide how lines and circles meet.",
+   ["I can write the equation of a circle from its centre and radius.", "I can find the centre and radius from x² + y² + 2gx + 2fy + c = 0.", "I can find the equation of a tangent at a point on a circle.", "I can decide whether circles touch, meet or are apart, and whether a line is a tangent."],
+   "Ask: which points are exactly 5 from the origin? Plot some.",
+   "(x − a)² + (y − b)² = r² has centre (a, b) and radius r. From the general form, the centre is (−g, −f) and r = √(g² + f² − c) (on the formulae list). A tangent is perpendicular to the radius at the point. Circles: compare the distance between centres with the sum (and difference) of the radii. A line meets a circle where substituting gives a quadratic: its discriminant says 2, 1 (tangent) or 0 points.",
+   "Ask them for the tangent to x² + y² − 4x + 6y − 12 = 0 at (5, 1).", "Use a compass on squared paper to check a circle's equation by plotting points.",
+   "centre, radius, tangent, general equation, distance", "Why is the tangent's gradient found from the radius's gradient?", "Says a tangent meets the radius at a right angle, so their gradients multiply to −1."),
+ "nh-vectors": ("We are learning to use vectors in three dimensions: the scalar product, angles between vectors, perpendicular vectors, collinearity and dividing a line.",
+   ["I can find the scalar product from components or from |a||b|cos θ.", "I can find the angle between two vectors.", "I can use a.b = 0 for perpendicular vectors.", "I can show points are collinear and find the point dividing a line in a ratio."],
+   "Ask: how could you find the angle at a corner of a 3D shape you can't measure directly?",
+   "a.b = a₁b₁ + a₂b₂ + a₃b₃ = |a||b| cos θ (both on the formulae list), so cos θ = a.b / (|a||b|), with both vectors pointing away from the angle. Perpendicular: a.b = 0. Collinear: AB = k BC (parallel) and B is common: say both. A point dividing AB in m : n is A + m/(m + n) AB.",
+   "Ask them for the angle between AB and AC for A(1, 0, 2), B(3, 2, 3), C(0, 4, 5).", "Find the angle between two edges of a cardboard box from its dimensions.",
+   "scalar product, magnitude, angle between vectors, perpendicular, collinear, ratio", "Why must both vectors point away from the angle?", "Says reversing one vector gives the angle on the other side (180° − θ)."),
+ "nh-logs": ("We are learning to use the laws of logarithms, solve exponential and log equations, model growth and decay, and use log graphs.",
+   ["I can change between logs and exponentials (logₐx = n ⇔ aⁿ = x).", "I can use the laws of logs to simplify and evaluate.", "I can solve exponential and log equations.", "I can model growth and decay and find a formula y = kxⁿ or y = abˣ from a log graph."],
+   "Ask: 2 to what power is 1000? Between which whole numbers?",
+   "logₐx is the power a is raised to give x. Laws: log a + log b = log ab, log a − log b = log(a/b), n log a = log aⁿ, logₐa = 1, logₐ1 = 0. To solve aˣ = b, take logs of both sides. Growth and decay: A = A₀eᵏᵗ; take ln to find k or t. A straight line of log y against log x means y = kxⁿ (gradient n, intercept log k); log y against x means y = abˣ.",
+   "Ask them to solve 5ˣ = 40 and to simplify 2 log₃6 − log₃4.", "Find the half-life of caffeine online and work out how much is left after 10 hours.",
+   "logarithm, base, exponential, growth, decay, half-life", "Why does taking logs help solve 5ˣ = 40?", "Says it brings the unknown power down: x log 5 = log 40."),
+}
+
+def topic_lesson(key, course, name, n, slug, title, strand):
+    lid = f"lesson-sqa-climb-{key}-{slug}"
+    sheet = f"Exam practice ({course}) {n}: {title}"
+    if key == "n4":
+        s = src[f"lesson-england-gcse-climb-{N4_FROM[slug]}"]
+        intention, criteria, steps0 = s["intention"], s["criteria"], s["steps"]
+        start, teach, check = steps0["start"], steps0["teach"], steps0["check"]
+        home, vocab, understand, look = s["home"], s["vocab"], s["understand"], s["lookFor"]
+        if slug == "data":
+            p = src["lesson-england-gcse-climb-probability"]
+            criteria = criteria[:3] + p["criteria"][:1]
+            teach = teach + " Probability: a value from 0 to 1, as a fraction or decimal; it is the number of ways the event can happen out of all the equally likely outcomes, and P(not A) = 1 − P(A)."
+            intention = intention.rstrip(".") + ", and to work out simple probabilities."
+    else:
+        intention, criteria, start, teach, check, home, vocab, understand, look = NEW[f"{key}-{slug}"]
+    return {"id": lid, "level": "Senior", "subject": "Maths", "strand": strand, "codes": [],
+            "title": f"SQA maths climb ({course}) {n}: {title}", "intention": intention, "criteria": criteria,
+            "steps": {"start": start, "teach": teach,
+                      "practise": f"The \"{sheet}\" sheet, marked the SQA way (one bullet a mark, errors followed through), then the online practice.",
+                      "check": check},
+            "use": [f"{key}-{slug}"], "home": home, "vocab": vocab, "understand": understand, "lookFor": look}
+
+lessons = []
+for key, course, name, topics in STAGES:
+    expects = {"n4": ("n4-what-national-5-expects", "What National 5 expects: the National 4 skills"), "n5": ("n5-what-the-exam-expects", "What the exam expects: National 5"), "nh": ("nh-what-the-exam-expects", "What the exam expects: Higher")}[key]
+    lessons.append({"id": f"lesson-sqa-climb-{key}-start-here", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
+        "title": f"SQA maths climb ({course}) start here: check and plan",
+        "intention": f"We are finding out which of the {name} topics are already secure and which to learn first, and making a plan.",
+        "criteria": [f"I can try one exam question on each of the 14 {name} topics.", "I know which topics I will work on first, and why.", "I know how each topic works: lesson, online practice, exam-style sheet, then mini papers."],
+        "steps": {"start": {"n4": "Talk about the goal: the skills National 5 takes for granted, so the National 5 course itself is about National 5.",
+                            "n5": "Talk about the goal: a pass at National 5 (and an A or B if Higher comes next). Most marks come from steps of working, not just answers.",
+                            "nh": "Talk about the goal: Higher. Higher marks come from complete, clearly set-out working on long, multi-part questions."}[key],
+                  "teach": f"Explain the stage: 14 topics in order, each with a lesson, online practice and an exam-style sheet; mini papers every few sessions. Do the {course} check (online or on paper), with a calculator but no help: it is a map, not a test.",
+                  "practise": f"The \"SQA maths climb: {course} check\" sheet, or the online {course} check.",
+                  "check": f"Mark the check together and fill in the \"SQA maths climb: {course} tracker\" sheet: the topics that lost marks go first, in climb order."},
+        "use": [f"{key}-check"], "home": "Look at the tracker together and agree a weekly time for online practice.",
+        "vocab": "course, paper, marking instructions, bullet, follow-through, secure",
+        "understand": "Why work through the topics in the climb's order rather than starting with the hardest?",
+        "lookFor": "Says the early topics are used inside the later ones, so they make the later topics easier as well as earning marks."})
+    for i, (slug, title, strand) in enumerate(topics, 1):
+        lessons.append(topic_lesson(key, course, name, i, slug, title, strand))
+    lessons.append({"id": f"lesson-sqa-climb-{expects[0]}", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
+        "title": f"SQA maths climb: what the exam expects ({course})" if key != "n4" else "SQA maths climb: what National 5 expects (National 4 skills)",
+        "intention": {"n4": "We are learning how National 4 is passed, what National 5 assumes we can already do, and the habits of setting out working that SQA marking rewards.",
+                      "n5": "We are learning how the National 5 exam is set out and marked: the two papers, what a pass takes, bullet marks and follow-through, and the formulae list.",
+                      "nh": "We are learning how the Higher exam is set out and marked, and where marks are won and lost: statements, exact values, nature tables and multi-part questions."}[key],
+        "criteria": ["I know the papers, their times and their marks." if key != "n4" else "I know National 4 is passed in school, with no exam.", "I know each step of working earns its own mark (one bullet a mark).", "I know an error is followed through, so I never leave a question blank."],
+        "steps": {"start": "Show an answer with a slip in the middle. Ask how many marks it should keep.",
+                  "teach": f"Go through the \"{expects[1]}\" sheet, then mark its model answers together.",
+                  "practise": f"Mark the model answers on the \"{expects[1]}\" sheet together, then the online mixed exam questions with full working on paper.",
+                  "check": "Ask them to explain follow-through, and what an answer with no working risks."},
+        "use": [f"{key}-mixed"], "home": "Do the online mixed exam questions, writing full working on paper.",
+        "vocab": "paper, non-calculator, formulae list, bullet mark, follow-through, grade boundary",
+        "understand": "Why can a wrong final answer still earn most of a question's marks?",
+        "lookFor": "Says each step earns its own bullet, and steps after a slip still count when they're done correctly."})
+    lessons.append({"id": f"lesson-sqa-climb-{key}-mini-papers", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
+        "title": f"SQA maths climb: mini papers ({course})",
+        "intention": "We are practising exam questions from all the topics together, under exam conditions, and using the results to plan what to revise.",
+        "criteria": ["I can answer mixed exam questions without being told the topic.", "I show my working on every question.", "I can use my marks to choose which topics to go back to."],
+        "steps": {"start": "Recap the habits: read twice, underline the command word, one step a line, round only at the end.",
+                  "teach": "Set up exam conditions: about 20 minutes, quiet, calculator only for the calculator paper. Remind them to do the questions they can first.",
+                  "practise": f"One of the \"Mini paper: non-calculator (SQA {course})\", \"Mini paper: calculator (SQA {course})\" or \"Mini paper: longer questions (SQA {course})\" sheets. Each print is a new paper.",
+                  "check": "Mark it together the SQA way, then write the score and the topics to go back to on the tracker."},
+        "use": [f"{key}-mixed"], "home": "Redo the questions that lost marks, then the online mixed exam questions.",
+        "vocab": "exam conditions, marking, topic, revise",
+        "understand": "Your mini paper shows you lost marks on two topics. What do you do next?",
+        "lookFor": "Goes back to those topics' lessons or exam sheets before the next mini paper, rather than just doing more papers."})
+
+lessons.append({"id": "lesson-sqa-climb-exam-technique", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
+    "title": "SQA maths climb: exam technique, command words and setting out",
+    "intention": "We are learning what each SQA command word asks for, and to set out working so every step can be given its mark.",
+    "criteria": ["I know what state, evaluate, solve, express in the form, hence, show that, justify and determine the nature ask for.", "I set out working one step a line.", "I write the statements that earn marks on their own."],
+    "steps": {"start": "Show 'Hence solve…' after a part (a). Ask what 'hence' tells them to do.",
+              "teach": "Go through the command words on the \"SQA exam technique: command words and setting out\" sheet. Show how a marking scheme gives one bullet a step, so a step that isn't written can't be marked.",
+              "practise": "The \"SQA exam technique: command words and setting out\" sheet: three questions set out step by step, then compared with the marking.",
+              "check": "Ask them what 'show that' and 'justify your answer' each need."},
+    "use": ["n5-mixed", "nh-mixed"], "home": "Pick any three online exam questions and write out the working as bullets before checking.",
+    "vocab": "command word, hence, show that, justify, nature, sketch",
+    "understand": "Why is writing 'dy/dx = 0' worth a mark even though it's obvious?",
+    "lookFor": "Says the marker can only give marks for what is written, and that statement is the strategy step."})
+lessons.append({"id": "lesson-sqa-climb-my-next-step", "level": "Senior", "subject": "Maths", "strand": "Number", "codes": [],
+    "title": "SQA maths climb: my next step (working on your own, National 5 and Higher)",
+    "intention": "We are learning to follow the climb on our own: take the check, practise the next topic, mark our work the SQA way and know when to move on.",
+    "criteria": ["I can open the climb page and follow My next step.", "I read the marking after every question, even when I was right.", "I can mark my own working one bullet a step.", "I know when a topic is secure and when to move to the next stage."],
+    "steps": {"start": "Ask: when you study on your own, how do you decide what to do next? Talk about why guessing wastes time.",
+              "teach": "Open popspell.com/climb.html?course=sqa together. Show My next step: it starts with the stage check, then picks the first topic that needs work, in the climb's order, and suggests a mini paper when a stage is nearly done. Show where the marking appears after each answer and how a topic becomes secure (three-quarters of the marks on a practice set). Explain that progress stays on this device only.",
+              "practise": "The \"SQA maths climb: my route to National 5 and Higher\" sheet: fill in the exam and target together, then do one practice set on the climb page.",
+              "check": "Ask them to show you their next step on the climb page and explain why that topic comes next."},
+    "use": ["n4-check", "n5-check", "nh-check"], "home": "Two or three sessions a week on the climb page, about 45 minutes each, with a notebook for working.",
+    "vocab": "self-guided, marking, secure, stage, next step",
+    "understand": "Why read the marking even when you got the answer right?",
+    "lookFor": "Says it shows which steps earn marks, so you can write them in the exam even when the last step goes wrong."})
+
+SQA = {"n4": "National 4 Mathematics", "n5": "National 5 Mathematics", "nh": "Higher Mathematics"}
+for l in lessons:
+    k = l["id"].replace("lesson-sqa-climb-", "")[:2]
+    l["sqa"] = SQA.get(k, "National 5 and Higher Mathematics")
+out = {"section": "Scotland: SQA maths exam climb (National 4 skills, National 5, Higher)", "lessons": lessons}
+with open(HERE("content", "lessons", "17-sqa-climb.json"), "w") as f:
+    json.dump(out, f, ensure_ascii=False, indent=1)
+    f.write("\n")
+print(len(lessons), "lessons")
