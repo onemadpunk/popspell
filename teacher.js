@@ -553,7 +553,9 @@
 
   /* ---------- Library: every resource, found by level, subject, strand and type ---------- */
 
-  const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"], ["Third", "S1–S3"], ["Fourth", "S3"]];
+  const LIB_LEVELS = [["Early", "Nursery–P1"], ["First", "P2–P4"], ["Second", "P5–P7"], ["Third", "S1–S3"], ["Fourth", "S3"], ["Senior", "S4–S6"]];
+  // The senior phase (S4 to S6) has SQA courses, not a CfE level: its work is the SQA maths climb
+  const levelName = l => (l === "Senior" ? "Senior phase" : `${l} level`);
   const LIB_SUBJECTS = ["Literacy", "Maths"];
   const SUBJECT_ALSO = { Literacy: "Reading, writing, spelling", Maths: "Numeracy and number" };
   const LIB_TYPES = { lesson: "Ready lesson", check: "Starting check", spelling: "Spelling list", activity: "Activity", story: "Story",
@@ -672,7 +674,7 @@
     "Data and chance": "Information, Data and Uncertainty"
   };
   const kduOf = l => {
-    if (!l || l.england || !l.strand) return "";
+    if (!l || l.england || !l.strand || l.sqa) return "";
     if (l.subject === "Maths") return KDU_MATHS[l.strand] || "";
     if (l.subject !== "Literacy") return "";
     return ((l.level === "Early" || l.level === "First") ? KDU_LIT_YOUNG : KDU_LIT_OLDER)[l.strand] || "";
@@ -754,7 +756,7 @@
     const order = en ? [FIND_LEVEL, ...E_().STRAND_ORDER, EN_NONE] : STRANDS;
     const strandOfEntry = e => (en ? e.enStrand : e.strand);
     const levelOfEntry = e => (en ? e.band : e.level);
-    const levels = en ? E_().BANDS.map(([b]) => [b, b, BAND_AGES[b]]) : LIB_LEVELS.map(([l, years]) => [l, `${l} level`, years]);
+    const levels = en ? E_().BANDS.map(([b]) => [b, b, BAND_AGES[b]]) : LIB_LEVELS.map(([l, years]) => [l, levelName(l), years]);
     const segment = (name, label, options, cls = "") => `<div class="lib-seg${cls}" role="group" aria-label="${label}">${options.map(([value, text, small]) =>
       `<button type="button" data-${name}="${esc(value)}" aria-pressed="${prefs[name] === value}"><span>${esc(text).replace(/^All (.+)/, "All<span class=\"lib-wide\"> $1</span>")}</span>${small ? `<small>${esc(small)}</small>` : ""}</button>`).join("")}</div>`;
     body.innerHTML = `<div class="work-flow lib-find">
@@ -779,7 +781,7 @@
       <div id="libResults"></div>`;
     const tagOf = e => (en
       ? `<span class="lib-level lv-${(e.band || "any").toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(e.type === "check" ? "Any year" : e.en ? e.en.label : "Any year")}</span>`
-      : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? `${esc(e.level)} level` : "Any level"}</span>`);
+      : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? esc(levelName(e.level)) : "Any level"}</span>`);
     const codesLine = e => (en ? (e.en && e.en.statements.length ? `<p class="prog-codes">${esc(ncSource(e.en))}: ${esc(e.en.label)} · ${esc(e.en.domain)}</p>` : "")
       : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
     // My folder: the resources a teacher uses most, kept on this device
@@ -907,7 +909,7 @@
   const LESSON_STEPS = [["start", "Start"], ["teach", "Teach"], ["practise", "Practise"], ["check", "Check"]];
   // A lesson in Scotland's terms (CfE benchmarks and outcomes) or England's (the national curriculum's
   // statutory statements for the years it covers)
-  const lessonLevel = (l, cur) => (cur === "england" ? (enWork(l.id) || {}).label || "" : `${asCfe(l).level} level`);
+  const lessonLevel = (l, cur) => (cur === "england" ? (enWork(l.id) || {}).label || "" : levelName(asCfe(l).level));
   const lessonBand = (l, cur) => (cur === "england" ? (E_().bandOf(enWork(l.id)) || "none").toLowerCase().replace(/[^a-z0-9]+/g, "-") : asCfe(l).level.toLowerCase());
   // The statements within the lesson's own years (the work it uses can reach further back)
   const lessonStatements = en => {
@@ -919,7 +921,9 @@
     const M = window.PopLessons.MINUTES;
     const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
     const en = cur === "england" ? enWork(l.id) : null;
-    const curriculum = !en ? (l.england
+    const curriculum = l.sqa ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+        <p><b>SQA course:</b> ${esc(l.sqa)} (senior phase, after CfE Fourth level). Written from SQA's course specification; the questions are PopSpell's own, not past papers.</p>`
+      : !en ? (l.england
       ? `<p class="hint">From England's curriculum: in CfE this comes after Second level, so there's no CfE version.</p>
         <p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
         ${l.codes.length ? `<p><b>CfE experiences and outcomes it supports:</b> ${esc(l.codes.join(", "))}</p>` : ""}`
