@@ -76,6 +76,8 @@ One question bank in [`activities.js`](activities.js) (`PopActivities.examBank`)
 
 **My next step, for a pupil working alone** ([`climb.html`](climb.html), [`climb.js`](climb.js), [`climb.css`](climb.css)): a standalone page (no login, no teacher) for a homeschooled pupil or one revising at home. It asks where they're starting, gives that stage's check, then always shows one next step: practise the first topic not yet secure (topics that lost marks in the check first; about three-quarters of a ten-question set makes it secure), then a mini paper (half the marks or more moves them on; topics that lost marks go back on the list), then the next stage. Every answer is marked straight away with its mark scheme. Progress is kept in `localStorage` (`popspell-climb`) on that device only. Every screen fits 1366 × 650 without scrolling. The lesson *GCSE maths climb: my next step* prints a one-page route (`paper-gx-route`).
 
+**Packs to download, for working on paper or offline** ([`pack.html`](pack.html), [`pack.js`](pack.js), [`pack.css`](pack.css)): a standalone page (no login) that makes a whole stage of the climb as one printable pack, saved as a PDF from the browser's print window: a cover with a plan to tick off, then the stage's sheets in study order (route, what the exam expects, the check, the tracker, the 14 Exam practice sheets, the three mini papers), then an answers section with every mark scheme. The pack is built in the browser from the same sheets as the Library (`paper-sheets.js`), so nothing is stored in the repository and every pack has new numbers; a pack code on every page matches the answers to the work. Work only, or answers only, print from the same pack. `PACKS` in `pack.js` lists the stages by sheet id, so another climb (Scotland's National 5 and Higher) joins with one more entry. The GCSE English climb has its own three packs there (its writing tasks and one-hour mini papers come after the topics), shown only when `exam-english/` is loaded. Sheets are fitted to A4 by [`sheet-print.js`](sheet-print.js), shared with the teacher area; `npm run sheet-check` prints each pack too (`--type pack`).
+
 ### 🎓 GCSE English exam climb (England)
 
 The same climb for GCSE English Language, grade 1 to 9, with Literature where it's practical. Three stages of eight topics: **stage 1, grade 1 to 3** (`e1-…`: finding information, inference, words and effects, summary, sentences, spelling, paragraphs, letters/articles/speeches), **stage 2, grades 4 and 5** (`e2-…`: language, structure, evaluating, comparing, punctuation, sentence variety, stories, arguments) and **stage 3, grades 6 to 9** (`e3-…`: perceptive analysis, whole-text structure, critical evaluation, 19th-century context, vocabulary, crafted sentences, imagery, rhetoric), plus four **Literature** topics (`lit-…`).
@@ -292,7 +294,6 @@ Speech voices can't reliably say isolated phonemes, so the site reads whole word
 ## Trying it on your own computer
 
 Double-click `index.html` to open it in a browser.
-
 
 ## Fast and offline
 

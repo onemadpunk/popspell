@@ -195,13 +195,15 @@
 
     add(`paper-gx-${st.key}-check`, L("start-here"), `GCSE maths climb: stage ${st.n} check (${st.tag})`,
       `One exam question on each of the 14 topics for ${st.tag}, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
-        const items = GX().check(st.key);
+        // A rare draw of long questions and mark schemes can push the answers onto a third A4 page, so draw
+        // ten checks and keep the shortest
+        const size = list => list.reduce((t, it) => t + it.q.length + it.scheme.length + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
+        const items = Array.from({ length: 10 }, () => GX().check(st.key)).sort((x, y) => size(x) - size(y))[0];
         return {
           pupil: `${h.sheetHead(`Stage ${st.n} check`, who)}${gxStrip2(st, "", "Calculator allowed", gxTotal(items))}
             <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
             <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
-          answers: `${answersPage(h, `Stage ${st.n} check`, items.map(it => `<b>${it.topic.n}. ${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the stage tracker.")}
-            <p class="gx-note"><b>What to work on first:</b> the topics that lost marks, in the climb's order. A topic with full marks still gets its exam-style sheet as a check before it's ticked off.</p>`
+          answers: `${answersPage(h, `Stage ${st.n} check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme}</span>`), "Copy each topic's score onto the stage tracker. Work first on the topics that lost marks, in the climb's order.")}`
         };
       });
 
@@ -299,7 +301,7 @@
     "One page for a pupil working on their own (at home, or homeschooled): the three stages, what to do in each session, how to mark their own work and when to move on.", (who, h) => ({
       pupil: `${h.sheetHead("My route: grade 1 to 9", who)}${gxStrip("GCSE maths climb", "Self-guided", 0)}
         ${box("The three stages", `<p><b>Stage 1, grades 1 to 3</b> (Foundation): number, fractions, percentages, ratio, basic algebra, shape and data. <b>Stage 2, grades 4 and 5</b>: what both tiers share, from standard form to trigonometry. <b>Stage 3, grades 6 to 9</b> (Higher only): surds, quadratics, circle theorems, vectors, proof and more. Start where your check says; you don't have to go to the top.</p>`)}
-        ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/climb.html</b> and press <b>My next step</b>. <b>2.</b> Do what it says: the stage check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the mark scheme, even when you were right: it shows which lines earn marks. <b>4.</b> Write any question you got wrong in your notebook, with the right working, and try it again next session.</p>`)}
+        ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/climb.html</b> and press <b>My next step</b>. <b>2.</b> Do what it says: the stage check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the mark scheme, even when you were right: it shows which lines earn marks. <b>4.</b> Write any question you got wrong in your notebook, with the right working, and try it again next session.</p><p><b>No internet, or rather work on paper?</b> Download the pack for your stage from <b>popspell.com/pack.html</b>: every sheet, a plan to tick off, and the answers at the back.</p>`)}
         ${box("Marking your own work", `<p>Each question says its marks. Give yourself the marks for each step you wrote that matches the mark scheme, even if your final answer was wrong. No working, wrong answer: no marks. Be strict: the exam will be.</p>`)}
         ${box("When to move on", `<p>A topic is <b>secure</b> when you score about three-quarters of the marks in one set of its practice (on paper, aim to do it twice on different days). When all of a stage's topics are secure, do a mini paper. Scoring about half or more on it? Start the next stage.</p>`)}
         <p class="gx-plan">My exam date: ${blank(7)} &nbsp; My target grade: ${blank(3)} &nbsp; Stage I'm on: ${blank(3)} &nbsp; Sessions a week: ${blank(3)}</p>`,
