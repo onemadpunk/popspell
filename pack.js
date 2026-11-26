@@ -63,6 +63,28 @@ window.PopPacks = (() => {
       topics: st.topics.map(t => `paper-sq-${t.id}`), papers: ["noncalc", "calc", "reasoning"].map(k => `paper-sq-${st.key}-mini-${k}`),
       next: st.n < SQX().STAGES.length ? `stage ${st.n + 1} (${SQX().STAGES[st.n].course})` : "" }))
   });
+  // England's A level maths climb (Years 12 and 13): the same four-part stages
+  const ALX = () => X().alevel;
+  add({
+    id: "alevel", title: "A level maths climb", where: "England, A level Mathematics (Years 12 and 13)", online: "climb.html?course=alevel",
+    words: {
+      work: "Show every step: A level mark schemes give method marks for each correct step.",
+      again: "Not secure yet? Read the marking, then do the questions you lost again a few days later. Make a new pack for fresh numbers.",
+      papers: "do the mini papers, 20 to 25 minutes each, like the real exam",
+      pass: "About half the marks",
+      paperTodo: "Like the real exam: 20 to 25 minutes. Half the marks or more is a good paper.",
+      writeTodo: "",
+      topicTodo: "Show your working. Three-quarters of the marks makes the topic secure: tick it on the tracker.",
+      marking: "Each bullet (•1, •2…) is one mark. Give every bullet the working shows, even after a slip. A wrong answer with no working gets no marks."
+    },
+    stages: () => ALX().STAGES.map(st => ({
+      id: `alevel-${st.n}`, title: st.title, short: st.course,
+      about: { y12: "Year 12 (the AS content): algebra, trig, logs, calculus, vectors, statistics and mechanics.",
+        y13: "Year 13: functions, series, trig identities, more calculus, numerical methods, the normal distribution and mechanics." }[st.key],
+      read: ["paper-al-route", "paper-al-expects"], check: `paper-al-${st.key}-check`, tracker: `paper-al-${st.key}-tracker`,
+      topics: st.topics.map(t => `paper-al-${t.id}`), papers: ["pure", "applied", "reasoning"].map(k => `paper-al-${st.key}-mini-${k}`),
+      next: st.n < ALX().STAGES.length ? `stage ${st.n + 1} (${ALX().STAGES[st.n].course})` : "" }))
+  });
   // The GCSE English climb (exam-english/, PopEnglishExam): only on pages that load its bank. Written
   // answers can't be marked line by line, so its plan and marking notes are its own (words below).
   const EN = () => window.PopEnglishExam && window.PopEnglishExam.course("gcse");
@@ -128,7 +150,7 @@ window.PopPacks = (() => {
     const c = code(), ids = sheetsOf(st).filter(id => PAPER.get(id));
     const parts = ids.map((id, i) => {
       const sh = PAPER.get(id), b = sh.build(who, kit), n = i + 1;
-      const plain = sh.title.replace(/^(GCSE|SQA) (maths|English) climb: /, "").replace(/ \((?:SQA )?(grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9|National 4|National 5|Advanced Higher)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
+      const plain = sh.title.replace(/^(GCSE|SQA|A level) (maths|English) climb: /, "").replace(/ \((?:SQA |A level )?(grades 4 and 5|Higher|grade 1 to 3|grades 6 to 9|National 4|National 5|Advanced Higher|Year 12|Year 13)\)/, ""), title = plain[0].toUpperCase() + plain.slice(1);
       return { id, n, title, todo: todo(st, id),
         work: K.ageLook(stamp(b.pupil, `Pack ${c} · Part ${n} of ${ids.length}`), "older"),
         answers: b.answers ? stamp(b.answers, `Pack ${c} · Answers for part ${n}: ${esc(title)}`) : "" };

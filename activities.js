@@ -4493,6 +4493,283 @@ window.PopActivities = (() => {
       make: () => shuffle(st.topics).slice(0, 12).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }))
   ];
 
+  /* ---------- A level maths climb (England, Years 12 and 13) ---------- */
+  // The same shape as the GCSE and SQA climbs: a check, 14 topics a stage in climb order, exam-style questions with
+  // marks and a mark scheme, mini papers. Stage 1 is Year 12 (the first year of A level Mathematics, the AS content),
+  // stage 2 is Year 13 (the rest of the A level). Pure maths shares a lot with SQA Higher and Advanced Higher, so it
+  // reuses those questions where they match the A level content (DfE's GCE AS and A level subject content for
+  // mathematics, 2016); statistics and mechanics are new. A level mark schemes give method (M), accuracy (A) and
+  // independent (B) marks; PopSpell writes one bullet a mark (•1, •2…) and says which step earns it.
+  // Questions are PopSpell's own, never exam board papers.
+  const AL = "Mathematics · A level maths climb (England)";
+  const alAH = id => sqTopic(id).makers;
+  const alM = (id, at) => { const m = alAH(id); return at.map(i => m[i]); };
+  const alC = (n, r) => saNCr(n, r);
+  const alBinP = (n, p, r) => alC(n, r) * p ** r * (1 - p) ** (n - r);
+  const alBinLe = (n, p, r) => { let s = 0; for (let i = 0; i <= r; i++) s += alBinP(n, p, i); return s; };
+  // The standard normal distribution function (Abramowitz and Stegun 26.2.17: within 1e-7, ample for 4 decimal places)
+  const alPhi = z => { const t = 1 / (1 + 0.2316419 * Math.abs(z)), d = 0.3989422804014327 * Math.exp(-z * z / 2);
+    const p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429)))); return z >= 0 ? 1 - p : p; };
+  // Rounded to s significant figures, and whether that rounding is safely away from a knife edge
+  const alSfDp = (x, s) => Math.max(0, s - 1 - Math.floor(Math.log10(Math.abs(x))));
+  const alSf = (x, s = 3) => sqR(x, alSfDp(x, s));
+  const alSafeSf = (x, s = 3) => x !== 0 && sqSafe(x, alSfDp(x, s));
+  const al4 = x => x.toFixed(4);
+  const alG = 9.8;
+  const alSign = (k, v = "x", first = false) => (k === 0 ? "" : `${k < 0 ? (first ? "−" : " − ") : first ? "" : " + "}${Math.abs(k) === 1 && v ? "" : Math.abs(k)}${v}`);
+
+  // Year 12: binomial expansion
+  const alBinApprox = () => { const n = gfR(4, 8), a = pick([2, 3, -2, -3, 4, -1]), c1 = n * a, c2 = alC(n, 2) * a * a;
+    const ans = `1${alSign(c1)}${alSign(c2, "x²")}`;
+    return gfQ(`Find the first three terms, in ascending powers of x, of the binomial expansion of (1 ${a < 0 ? "−" : "+"} ${Math.abs(a) === 1 ? "" : Math.abs(a)}x)${sup(n)}.`, ans, 3,
+      `•1 1 + ${n}(${gfM(a)}x) (1 mark). •2 ${n}C2 × (${gfM(a)}x)² with ${n}C2 = ${alC(n, 2)} (1 mark). •3 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [`1${alSign(c1)}${alSign(alC(n, 2) * a, "x²")}`, `1${alSign(c1)}${alSign(n * a * a, "x²")}`, `1${alSign(n)}${alSign(alC(n, 2), "x²")}`]).slice(0, 2), label: `bx ${n}${a}`, skill: "binomial expansion" }); };
+  // Year 12: vectors in two dimensions
+  const alVecMag = () => { const [p, q, r] = pick([[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [7, 24, 25], [9, 12, 15]]), sp = pick([1, -1]), sq = pick([1, -1]);
+    const v = `${gfM(sp * p)}i ${sq < 0 ? "−" : "+"} ${q}j`;
+    return gfQ(`a = ${v}. Find |a|, the magnitude of a.`, r, 2, `•1 |a| = √((${gfM(sp * p)})² + (${gfM(sq * q)})²) (1 mark). •2 = √${r * r} = ${r} (1 mark).`, { label: `vm ${p}${q}${sp}${sq}`, skill: "magnitude of a vector" }); };
+  const alVecDir = () => { let p, q, ang; do { p = gfR(1, 9); q = gfR(1, 9); ang = Math.atan2(q, p) * 180 / Math.PI; } while (p === q || !sqSafe(ang, 1));
+    return gfQ(`Find the angle the vector ${p}i + ${q}j makes with the positive x-direction (the unit vector i). Give your answer in degrees to 1 decimal place.`, sqR(ang, 1), 2,
+      `•1 tan θ = ${q}/${p} (1 mark). •2 θ = ${sqR(ang, 1)}° (1 mark).`, { calc: true, unit: "°", label: `vd ${p}${q}`, skill: "direction of a vector" }); };
+  const alVecAB = () => { const a = [gfR(-6, 6), gfR(-6, 6)], b = [gfR(-6, 6), gfR(-6, 6)], d = [b[0] - a[0], b[1] - a[1]]; if (!d[0] || !d[1]) return {};
+    const fmt = v => `${gfM(v[0])}i ${v[1] < 0 ? "−" : "+"} ${Math.abs(v[1])}j`, ans = fmt(d);
+    return gfQ(`Points A and B have position vectors ${fmt(a)} and ${fmt(b)}. Find the vector AB.`, ans, 2, `•1 AB = b − a (1 mark). •2 ${ans} (1 mark).`,
+      { options: sqUniq(ans, [fmt([-d[0], -d[1]]), fmt([a[0] + b[0], a[1] + b[1]])]), label: `ab ${a}${b}`, skill: "vectors between points" }); };
+  // Year 12: statistical sampling and data
+  const alSampleKind = () => { const [what, ans] = pick([
+      ["A school lists its 900 pupils alphabetically, picks a random start between 1 and 15, then takes every 15th pupil.", "systematic sampling"],
+      ["A factory has 300 day-shift and 200 night-shift workers. It picks 30 day-shift and 20 night-shift workers at random.", "stratified sampling"],
+      ["Each of 500 members is given a number, and a random number generator picks 40 different numbers.", "simple random sampling"],
+      ["An interviewer in a shopping centre stops people until she has asked 20 men and 20 women.", "quota sampling"],
+      ["A student asks the first 25 people who come into the canteen.", "opportunity sampling"]]);
+    return gfQ(`${what} What kind of sampling is this?`, ans, 1, `•1 ${ans} (1 mark).`, { options: shuffle(["systematic sampling", "stratified sampling", "simple random sampling", "quota sampling", "opportunity sampling"].filter(x => x !== ans)).slice(0, 2), label: `sk ${ans}`, skill: "kinds of sampling" }); };
+  const alStratified = () => { const k = pick([20, 25, 40, 50]), parts = [gfR(2, 9), gfR(2, 9), gfR(2, 9)], tot = parts.reduce((s, x) => s + x, 0), N = tot * k * pick([2, 4]), n = tot * pick([2, 3, 4]);
+    const names = pick([["Year 12", "Year 13", "staff"], ["juniors", "seniors", "veterans"], ["north site", "south site", "east site"]]), i = rand(3), size = parts[i] * N / tot, ans = parts[i] * n / tot;
+    return gfQ(`A club of ${N} members has ${parts.map((p, j) => `${p * N / tot} ${names[j]}`).join(", ").replace(/, ([^,]*)$/, " and $1")}. A stratified sample of ${n} is taken. How many ${names[i]} should be in the sample?`, ans, 2,
+      `•1 ${size}/${N} × ${n} (1 mark). •2 ${ans} (1 mark).`, { label: `st ${N}${n}${i}`, skill: "stratified sampling" }); };
+  const alSummary = () => { let xs, n, sx, sxx, sd; do { n = gfR(8, 12); xs = Array.from({ length: n }, () => gfR(10, 40)); sx = xs.reduce((s, x) => s + x, 0); sxx = xs.reduce((s, x) => s + x * x, 0); sd = Math.sqrt(sxx / n - (sx / n) ** 2); } while (!alSafeSf(sd));
+    return gfQ(`For ${n} values of x, Σx = ${sx} and Σx² = ${gfBig(sxx)}. Find the standard deviation of x, to 3 significant figures.`, alSf(sd), 3,
+      `•1 mean = ${sx}/${n} (1 mark). •2 variance = ${gfBig(sxx)}/${n} − (${sx}/${n})² (1 mark). •3 standard deviation = ${alSf(sd)} (1 mark).`, { calc: true, label: `sd ${n}${sx}${sxx}`, skill: "mean and standard deviation" }); };
+  const alOutlier = () => { const q1 = gfR(20, 40), iqr = 2 * gfR(4, 10), q3 = q1 + iqr, hi = q3 + 1.5 * iqr, lo = q1 - 1.5 * iqr;
+    const out = pick([Math.ceil(hi) + gfR(1, 6), Math.floor(lo) - gfR(1, 6)]), ins = [Math.floor(hi) - gfR(1, 4), Math.ceil(lo) + gfR(1, 4)];
+    return gfQ(`Q₁ = ${q1} and Q₃ = ${q3}. An outlier is a value more than 1.5 × IQR above Q₃ or below Q₁. Which of these values is an outlier?`, gfM(out), 2,
+      `•1 IQR = ${iqr}, so the fences are ${q1} − ${1.5 * iqr} = ${gfM(lo)} and ${q3} + ${1.5 * iqr} = ${hi} (1 mark). •2 ${gfM(out)} is outside them (1 mark).`, { options: ins.map(gfM), label: `ol ${q1}${q3}${out}`, skill: "outliers" }); };
+  // Year 12: probability and the binomial distribution
+  const alUnion = () => { const a = gfR(3, 6) / 10, b = gfR(2, 5) / 10, both = gfR(1, Math.min(a, b) * 10 - 1) / 10, u = Math.round((a + b - both) * 100) / 100;
+    return gfQ(`P(A) = ${a}, P(B) = ${b} and P(A ∩ B) = ${both}. Find P(A ∪ B).`, gfD(u), 2, `•1 P(A ∪ B) = P(A) + P(B) − P(A ∩ B) (1 mark). •2 = ${gfD(u)} (1 mark).`, { label: `un ${a}${b}${both}`, skill: "the addition rule" }); };
+  const alIndep = () => { const a = gfR(2, 8) / 10, b = gfR(2, 8) / 10, yes = rand(2), both = yes ? Math.round(a * b * 100) / 100 : Math.round(a * b * 100 + pick([-3, -2, 2, 3])) / 100;
+    if (both <= 0) return {};
+    const ans = yes ? `Yes: P(A) × P(B) = ${gfD(a * b)} = P(A ∩ B)` : `No: P(A) × P(B) = ${gfD(a * b)} ≠ P(A ∩ B)`;
+    return gfQ(`P(A) = ${a}, P(B) = ${b} and P(A ∩ B) = ${gfD(both)}. Are A and B independent?`, ans, 2, `•1 P(A) × P(B) = ${a} × ${b} = ${gfD(a * b)} (1 mark). •2 compare with P(A ∩ B) = ${gfD(both)}: ${yes ? "equal, so independent" : "not equal, so not independent"} (1 mark).`,
+      { options: [yes ? `No: P(A) + P(B) ≠ 1` : `Yes: P(A) + P(B) < 1`, yes ? "No: A and B can both happen" : "Yes: P(A ∩ B) is small"], label: `in ${a}${b}${both}`, skill: "independent events" }); };
+  const alBinPmf = () => { let n, p, r, v; do { n = gfR(8, 20); p = pick([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6]); r = gfR(1, n - 2); v = alBinP(n, p, r); } while (v < 0.01 || !sqSafe(v, 4));
+    return gfQ(`X ~ B(${n}, ${p}). Find P(X = ${r}), to 4 decimal places.`, al4(v), 2, `•1 ${n}C${r} × ${p}${sup(r)} × ${gfD(1 - p)}${sup(n - r)} (1 mark). •2 = ${al4(v)} (1 mark).`, { calc: true, label: `bp ${n}${p}${r}`, skill: "binomial probabilities" }); };
+  const alBinCdf = () => { let n, p, r, v, k; do { n = gfR(10, 25); p = pick([0.1, 0.2, 0.3, 0.4, 0.5]); r = gfR(1, Math.round(n * p) + 2); k = rand(2); v = k ? 1 - alBinLe(n, p, r - 1) : alBinLe(n, p, r); } while (v < 0.01 || v > 0.99 || !sqSafe(v, 4));
+    return gfQ(`X ~ B(${n}, ${p}). Find P(X ${k ? "≥" : "≤"} ${r}), to 4 decimal places.`, al4(v), 3,
+      k ? `•1 P(X ≥ ${r}) = 1 − P(X ≤ ${r - 1}) (1 mark). •2 P(X ≤ ${r - 1}) = ${al4(1 - v)} from the cumulative binomial function (1 mark). •3 ${al4(v)} (1 mark).`
+        : `•1 P(X ≤ ${r}) adds P(X = 0) up to P(X = ${r}) (1 mark). •2 use the cumulative binomial function on a calculator (1 mark). •3 ${al4(v)} (1 mark).`, { calc: true, label: `bc ${n}${p}${r}${k}`, skill: "cumulative binomial probabilities" }); };
+  const alBinModel = () => { const [ctx, ans, wrong] = pick([
+      ["A dice is rolled 30 times and X is the number of sixes.", "B(30, 1/6)", ["B(6, 1/30)", "B(30, 1/2)"]],
+      ["20 seeds are planted and each grows with probability 0.85. X is the number that grow.", "B(20, 0.85)", ["B(0.85, 20)", "B(20, 0.15)"]],
+      ["A multiple-choice test has 12 questions with 4 options each. Ali guesses every answer. X is the number right.", "B(12, 0.25)", ["B(12, 4)", "B(4, 0.25)"]],
+      ["5% of bulbs are faulty. A box of 40 is checked and X is the number faulty.", "B(40, 0.05)", ["B(40, 0.95)", "B(5, 0.40)"]]]);
+    return gfQ(`${ctx} Which distribution models X? (Assume the trials are independent.)`, ans, 2, `•1 a fixed number of independent trials, each a success or not, with the same probability (1 mark). •2 X ~ ${ans} (1 mark).`, { options: wrong, label: `bm ${ans}`, skill: "binomial models" }); };
+  // Year 12: hypothesis testing with the binomial distribution
+  const alHypSetup = () => { const [ctx, p0, dir] = pick([
+      ["A coin is thought to be biased towards heads. It is tossed 20 times.", "0.5", ">"], ["A company claims 30% of customers buy a drink. A manager thinks the true figure is lower.", "0.3", "<"],
+      ["A dice is suspected of landing on six more often than it should.", "1/6", ">"], ["A seed company says 80% of its seeds grow. A gardener thinks fewer than that do.", "0.8", "<"],
+      ["A spinner should land on red with probability 0.25. A pupil thinks it has changed, but not in which direction.", "0.25", "≠"]]);
+    const ans = `H₀: p = ${p0}, H₁: p ${dir} ${p0}`, others = [">", "<", "≠"].filter(d => d !== dir).map(d => `H₀: p = ${p0}, H₁: p ${d} ${p0}`);
+    return gfQ(`${ctx} Write suitable hypotheses H₀ and H₁, where p is the probability of a success.`, ans, 2, `•1 H₀: p = ${p0} (1 mark). •2 H₁: p ${dir} ${p0}${dir === "≠" ? " (a two-tailed test)" : " (a one-tailed test)"} (1 mark).`, { options: others, label: `hs ${p0}${dir}`, skill: "setting up a hypothesis test" }); };
+  const alHypTest = () => { let n, p0, up, x, pv; do { n = gfR(12, 25); p0 = pick([0.2, 0.25, 0.3, 0.4, 0.5]); up = rand(2); const m = n * p0; x = up ? Math.round(m) + gfR(2, 6) : Math.round(m) - gfR(2, 5); if (x < 0 || x > n) { pv = 0; continue; } pv = up ? 1 - alBinLe(n, p0, x - 1) : alBinLe(n, p0, x); } while (!pv || Math.abs(pv - 0.05) < 0.01 || pv > 0.3 || !sqSafe(pv, 4));
+    const rej = pv < 0.05, sgn = up ? "≥" : "≤", ans = rej ? `P(X ${sgn} ${x}) = ${al4(pv)} < 0.05: reject H₀` : `P(X ${sgn} ${x}) = ${al4(pv)} > 0.05: do not reject H₀`;
+    return gfQ(`H₀: p = ${p0}, H₁: p ${up ? ">" : "<"} ${p0}, at the 5% significance level. In ${n} trials there were ${x} successes. Carry out the test.`, ans, 4,
+      `•1 under H₀, X ~ B(${n}, ${p0}) (1 mark). •2 P(X ${sgn} ${x}) = ${al4(pv)} (1 mark). •3 ${rej ? "less" : "more"} than 0.05, so ${rej ? "reject" : "do not reject"} H₀ (1 mark). •4 in context: there is ${rej ? "" : "not "}enough evidence that p is ${up ? "greater" : "less"} than ${p0} (1 mark).`,
+      { calc: true, options: [rej ? `P(X ${sgn} ${x}) = ${al4(pv)} < 0.05: do not reject H₀` : `P(X ${sgn} ${x}) = ${al4(pv)} > 0.05: reject H₀`, `P(X = ${x}) = ${al4(alBinP(n, p0, x))}: ${rej ? "do not reject" : "reject"} H₀`], label: `ht ${n}${p0}${x}`, skill: "binomial hypothesis tests" }); };
+  const alCritical = () => { let n, p0, c, act; do { n = gfR(15, 30); p0 = pick([0.3, 0.4, 0.5]); c = -1; for (let k = 0; k <= n; k++) if (alBinLe(n, p0, k) <= 0.05) c = k; act = c >= 0 ? alBinLe(n, p0, c) : 0; } while (c < 1 || !sqSafe(act, 4));
+    const ans = `X ≤ ${c}`;
+    return gfQ(`X ~ B(${n}, ${p0}). H₀: p = ${p0}, H₁: p < ${p0}, at the 5% level. Find the critical region.`, ans, 3,
+      `•1 P(X ≤ ${c}) = ${al4(act)} ≤ 0.05 (1 mark). •2 P(X ≤ ${c + 1}) = ${al4(alBinLe(n, p0, c + 1))} > 0.05 (1 mark). •3 critical region X ≤ ${c}; the actual significance level is ${al4(act)} (1 mark).`,
+      { calc: true, options: [`X ≤ ${c + 1}`, `X ≤ ${Math.max(0, c - 1)}`].filter(o => o !== ans), label: `cr ${n}${p0}`, skill: "critical regions" }); };
+  // Year 12: mechanics (kinematics and forces), g = 9.8 m s⁻²
+  const alSuvatS = () => { const u = gfR(0, 10), t = 2 * gfR(2, 8), a = pick([0.5, 1, 1.5, 2, 2.5]), v = u + a * t, s = (u + v) / 2 * t;
+    return gfQ(`A car accelerates uniformly from ${u} m/s to ${gfD(v)} m/s in ${t} seconds. Find the distance it travels in that time (m).`, gfD(s), 2, `•1 s = (u + v)t/2 = (${u} + ${gfD(v)}) × ${t}/2 (1 mark). •2 ${gfD(s)} m (1 mark).`, { unit: "m", label: `su ${u}${t}${a}`, skill: "constant acceleration (suvat)" }); };
+  const alSuvatUp = () => { let u, h; do { u = gfR(8, 30); h = u * u / (2 * alG); } while (!alSafeSf(h));
+    return gfQ(`A ball is thrown vertically upwards at ${u} m/s. Taking g = 9.8 m s⁻², find its greatest height above the point of projection, to 3 significant figures (m).`, alSf(h), 3,
+      `•1 at the top v = 0 (1 mark). •2 0 = ${u}² − 2 × 9.8 × s (1 mark). •3 s = ${alSf(h)} m (1 mark).`, { calc: true, unit: "m", label: `up ${u}`, skill: "vertical motion under gravity" }); };
+  const alSuvatDec = () => { const u = 2 * gfR(4, 15), a = pick([0.5, 1, 2, 4]), s = u * u / (2 * a);
+    if (!Number.isInteger(s)) return {};
+    return gfQ(`A cyclist travelling at ${u} m/s brakes with constant deceleration and stops in ${s} m. Find the deceleration (m s⁻²).`, gfD(a), 2, `•1 0 = ${u}² − 2a × ${s} (1 mark). •2 a = ${gfD(a)} m s⁻² (1 mark).`, { label: `de ${u}${a}`, skill: "constant acceleration (suvat)" }); };
+  const alNewton = () => { const m = pick([800, 900, 1000, 1200, 1500]), a = pick([0.4, 0.5, 0.8, 1, 1.2, 1.5]), R = 50 * gfR(4, 16), D = m * a + R;
+    return gfQ(`A car of mass ${m} kg moves along a level road. The engine's driving force is ${gfBig(D)} N and the resistance to motion is ${R} N. Find the car's acceleration (m s⁻²).`, gfD(a), 2,
+      `•1 F = ma: ${gfBig(D)} − ${R} = ${m}a (1 mark). •2 a = ${gfD(a)} m s⁻² (1 mark).`, { label: `nw ${m}${a}${R}`, skill: "Newton's second law" }); };
+  const alTow = () => { const M = pick([900, 1000, 1200, 1400]), m = pick([200, 300, 400, 500]), a = pick([0.5, 1, 1.5]), r1 = 50 * gfR(4, 10), r2 = 50 * gfR(1, 4), T = m * a + r2, D = (M + m) * a + r1 + r2;
+    return gfQ(`A car of mass ${M} kg tows a trailer of mass ${m} kg with a light rigid towbar along a level road. The driving force is ${gfBig(D)} N, and the resistances are ${r1} N on the car and ${r2} N on the trailer. Find the tension in the towbar (N).`, String(T), 4,
+      `•1 whole system: ${gfBig(D)} − ${r1} − ${r2} = ${M + m}a (1 mark). •2 a = ${gfD(a)} m s⁻² (1 mark). •3 trailer alone: T − ${r2} = ${m} × ${gfD(a)} (1 mark). •4 T = ${T} N (1 mark).`, { unit: "N", label: `tw ${M}${m}${a}${r1}`, skill: "connected particles" }); };
+  const alLift = () => { const m = gfR(45, 90), a = pick([0.5, 1, 1.2, 2]), up = rand(2), R = m * (alG + (up ? a : -a));
+    return gfQ(`A person of mass ${m} kg stands in a lift that is accelerating ${up ? "upwards" : "downwards"} at ${gfD(a)} m s⁻². Taking g = 9.8 m s⁻², find the reaction force of the floor on the person (N).`, gfD(R), 3,
+      `•1 forces: R up, ${m}g down (1 mark). •2 ${up ? `R − ${m} × 9.8 = ${m} × ${gfD(a)}` : `${m} × 9.8 − R = ${m} × ${gfD(a)}`} (1 mark). •3 R = ${gfD(R)} N (1 mark).`, { calc: true, unit: "N", label: `lf ${m}${a}${up}`, skill: "Newton's second law" }); };
+  const alVT = () => { const V = 2 * gfR(3, 12), t1 = 2 * gfR(1, 6), t2 = gfR(5, 30), t3 = 2 * gfR(1, 6), s = V * (t1 / 2 + t2 + t3 / 2);
+    return gfQ(`A train starts from rest and accelerates uniformly to ${V} m/s in ${t1} s. It keeps that speed for ${t2} s, then decelerates uniformly to rest in ${t3} s. Use the area under the velocity-time graph to find the total distance (m).`, gfBig(s), 3,
+      `•1 the graph is a trapezium (1 mark). •2 ½ × ${t1} × ${V} + ${t2} × ${V} + ½ × ${t3} × ${V} (1 mark). •3 ${gfBig(s)} m (1 mark).`, { unit: "m", accept: [String(s)], label: `vt ${V}${t1}${t2}${t3}`, skill: "velocity-time graphs" }); };
+
+  // Year 13: proof
+  const alContra = () => { const [claim, ans, w1, w2] = pick([
+      ["√2 is irrational.", "Assume √2 is rational, so √2 = a/b with a and b integers with no common factor.", "Assume √2 is irrational.", "Let √2 = 1.414…"],
+      ["There are infinitely many prime numbers.", "Assume there are finitely many primes, p₁, p₂, …, pₙ.", "Assume there are infinitely many primes.", "Check the primes up to 100."],
+      ["If n² is even, then n is even.", "Assume n² is even and n is odd, so n = 2k + 1.", "Assume n is even, so n = 2k.", "Try n = 2, 4 and 6."],
+      ["There is no greatest even number.", "Assume there is a greatest even number, N.", "Let N be any even number, then N + 1 is odd.", "Assume every number is even."]]);
+    return gfQ(`To prove by contradiction that “${claim}”, which is the right first line?`, ans, 1, `•1 ${ans} Then show this leads to something impossible (1 mark).`, { options: [w1, w2], label: `pc ${claim.slice(0, 10)}`, skill: "proof by contradiction" }); };
+  const alAlgProof = () => { const a = gfR(1, 6), k = 4 * a, ans = `${k}n`;
+    return gfQ(`n is an integer. (n + ${a})² − (n − ${a})² simplifies to a multiple of ${k}. What does it simplify to?`, ans, 2, `•1 n² + ${2 * a}n + ${a * a} − (n² − ${2 * a}n + ${a * a}) (1 mark). •2 = ${k}n, which is ${k} × an integer (1 mark).`,
+      { options: sqUniq(ans, [`${2 * a}n`, `${2 * a * a}`, `${k}n + ${2 * a * a}`]).slice(0, 2), label: `ap ${a}`, skill: "proof by deduction" }); };
+  // Year 13: the binomial expansion for any rational n
+  const alBinNeg = () => { const [n, ns] = pick([[-1, "−1"], [-2, "−2"], [0.5, "½"], [-0.5, "−½"]]), a = pick([2, 3, -2, -3, 4]);
+    const c1n = n * a, c2 = n * (n - 1) / 2 * a * a, fr = v => sqFr(Math.round(v * 8), 8), t = (v, x, first) => (v === 0 ? "" : `${v < 0 ? (first ? "−" : " − ") : first ? "" : " + "}${fr(Math.abs(v)) === "1" ? "" : fr(Math.abs(v))}${x}`);
+    const ans = `1${t(c1n, "x")}${t(c2, "x²")}, valid for |x| < ${sqFr(1, Math.abs(a))}`;
+    return gfQ(`Expand (1 ${a < 0 ? "−" : "+"} ${Math.abs(a)}x)${n === 0.5 ? "^½" : n === -0.5 ? "^(−½)" : sup(n)} in ascending powers of x up to the term in x², and state the values of x for which it is valid.`, ans, 4,
+      `•1 1 + (${ns})(${gfM(a)}x) (1 mark). •2 (${ns})(${ns} − 1)/2! × (${gfM(a)}x)² (1 mark). •3 1${t(c1n, "x")}${t(c2, "x²")} (1 mark). •4 valid for |${a}x| < 1, so |x| < ${sqFr(1, Math.abs(a))} (1 mark).`,
+      { options: sqUniq(ans, [`1${t(c1n, "x")}${t(c2, "x²")}, valid for |x| < ${Math.abs(a)}`, `1${t(c1n, "x")}${t(n * (n - 1) * a * a, "x²")}, valid for |x| < ${sqFr(1, Math.abs(a))}`]), label: `bn ${n}${a}`, skill: "binomial expansion for any n" }); };
+  // Year 13: radians, small angles and reciprocal trig functions
+  const alSector = () => { const r = gfR(3, 15), th = pick([0.4, 0.6, 0.8, 1.2, 1.5, 2]), k = rand(2), v = k ? r * th : r * r * th / 2;
+    return gfQ(`A sector of a circle has radius ${r} cm and angle ${th} radians. Find its ${k ? "arc length" : "area"} (${k ? "cm" : "cm²"}).`, gfD(v), 2, `•1 ${k ? "s = rθ" : "A = ½r²θ"} (1 mark). •2 ${k ? `${r} × ${th}` : `½ × ${r}² × ${th}`} = ${gfD(v)} (1 mark).`, { unit: k ? "cm" : "cm²", label: `sc ${r}${th}${k}`, skill: "arcs and sectors in radians" }); };
+  const alSmall = () => { const k = gfR(2, 5), [e, ans, w1, w2] = pick([
+      [`1 − cos ${k}θ`, `${k * k}θ²/2`, `${k}θ²/2`, `${k}θ`], [`sin ${k}θ tan θ`, `${k}θ²`, `${k}θ`, `${k + 1}θ²`],
+      [`(1 − cos ${k}θ)/θ²`, sqFr(k * k, 2), sqFr(k, 2), `${k * k}`], [`sin ${k}θ / tan θ`, `${k}`, `${k}θ`, `1/${k}`], [`cos θ + θ sin θ`, "1 + θ²/2", "1 − θ²/2", "1 + θ²"]]);
+    return gfQ(`θ is small and in radians. Use the small-angle approximations (sin θ ≈ θ, tan θ ≈ θ, cos θ ≈ 1 − θ²/2) to approximate ${e}.`, ans, 2, `•1 substitute the approximations (1 mark). •2 ${e} ≈ ${ans} (1 mark).`, { options: sqUniq(ans, [w1, w2]), label: `sa ${e}`, skill: "small-angle approximations" }); };
+  const alRecip = () => { const [eq, ans, w1, w2] = pick([
+      ["sec x = 2", "x = 60°, 300°", "x = 30°, 330°", "x = 60°, 120°"], ["sec x = −2", "x = 120°, 240°", "x = 60°, 300°", "x = 150°, 210°"],
+      ["cosec x = 2", "x = 30°, 150°", "x = 60°, 120°", "x = 30°, 330°"], ["cot x = 1", "x = 45°, 225°", "x = 45°, 135°", "x = 45°, 315°"],
+      ["cosec x = −2", "x = 210°, 330°", "x = 30°, 150°", "x = 240°, 300°"], ["cot x = −1", "x = 135°, 315°", "x = 45°, 225°", "x = 135°, 225°"]]);
+    return gfQ(`Solve ${eq} for 0° ≤ x < 360°.`, ans, 3, `•1 write it with sin, cos or tan (sec x = 1/cos x, cosec x = 1/sin x, cot x = 1/tan x) (1 mark). •2 the first solution (1 mark). •3 ${ans} (1 mark).`, { options: [w1, w2], label: `rc ${eq}`, skill: "reciprocal trig functions" }); };
+  // Year 13: setting up differential equations
+  const alFormDE = () => { const [ctx, ans, w1, w2] = pick([
+      ["The number of bacteria, N, grows at a rate proportional to N.", "dN/dt = kN", "dN/dt = k/N", "N = kt"],
+      ["A cup of tea at temperature θ °C cools at a rate proportional to the difference between θ and the room's 20 °C.", "dθ/dt = −k(θ − 20)", "dθ/dt = k(20θ)", "dθ/dt = −kθ + 20"],
+      ["Water leaks from a tank so that the volume V decreases at a rate proportional to √V.", "dV/dt = −k√V", "dV/dt = k√V", "V = −k√t"],
+      ["The radius r of a puddle decreases at a rate inversely proportional to r.", "dr/dt = −k/r", "dr/dt = −kr", "dr/dt = k/r²"]]);
+    return gfQ(`${ctx} Which differential equation models this, where k is a positive constant?`, ans, 2, `•1 a rate of change written as a derivative with respect to time (1 mark). •2 ${ans} (1 mark).`, { options: [w1, w2], label: `fd ${ans}`, skill: "forming differential equations" }); };
+  // Year 13: numerical methods
+  const alSignCh = () => { let p, q, a, f; do { p = gfR(1, 6); q = gfR(1, 20); f = x => x ** 3 - p * x - q; a = gfR(1, 4); } while (!(f(a) < 0 && f(a + 1) > 0));
+    const fn = `x³ − ${p === 1 ? "" : p}x − ${q}`, ans = `f(${a}) = ${gfM(f(a))} and f(${a + 1}) = ${f(a + 1)}: a change of sign, and f is continuous`;
+    return gfQ(`f(x) = ${fn}. Which shows that f(x) = 0 has a root between x = ${a} and x = ${a + 1}?`, ans, 2, `•1 f(${a}) = ${gfM(f(a))} and f(${a + 1}) = ${f(a + 1)} (1 mark). •2 a change of sign and f is continuous, so there is a root between them (1 mark).`,
+      { options: [`f(${a}) = ${gfM(f(a))} and f(${a + 1}) = ${f(a + 1)}: both are close to 0`, `f(${a + 1}) − f(${a}) = ${f(a + 1) - f(a)} > 0`], label: `ch ${p}${q}${a}`, skill: "locating roots" }); };
+  const alNR = () => { let p, q, x0, x1; do { p = gfR(1, 6); q = gfR(3, 30); x0 = gfR(1, 4); const f = x0 ** 3 + p * x0 - q, d = 3 * x0 * x0 + p; x1 = x0 - f / d; } while (Math.abs(x1 - x0) < 0.05 || Math.abs(x1 - x0) > 1 || !sqSafe(x1, 3));
+    return gfQ(`f(x) = x³ + ${p === 1 ? "" : p}x − ${q}. Taking x₀ = ${x0}, use the Newton-Raphson method once to find x₁, to 3 decimal places.`, sqR(x1, 3), 3,
+      `•1 f′(x) = 3x² + ${p} (1 mark). •2 x₁ = ${x0} − f(${x0})/f′(${x0}) = ${x0} − (${gfM(x0 ** 3 + p * x0 - q)})/${3 * x0 * x0 + p} (1 mark). •3 x₁ = ${sqR(x1, 3)} (1 mark).`, { calc: true, label: `nr ${p}${q}${x0}`, skill: "the Newton-Raphson method" }); };
+  const alIter = () => { let a, b, x0, xs; do { a = gfR(2, 6); b = gfR(1, 9); x0 = gfR(1, 3); xs = [x0]; for (let i = 0; i < 3; i++) xs.push(Math.cbrt(a * xs[i] + b)); } while (!sqSafe(xs[3], 3) || !sqSafe(xs[1], 3));
+    return gfQ(`Use the iteration xₙ₊₁ = ∛(${a}xₙ + ${b}) with x₀ = ${x0} to find x₃, to 3 decimal places.`, sqR(xs[3], 3), 2, `•1 x₁ = ${sqR(xs[1], 3)}… and x₂ = ${sqR(xs[2], 3)}…, keeping full accuracy (1 mark). •2 x₃ = ${sqR(xs[3], 3)} (1 mark).`, { calc: true, label: `it ${a}${b}${x0}`, skill: "iteration" }); };
+  const alTrap = () => { const [name, f] = pick([["√(1 + x²)", x => Math.sqrt(1 + x * x)], ["1/(1 + x)", x => 1 / (1 + x)], ["ln(1 + x)", x => Math.log(1 + x)], ["e^(x²)", x => Math.exp(x * x / 4)]]);
+    const top = name === "e^(x²)" ? 1 : 2, h = top / 4, ys = [0, 1, 2, 3, 4].map(i => f(i * h)), v = h / 2 * (ys[0] + ys[4] + 2 * (ys[1] + ys[2] + ys[3]));
+    if (!sqSafe(v, 3)) return {};
+    const fn = name === "e^(x²)" ? "e^(x²/4)" : name;
+    return gfQ(`Use the trapezium rule with 4 strips to estimate ∫₀^${top} ${fn} dx, to 3 decimal places.`, sqR(v, 3), 4,
+      `•1 h = ${gfD(h)} (1 mark). •2 the y-values ${ys.map(y => sqR(y, 4)).join(", ")} (1 mark). •3 ${gfD(h)}/2 × (${sqR(ys[0], 4)} + ${sqR(ys[4], 4)} + 2(${sqR(ys[1], 4)} + ${sqR(ys[2], 4)} + ${sqR(ys[3], 4)})) (1 mark). •4 ${sqR(v, 3)} (1 mark).`,
+      { calc: true, label: `tr ${name}`, skill: "the trapezium rule" }); };
+  // Year 13: the normal distribution
+  const alNormP = () => { let mu, sd, a, b, k, v; do { mu = 10 * gfR(2, 15); sd = gfR(3, 15); k = rand(3); a = mu + gfR(-20, 20) / 10 * sd; a = Math.round(a); b = a + gfR(2, 3 * sd); v = k === 0 ? alPhi((a - mu) / sd) : k === 1 ? 1 - alPhi((a - mu) / sd) : alPhi((b - mu) / sd) - alPhi((a - mu) / sd); } while (v < 0.01 || v > 0.99 || !sqSafe(v, 4));
+    const what = k === 0 ? `X < ${a}` : k === 1 ? `X > ${a}` : `${a} < X < ${b}`;
+    return gfQ(`X ~ N(${mu}, ${sd}²). Find P(${what}), to 4 decimal places.`, al4(v), 2, `•1 standardise: z = (x − ${mu})/${sd}, or use the calculator's normal distribution function (1 mark). •2 P(${what}) = ${al4(v)} (1 mark).`, { calc: true, label: `np ${mu}${sd}${a}${k}`, skill: "normal probabilities" }); };
+  const alNormSd = () => { const [pr, z] = pick([[0.1, 1.2816], [0.05, 1.6449], [0.025, 1.96], [0.2, 0.8416], [0.01, 2.3263]]); let mu, a, sd; do { mu = 10 * gfR(3, 12); a = mu + gfR(5, 40); sd = (a - mu) / z; } while (!alSafeSf(sd));
+    return gfQ(`X ~ N(${mu}, σ²) and P(X > ${a}) = ${pr}. Find σ, to 3 significant figures.`, alSf(sd), 3, `•1 P(Z > z) = ${pr} gives z = ${z} (1 mark). •2 (${a} − ${mu})/σ = ${z} (1 mark). •3 σ = ${alSf(sd)} (1 mark).`, { calc: true, label: `ns ${mu}${a}${pr}`, skill: "finding a standard deviation" }); };
+  const alNormMu = () => { const [pr, z] = pick([[0.1, 1.2816], [0.05, 1.6449], [0.025, 1.96], [0.2, 0.8416]]); let sd, a, mu; do { sd = gfR(2, 12); a = 10 * gfR(3, 12); mu = a + z * sd; } while (!alSafeSf(mu, 4));
+    return gfQ(`X ~ N(μ, ${sd}²) and P(X < ${a}) = ${pr}. Find μ, to 1 decimal place.`, sqR(mu, 1), 3, `•1 P(Z < z) = ${pr} gives z = −${z} (1 mark). •2 (${a} − μ)/${sd} = −${z} (1 mark). •3 μ = ${sqR(mu, 1)} (1 mark).`, { calc: true, label: `nm ${sd}${a}${pr}`, skill: "finding a mean" }); };
+  const alNormApprox = () => { const n = pick([50, 80, 100, 120, 200]), p = pick([0.3, 0.4, 0.5, 0.6]), m = n * p, v = Math.round(n * p * (1 - p) * 100) / 100, ans = `N(${gfD(m)}, ${gfD(v)})`;
+    return gfQ(`X ~ B(${n}, ${p}). n is large and p is close to 0.5, so X can be approximated by a normal distribution. Which one?`, ans, 2, `•1 mean np = ${gfD(m)} (1 mark). •2 variance np(1 − p) = ${gfD(v)}, so ${ans}; use a continuity correction (1 mark).`,
+      { options: sqUniq(ans, [`N(${gfD(m)}, ${gfD(m)})`, `N(${gfD(m)}, ${sqR(Math.sqrt(v), 2)})`, `N(${n}, ${p})`]).slice(0, 2), label: `na ${n}${p}`, skill: "the normal approximation" }); };
+  // Year 13: conditional probability and further hypothesis tests
+  const alCond = () => { const a = gfR(10, 40), b = gfR(10, 40), c = gfR(10, 40), d = gfR(10, 40), rows = pick([["Maths", "No maths"], ["Walks", "Doesn't walk"]]), cols = pick([["Physics", "No physics"], ["Has a dog", "No dog"]]);
+    const ans = sqFr(a, a + c);
+    return gfQ(`In a survey, ${a} people are “${rows[0]}” and “${cols[0]}”, ${b} are “${rows[0]}” only, ${c} are “${cols[0]}” only and ${d} are neither. One person is chosen at random. Given they are “${cols[0]}”, find the probability they are also “${rows[0]}”.`, ans, 2,
+      `•1 P(${rows[0]} | ${cols[0]}) = ${a}/(${a} + ${c}) (1 mark). •2 = ${ans} (1 mark).`, { accept: [`${a}/${a + c}`].concat(sqDec(a, a + c)), label: `cp ${a}${b}${c}${d}`, skill: "conditional probability" }); };
+  const alZTest = () => { let mu, sd, n, up, xb, z; do { mu = 10 * gfR(3, 12); sd = gfR(4, 15); n = pick([16, 25, 36, 49, 64, 100]); up = rand(2); xb = Math.round((mu + (up ? 1 : -1) * gfR(1, 30) / 10 * sd / Math.sqrt(n) * 1.3) * 10) / 10; z = (xb - mu) / (sd / Math.sqrt(n)); } while (Math.abs(Math.abs(z) - 1.6449) < 0.25 || Math.abs(z) < 0.2 || !sqSafe(z, 2));
+    const rej = Math.abs(z) > 1.6449, ans = rej ? `z = ${sqR(z, 2)}: beyond ${up ? "" : "−"}1.6449, so reject H₀` : `z = ${sqR(z, 2)}: not beyond ${up ? "" : "−"}1.6449, so do not reject H₀`;
+    return gfQ(`The masses of bags are normally distributed with standard deviation ${sd} g. The mean is meant to be ${mu} g. A sample of ${n} bags has mean ${gfD(xb)} g. Test, at the 5% level, whether the mean is ${up ? "more" : "less"} than ${mu} g.`, ans, 4,
+      `•1 H₀: μ = ${mu}, H₁: μ ${up ? ">" : "<"} ${mu} (1 mark). •2 under H₀, X̄ ~ N(${mu}, ${sd}²/${n}) (1 mark). •3 z = (${gfD(xb)} − ${mu})/(${sd}/√${n}) = ${sqR(z, 2)} (1 mark). •4 ${rej ? "reject" : "do not reject"} H₀: there is ${rej ? "" : "not "}enough evidence that the mean is ${up ? "more" : "less"} than ${mu} g (1 mark).`,
+      { calc: true, options: [rej ? `z = ${sqR(z, 2)}: not beyond the critical value, so do not reject H₀` : `z = ${sqR(z, 2)}: beyond the critical value, so reject H₀`, `z = ${sqR((xb - mu) / sd, 2)}: ${rej ? "do not reject" : "reject"} H₀`], label: `zt ${mu}${sd}${n}${xb}`, skill: "testing a normal mean" }); };
+  const alPMCC = () => { const [n, cv] = pick([[8, 0.6215], [10, 0.5494], [12, 0.4973], [15, 0.4409], [20, 0.3783]]); let r; do r = gfR(20, 85) / 100; while (Math.abs(r - cv) < 0.04);
+    const rej = r > cv, ans = rej ? `${r} > ${cv}: reject H₀; there is evidence of positive correlation` : `${r} < ${cv}: do not reject H₀; not enough evidence of positive correlation`;
+    return gfQ(`For ${n} pairs of data the product moment correlation coefficient is r = ${r}. The 5% one-tailed critical value for n = ${n} is ${cv}. Test H₀: ρ = 0 against H₁: ρ > 0.`, ans, 3,
+      `•1 compare r = ${r} with ${cv} (1 mark). •2 ${rej ? "reject" : "do not reject"} H₀ (1 mark). •3 in context: ${rej ? "there is evidence of positive correlation" : "not enough evidence of positive correlation"} (1 mark).`,
+      { options: [rej ? `${r} > ${cv}: do not reject H₀; no evidence of correlation` : `${r} < ${cv}: reject H₀; there is evidence of positive correlation`, `${r} > 0: reject H₀; it proves the variables are linked`], label: `pm ${n}${r}`, skill: "testing correlation" }); };
+  // Year 13: mechanics (projectiles, friction, moments, calculus in kinematics)
+  const alProjTime = () => { const [ang, s] = pick([[30, 0.5], [60, Math.sqrt(3) / 2], [45, Math.SQRT1_2]]); let U, t; do { U = gfR(10, 30); t = 2 * U * s / alG; } while (!alSafeSf(t));
+    return gfQ(`A ball is projected from level ground at ${U} m/s at ${ang}° above the horizontal. Taking g = 9.8 m s⁻², find the time of flight, to 3 significant figures (s).`, alSf(t), 3,
+      `•1 vertical: u = ${U} sin ${ang}° (1 mark). •2 0 = ${U} sin ${ang}° × t − 4.9t² (1 mark). •3 t = ${alSf(t)} s (1 mark).`, { calc: true, unit: "s", label: `pt ${U}${ang}`, skill: "projectiles" }); };
+  const alProjRange = () => { const [ang, s, c] = pick([[30, 0.5, Math.sqrt(3) / 2], [60, Math.sqrt(3) / 2, 0.5], [45, Math.SQRT1_2, Math.SQRT1_2]]); let U, R; do { U = gfR(10, 30); R = U * c * 2 * U * s / alG; } while (!alSafeSf(R));
+    return gfQ(`A ball is projected from level ground at ${U} m/s at ${ang}° above the horizontal. Taking g = 9.8 m s⁻², find how far away it lands, to 3 significant figures (m).`, alSf(R), 4,
+      `•1 time of flight from the vertical motion: t = 2 × ${U} sin ${ang}°/9.8 (1 mark). •2 horizontal speed ${U} cos ${ang}° is constant (1 mark). •3 range = ${U} cos ${ang}° × t (1 mark). •4 ${alSf(R)} m (1 mark).`, { calc: true, unit: "m", label: `pr ${U}${ang}`, skill: "projectiles" }); };
+  const alProjHigh = () => { const [ang, s] = pick([[30, 0.5], [60, Math.sqrt(3) / 2], [45, Math.SQRT1_2]]); let U, H; do { U = gfR(10, 30); H = (U * s) ** 2 / (2 * alG); } while (!alSafeSf(H));
+    return gfQ(`A ball is projected from level ground at ${U} m/s at ${ang}° above the horizontal. Taking g = 9.8 m s⁻², find its greatest height, to 3 significant figures (m).`, alSf(H), 3,
+      `•1 at the top the vertical velocity is 0 (1 mark). •2 0 = (${U} sin ${ang}°)² − 2 × 9.8 × h (1 mark). •3 h = ${alSf(H)} m (1 mark).`, { calc: true, unit: "m", label: `ph ${U}${ang}`, skill: "projectiles" }); };
+  const alFriction = () => { let m, mu, P, a; do { m = gfR(2, 20); mu = pick([0.1, 0.2, 0.25, 0.3, 0.4]); P = gfR(Math.ceil(mu * m * alG) + 2, Math.ceil(mu * m * alG) + 40); a = (P - mu * m * alG) / m; } while (!alSafeSf(a));
+    return gfQ(`A box of mass ${m} kg is pulled along rough horizontal ground by a horizontal force of ${P} N. The coefficient of friction is ${mu}. Taking g = 9.8 m s⁻², find its acceleration, to 3 significant figures (m s⁻²).`, alSf(a), 4,
+      `•1 R = ${m}g = ${gfD(m * alG)} N (1 mark). •2 friction F = μR = ${gfD(mu * m * alG)} N, as it is moving (1 mark). •3 ${P} − ${gfD(mu * m * alG)} = ${m}a (1 mark). •4 a = ${alSf(a)} m s⁻² (1 mark).`, { calc: true, label: `fr ${m}${mu}${P}`, skill: "friction" }); };
+  const alSlope = () => { const [ang, t] = pick([[30, "1/√3"], [45, "1"], [60, "√3"]]), ans = `μ = tan ${ang}° = ${t}`;
+    return gfQ(`A block rests on a rough plane inclined at ${ang}° to the horizontal, and is on the point of slipping. No other force acts. Find the coefficient of friction μ.`, ans, 3,
+      `•1 along the plane: F = mg sin ${ang}° (1 mark). •2 perpendicular: R = mg cos ${ang}°, and F = μR as friction is limiting (1 mark). •3 μ = tan ${ang}° = ${t} (1 mark).`,
+      { options: [`μ = sin ${ang}°`, `μ = cos ${ang}°`].map(o => o), label: `sl ${ang}`, skill: "friction on a slope" }); };
+  const alMoments = () => { const L = 2 * gfR(2, 5), M = gfR(5, 30), m = gfR(5, 40), d = gfR(1, L - 1), RA = M * alG * (L / 2) / L + m * alG * (L - d) / L;
+    return gfQ(`A uniform beam AB of length ${L} m and mass ${M} kg rests horizontally on supports at A and B. A load of ${m} kg sits ${d} m from A. Taking g = 9.8 m s⁻², find the reaction at A (N), to 3 significant figures.`, alSf(RA), 4,
+      `•1 take moments about B (1 mark). •2 R_A × ${L} = ${M}g × ${gfD(L / 2)} + ${m}g × ${L - d} (1 mark). •3 the beam's weight acts at its middle, ${gfD(L / 2)} m from B (1 mark). •4 R_A = ${alSf(RA)} N (1 mark).`, { calc: true, unit: "N", label: `mo ${L}${M}${m}${d}`, skill: "moments" }); };
+  const alVarAcc = () => { const a = gfR(1, 4), b = gfR(1, 9), c = gfR(1, 6), T = gfR(1, 5), k = rand(2), v = 3 * a * T * T - 2 * b * T + c;
+    if (k) return gfQ(`A particle moves in a straight line with displacement s = ${a === 1 ? "" : a}t³ − ${b}t² + ${c}t metres at time t seconds. Find its acceleration when t = ${T} (m s⁻²).`, gfM(6 * a * T - 2 * b), 3,
+      `•1 v = ds/dt = ${3 * a}t² − ${2 * b}t + ${c} (1 mark). •2 a = dv/dt = ${6 * a}t − ${2 * b} (1 mark). •3 at t = ${T}: ${gfM(6 * a * T - 2 * b)} m s⁻² (1 mark).`, { label: `va ${a}${b}${c}${T}`, skill: "kinematics with calculus" });
+    return gfQ(`A particle moves in a straight line with displacement s = ${a === 1 ? "" : a}t³ − ${b}t² + ${c}t metres at time t seconds. Find its velocity when t = ${T} (m/s).`, gfM(v), 2,
+      `•1 v = ds/dt = ${3 * a}t² − ${2 * b}t + ${c} (1 mark). •2 at t = ${T}: ${gfM(v)} m/s (1 mark).`, { label: `vv ${a}${b}${c}${T}`, skill: "kinematics with calculus" }); };
+
+  // The two stages' topics: [slug, short, title, strand, blurb, makers]
+  const AL_Y12 = [
+    ["proof", "Proof and algebra", "Proof, surds and indices", "Number", "Proof by deduction and counterexample, surds and the laws of indices.", sqFrom("gh-surds").concat(sqFrom("g5-indices", [0, 1, 2]), [saCounter, alAlgProof])],
+    ["quadratics", "Quadratics", "Quadratics, the discriminant and inequalities", "Patterns and missing numbers", "Completing the square, the discriminant, tangents and quadratic inequalities.", alM("nh-quadratics", [0, 1, 2, 3]).concat(alM("n5-brackets", [7]))],
+    ["polynomials", "Polynomials and graphs", "Polynomials, the factor theorem and graphs", "Patterns and missing numbers", "The remainder and factor theorems, factorising cubics, and transforming graphs.", alM("nh-polynomials", [0, 1, 2, 3]).concat(alM("nh-graphs", [0, 1]))],
+    ["coordinates", "Lines and circles", "Coordinate geometry: lines and circles", "Shape and angles", "Parallel and perpendicular lines, perpendicular bisectors, and the equation, centre and tangents of a circle.", alM("nh-lines", [0, 3]).concat(alM("nh-circles", [0, 1, 2, 3]))],
+    ["binomial", "Binomial expansion", "The binomial expansion", "Patterns and missing numbers", "nCr, the first terms of (1 + ax)ⁿ, a given term, and the term independent of x.", [saNCrQ, saBinCoeff, saBinFree, alBinApprox, alBinApprox]],
+    ["trig", "Trigonometry", "Trigonometry: the sine and cosine rules, graphs and equations", "Shape and angles", "The sine and cosine rules, the area of a triangle, trig graphs, identities and solving trig equations in degrees.", sqFrom("gh-trig", [0, 1, 2, 3]).concat(alM("n5-trigeq", [1, 3]), alM("nh-trig", [4]))],
+    ["logs", "Exponentials and logs", "Exponentials and logarithms", "Patterns and missing numbers", "The laws of logs, solving exponential equations, growth and decay, and straight-line log graphs.", alM("nh-logs", [0, 1, 2, 3, 4, 5])],
+    ["differentiation", "Differentiation", "Differentiation from first principles to stationary points", "Patterns and missing numbers", "Differentiating powers of x, tangents and normals, increasing functions, stationary points and optimisation.", alM("nh-differentiation", [0, 1, 2]).concat(alM("nh-calculus", [0, 1, 2, 3]))],
+    ["integration", "Integration", "Integration and the area under a curve", "Patterns and missing numbers", "Integrating powers of x, definite integrals, areas, and finding a curve from its gradient.", alM("nh-integration", [0, 1, 2, 3])],
+    ["vectors", "Vectors", "Vectors in two dimensions", "Shape and angles", "Magnitude and direction, vectors between points, and vector geometry.", sqFrom("gh-vectors", [0, 1, 2]).concat([alVecMag, alVecDir, alVecAB])],
+    ["sampling", "Sampling and data", "Statistical sampling and data", "Data and chance", "Kinds of sampling, stratified samples, mean and standard deviation from sums, and outliers.", [alSampleKind, alStratified, alSummary, alOutlier]],
+    ["probability", "Probability and the binomial", "Probability and the binomial distribution", "Data and chance", "The addition rule, independent events, binomial models and binomial probabilities.", [alUnion, alIndep, alBinModel, alBinPmf, alBinCdf]],
+    ["hypothesis", "Hypothesis testing", "Hypothesis testing with the binomial distribution", "Data and chance", "Null and alternative hypotheses, one- and two-tailed tests, p-values and critical regions.", [alHypSetup, alHypTest, alCritical]],
+    ["mechanics", "Kinematics and forces", "Mechanics: kinematics and Newton's laws", "Measurement", "Constant acceleration (suvat), velocity-time graphs, vertical motion, Newton's second law, lifts and connected particles.", [alSuvatS, alSuvatUp, alSuvatDec, alVT, alNewton, alLift, alTow]]
+  ];
+  const AL_Y13 = [
+    ["proof", "Proof", "Proof by contradiction and disproof", "Number", "Proof by contradiction, by deduction and disproof by counterexample.", [alContra, alContra, alAlgProof, saCounter, alM("ah-proof", [4])[0]]],
+    ["functions", "Functions", "Functions, inverses and the modulus", "Patterns and missing numbers", "Composite and inverse functions, domain and range, odd and even functions, and modulus equations.", alM("nh-functions", [0, 2, 3, 4]).concat(alM("ah-functions", [2, 4]))],
+    ["algebra", "Partial fractions and series", "Partial fractions and the binomial series", "Patterns and missing numbers", "Partial fractions (including a repeated factor) and the binomial expansion for any rational power, with its validity.", alM("ah-algebra", [0, 1]).concat([alBinNeg, alBinNeg])],
+    ["sequences", "Sequences and series", "Sequences and series", "Patterns and missing numbers", "Arithmetic and geometric series, sums to infinity, sigma notation and recurrence relations.", alM("ah-series", [0, 1, 2, 3]).concat(alM("nh-recurrence", [0, 1]))],
+    ["radians", "Radians and trig functions", "Radians, small angles and reciprocal trig functions", "Shape and angles", "Radians, arcs and sectors, small-angle approximations, sec, cosec and cot.", alM("nh-trig", [0, 1, 2]).concat([alSector, alSmall, alRecip])],
+    ["identities", "Trig identities", "Trig identities: compound and double angles, and R cos(x − α)", "Shape and angles", "The addition and double angle formulae, proving identities and the harmonic form.", alM("nh-formulae", [0, 1, 2, 3, 4]).concat(alM("nh-trig", [3]))],
+    ["differentiation", "Differentiation rules", "Differentiation: chain, product and quotient rules", "Patterns and missing numbers", "The chain, product and quotient rules, and the derivatives of eˣ, ln x and the trig functions.", alM("nh-differentiation", [3, 4]).concat(alM("ah-differentiation", [0, 1, 2, 3]))],
+    ["implicit", "Implicit and parametric", "Implicit and parametric differentiation, and rates of change", "Patterns and missing numbers", "Differentiating implicitly and parametrically, and connected rates of change.", alM("ah-implicit", [0, 1, 3]).concat(alM("nh-calculus", [4]))],
+    ["integration", "Integration methods", "Integration: substitution, by parts and partial fractions", "Patterns and missing numbers", "Standard integrals, f′(x)/f(x), substitution, integration by parts and with partial fractions.", alM("nh-integration", [4, 5]).concat(alM("ah-integration", [1, 2, 3]), alM("ah-parts", [0, 1]))],
+    ["differential", "Differential equations", "Differential equations", "Patterns and missing numbers", "Forming differential equations and solving them by separating the variables, with a condition.", alM("ah-de1", [0, 1, 4]).concat([alFormDE, alFormDE])],
+    ["numerical", "Numerical methods", "Numerical methods", "Patterns and missing numbers", "Locating roots by a change of sign, iteration, the Newton-Raphson method and the trapezium rule.", [alSignCh, alIter, alNR, alTrap]],
+    ["normal", "The normal distribution", "The normal distribution", "Data and chance", "Normal probabilities, finding a mean or standard deviation, and the normal approximation to the binomial.", [alNormP, alNormP, alNormSd, alNormMu, alNormApprox]],
+    ["testing", "Conditional probability and tests", "Conditional probability, and testing a mean and correlation", "Data and chance", "Conditional probability, hypothesis tests for a normal mean and for correlation.", [alCond, alZTest, alPMCC]],
+    ["mechanics", "Projectiles, friction and moments", "Mechanics: projectiles, friction, moments and variable acceleration", "Measurement", "Projectiles, friction on level ground and slopes, moments on a beam, and kinematics with calculus.", [alProjTime, alProjRange, alProjHigh, alFriction, alSlope, alMoments, alVarAcc]]
+  ];
+  const AL_STAGES = [
+    { id: "a-level-year-12", n: 1, key: "y12", course: "Year 12", grades: "Year 12", goal: "the first year of A level Mathematics (the AS content)", title: "Stage 1: Year 12", topics: AL_Y12 },
+    { id: "a-level-year-13", n: 2, key: "y13", course: "Year 13", grades: "Year 13", goal: "the full A level in Mathematics", title: "Stage 2: Year 13", topics: AL_Y13 }
+  ];
+  AL_STAGES.forEach(st => { st.topics = st.topics.map(([slug, short, title, strand, blurb, makers], i) => ({ id: `${st.key}-${slug}`, n: i + 1, short, title, strand, blurb, makers, stage: st })); });
+  const AL_ALL = AL_STAGES.flatMap(st => st.topics);
+  const alTopic = id => AL_ALL.find(t => t.id === id);
+  const alStage = key => AL_STAGES.find(st => st.key === key || st.id === key || st.n === key);
+  const numeracyALevel = [
+    ...AL_STAGES.map(st => ({ id: `${st.key}-check`, title: `A level maths climb: ${st.course} check`, level: "Senior", organiser: AL, check: false,
+      blurb: `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The results show which topics to work on first.`,
+      make: () => sqCheck(st).map((it, i) => Object.assign(gfOnline(it, `${it.topic.n}. ${it.topic.short}: `), { skill: `${it.topic.n}. ${it.topic.short}`, diff: i })) })),
+    ...AL_ALL.map(t => ({ id: t.id, title: `A level maths climb (${t.stage.course}) ${t.n}: ${t.title}`, level: "Senior", organiser: AL, check: false, blurb: `${t.blurb} Exam-style questions with marks and a mark scheme.`,
+      make: () => gfItems(t, 10).map(it => Object.assign(gfOnline(it), { diff: it.marks * 100 + (it.ps ? 50 : 0) + rand(50) })) })),
+    ...AL_STAGES.map(st => ({ id: `${st.key}-mixed`, title: `A level maths climb: mixed exam questions (${st.course})`, level: "Senior", organiser: AL, check: false,
+      blurb: `Twelve exam-style questions from across the 14 ${st.course} topics, a new mix every time, for revision once topics have been taught.`,
+      make: () => shuffle(st.topics).slice(0, 12).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }))
+  ];
+
   const numeracyExam = [
     { id: "gf-baseline", title: "GCSE maths climb: baseline check (grade 1 to 3)", level: "Fourth", organiser: GF, check: false,
       blurb: "Two quick questions on each of the 14 Foundation topics, in the order of the climb. The results show which topics to teach first.",
@@ -4822,7 +5099,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, numeracyALevel, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -4936,7 +5213,9 @@ window.PopActivities = (() => {
     // n questions from a topic (keep filters them), and the baseline's two one-mark questions a topic
     examBank: { STAGES: EXAM_STAGES, TOPICS: GF_TOPICS, ALL: GX_ALL, topic: gfTopic, stage: gfStage, items: (id, n, keep) => gfItems(gfTopic(id), n, keep), baseline: gfBaseline, check: key => gfCheck(gfStage(key)), online: gfOnline,
       // Scotland's version: the SQA climb (National 4 skills, National 5, Higher), the same shape
-      scotland: { STAGES: SQA_STAGES, TOPICS: SQ_N4, ALL: SQ_ALL, topic: sqTopic, stage: sqStage, items: (id, n, keep) => gfItems(sqTopic(id), n, keep), baseline: () => sqCheck(SQA_STAGES[0]), check: key => sqCheck(sqStage(key)), online: gfOnline } },
+      scotland: { STAGES: SQA_STAGES, TOPICS: SQ_N4, ALL: SQ_ALL, topic: sqTopic, stage: sqStage, items: (id, n, keep) => gfItems(sqTopic(id), n, keep), baseline: () => sqCheck(SQA_STAGES[0]), check: key => sqCheck(sqStage(key)), online: gfOnline },
+      // England's A level Mathematics (Years 12 and 13), the same shape
+      alevel: { STAGES: AL_STAGES, ALL: AL_ALL, topic: alTopic, stage: alStage, items: (id, n, keep) => gfItems(alTopic(id), n, keep), baseline: () => sqCheck(AL_STAGES[0]), check: key => sqCheck(alStage(key)), online: gfOnline } },
     demand, // how demanding a question is: activities put their questions easy to hard by this
     // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
     alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),

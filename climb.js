@@ -7,15 +7,17 @@
 (() => {
   "use strict";
   // Two courses share this page: the GCSE climb (England), and the SQA climb (Scotland) with ?course=sqa
-  const SQA = /[?&]course=sqa\b/.test(location.search);
-  const X = SQA ? window.PopActivities.examBank.scotland : window.PopActivities.examBank;
-  const NAME = SQA ? "SQA maths climb" : "GCSE maths climb";
+  // and England's A level climb (Years 12 and 13) with ?course=alevel, which works like the SQA one
+  const AL = /[?&]course=alevel\b/.test(location.search);
+  const SQA = AL || /[?&]course=sqa\b/.test(location.search);
+  const X = AL ? window.PopActivities.examBank.alevel : SQA ? window.PopActivities.examBank.scotland : window.PopActivities.examBank;
+  const NAME = AL ? "A level maths climb" : SQA ? "SQA maths climb" : "GCSE maths climb";
   const goal = st => (SQA ? st.goal : st.n === 1 ? "grade 1 to 3" : `grades ${st.grades}`);
   const $ = id => document.getElementById(id);
   const app = $("app");
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const norm = s => String(s).trim().toLowerCase().replace(/[‘’]/g, "'").replace(/[−–]/g, "-").replace(/\s+/g, " ").replace(/^0+(?=\d)/, "");
-  const SECURE = 0.75, PAPER_PASS = 0.5, KEY = SQA ? "popspell-climb-sqa" : "popspell-climb";
+  const SECURE = 0.75, PAPER_PASS = 0.5, KEY = AL ? "popspell-climb-alevel" : SQA ? "popspell-climb-sqa" : "popspell-climb";
   const today = () => new Date().toISOString().slice(0, 10);
 
   // ---------- Progress, on this device ----------
@@ -47,7 +49,7 @@
     check: s => [`Take the stage ${s.st.n} check`, `One question on each of the ${s.st.topics.length} topics for ${goal(s.st)} (${!SQA && s.st.n === 1 ? 28 : s.st.topics.length} questions). It shows which topics to work on first. Write your working on paper as you go.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Ten exam questions; about three-quarters of the marks makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
     paper: s => ["Do a mini paper", `Every stage ${s.st.n} topic is secure. Ten mixed questions, like the real exam: about half the marks or more and you're ready for the next stage. Topics that lose marks go back on your list.`],
-    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${SQA ? (s.to.n === 3 ? " Higher usually follows a National 5 at grade A or B." : s.to.n === 4 ? " Advanced Higher usually follows a Higher at grade A or B." : "") : s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
+    stage: s => [`Move up to stage ${s.to.n}`, `You've finished stage ${s.st.n}. Stage ${s.to.n} is ${s.to.title.replace(/^Stage \d: /, "")}.${AL ? " Year 13 builds on Year 12: keep its algebra and calculus sharp." : SQA ? (s.to.n === 3 ? " Higher usually follows a National 5 at grade A or B." : s.to.n === 4 ? " Advanced Higher usually follows a Higher at grade A or B." : "") : s.to.n === 3 ? " It's for the Higher tier: check with your teacher which tier you're sitting." : ""}`],
     done: () => ["Keep your marks sharp", `You've climbed all ${["", "", "two", "three", "four"][X.STAGES.length]} stages. Keep doing mini papers, and go back to any topic that loses marks.`]
   };
 
@@ -55,7 +57,7 @@
   function home() {
     document.title = `${NAME} · PopSpell`;
     const s = nextStep(), [title, about] = STEP_TEXT[s.kind](s);
-    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${(SQA ? ["National 4, or not sure", "National 5", "Higher", "Advanced Higher"] : ["Grade 1 to 3, or not sure", "Grade 4 or 5", "Grade 6 or above"])[st.n - 1]}</button>`).join("")}</div>` : "";
+    const action = s.kind === "start" ? `<div class="cl-grade">${X.STAGES.map(st => `<button class="cl-btn" data-start="${st.n}">${(AL ? ["Year 12, or not sure", "Year 13"] : SQA ? ["National 4, or not sure", "National 5", "Higher", "Advanced Higher"] : ["Grade 1 to 3, or not sure", "Grade 4 or 5", "Grade 6 or above"])[st.n - 1]}</button>`).join("")}</div>` : "";
     const go = { check: "Start the check", topic: "Start practising", paper: "Start the mini paper", stage: `Go to stage ${s.to ? s.to.n : ""}`, done: "Mini paper" }[s.kind];
     app.innerHTML = `${top("My next step")}
       <main class="cl-home">
@@ -66,9 +68,9 @@
           ${go ? `<div class="cl-next-do"><button class="cl-btn big" id="go">${go} →</button>${s.kind === "topic" ? `<button class="cl-btn ghost" id="skip">I know this: test me</button>` : ""}</div>` : ""}
         </section>
         <div class="cl-stages${X.STAGES.length === 4 ? " four" : ""}">${X.STAGES.map(stageCard).join("")}</div>
-        <div class="cl-foot"><p>Questions are PopSpell's own, ${SQA ? "in the SQA exam style, marked one step a mark" : "in the GCSE (9 to 1) exam style, with mark schemes"}. Your progress stays in this browser on this device.
-          <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 to Advanced Higher climb"}</a></p>
-          <a class="cl-btn small" href="pack.html?stage=${SQA ? "sqa" : "gcse"}-${data.stage || 1}">Work on paper: download a pack</a>
+        <div class="cl-foot"><p>Questions are PopSpell's own, ${AL ? "in the A level exam style, marked one mark a step" : SQA ? "in the SQA exam style, marked one step a mark" : "in the GCSE (9 to 1) exam style, with mark schemes"}. Your progress stays in this browser on this device.
+          <a href="${SQA ? "climb.html" : "climb.html?course=sqa"}">${SQA ? "Sitting GCSEs in England? The GCSE climb" : "In Scotland? The National 5 to Advanced Higher climb"}</a>${AL ? "" : ` <a href="climb.html?course=alevel">Doing A level? The Year 12 and 13 climb</a>`}</p>
+          <a class="cl-btn small" href="pack.html?stage=${AL ? "alevel" : SQA ? "sqa" : "gcse"}-${data.stage || 1}">Work on paper: download a pack</a>
           <button class="cl-btn small" id="reset">Start again</button></div>
       </main>`;
     app.querySelectorAll("[data-start]").forEach(b => b.onclick = () => { data.stage = Number(b.dataset.start); save(); home(); });
