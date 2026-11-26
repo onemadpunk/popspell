@@ -22,7 +22,7 @@ const fail = (area, msg) => problems.push(`${area}: ${msg}`);
 // The browser's content files, loaded as the page loads them
 const window = {};
 const context = { window, console };
-for (const f of ["words.js", "sentences.js", "passages.js", "stories.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/bank.js", "activities.js", "lessons.js", "paper-sheets.js"]) runInNewContext(read(f), context, { filename: f });
+for (const f of ["words.js", "sentences.js", "passages.js", "stories.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/alevel.js", "exam-english/bank.js", "activities.js", "lessons.js", "paper-sheets.js"]) runInNewContext(read(f), context, { filename: f });
 const { PopActivities: A, PopLessons: L, PopPaper: P } = window;
 const lessons = L.all();
 

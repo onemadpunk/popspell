@@ -1,0 +1,333 @@
+{
+ "section": "Literacy extras: comprehension ladder, reading tests, novel task maps, writing frames and spot the difference",
+ "lessons": [
+  {
+   "id": "lesson-first-comprehension-ladder",
+   "level": "First",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "LIT 1-14a",
+    "LIT 1-16a",
+    "ENG 1-17a"
+   ],
+   "title": "Comprehension ladder: finding, word meaning and first inference",
+   "intention": "We are learning to answer questions about a short text: finding information, working out word meanings and explaining what we think, with a reason.",
+   "criteria": [
+    "I can find an answer in the text and point to it.",
+    "I can use the word box and the sentence to work out a word.",
+    "I can say how a character feels and why."
+   ],
+   "steps": {
+    "start": "Read the title and look at the word box. What do you think the text will be about?",
+    "teach": "Read the text together first (or let them read it alone if they can), then go through the word box. Teach the question types as a ladder: finding it (the answer is in the text: underline it), word meaning (use the words around it), inference (the text hints: what does it make you think, and why?), and the writer's choices (why this word, this ending?). For every 'why' question, ask for evidence: 'What in the text tells you?'",
+    "practise": "Comprehension ladder rungs 1 to 3: one a session, in order. Fill-the-gap last, as a quick summary.",
+    "check": "Ask one 'why do you think…?' question and listen for a reason from the text."
+   },
+   "use": [],
+   "home": "At bedtime, ask one 'how do you think … felt?' question about the story you're reading.",
+   "vocab": "question, answer, text, find, clue, because, feel",
+   "understand": "How can you prove your answer is right?",
+   "lookFor": "Points to the words in the text, or says 'because it says…'."
+  },
+  {
+   "id": "lesson-second-comprehension-ladder",
+   "level": "Second",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "LIT 2-14a",
+    "LIT 2-16a",
+    "ENG 2-17a"
+   ],
+   "title": "Comprehension ladder: inference, evidence and the writer's choices",
+   "intention": "We are learning to answer comprehension questions that need inference and evidence, and to comment on the writer's choices.",
+   "criteria": [
+    "I can back an inference with evidence from the text.",
+    "I can explain what a word, simile or phrase suggests.",
+    "I can track how a character's feelings change."
+   ],
+   "steps": {
+    "start": "Read the last line of the text first. What questions does it make you want to ask?",
+    "teach": "Read the text together first (or let them read it alone if they can), then go through the word box. Teach the question types as a ladder: finding it (the answer is in the text: underline it), word meaning (use the words around it), inference (the text hints: what does it make you think, and why?), and the writer's choices (why this word, this ending?). For every 'why' question, ask for evidence: 'What in the text tells you?'",
+    "practise": "Comprehension ladder rungs 4 to 6: one a session. Mark together using the answers page, and talk about any answer that was close.",
+    "check": "Ask them to explain one simile or word choice: what does it make the reader think or feel?"
+   },
+   "use": [],
+   "home": "Pick a sentence you both like from a book and talk about why the writer chose those words.",
+   "vocab": "inference, evidence, simile, suggests, effect, writer's choice",
+   "understand": "What's the difference between 'what it says' and 'what it suggests'?",
+   "lookFor": "Says the text says something directly, but suggests something we work out from clues."
+  },
+  {
+   "id": "lesson-third-comprehension-ladder",
+   "level": "Third",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "LIT 3-14a",
+    "LIT 3-16a",
+    "ENG 3-17a",
+    "LIT 3-18a"
+   ],
+   "title": "Comprehension ladder: argument, structure and effect",
+   "intention": "We are learning to identify a writer's purpose and point of view, and to explain the effect of language and structure.",
+   "criteria": [
+    "I can say whether a text is balanced or one-sided, with evidence.",
+    "I can explain the effect of a word, image or ending.",
+    "I can write answers that point, quote and explain."
+   ],
+   "steps": {
+    "start": "Is a newspaper article always neutral? How could you tell?",
+    "teach": "Read the text together first (or let them read it alone if they can), then go through the word box. Teach the question types as a ladder: finding it (the answer is in the text: underline it), word meaning (use the words around it), inference (the text hints: what does it make you think, and why?), and the writer's choices (why this word, this ending?). For every 'why' question, ask for evidence: 'What in the text tells you?' At this level, teach point, quote, explain for every 2-mark or 3-mark answer.",
+    "practise": "Comprehension ladder rungs 7 and 8. Then swap: they write one question of each type for the other text.",
+    "check": "Ask for one point-quote-explain answer about the effect of the last sentence."
+   },
+   "use": [],
+   "home": "Read a news article together and ask: what does the writer want me to think?",
+   "vocab": "purpose, point of view, balanced, biased, effect, structure, quotation",
+   "understand": "Why does a good answer quote only a few words, not whole sentences?",
+   "lookFor": "Says short quotes show exactly which words create the effect, so the explanation can focus on them."
+  },
+  {
+   "id": "lesson-first-reading-test",
+   "level": "First",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "LIT 1-14a",
+    "LIT 1-16a"
+   ],
+   "title": "Reading test practice: P4 (England Year 3)",
+   "intention": "We are learning to read a text on our own and answer a range of questions within a time limit.",
+   "criteria": [
+    "I can read the whole text before I start the questions.",
+    "I can find answers and check them in the text.",
+    "I can explain an answer in a full sentence."
+   ],
+   "steps": {
+    "start": "How long should you spend reading the text before the questions?",
+    "teach": "Show how a test works: read the whole text, then the questions; one tick means one answer; look back at the text for every answer. Do the first two questions together, then let them work alone.",
+    "practise": "The P4 reading test, timed. Mark it together with the mark scheme.",
+    "check": "Use the questions they missed to choose a skill to practise (finding, word meaning or inference)."
+   },
+   "use": [],
+   "home": "Play 'find it fast': you ask a question about a page, they find the answer.",
+   "vocab": "test, question, look back, tick, explain",
+   "understand": "Why should you look back at the text, even if you think you remember?",
+   "lookFor": "Says it helps check and find the exact words."
+  },
+  {
+   "id": "lesson-second-reading-tests",
+   "level": "Second",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "LIT 2-14a",
+    "LIT 2-16a",
+    "ENG 2-17a",
+    "LIT 2-18a"
+   ],
+   "title": "Reading test practice: P5 to P7 (England Years 4 to 6)",
+   "intention": "We are learning to manage a reading test: reading carefully, answering every type of question and using the marks as a guide to how much to write.",
+   "criteria": [
+    "I can use the number of marks to decide how much to write.",
+    "I can answer inference questions with evidence.",
+    "I can manage my time so I finish."
+   ],
+   "steps": {
+    "start": "A question is worth 2 marks. What does that tell you?",
+    "teach": "Teach test habits: read the text once for the gist, then question by question; underline key words in the question; 1 mark = one point, 2 marks = a point and a reason or evidence; skip and come back; check at the end. Model one 2-mark answer aloud.",
+    "practise": "The reading test for their year (P5, P6 or P7), timed. Mark with the mark scheme and talk through two answers that lost marks.",
+    "check": "Ask them to improve one 2-mark answer so it earns both marks."
+   },
+   "use": [],
+   "home": "Time a short reading task at home and talk about how they used the time.",
+   "vocab": "marks, evidence, inference, explain, summarise, tone",
+   "understand": "Why do some questions get more marks than others?",
+   "lookFor": "Says they need more: a reason, evidence or explanation, not just one fact."
+  },
+  {
+   "id": "lesson-second-novel-task-map",
+   "level": "Second",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [
+    "ENG 2-19a",
+    "LIT 2-11a",
+    "LIT 2-16a"
+   ],
+   "title": "Reading a whole novel with a task map",
+   "intention": "We are learning to read a whole novel and respond to it in different ways: characters, setting, plot, words, writing and talk.",
+   "criteria": [
+    "I can choose and complete tasks as I read.",
+    "I can back my ideas about a character with evidence.",
+    "I can share my response to a book with others."
+   ],
+   "steps": {
+    "start": "Look at the cover and title. What do you predict, and why?",
+    "teach": "Show the task map and how it works: read a section, pick a task, do it, tick it. Agree how many tasks a week. Model one task (for example a character web with quotations).",
+    "practise": "A task map: the one for your class or home novel, or the 'any novel' map. Aim for one task from each row by the end of the book.",
+    "check": "Ask them to show their favourite completed task and explain it."
+   },
+   "use": [],
+   "home": "Read the book together for ten minutes a night, and do one talk task at the weekend.",
+   "vocab": "character, setting, plot, prediction, evidence, review",
+   "understand": "How does doing a task help you understand a book better than just reading it?",
+   "lookFor": "Says it makes you stop and think about characters or events, and look back for evidence."
+  },
+  {
+   "id": "lesson-first-writing-frames",
+   "level": "First",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [
+    "LIT 1-26a",
+    "LIT 1-28a",
+    "LIT 1-29a",
+    "ENG 1-30a",
+    "ENG 1-31a"
+   ],
+   "title": "Writing frames: plan and check by text type",
+   "intention": "We are learning to plan writing with a frame for the type of text, and to check our writing against success criteria.",
+   "criteria": [
+    "I can say what kind of text I'm writing and why.",
+    "I can use a frame to plan the parts in order.",
+    "I can check my writing with the success criteria."
+   ],
+   "steps": {
+    "start": "What's the difference between a story and instructions?",
+    "teach": "Pick one text type a week. Read a short example together and spot its parts. Then plan in the frame (draw or write), write it out, and check the success criteria in the 'Me' column before an adult checks.",
+    "practise": "The writing frame for this week's text type (recount, instructions, report, persuasive, story, letter, explanation or discussion).",
+    "check": "Ask them to show where their writing meets one success criterion."
+   },
+   "use": [],
+   "home": "Write a real text together: a thank-you letter, a recipe or a recount of a trip.",
+   "vocab": "recount, instructions, report, letter, story, plan, success criteria",
+   "understand": "Why do different kinds of writing have different parts?",
+   "lookFor": "Says each kind has a different job, such as telling what happened or how to do something."
+  },
+  {
+   "id": "lesson-second-writing-frames",
+   "level": "Second",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [
+    "LIT 2-26a",
+    "LIT 2-28a",
+    "LIT 2-29a",
+    "ENG 2-30a",
+    "ENG 2-31a"
+   ],
+   "title": "Writing frames: structure, features and success criteria",
+   "intention": "We are learning to organise writing in paragraphs with the features of each text type, and to self-assess against success criteria.",
+   "criteria": [
+    "I can plan paragraphs for a text type.",
+    "I can use the features and connectives of the text type.",
+    "I can check my writing against success criteria and set a target."
+   ],
+   "steps": {
+    "start": "Show two openings: one recount, one persuasive. Which is which? How can you tell?",
+    "teach": "Teach a text type a week: read a model, label its features, plan in the frame, write in paragraphs, then self-assess. Pick one unmet criterion as the next target, rather than correcting everything.",
+    "practise": "The Second and Third level writing frame for this week's text type.",
+    "check": "Ask them to improve one paragraph to meet a criterion they missed."
+   },
+   "use": [],
+   "home": "Spot text types in real life: a leaflet (persuasive), a manual (instructions), a newspaper report.",
+   "vocab": "paragraph, connective, formal, persuasive, balanced, success criteria, target",
+   "understand": "Why do success criteria help a writer?",
+   "lookFor": "Says they show what a good piece needs, so you can check and improve it."
+  },
+  {
+   "id": "lesson-third-writing-frames",
+   "level": "Third",
+   "subject": "Literacy",
+   "strand": "Writing: creating texts",
+   "codes": [
+    "LIT 3-26a",
+    "LIT 3-28a",
+    "LIT 3-29a",
+    "ENG 3-30a",
+    "ENG 3-31a"
+   ],
+   "title": "Writing frames to independence: discussion, persuasion and explanation",
+   "intention": "We are learning to use a frame to plan, then move away from it, writing structured texts with a clear purpose and audience.",
+   "criteria": [
+    "I can plan a balanced or persuasive piece in paragraphs.",
+    "I can adapt the frame and use my own openers.",
+    "I can judge my writing against criteria and redraft."
+   ],
+   "steps": {
+    "start": "Is it easier to argue one side or both sides? Why?",
+    "teach": "Use the frame for the plan only, then write without starters. Compare their version with the frame's: which openers did they improve? Redraft one paragraph.",
+    "practise": "The Second and Third level frames for discussion, persuasive and explanation writing.",
+    "check": "Ask them to point to one place where they changed a starter into their own words."
+   },
+   "use": [
+    "paper-frame-discussion-second",
+    "paper-frame-persuasive-second",
+    "paper-frame-explanation-second"
+   ],
+   "home": "Discuss a real issue at home and list points for and against.",
+   "vocab": "discussion, counter-argument, conclusion, audience, purpose, redraft",
+   "understand": "When should a writer stop using a frame?",
+   "lookFor": "Says when they can plan and structure on their own, using the frame only to check."
+  },
+  {
+   "id": "lesson-early-spot-the-difference",
+   "level": "Early",
+   "subject": "Literacy",
+   "strand": "Listening and talking",
+   "codes": [
+    "LIT 0-02a",
+    "LIT 0-10a"
+   ],
+   "title": "Spot the difference: looking closely and talking about it",
+   "intention": "We are learning to look carefully and use words to say what is the same and what is different.",
+   "criteria": [
+    "I can find differences between two pictures.",
+    "I can say what has changed, for example 'the tree has no apples'.",
+    "I can take turns to find and say one."
+   ],
+   "steps": {
+    "start": "Show two of the same toy, one changed (a sock missing). What's different?",
+    "teach": "Look at the top picture together and name what you see. Then compare, one thing at a time, left to right. When they find one, ask them to say it in a sentence: 'The … has…'",
+    "practise": "Spot the difference (5): any scene. Take turns: one find each.",
+    "check": "Ask them to describe one difference in a full sentence."
+   },
+   "use": [],
+   "home": "Play 'what's changed?': hide or move one thing on a table while they close their eyes.",
+   "vocab": "same, different, missing, more, fewer, top, bottom",
+   "understand": "How do you look carefully so you don't miss one?",
+   "lookFor": "Says look at one part at a time, or in order across the picture."
+  },
+  {
+   "id": "lesson-first-spot-the-difference",
+   "level": "First",
+   "subject": "Literacy",
+   "strand": "Listening and talking",
+   "codes": [
+    "LIT 1-02a",
+    "LIT 1-10a"
+   ],
+   "title": "Spot the difference: careful looking and precise words",
+   "intention": "We are learning to look systematically and describe changes precisely.",
+   "criteria": [
+    "I can search a picture in a careful order.",
+    "I can describe each difference precisely (fewer, missing, extra).",
+    "I can explain how I found them."
+   ],
+   "steps": {
+    "start": "How could you check a whole picture so you don't miss anything?",
+    "teach": "Teach a search strategy: split the picture into parts (rows or quarters) and check each object one by one. Describe each find precisely ('the house has one window missing', not 'the house is different').",
+    "practise": "Spot the difference (7) and (10): any scene. Time yourselves, then talk about the strategy.",
+    "check": "Ask them to describe three differences precisely and say how they searched."
+   },
+   "use": [],
+   "home": "Make your own: draw a simple picture twice with three changes for a family member.",
+   "vocab": "precise, fewer, extra, missing, instead, strategy",
+   "understand": "Why is 'the tree has one fewer apple' better than 'the tree is different'?",
+   "lookFor": "Says it tells exactly what changed, so someone else could find it."
+  }
+ ]
+}

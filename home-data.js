@@ -5,7 +5,7 @@
    A pack is one subject, one nation and one level band. Its sessions are that band's ready lessons in
    teaching order: Scotland follows the Curriculum for Excellence levels (with the draft Know, Do,
    Understand strands named where they're known) and the SQA courses for S4 to S6; England follows the
-   2014 national curriculum by year band, and the GCSE climbs for Years 10 and 11.
+   2014 national curriculum by year band, the GCSE climbs for Years 10 and 11, and the A level climbs for Years 12 and 13.
 
    pick says which lessons: { level } a CfE level (Scotland's view of each lesson; with part, one of its three
    school years), { sqa } an SQA course,
@@ -30,6 +30,9 @@ window.PopHomeData = (() => {
     add("scotland", subject, "higher", `Higher ${sqa}`, "S5 to S6 (age 15 to 18)", { sqa: `Higher ${sqa}` }, { age: "older", exam: true, perWeek: 2 });
     add("scotland", subject, "ah", `Advanced Higher ${sqa}`, "S6 (age 16 to 18)", { sqa: `Advanced Higher ${sqa}` }, { age: "older", exam: true, perWeek: 2 });
   });
+  // Scotland's other maths course: Applications of Mathematics (the SQA Applications climb)
+  add("scotland", "Maths", "apps-n5", "National 5 Applications of Mathematics", "S4 to S5 (age 14 to 17)", { sqa: "National 5 Applications of Mathematics" }, { age: "older", exam: true, perWeek: 2 });
+  add("scotland", "Maths", "apps-higher", "Higher Applications of Mathematics", "S5 to S6 (age 15 to 18)", { sqa: "Higher Applications of Mathematics" }, { age: "older", exam: true, perWeek: 2 });
   // England: the national curriculum's own year bands, then the GCSE climbs
   [["Maths", "Maths"], ["Literacy", "English"]].forEach(([subject, word]) => {
     add("england", subject, "reception", `${word}: Reception`, "Reception (age 4 to 5)", { band: "Reception" });
@@ -41,11 +44,16 @@ window.PopHomeData = (() => {
     add("england", subject, "ks4", `${word}: Key stage 4, the GCSE content`, "Years 10 and 11 (age 14 to 16)", { band: "Key stage 4", climb: false }, { age: "older", perWeek: 2 });
     const g = word === "Maths" ? "GCSE maths" : "GCSE English Language";
     const re = word === "Maths" ? ["^lesson-england-gcse-climb-(?!g5-|gh-|my-next)", "^lesson-england-gcse-climb-g5-", "^lesson-england-gcse-climb-gh-"]
-      : ["^lesson-england-english-climb-(e1-|start|what|my-next)", "^lesson-england-english-climb-e2-", "^lesson-england-english-climb-(e3-|lit-)"];
+      : ["^lesson-england-english-climb-(e1-|start|what|my-next)", "^lesson-england-english-climb-(e2-|spoken)", "^lesson-england-english-climb-(e3-|lit-)"];
     add("england", subject, "gcse-1", `${g}: grade 1 to 3`, "Years 10 and 11, or a resit", { climb: re[0] }, { age: "older", exam: true, perWeek: 2 });
     add("england", subject, "gcse-2", `${g}: grades 4 and 5`, "Years 10 and 11, or a resit", { climb: re[1] }, { age: "older", exam: true, perWeek: 2 });
     add("england", subject, "gcse-3", `${g}: grades 6 to 9${word === "Maths" ? " (Higher)" : " and Literature"}`, "Years 10 and 11", { climb: re[2] }, { age: "older", exam: true, perWeek: 2 });
   });
+  // England's sixth form: A level, one pack a year (the A level climbs)
+  add("england", "Maths", "alevel-y12", "A level Mathematics: Year 12", "Year 12 (age 16 to 17)", { climb: "^lesson-alevel-maths-(y12-|what-the-exam|exam-technique)" }, { age: "older", exam: true, perWeek: 1, note: "Each A level session is a whole topic: spread it over a week, with the lesson on day 1, practice on days 2 and 3 (make the pack again for fresh questions), and the exam sheet at the end of the week." });
+  add("england", "Maths", "alevel-y13", "A level Mathematics: Year 13", "Year 13 (age 17 to 18)", { climb: "^lesson-alevel-maths-(y13-|my-next-step)" }, { age: "older", exam: true, perWeek: 1, note: "Each A level session is a whole topic: spread it over a week, with the lesson on day 1, practice on days 2 and 3 (make the pack again for fresh questions), and the exam sheet at the end of the week." });
+  add("england", "Literacy", "alevel-lit", "A level English Literature", "Years 12 and 13 (age 16 to 18)", { climb: "^lesson-alevel-english-(al1-|my-next-step)" }, { age: "older", exam: true, perWeek: 1, note: "Each A level session is a whole topic: spread it over a week, with the lesson on day 1, the online practice on days 2 and 3, and the exam question written and marked with the bands at the end of the week." });
+  add("england", "Literacy", "alevel-lang", "A level English Language", "Years 12 and 13 (age 16 to 18)", { climb: "^lesson-alevel-english-(al2-|my-next-step)" }, { age: "older", exam: true, perWeek: 1, note: "Each A level session is a whole topic: spread it over a week, with the lesson on day 1, the online practice on days 2 and 3, and the exam question written and marked with the bands at the end of the week." });
 
   // ---------- Plain words for the parent ----------
   // When a child is stuck, by strand and age: things to say. Each lesson page adds its own "look for".

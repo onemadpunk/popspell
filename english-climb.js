@@ -1,5 +1,6 @@
 /* The English exam climb for a pupil working on their own (english-climb.html): GCSE English Language from
-   grade 1 to 9 in three stages, with English Literature alongside; with ?course=sqa, Scotland's climb.
+   grade 1 to 9 in three stages, with English Literature alongside; with ?course=sqa, Scotland's climb; with
+   ?course=alevel, A level English Literature and English Language (Years 12 and 13), one stage each.
    "My next step" says what to do: the stage check first, then each topic that needs work in the climb's
    order (practice until about three-quarters right), then the stage's writing tasks (planned, written on
    paper or here, checked against a list, then compared with a model answer), then a mini paper, then the
@@ -8,13 +9,14 @@
 (() => {
   "use strict";
   const X = window.PopEnglishExam;
-  const KEY_COURSE = /[?&]course=sqa\b/.test(location.search) && X.course("sqa") ? "sqa" : "gcse";
+  const ASKED = (/[?&]course=(sqa|alevel)\b/.exec(location.search) || [])[1];
+  const KEY_COURSE = ASKED && X.course(ASKED) ? ASKED : "gcse";
   const C = X.course(KEY_COURSE);
   const NAME = C.name;
   const $ = id => document.getElementById(id);
   const app = $("app");
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const SECURE = 0.75, PAPER_PASS = 0.6, KEY = KEY_COURSE === "sqa" ? "popspell-english-climb-sqa" : "popspell-english-climb";
+  const SECURE = 0.75, PAPER_PASS = 0.6, KEY = KEY_COURSE === "gcse" ? "popspell-english-climb" : `popspell-english-climb-${KEY_COURSE}`;
   const today = () => new Date().toISOString().slice(0, 10);
   const STAGES = C.STAGES, LIT = C.LIT;
 
@@ -42,11 +44,12 @@
     if (w) return { kind: "write", st, w };
     const papers = data.papers[st.key] || [];
     if (!papers.some(p => p.got / p.of >= PAPER_PASS)) return { kind: "paper", st };
-    if (st.n < STAGES.length) return { kind: "stage", st, to: stageOf(st.n + 1) };
+    // A level's two stages are two separate A levels, so finishing one is the end of the climb
+    if (st.n < STAGES.length && C.key !== "alevel") return { kind: "stage", st, to: stageOf(st.n + 1) };
     return { kind: "done", st };
   }
   const STEP_TEXT = {
-    start: () => ["Where are you starting?", `Pick the ${C.key === "sqa" ? "level" : "grade"} you’re working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know.`],
+    start: () => ["Where are you starting?", C.key === "alevel" ? "Pick the A level you’re taking. Its check is quick, and the climb skips what you already know." : `Pick the ${C.key === "sqa" ? "level" : "grade"} you’re working at now. Not sure? Start at stage 1: its check is quick, and the climb skips what you already know.`],
     check: s => [`Take the stage ${s.st.n} check`, `${s.st.n === 1 ? "Two questions" : "One question"} on each of the ${s.st.topics.length} topics for ${s.st.goal}. It shows which topics to work on first.`],
     topic: s => [`Practise ${s.st.n}.${s.t.n}: ${s.t.title}`, `${s.t.blurb} Eight exam-style questions; six or more right makes the topic secure.${topicState(s.t).best != null ? ` Your best so far: ${Math.round(topicState(s.t).best * 100)}%.` : ""}`],
     write: s => [`Writing task: ${s.w.kind.toLowerCase()}`, `${(C.writingWhyFor || {})[s.w.stage] || C.writingWhy || "Half of every paper is the writing question."} Plan, write for about ${s.w.minutes - 10} minutes, check your work against a list, then compare it with a model answer at ${s.w.grade}.`],

@@ -625,12 +625,13 @@
     all.forEach((e, i) => {
       e.order = i;
       e.codes = e.codes || (e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level));
+      e.kdu = e.type === "check" || e.england ? "" : kduOf({ subject: e.subject, strand: e.strand, level: e.level, sqa: e.lesson && e.lesson.sqa });
       // England: the national curriculum year, band and strand for the same work
       const w = e.type === "check" ? null : enWork(e.id);
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.kdu} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
         ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
       SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
       // Teachers' other names for tricky words, found from the title so the whole phonics strand doesn't match
@@ -644,6 +645,9 @@
 
   // Where a ready lesson sits in Scotland's draft Know, Do, Understand frameworks (Education Scotland, November 2026).
   // The drafts have no statement codes and may change, so this names the strand and heading only. It is a provisional guide.
+  // Numeracy and mathematics are one draft framework ("Draft Technical Framework: Numeracy and Mathematics", November 2026),
+  // with no separate numeracy strand, so the old MNU (numeracy) outcomes map through the same strands as MTH ones.
+  // The same tags go on every activity, sheet and word list in the Library, from its strand and level (libraryEntries).
   const KDU_LIT_YOUNG = {
     "Handwriting": "Language Foundation · Concepts of print and letter knowledge",
     "Listening and sounds": "Oral Language and Interaction; Language Foundation · Phonological awareness, phonemic awareness and phonics",
@@ -657,6 +661,7 @@
   };
   const KDU_LIT_OLDER = {
     "Handwriting": "Tools for Writing",
+    "Listening and sounds": "Communicating and Interacting",
     "Listening and talking": "Communicating and Interacting",
     "Reading: phonics and tricky words": "Tools for Reading Comprehension",
     "Reading: understanding stories": "Story and Identity; How Texts Work; Tools for Reading Comprehension",
@@ -668,12 +673,12 @@
   const KDU_MATHS = {
     "Number": "Quantity, Numbers and the Algebraic Properties of Number · Number systems and structures; Number relationships and operations",
     "Money": "Quantity, Numbers and the Algebraic Properties of Number · Finance",
-    "Fractions, decimals and percentages": "Proportional reasoning",
+    "Fractions, decimals and percentages": "Quantity, Numbers and the Algebraic Properties of Number · Proportional reasoning",
     "Patterns and missing numbers": "Quantity, Numbers and the Algebraic Properties of Number · Patterns and sequences; Expressions, equations and relationships",
     "Measurement": "Shape, Space and Measurement · Measures",
     "Time": "Shape, Space and Measurement · Measures",
     "Shape and angles": "Shape, Space and Measurement · Properties of shapes and solids; Position and movement",
-    "Data and chance": "Information, Data and Uncertainty"
+    "Data and chance": "Information, Data and Uncertainty · Data management; Data analysis and interpretation; Probability"
   };
   const kduOf = l => {
     if (!l || l.england || !l.strand || l.sqa) return "";
@@ -729,7 +734,7 @@
   }
   const saveLibraryPrefs = p => { try { localStorage.setItem(LIB_KEY, JSON.stringify(p)); } catch { /* fine */ } };
 
-  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14", "Key stage 4": "Age 14–16" };
+  const BAND_AGES = { Reception: "Age 4–5", "Year 1": "Age 5–6", "Year 2": "Age 6–7", "Years 3–4": "Age 7–9", "Years 5–6": "Age 9–11", "Key stage 3": "Age 11–14", "Key stage 4": "Age 14–16", "Sixth form (A level)": "Age 16–18" };
   const pupilLibraryLevel = pupil => {
     if (E_() && E_().isEngland(pupil.yearGroup)) {
       const year = E_().pupilYear(pupil.yearGroup);
@@ -785,7 +790,7 @@
       ? `<span class="lib-level lv-${(e.band || "any").toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(e.type === "check" ? "Any year" : e.en ? e.en.label : "Any year")}</span>`
       : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? esc(levelName(e.level)) : "Any level"}</span>`);
     const codesLine = e => (en ? (e.en && e.en.statements.length ? `<p class="prog-codes">${esc(ncSource(e.en))}: ${esc(e.en.label)} · ${esc(e.en.domain)}</p>` : "")
-      : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
+      : e.codes.length || e.kdu ? `<p class="prog-codes">${e.codes.length ? `CfE ${esc(e.codes.join(", "))}` : ""}${e.codes.length && e.kdu ? " · " : ""}${e.kdu ? `<span title="Scotland's draft Know, Do, Understand framework (November 2026): may still change">New curriculum (draft): ${esc(e.kdu)}</span>` : ""}</p>` : "");
     // My folder: the resources a teacher uses most, kept on this device
     const favKey = `popspell-folder-${me ? me.uid : "teacher"}`;
     const favs = new Set((() => { try { return JSON.parse(localStorage.getItem(favKey) || "[]"); } catch { return []; } })());
@@ -923,7 +928,9 @@
     const M = window.PopLessons.MINUTES;
     const work = id => (forPrint || !previewHref(id) ? esc(workTitle(id)) : `<a href="${esc(previewHref(id))}" target="_blank" rel="noopener">${esc(workTitle(id))}</a>`);
     const en = cur === "england" ? enWork(l.id) : null;
-    const curriculum = l.sqa ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+    const curriculum = l.alevel ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
+        <p><b>Course:</b> ${esc(l.alevel)} (England, sixth form, after GCSE). Written from the Department for Education's A level subject content, which every exam board follows; the questions are PopSpell's own, not past papers.</p>`
+      : l.sqa ? `<p><b>Success criteria:</b></p><ul class="lesson-criteria">${l.criteria.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
         <p><b>SQA course:</b> ${esc(l.sqa)} (senior phase, after CfE Fourth level). Written from SQA's course specification; the questions are PopSpell's own, not past papers.</p>`
       : !en ? (l.england
       ? `<p class="hint">From England's curriculum: in CfE this comes after Second level, so there's no CfE version.</p>
@@ -3417,7 +3424,7 @@
   }
   function levelsHTML(r, prog) {
     const c = levelCheck(r, prog);
-    if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see what's expected for their age next to where they're working: a CfE level for P1–S6, or a national curriculum year for Reception–Year 11.</p>`;
+    if (!c.expected) return `<p class="hint prog-levels">Add ${esc(r.name)}'s year group (in Pupils) to see what's expected for their age next to where they're working: a CfE level for P1–S6, or a national curriculum year for Reception–Year 11, or Year 12–13 for A level.</p>`;
     if (c.england) return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}</b> (${esc(c.expected.stage)}): ${esc(c.expected.text)}.</p>
       ${c.areas.map(a => `<p><span class="lv-badge lv-${a.status}">${yearStatus(c.year, a.status)}</span> <b>${a.area}:</b> working on ${esc(a.level)} work (${esc(a.domain)})</p>`).join("")}${LEVEL_EVIDENCE}</div>`;
     return `<div class="prog-levels"><p><b>🎯 Expected for ${esc(c.year)}:</b> ${c.expected[0]} level (${esc(c.expected[1])}).</p>
@@ -4078,7 +4085,7 @@
   /* ---------- New pupil: profile, Pip's Sound Quest, and the starting assessment report ---------- */
 
   // A pupil's year group also says which curriculum they follow: P1 to S6 are Scotland's,
-  // Reception and Year 1 to Year 11 are England's
+  // Reception and Year 1 to Year 13 are England's
   const YEAR_GROUPS = ["Nursery", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "S1", "S2", "S3", "S4", "S5", "S6"];
   const ENGLAND_YEARS = () => (E_() ? E_().YEARS.map(y => y[0]) : []);
   const yearOptions = chosen => `<optgroup label="Scotland (Curriculum for Excellence)">${YEAR_GROUPS.map(y => `<option${chosen === y ? " selected" : ""}>${y}</option>`).join("")}</optgroup>
@@ -4092,7 +4099,7 @@
   };
   // Pupils from S1 and Year 7 up see the older look: no mascot or stickers, calmer colours. Their
   // work still follows the level they're working at; this is only how the screens look.
-  const OLDER_FROM = new Set(["S1", "S2", "S3", "S4", "S5", "S6", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11"]);
+  const OLDER_FROM = new Set(["S1", "S2", "S3", "S4", "S5", "S6", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Year 13"]);
   const LOOK_CHOICES = [["auto", "Automatic (from their year group)"], ["younger", "PopSpell's usual look, with Pip"], ["older", "Older look, no mascot or stickers"]];
   const lookFor = (choice, yearGroup) => (choice === "older" || (choice !== "younger" && OLDER_FROM.has(yearGroup)) ? "older" : "");
   const NEED_CHIPS = ["Dyslexia (or suspected)", "English as an additional language", "ADHD", "Speech and language", "Hearing", "Sight", "Anxious about learning", "Needs short tasks"];

@@ -5298,5 +5298,1008 @@ window.PopPaper = (() => {
         "Listen for twenty-nine, thirty: the tens change and the ones start again.")
     };
   });
+
+  /* ===================== A level maths exam climb (England, Years 12 and 13) =====================
+     The GCSE and SQA climbs' sheets for A level Mathematics: stage 1 is Year 12 (the AS content), stage 2 is
+     Year 13. For each stage: a check, a tracker, an exam-style sheet for each of its 14 topics and mini papers;
+     then "what the exam expects", exam technique and a route for a student working alone. Questions come from
+     PopActivities.examBank.alevel (activities.js), so every print is a fresh set. Pure, statistics and
+     mechanics follow the DfE's GCE AS and A level subject content for mathematics (2016), which every exam
+     board (AQA, Edexcel, OCR, OCR MEI) follows. Questions are PopSpell's own, never exam board papers. */
+
+  const ALX = () => window.PopActivities.examBank.alevel;
+  const AL_LESSON = slug => `lesson-alevel-maths-${slug}`;
+  const alStrip = (what, calc, marks) => `<p class="qd-strip gx-strip"><b>A level maths climb</b><span>${what}</span><span>${calc}</span>${marks ? `<span>Total ___ / ${marks}</span>` : "<span>Done ☐</span>"}</p>`;
+  const alAfter = `<p class="gx-note"><b>Marking the A level way:</b> each bullet (•1, •2…) is one mark. Exam boards call them M marks (a correct method), A marks (an accurate answer from a correct method) and B marks (a fact or result on its own).
+    A slip is followed through: later steps done correctly with a wrong value still earn their method marks. An answer with no working may get no marks, and "show that" needs every step.</p>`;
+
+  const AL_STAGE_LIST = [
+    { key: "y12", n: 1, course: "Year 12", name: "Year 12 (AS content)", next: "Year 13",
+      topics: [["proof", "Proof, surds and indices"], ["quadratics", "Quadratics, the discriminant and inequalities"], ["polynomials", "Polynomials, the factor theorem and graphs"],
+        ["coordinates", "Coordinate geometry: lines and circles"], ["binomial", "The binomial expansion"], ["trig", "Trigonometry: the sine and cosine rules, graphs and equations"],
+        ["logs", "Exponentials and logarithms"], ["differentiation", "Differentiation from first principles to stationary points"], ["integration", "Integration and the area under a curve"],
+        ["vectors", "Vectors in two dimensions"], ["sampling", "Statistical sampling and data"], ["probability", "Probability and the binomial distribution"],
+        ["hypothesis", "Hypothesis testing with the binomial distribution"], ["mechanics", "Mechanics: kinematics and Newton's laws"]] },
+    { key: "y13", n: 2, course: "Year 13", name: "Year 13 (the full A level)", next: "",
+      topics: [["proof", "Proof by contradiction and disproof"], ["functions", "Functions, inverses and the modulus"], ["algebra", "Partial fractions and the binomial series"],
+        ["sequences", "Sequences and series"], ["radians", "Radians, small angles and reciprocal trig functions"], ["identities", "Trig identities: compound and double angles, and R cos(x − α)"],
+        ["differentiation", "Differentiation: chain, product and quotient rules"], ["implicit", "Implicit and parametric differentiation, and rates of change"],
+        ["integration", "Integration: substitution, by parts and partial fractions"], ["differential", "Differential equations"], ["numerical", "Numerical methods"],
+        ["normal", "The normal distribution"], ["testing", "Conditional probability, and testing a mean and correlation"], ["mechanics", "Mechanics: projectiles, friction, moments and variable acceleration"]] }
+  ];
+
+  const AL_APPLIED = /-(sampling|probability|hypothesis|mechanics|normal|testing)$/;
+  AL_STAGE_LIST.forEach(st => {
+    const L = slug => AL_LESSON(`${st.key}-${slug}`);
+    const T = () => ALX().stage(st.key).topics;
+
+    add(`paper-al-${st.key}-check`, L("start-here"), `A level maths climb: ${st.course} check`,
+      `One exam question on each of the 14 ${st.course} topics, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
+        const size = list => list.reduce((t, it) => t + it.q.length + 2 * (it.scheme.length + String(it.answer).length) + (it.options ? it.options.join(" / ").length + String(it.answer).length : 0), 0);
+        let items = ALX().check(st.key);
+        for (let i = 0; i < 80 && size(items) > 3300; i++) { const next = ALX().check(st.key); if (size(next) < size(items)) items = next; }
+        return {
+          pupil: `${h.sheetHead(`${st.course} check`, who)}${alStrip(st.name, "Calculator allowed", gxTotal(items))}
+            <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
+            <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
+          answers: `${answersPage(h, `${st.course} check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme.replace(/ \(1 mark\)/g, "")}</span>`), "Each bullet is one mark. Copy each topic's score onto the tracker. Work first on the topics that lost marks, in the climb's order.")}`
+        };
+      });
+
+    add(`paper-al-${st.key}-tracker`, L("start-here"), `A level maths climb: ${st.course} tracker`,
+      `One page to plan and track ${st.name}: the check score, lesson, online practice and exam-style sheet for each topic, and mini paper scores.`, (who, h) => {
+        const cell = '<td class="gx-cell"></td>';
+        return {
+          pupil: `${h.sheetHead(`${st.name}: tracker`, who)}${alStrip(st.name, "Keep this with the student's work", 0)}
+            <p class="gx-plan">Exam board: ${blank(5)} &nbsp; Exam dates: ${blank(6)} &nbsp; Sessions a week: ${blank(3)} &nbsp; Target grade: ${blank(3)}</p>
+            <table class="gx-track"><thead><tr><th>Topic, in climb order</th><th>Check<br>marks</th><th>Lesson<br>(date)</th><th>Online<br>best %</th><th>Exam sheet<br>score</th><th>Secure<br>✓</th></tr></thead>
+            <tbody>${st.topics.map(([, title], i) => `<tr><td>${i + 1}. ${title}</td>${cell.repeat(5)}</tr>`).join("")}</tbody></table>
+            <p class="gx-plan"><b>Secure</b> means about three-quarters of the exam sheet's marks, with working shown, on two different days.</p>
+            <table class="gx-track gx-papers"><thead><tr><th>Mini paper</th><th>Date</th><th>Score</th><th>Topics to go back to</th></tr></thead>
+            <tbody>${Array.from({ length: 4 }, () => `<tr>${cell.repeat(4)}</tr>`).join("")}</tbody></table>`,
+          answers: lookForPage(h, `${st.name}: tracker`, [
+            "Plan with the check: work on the topics that lost marks first, in the climb's order.",
+            "Each topic: the lesson, then the online practice (aim for 80% or more), then the exam-style sheet marked one bullet a mark.",
+            "Every three or four sessions, a mini paper. Note the topics it shows up and go back to them.",
+            st.n === 1 ? "Year 12 is the AS content: pure maths about two-thirds, statistics and mechanics a sixth each. When most topics are secure and mini papers score about half or more, move on to Year 13."
+              : "Year 13 questions lean on Year 12's algebra, trigonometry and calculus: when a topic loses marks, check the Year 12 skill under it before practising more.",
+            "Scores here come from PopSpell's work and your marking. They are a guide for planning, not a predicted grade."])
+        };
+      });
+
+    st.topics.forEach(([slug, title], i) => {
+      add(`paper-al-${st.key}-${slug}`, L(slug), `Exam practice (A level ${st.course}) ${i + 1}: ${title}`,
+        "Six exam-style questions with marks, easiest first, and an answers page marked one bullet a mark. New numbers every print.", (who, h) => {
+          let pics = 0;
+          const items = ALX().items(`${st.key}-${slug}`, 6).sort((a, b) => a.marks - b.marks || (a.pic ? 1 : 0) - (b.pic ? 1 : 0))
+            .map(it => (it.pic && ++pics > 2 ? Object.assign({}, it, { pic: "" }) : it));
+          const anyCalc = items.some(it => it.calc), total = gxTotal(items);
+          return {
+            pupil: `${h.sheetHead(`Exam practice: ${title}`, who)}${alStrip(`${st.course}: topic ${i + 1} of 14`, anyCalc ? "Calculator only where it says" : "No calculator", total)}
+              ${items.map((it, j) => gxQ(it, j + 1)).join("")}`,
+            answers: answersPage(h, `Exam practice: ${title}`, gxScheme(items), `Total ${total} marks. The answer, then where each mark comes from.`, alAfter)
+          };
+        });
+    });
+
+    [["pure", "Mini paper: pure maths", "Six questions from the pure topics, like Paper 1. About 25 minutes.", it => it.marks >= 2 && !it.pic, "Calculator allowed", t => !AL_APPLIED.test(t.id)],
+      ["applied", "Mini paper: statistics and mechanics", "Five questions from the statistics and mechanics topics, like the applied paper. About 20 minutes.", it => it.marks >= 2 && !it.pic, "Calculator allowed", t => AL_APPLIED.test(t.id)],
+      ["reasoning", "Mini paper: longer questions", "Four longer questions (3 or 4 marks each), where most marks are for the steps of working. About 20 minutes.", it => it.marks >= 3 && !it.pic, "Calculator allowed", () => true]]
+      .forEach(([slug, title, detail, keep, calc, which]) => add(`paper-al-${st.key}-mini-${slug}`, L("mini-papers"), `${title} (A level ${st.course})`, detail, (who, h) => {
+        const items = shuffle(T().filter(which)).map(t => ALX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, slug === "reasoning" ? 4 : slug === "applied" ? 5 : 6).sort((a, b) => a.marks - b.marks);
+        const total = gxTotal(items);
+        return {
+          pupil: `${h.sheetHead(`${title.replace("Mini paper: ", "Mini paper, ")}`, who)}${alStrip(st.name, calc, total)}
+            <p class="gx-intro">Like the real exam: show your working on every question, and give answers to 3 significant figures unless the question says otherwise.</p>
+            ${items.map((it, j) => gxQ(Object.assign({}, it, { calc: false }), j + 1, slug === "reasoning" ? 1.3 : 1)).join("")}`,
+          answers: answersPage(h, `${title} (A level ${st.course})`, gxScheme(items), `Total ${total} marks. Note the topic of each question that lost marks on the tracker.`, alAfter)
+        };
+      }));
+  });
+
+  // ---------- What the exam expects ----------
+  add("paper-al-expects", AL_LESSON("what-the-exam-expects"), "What the exam expects: A level Mathematics",
+    "A level Mathematics in a page: the three papers, what each board shares, the large data set, how marks are given, and a model answer marked step by step.", (who, h) => ({
+      pupil: `${h.sheetHead("What the exam expects: A level Mathematics", who)}${alStrip("Years 12 and 13", "Read, then talk it through", 0)}
+        ${box("The exams", `<p>All of A level Mathematics is examined at the end of Year 13: <b>three papers of 2 hours</b>, each 100 marks, all calculator allowed. Most boards give two papers to pure maths and one to statistics and mechanics (OCR MEI and AQA split them a little differently). Grades are A* to E. There's no coursework.</p>`)}
+        ${box("AS level, if you take it", `<p>Some students sit AS Mathematics at the end of Year 12: two papers on the Year 12 content. AS marks don't count towards the A level; the A level exams cover everything again.</p>`)}
+        ${box("What every board shares", `<p>The content is the same for AQA, Edexcel, OCR and OCR MEI (it's set by the Department for Education). The boards differ in the order of papers, the formulae booklet and the <b>large data set</b>: a real data set (weather, cars, countries…) that statistics questions use. Download your board's large data set and get to know it: questions assume you've explored it.</p>`)}
+        ${box("How marks are given", `<p>M marks for a correct method, A marks for accurate answers (which depend on the M mark before them), B marks for a fact or result on its own. Give answers to 3 significant figures unless told otherwise, and keep full accuracy until the end. "Show that" means every step, ending exactly where the question does. Statistics conclusions must be <b>in context</b>.</p>`)}
+        ${box("A model answer", `<p><b>Question:</b> X ~ B(20, 0.3). Test H₀: p = 0.3 against H₁: p > 0.3 at the 5% level, given x = 10. <i>(4 marks)</i></p>
+          <p><b>Answer A</b> (4 marks): •1 X ~ B(20, 0.3) under H₀ •2 P(X ≥ 10) = 1 − P(X ≤ 9) = 0.0480 •3 0.0480 < 0.05, reject H₀ •4 there is evidence that the probability is greater than 0.3.</p>
+          <p><b>Answer B</b> (3 marks): the same, but ends "reject H₀". With no conclusion in context, the last mark is lost.</p>`)}`,
+      answers: lookForPage(h, "What the exam expects: A level Mathematics", [
+        "Talk through answer B: the maths is right, but statistics marks need a conclusion in the words of the question.",
+        "Find out which exam board the student will sit, download its specification, formulae booklet and large data set, and keep them with the tracker.",
+        "A student sitting A levels as a private candidate needs an exam centre: contact one early in Year 12 (centres take bookings months ahead).",
+        "Paper details are from the DfE's subject content (2016) and the boards' specifications: check your board's site for this year's dates."])
+    }));
+
+  add("paper-al-technique", AL_LESSON("exam-technique"), "A level exam technique: command words and setting out",
+    "What each A level command word asks for, then three questions to set out step by step, one bullet a mark. The questions change every print.", (who, h) => {
+      const WORDS = [["Write down / State", "The answer only; little or no working needed."], ["Find / Calculate / Determine", "Working, then the answer."], ["Show that", "Every step, ending with exactly what's given."],
+        ["Hence", "Use the part before."], ["Hence or otherwise", "Use the part before, or another method."], ["Prove", "A complete logical argument, with a conclusion."],
+        ["Exact", "Surds, fractions, π, ln and e: no decimals."], ["Sketch", "The right shape, with intercepts, turning points and asymptotes labelled."],
+        ["Interpret / In context", "Say what it means in the situation, in its words and units."], ["Criticise / Comment on the model", "Name an assumption and why it might not hold."]];
+      const pool = ["y12-differentiation", "y12-integration", "y12-probability", "y12-mechanics", "y13-integration", "y13-normal", "y13-numerical"].map(id => ALX().items(id, 1, it => it.marks >= 2 && !it.options && !it.pic)[0]).filter(Boolean);
+      const three = shuffle(pool).slice(0, 3);
+      return {
+        pupil: `${h.sheetHead("Command words and setting out", who)}${alStrip("Years 12 and 13", "Calculator allowed", 0)}
+          <table class="gx-words">${WORDS.map(([w, d]) => `<tr><th>${w}</th><td>${d}</td></tr>`).join("")}</table>
+          <p class="qd-task"><span class="qd-n">1</span> Underline the command word in each question below.</p>
+          <p class="qd-task"><span class="qd-n">2</span> Set out each answer one step a line. Number the steps •1, •2… to match the marks.</p>
+          ${three.map((it, i) => gxQ(it, i + 1)).join("")}`,
+        answers: answersPage(h, "Command words and setting out", gxScheme(three), "Compare the student's bullets with the scheme: does each step they wrote match a mark?", alAfter)
+      };
+    });
+
+  add("paper-al-route", AL_LESSON("my-next-step"), "A level maths climb: my route through Years 12 and 13",
+    "One page for a student working on their own (homeschooled or studying independently): the two stages, what to do each session, how to mark their own work and when to move on.", (who, h) => ({
+      pupil: `${h.sheetHead("My route: A level Mathematics", who)}${alStrip("A level maths climb", "Self-guided", 0)}
+        ${box("The two stages", `<p><b>Stage 1, Year 12</b>: proof, algebra, coordinate geometry, the binomial expansion, trig, logs, differentiation, integration, vectors, sampling, probability, hypothesis testing and kinematics. <b>Stage 2, Year 13</b>: functions, series, trig identities, more calculus, differential equations, numerical methods, the normal distribution and harder mechanics.</p>`)}
+        ${box("Each session (about an hour)", `<p><b>1.</b> Open <b>popspell.com/climb.html?course=alevel</b> and press <b>My next step</b>. <b>2.</b> Do what it says: a check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the marking, even when you were right. <b>4.</b> Copy any question you got wrong into a notebook with the right working. <b>5.</b> Once a week, an exam-style sheet on paper.</p>`)}
+        ${box("Marking your own work", `<p>Each question says its marks, and the marking lists one bullet (•1, •2…) for each. Give yourself every bullet your working shows, even after a slip. No working, wrong answer: no marks.</p>`)}
+        ${box("When to move on", `<p>A topic is <b>secure</b> at about three-quarters of the marks in one set of its practice. When all of a stage's topics are secure, do a mini paper: about half or more, and you're ready for the next stage. Then real past papers from your board.</p>`)}
+        <p class="gx-plan">Exam board: ${blank(5)} &nbsp; Exam centre: ${blank(6)} &nbsp; Target grade: ${blank(3)} &nbsp; Sessions a week: ${blank(3)}</p>`,
+      answers: lookForPage(h, "My route: A level Mathematics", [
+        "For the adult at home: the climb page keeps progress on this device only. Nothing is sent anywhere, so use the same device each time.",
+        "Check in once a week: look at the topics marked secure, and ask the student to explain one question they got wrong and how they fixed it.",
+        "If a topic stays below half its marks after three sessions, it needs teaching, not more practice: use the topic's lesson, or a tutor.",
+        "Private candidates need an exam centre: book early in Year 12.",
+        "Scores are a guide for planning, not a predicted grade."])
+    }));
+  /* ===================== A level English climb (England, Years 12 and 13) =====================
+     The GCSE and SQA English climbs' sheets (14-english-climb.js, 15-sqa-english-climb.js), for A level:
+     stage 1 is English Literature, stage 2 is English Language. For each stage: a check, a tracker and
+     "what the exam expects"; an exam practice sheet for each topic (the text, quick questions, then an
+     A level question, with an answers page of reasons, what to look for, mark bands and a model answer);
+     a writing task with a plan, self-check and a model; and two mini papers. Plus a route for a student
+     working alone. The helpers (exText, exQuick, exWritten…) are 14-english-climb.js's, in the same scope.
+     Questions and texts are exam-english/alevel.js's and texts.js's: PopSpell's own transcripts and articles
+     and public-domain literature; nothing comes from any board's past paper. */
+
+  if (EXB && EXB.course("alevel")) {
+    const EX = EXB, AC = EX.course("alevel");
+    const AE_LESSON = slug => `lesson-alevel-english-${slug}`;
+    const aeStrip = (what, how, marks) => exStrip(what, how, marks, "A level English climb");
+    const aeShort = st => st.n === 1 ? "Literature" : "Language";
+
+    // ---------- An exam practice sheet for each topic ----------
+    AC.STAGES.forEach(st => st.topics.forEach(t => {
+      const w = t.written, on = exTextsOf(w), where = `${aeShort(st)}, topic ${t.n} of ${st.topics.length}`;
+      const nQuick = on.length > 1 ? 3 : on.length ? 4 : 5;
+      add(`paper-ex-${t.id}`, AE_LESSON(t.id), `A level English practice ${st.n}.${t.n}: ${t.title}`,
+        `${on.length ? `${on.length > 1 ? "Two texts" : "A text"} to read, ` : ""}${nQuick} quick questions, then an A level question (${t.paper}). The answers page has the reasons, what to look for, the mark bands and a model answer.`, (who, h) => {
+          const quick = exPick(t, on, nQuick);
+          return {
+            pupil: `${h.sheetHead(`A level practice: ${t.title}`, who)}${aeStrip(where, t.paper, 0)}
+              ${exTexts(on)}
+              <p class="ex-h"><b>Quick questions</b> Tick one answer each.</p>
+              <div class="ex-quick">${quick.map((it, i) => exQuick(it, i + 1, on)).join("")}</div>
+              <p class="ex-h"><b>Exam question</b></p>${exWritten(w, quick.length + 1)}`,
+            answers: answersPage(h, `A level practice: ${t.title}`, quick.map(exQuickAns), "Quick questions: the answer, and why.",
+              exWrittenAns(w, quick.length + 1) + `<p class="gx-note">Find the band that fits best overall, then go up or down within it. Bands are PopSpell's plain-words summary of how A level answers are marked, not any board's own wording.</p>`)
+          };
+        });
+    }));
+
+    // ---------- Each stage: the check, the tracker, what the exam expects, the writing task and the mini papers ----------
+    AC.STAGES.forEach(st => {
+      const short = aeShort(st);
+      const L = slug => AE_LESSON(`${st.key}-${slug}`);
+      const writing = AC.WRITING.filter(w => w.stage === st.key);
+      const minis = AC.MINI.filter(m => m.id.startsWith(`${st.key}-`));
+      const check = AC.CHECK[st.key];
+
+      add(`paper-ex-${st.key}-check`, L("start-here"), `A level English climb: ${short} check`,
+        `One question on each of the ${st.topics.length} ${short} topics, in the order of the climb, with the reasons on the answers page. It shows which topics to work on first.`, (who, h) => {
+          const items = st.topics.map(t => shuffle(t.items.filter(it => exUsable(it, [])))[0]);
+          return {
+            pupil: `${h.sheetHead(`A level ${short}: check`, who)}${aeStrip(st.title, "About 15 minutes", items.length)}
+              <p class="gx-intro">Tick one answer for each question. A question you can't do yet is useful to know, not a fail: leave it and move on.</p>
+              ${items.map((it, i) => `<div class="ex-check"><p class="ex-topic">${it.topic.n}. ${exEsc(it.topic.short)}</p>${exQuick(it, i + 1, [])}</div>`).join("")}`,
+            answers: `${answersPage(h, `A level ${short}: check`, items.map(it => `<b>${it.topic.n}. ${exEsc(it.topic.short)}</b>: ${exQuickAns(it)}`), "One mark each. Put ✓ or ✗ beside each topic on the tracker.")}
+              <p class="gx-note"><b>What to work on first:</b> the topics marked ✗, in the climb's order. One question is a quick look, not a verdict: a topic marked ✓ still gets its practice sheet before it's ticked off. The online check asks two questions a topic and marks itself.</p>`
+          };
+        });
+
+      add(`paper-ex-${st.key}-tracker`, L("start-here"), `A level English climb: ${short} tracker`,
+        `One page to plan and track ${st.goal}: each topic's check, lesson, online practice and practice sheet, the writing task and the mini papers.`, (who, h) => ({
+          pupil: `${h.sheetHead(`${st.goal}: tracker`, who)}${aeStrip(st.title, "Keep this with the student's work", 0)}
+            <p class="gx-plan">Exam board: ${blank(6)} &nbsp; Exam dates: ${blank(7)} &nbsp; Coursework deadline: ${blank(6)} &nbsp; Target grade: ${blank(2)}</p>
+            ${exTrack(st.topics.map(t => `${t.n}. ${exEsc(t.title)}`))}
+            <table class="gx-track gx-papers"><thead><tr><th>Writing task or mini paper</th><th>Date</th><th>Self-check ✓</th><th>Marks</th><th>What to work on next</th></tr></thead>
+            <tbody>${writing.map(w => exEsc(w.kind)).concat(minis.map(m => exEsc(m.title))).map(r => `<tr><td>${r}</td>${'<td class="gx-cell"></td>'.repeat(4)}</tr>`).join("")}</tbody></table>
+            <p class="gx-plan"><b>Secure</b> means about three-quarters of the online practice right, and the practice sheet's question answered in the 16–20 band or above.</p>`,
+          answers: lookForPage(h, `${st.goal}: tracker`, [
+            "Plan with the check: start with the topics marked ✗, in the climb's order. One topic a week suits most sixth-form timetables.",
+            "Each topic: the lesson, then the online practice (aim for 75% or more), then the practice sheet. Mark its exam question with the bands on the answers page, then compare with the model together.",
+            "Coursework is about 20% of the A level. Use the coursework topic early in the year: choosing texts or data takes time.",
+            "Then the mini papers. About 60% or more is a good sign the stage is going well.",
+            "Marks here come from PopSpell's work and your marking. They are a guide for planning, not a predicted grade."])
+        }));
+
+      add(`paper-ex-${st.key}-expects`, L("start-here"), `What the exam expects: ${st.goal}`,
+        `What ${st.goal} takes: the papers and coursework, how answers are marked in bands, what each grade looks like, and the writing checklist.`, (who, h) => {
+          const paper = AC.EXAM.papers[st.n - 1];
+          return {
+            pupil: `${h.sheetHead(`What the exam expects: ${st.goal}`, who)}${aeStrip(st.title, "Read, then talk it through", 0)}
+              ${box(`${exEsc(paper.name)}`, `<p><i>${exEsc(paper.time)}. ${exEsc(paper.marks)}.</i> ${exEsc(paper.text)}</p>
+                <table class="ex-paper"><thead><tr><th>Q</th><th>What it asks</th><th>Marks</th><th>Time</th></tr></thead><tbody>${paper.qs.map(([n, what, mk, time]) => `<tr><td>${n}</td><td>${exEsc(what)}</td><td>${mk}</td><td>${time}</td></tr>`).join("")}</tbody></table>`)}
+              ${box("How long answers are marked (out of 25)", exLevels(st.n === 1 ? AC.LIT_25 : AC.LANG_25))}
+              ${box("What each grade looks like", `<table class="ex-levels">${AC.GRADES.map(([g, d]) => `<tr><th>${g}</th><td>${exEsc(d)}</td></tr>`).join("")}</table>`)}
+              ${box("Writing: what to check", `<div class="ex-cols">${exTicks(check.content)}${exTicks(check.accuracy)}</div>`)}`,
+            answers: lookForPage(h, `What the exam expects: ${st.goal}`, [
+              AC.EXAM.boards,
+              "Ask the student to find their board's specification (from their school or college, or the board) and note the set texts or topics, the papers and the coursework rules.",
+              "Look at the bands together: take an answer the student wrote recently and find its band. What would lift it to the next?",
+              AC.EXAM.writing,
+              "Exam facts are from the DfE's subject content, which every board follows. Band and grade descriptions are PopSpell's plain-words summary, not any board's own wording."])
+          };
+        });
+
+      writing.forEach(w => {
+        add(`paper-ex-write-${w.id}`, L("writing"), `A level English writing task: ${w.kind.toLowerCase()} (${st.goal})`,
+          `${w.paper}: plan, draft in about ${w.minutes} minutes, then check against the list. The answers page has a model with notes and the bands.`, (who, h) => ({
+            pupil: `${h.sheetHead(`Writing task: ${w.kind.toLowerCase()}`, who)}${aeStrip(`${st.title}, aiming at ${w.grade}`, `${w.paper} · about ${w.minutes} minutes`, w.marks)}
+              ${box("The task", `<p class="ex-big">${exEsc(w.q)}</p>`)}
+              ${box("Plan (10 minutes)", `<ol class="ex-plan">${w.plan.map(p => `<li>${exEsc(p)}</li>`).join("")}</ol><div class="pp-draw ex-planbox"></div>`)}
+              <p class="ex-more"><b>Draft</b> on lined paper, or on the My next step page. Then <b>check</b>: tick each line you can honestly tick, and fix what you can't.</p>
+              <div class="ex-cols ex-self">${exTicks(check.content)}${exTicks(check.accuracy)}</div>`,
+            answers: `${h.brandHead(`Model and marking: ${w.kind.toLowerCase()}`, "For the adult, not the student.")}
+              ${exModel(`A model, about ${w.grade}`, w.model)}
+              <p class="ex-sub">Why it works</p>${exList(w.notes)}
+              <p class="ex-sub">How it is marked (out of ${w.marks})</p>${exLevels(st.n === 1 ? AC.LIT_25 : AC.LANG_25)}
+              <p class="gx-note">Find the band that fits best overall, then go up or down within it. In feedback, name one thing that would lift it, not ten. Coursework rules on feedback differ by board: check before commenting on a final draft.</p>`
+          }));
+      });
+
+      minis.forEach(m => {
+        const on = m.texts || (m.t ? [m.t] : []);
+        const parts = m.parts.map(p => {
+          if (p.ref) { const w = EX.topic(p.ref).written; return { ref: p.ref, q: w.q, marks: w.marks, minutes: p.minutes, w }; }
+          return { q: p.q, marks: p.marks, minutes: p.minutes, w: p };
+        });
+        const total = parts.reduce((s, p) => s + p.marks, 0);
+        add(`paper-ex-${m.id}`, L("mini-papers"), m.title,
+          `${m.minutes} minutes, like a paper cut down: ${parts.map(p => `${p.marks} marks`).join(", ")}. Answers on lined paper; the answers page has what to look for and the bands.`, (who, h) => ({
+            pupil: `${h.sheetHead(m.title.replace("Mini paper: ", "Mini paper, "), who)}${aeStrip(st.title, `${m.minutes} minutes · answer on lined paper`, total)}
+              ${exTexts(on)}
+              ${parts.map((p, i) => `<div class="pp-q ex-mq"><p><b>${i + 1}.</b> ${exEsc(p.q)} <span class="gx-mk">(${exMk(p.marks)}, about ${p.minutes} minutes)</span></p></div>`).join("")}
+              <p class="ex-tip">Plan before you write: a one-sentence argument and three or four points.</p>`,
+            answers: `${h.brandHead(`Marking: ${m.title}`, "For the adult, not the student.")}
+              <p class="gx-note">Total ${total} marks. About 60% or more and the stage is going well. Note each part's marks on the tracker.</p>
+              <div class="ex-mini">${parts.map((p, i) => exWrittenAns(Object.assign({}, p.w, { q: p.q, marks: p.marks }, p.ref ? { model: "" } : {}), i + 1)
+                + (p.ref ? `<p class="ex-tip">A model answer is on the answers page of "${exEsc(EX.topic(p.ref).title)}" (A level English practice ${EX.topic(p.ref).stage.n}.${EX.topic(p.ref).n}).</p>` : "")).join("")}</div>`
+          }));
+      });
+    });
+
+    // ---------- A route for a student working alone ----------
+    add("paper-ex-alevel-route", AE_LESSON("my-next-step"), "A level English climb: my route through Years 12 and 13",
+      "One page for a student working on their own (at home, or homeschooled): the two courses, what to do each session, marking your own answers honestly with the bands, and when to move on.", (who, h) => ({
+        pupil: `${h.sheetHead("My route: A level English", who)}${aeStrip("A level English climb", "Self-guided", 0)}
+          ${box("The two stages", `${AC.STAGES.map(s => `<p><b>${exEsc(s.title)}.</b> ${exEsc(s.about)}</p>`).join("")}<p>Most students take one of the two A levels: do the stage for yours. Both share close reading and argued writing.</p>`)}
+          ${box("Each session (about an hour)", `<p><b>1.</b> Open <b>popspell.com/english-climb.html?course=alevel</b> and press <b>My next step</b>. <b>2.</b> Do what it says: a check, a topic's questions, a writing task, or a mini paper. <b>3.</b> Read the reason after every question, even when you were right. <b>4.</b> Mark written answers with the bands honestly: find the best fit, then say what would lift it.</p>`)}
+          ${box("Reading every day", `<p>Literature: your set texts, plus one poem or short story a week you haven't studied (unseen practice). Language: one article and one piece of real talk (a podcast, a conversation) a day, noticing one feature of each.</p>`)}
+          ${box("When to move on", `<p>A topic is <b>secure</b> when you get about three-quarters of its questions right and its practice answer reaches the 16–20 band. When a stage's topics are secure and you've done its writing task, take a mini paper.</p>`)}
+          ${box("Sitting A levels as a private candidate", `<p>Homeschooled students sit the exams at an exam centre that accepts private candidates; ask early, as places and fees vary. Coursework (about 20%) must be supervised and marked by the centre, so agree it with them before you start.</p>`)}
+          <p class="gx-plan">My board: ${blank(6)} &nbsp; My exam centre: ${blank(7)} &nbsp; Exam dates: ${blank(6)} &nbsp; Target: ${blank(2)}</p>`,
+        answers: lookForPage(h, "My route: A level English", [
+          "For the adult at home: the climb page keeps progress on this device only, in this browser. Nothing is sent anywhere, so use the same device each time.",
+          "Once a week, ask to see one written answer and find its band together with the answers page.",
+          "Essays can't mark themselves. The bands and models make self-marking honest, but a teacher or tutor's look now and then is worth a lot.",
+          "Set texts are chosen from the board's list. The practice here uses public-domain texts and PopSpell's own; the method works for any set text.",
+          "Scores are a guide for planning, not a predicted grade."])
+      }));
+  }
+  /* ===================== SQA Applications of Mathematics climb (Scotland: National 5 and Higher) =====================
+     The SQA and A level maths climbs' sheets for Applications of Mathematics: stage 1 is National 5, stage 2 is Higher.
+     For each stage: a check, a tracker, an exam-style sheet for each topic and two mini papers; then "what the exam
+     expects" and a route for a learner working alone. Questions come from PopActivities.examBank.apps (activities.js),
+     so every print is a fresh set. Content follows SQA's National 5 and Higher Applications of Mathematics course
+     specifications. Questions are PopSpell's own, never SQA past papers. */
+
+  const APX = () => window.PopActivities.examBank.apps;
+  const AP_LESSON = slug => `lesson-sqa-apps-${slug}`;
+  const apStrip = (what, calc, marks) => `<p class="qd-strip gx-strip"><b>SQA Applications of Maths climb</b><span>${what}</span><span>${calc}</span>${marks ? `<span>Total ___ / ${marks}</span>` : "<span>Done ☐</span>"}</p>`;
+  const apAfter = `<p class="gx-note"><b>Marking the SQA way:</b> each bullet (•1, •2…) is one mark, for one step. A slip is followed through: later steps done correctly with a wrong value still earn their marks. Money answers need units and two decimal places, and a decision (which deal, is it acceptable) needs a reason from the working.</p>`;
+
+  const AP_STAGE_LIST = [
+    { key: "ap5", n: 1, course: "National 5", name: "National 5 Applications of Mathematics",
+      topics: [["numeracy", "Numeracy: rounding, estimating and calculating in context"], ["pay", "Finance: pay, deductions and budgets"], ["deals", "Finance: best deals, exchange rates, saving and borrowing"],
+        ["statistics", "Statistics: averages, spread and comparing data sets"], ["scatter", "Scattergraphs, probability and expected frequency"], ["geometry", "Geometry: Pythagoras, gradient and area"],
+        ["volume", "Measurement: volume, surface area and packing"], ["scale", "Scale drawings, bearings and navigation"], ["time", "Time, speed, time zones and planning tasks"],
+        ["logic", "Tolerance, tariffs, flowcharts and reading charts"]] },
+    { key: "aph", n: 2, course: "Higher", name: "Higher Applications of Mathematics",
+      topics: [["borrowing", "Finance: borrowing, loans and mortgages"], ["saving", "Finance: saving, investing and inflation"], ["sampling", "Statistics: sampling, summaries and outliers"],
+        ["regression", "Correlation and linear regression"], ["probability", "Probability, conditional probability and expected value"], ["planning", "Planning and decision making: critical paths and float"],
+        ["modelling", "Mathematical modelling: linear and exponential"]] }
+  ];
+
+  AP_STAGE_LIST.forEach(st => {
+    const L = slug => AP_LESSON(`${st.key}-${slug}`);
+    const T = () => APX().stage(st.key).topics, nT = st.topics.length;
+
+    add(`paper-ap-${st.key}-check`, L("start-here"), `SQA Applications of Maths climb: ${st.course} check`,
+      `One exam question on each of the ${nT} ${st.name} topics, in the order of the climb. The answers page shows which topics to work on first.`, (who, h) => {
+        const items = APX().check(st.key);
+        return {
+          pupil: `${h.sheetHead(`${st.course} Applications: check`, who)}${apStrip(st.name, "Calculator allowed", gxTotal(items))}
+            <p class="gx-intro">Answer what you can, in any order, and write your working beside each question. A topic you haven't met yet is useful to know, not a fail.</p>
+            <table class="gx-base gx-check">${items.map(it => `<tr><td class="gx-topic">${it.topic.n}. ${it.topic.short}</td><td>${gxPlain(it.q)}${it.options ? ` <i>(${shuffle([it.answer].concat(it.options)).join(" / ")})</i>` : ""}<br><span class="gx-line">${blank(7)} <span class="gx-mk">(${gxMk(it.marks)})</span></span></td></tr>`).join("")}</table>`,
+          answers: answersPage(h, `${st.course} Applications: check`, items.map(it => `<b>${it.topic.short}</b>: ${it.answer} <span class="gx-of">(${gxMk(it.marks)})</span><br><span class="gx-how">${it.scheme.replace(/ \(1 mark\)/g, "")}</span>`), "Each bullet is one mark. Copy each topic's score onto the tracker. Work first on the topics that lost marks, in the climb's order.")
+        };
+      });
+
+    add(`paper-ap-${st.key}-tracker`, L("start-here"), `SQA Applications of Maths climb: ${st.course} tracker`,
+      `One page to plan and track ${st.name}: the check score, lesson, online practice and exam-style sheet for each topic, and mini paper scores.`, (who, h) => {
+        const cell = '<td class="gx-cell"></td>';
+        return {
+          pupil: `${h.sheetHead(`${st.name}: tracker`, who)}${apStrip(st.name, "Keep this with the learner's work", 0)}
+            <p class="gx-plan">Exam date: ${blank(6)} &nbsp; Exam centre: ${blank(6)} &nbsp; Sessions a week: ${blank(3)} &nbsp; Target grade: ${blank(3)}</p>
+            <table class="gx-track"><thead><tr><th>Topic, in climb order</th><th>Check<br>marks</th><th>Lesson<br>(date)</th><th>Online<br>best %</th><th>Exam sheet<br>score</th><th>Secure<br>✓</th></tr></thead>
+            <tbody>${st.topics.map(([, title], i) => `<tr><td>${i + 1}. ${title}</td>${cell.repeat(5)}</tr>`).join("")}</tbody></table>
+            <p class="gx-plan"><b>Secure</b> means about three-quarters of the exam sheet's marks, with working shown, on two different days.</p>
+            <table class="gx-track gx-papers"><thead><tr><th>Mini paper</th><th>Date</th><th>Score</th><th>Topics to go back to</th></tr></thead>
+            <tbody>${Array.from({ length: 4 }, () => `<tr>${cell.repeat(4)}</tr>`).join("")}</tbody></table>`,
+          answers: lookForPage(h, `${st.name}: tracker`, [
+            "Plan with the check: work on the topics that lost marks first, in the climb's order.",
+            "Each topic: the lesson, then the online practice (aim for 80% or more), then the exam-style sheet marked one bullet a mark.",
+            "Every three or four sessions, a mini paper. Note the topics it shows up and go back to them.",
+            st.n === 1 ? "Applications questions are set in real contexts: ask the learner to say what each answer means (is the deal cheaper, is the part acceptable) as well as working it out."
+              : "Higher Applications leans on National 5's finance and statistics: when a topic loses marks, check the National 5 skill under it first. The course also has a project (a statistical or modelling investigation): plan it early with the school or exam centre.",
+            "Scores here come from PopSpell's work and your marking. They are a guide for planning, not a predicted grade."])
+        };
+      });
+
+    st.topics.forEach(([slug, title], i) => {
+      add(`paper-ap-${st.key}-${slug}`, L(slug), `Exam practice (${st.course} Applications) ${i + 1}: ${title}`,
+        "Six exam-style questions with marks, easiest first, and an answers page marked one bullet a mark. New numbers every print.", (who, h) => {
+          let pics = 0;
+          const items = APX().items(`${st.key}-${slug}`, 6).sort((a, b) => a.marks - b.marks || (a.pic ? 1 : 0) - (b.pic ? 1 : 0))
+            .map(it => (it.pic && ++pics > 2 ? Object.assign({}, it, { pic: "" }) : it));
+          const total = gxTotal(items);
+          return {
+            pupil: `${h.sheetHead(`Exam practice: ${title}`, who)}${apStrip(`${st.course}: topic ${i + 1} of ${nT}`, "Calculator allowed", total)}
+              ${items.map((it, j) => gxQ(Object.assign({}, it, { calc: false }), j + 1)).join("")}`,
+            answers: answersPage(h, `Exam practice: ${title}`, gxScheme(items), `Total ${total} marks. The answer, then where each mark comes from.`, apAfter)
+          };
+        });
+    });
+
+    [["mixed", "Mini paper: mixed questions", "Six questions from across the stage, like a paper cut down. About 25 minutes.", it => it.marks >= 2 && !it.pic, 6],
+      ["reasoning", "Mini paper: longer questions", "Four longer questions, where most marks are for the steps and the decision at the end. About 20 minutes.", it => it.marks >= 3 && !it.pic, 4]]
+      .forEach(([slug, title, detail, keep, n]) => add(`paper-ap-${st.key}-mini-${slug}`, L("mini-papers"), `${title} (${st.course} Applications)`, detail, (who, h) => {
+        const items = shuffle(T()).map(t => APX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, n).sort((a, b) => a.marks - b.marks);
+        const total = gxTotal(items);
+        return {
+          pupil: `${h.sheetHead(`${title.replace("Mini paper: ", "Mini paper, ")}`, who)}${apStrip(st.name, "Calculator allowed", total)}
+            <p class="gx-intro">Like the real exam: show your working on every question, give money to two decimal places, and say what each answer means.</p>
+            ${items.map((it, j) => gxQ(Object.assign({}, it, { calc: false }), j + 1, slug === "reasoning" ? 1.3 : 1)).join("")}`,
+          answers: answersPage(h, `${title} (${st.course} Applications)`, gxScheme(items), `Total ${total} marks. Note the topic of each question that lost marks on the tracker.`, apAfter)
+        };
+      }));
+  });
+
+  add("paper-ap-expects", AP_LESSON("what-the-exam-expects"), "What the exam expects: SQA Applications of Mathematics",
+    "National 5 and Higher Applications of Mathematics in a page: the papers, the Higher project, how marks are given, and a model answer marked step by step.", (who, h) => ({
+      pupil: `${h.sheetHead("What the exam expects: Applications of Mathematics", who)}${apStrip("National 5 and Higher", "Read, then talk it through", 0)}
+        ${box("What the course is for", `<p>Applications of Mathematics is maths for life, work and further study: money, statistics, measurement, planning and modelling, always in a real context. It suits learners who want strong practical maths rather than the algebra and calculus of National 5 and Higher Mathematics.</p>`)}
+        ${box("National 5", `<p>Two question papers: <b>Paper 1</b>, no calculator, and <b>Paper 2</b>, calculator allowed. Questions mix numeracy, finance, statistics, geometry and measurement, often several in one context (a holiday, a job, a building project).</p>`)}
+        ${box("Higher", `<p>Two question papers (finance, statistics, planning and decision making, modelling) and a <b>project</b>: a statistical or modelling investigation the learner plans, carries out and writes up. A private candidate needs to agree how the project will be supervised with their exam centre.</p>`)}
+        ${box("How marks are given", `<p>One mark for each step (•1, •2…). Show the calculation, not just the answer. Money to two decimal places with £. When a question asks you to decide or compare, the last mark is for the decision <b>with a reason from your working</b>.</p>`)}
+        ${box("A model answer", `<p><b>Question:</b> Contract A: £50 up front, then £18 a month. Contract B: £21 a month. Which is cheaper over 24 months? <i>(3 marks)</i></p>
+          <p><b>Answer A</b> (3 marks): •1 A: £50 + 24 × £18 = £482 •2 B: 24 × £21 = £504 •3 A is cheaper, by £22.</p>
+          <p><b>Answer B</b> (2 marks): the same totals, then "A". With no reason or comparison, the last mark is lost.</p>`)}`,
+      answers: lookForPage(h, "What the exam expects: Applications of Mathematics", [
+        "Talk through answer B: the working is right, but the decision mark needs a reason that comes from the working.",
+        "Get the current course specification and specimen papers from SQA (or through the school or exam centre), and check this year's exam dates.",
+        "A private candidate needs an exam centre that accepts them: ask early in the year. For Higher, agree how the project will be supervised.",
+        "Paper details here are a plain-words summary of SQA's course specifications, not SQA's own wording."])
+    }));
+
+  add("paper-ap-route", AP_LESSON("my-next-step"), "SQA Applications of Maths climb: my route through National 5 and Higher",
+    "One page for a learner working on their own (homeschooled, or an adult): the two stages, what to do each session, how to mark their own work and when to move on.", (who, h) => ({
+      pupil: `${h.sheetHead("My route: Applications of Mathematics", who)}${apStrip("SQA Applications of Maths climb", "Self-guided", 0)}
+        ${box("The two stages", `<p><b>Stage 1, National 5</b>: numeracy, pay and budgets, best deals and borrowing, statistics, scattergraphs and probability, geometry, volume and packing, scale and bearings, time and planning, and tolerance and charts. <b>Stage 2, Higher</b>: borrowing and mortgages, saving and inflation, sampling, regression, probability, critical paths and modelling.</p>`)}
+        ${box("Each session (about 45 minutes)", `<p><b>1.</b> Open <b>popspell.com/climb.html?course=apps</b> and press <b>My next step</b>. <b>2.</b> Do what it says: a check, a topic's practice, or a mini paper. <b>3.</b> After every question, read the marking, even when you were right. <b>4.</b> Copy any question you got wrong into a notebook with the right working. <b>5.</b> Once a week, an exam-style sheet on paper.</p>`)}
+        ${box("Marking your own work", `<p>Each question says its marks, and the marking lists one bullet (•1, •2…) for each. Give yourself every bullet your working shows, even after a slip. No working, wrong answer: no marks.</p>`)}
+        ${box("When to move on", `<p>A topic is <b>secure</b> at about three-quarters of the marks in one set of its practice. When all of a stage's topics are secure, do a mini paper: about half or more, and you're ready for the next stage. Then SQA's specimen and past papers (ask SQA, your school or your exam centre for copies).</p>`)}
+        <p class="gx-plan">Exam centre: ${blank(6)} &nbsp; Exam date: ${blank(6)} &nbsp; Target grade: ${blank(3)} &nbsp; Sessions a week: ${blank(3)}</p>`,
+      answers: lookForPage(h, "My route: Applications of Mathematics", [
+        "For the adult at home: the climb page keeps progress on this device only. Nothing is sent anywhere, so use the same device each time.",
+        "Check in once a week: look at the topics marked secure, and ask the learner to explain one question they got wrong and how they fixed it.",
+        "If a topic stays below half its marks after three sessions, it needs teaching, not more practice: use the topic's lesson, or a tutor.",
+        "Scores are a guide for planning, not a predicted grade."])
+    }));
+  /* ===================== Spoken assessment: GCSE Spoken Language and SQA talk =====================
+     Support for the parts of GCSE English Language and SQA English that are assessed by talking, not writing:
+     England's Spoken Language endorsement (a prepared presentation, questions and feedback, in Standard English,
+     reported as Pass, Merit or Distinction) and SQA's spoken language performance in National 5 and Higher English
+     (an individual presentation or a group discussion, which must be achieved for the course award). A guide in
+     plain words, a planner, a rehearsal record, topics, and a group discussion sheet. The criteria are PopSpell's
+     plain-words summaries of the DfE's GCSE subject content and SQA's course specifications, not the boards' wording.
+     Private candidates: the endorsement and the talk performance are assessed by a teacher at the centre. */
+
+  const spStrip = (what, how) => `<p class="qd-strip gx-strip"><b>Spoken assessment</b><span>${what}</span><span>${how}</span><span>Done ☐</span></p>`;
+  const spTable = rows => `<table class="ex-levels">${rows.map(([a, b]) => `<tr><th>${a}</th><td>${b}</td></tr>`).join("")}</table>`;
+  const spTicks = items => `<ul class="ex-ticks">${items.map(s => `<li>☐ ${s}</li>`).join("")}</ul>`;
+  const SP_GCSE = "lesson-england-english-climb-spoken", SP_N5 = "lesson-sqa-talk-n5", SP_H = "lesson-sqa-talk-higher";
+
+  add("paper-sp-gcse-guide", SP_GCSE, "GCSE Spoken Language: what the endorsement asks",
+    "England's Spoken Language endorsement in a page: the presentation, the questions and feedback, Standard English, and what Pass, Merit and Distinction look like, in plain words.", (who, h) => ({
+      pupil: `${h.sheetHead("GCSE Spoken Language: the endorsement", who)}${spStrip("GCSE English Language", "Read, then talk it through")}
+        ${box("What it is", `<p>Alongside the GCSE English Language exams, every student gives a <b>prepared spoken presentation</b> to an audience, then <b>answers questions and responds to feedback</b>. It is assessed by a teacher and reported separately from the 9 to 1 grade, as <b>Pass, Merit or Distinction</b> (or Not Classified). Some presentations are filmed so the board can check the marking.</p>`)}
+        ${box("What you must do", spTicks(["Choose a topic you can speak about with knowledge and interest.", "Plan it for a real audience and purpose: to inform, persuade or explain.", "Speak in <b>Standard English</b> (no slang, full sentences, clear grammar).", "Use notes or prompt cards, not a script to read.", "Listen to questions and answer them properly, adding detail.", "Take feedback and respond to it."]))}
+        ${box("What each level looks like", spTable([
+          ["Pass", "A prepared presentation on a topic, in Standard English; listens to questions and answers them, even if briefly."],
+          ["Merit", "Well organised and well expressed, with the audience in mind; answers questions with relevant, developed detail."],
+          ["Distinction", "Sophisticated ideas, skilfully organised and delivered; answers questions perceptively and engages with the audience throughout."]]))}
+        ${box("Good topics", `<p>Something you care about and can explain: a hobby, a job you'd like, a local issue, a book or film that changed your mind, a debate (should…?). You'll need three clear points, evidence or examples for each, and an ending.</p>`)}`,
+      answers: lookForPage(h, "GCSE Spoken Language: the endorsement", [
+        "The endorsement doesn't change the GCSE grade, but colleges and employers see it on the certificate, and Not Classified looks poor: it is worth preparing for properly.",
+        "Standard English is the most common reason for missing a Pass: listen for slang, \"like\" as a filler, and dropped sentence endings in practice.",
+        "Private candidates: the endorsement must be assessed by a teacher at the exam centre. Ask the centre early how and when they arrange it.",
+        "Level descriptions here are PopSpell's plain-words summary of the DfE's GCSE English Language subject content, not any board's own wording."])
+    }));
+
+  add("paper-sp-plan", SP_GCSE, "Spoken presentation planner",
+    "One page to plan a talk or presentation: purpose and audience, an opening hook, three points with evidence, a counter-argument, an ending, and the questions to expect. Works for GCSE, SQA and everyday talks.", (who, h) => ({
+      pupil: `${h.sheetHead("Presentation planner", who)}${spStrip("GCSE and SQA talk", "Plan, then make prompt cards")}
+        <p class="gx-plan">Topic: ${blank(16)} &nbsp; Purpose (inform / persuade / explain): ${blank(6)}</p>
+        <p class="gx-plan">Audience: ${blank(10)} &nbsp; Time: about ${blank(2)} minutes &nbsp; Visual aid (optional): ${blank(8)}</p>
+        ${box("Opening hook (a question, a fact, a short story)", lines(2))}
+        ${box("Point 1, and its evidence or example", lines(2))}
+        ${box("Point 2, and its evidence or example", lines(2))}
+        ${box("Point 3, and its evidence or example", lines(2))}
+        ${box("What someone who disagrees would say, and my answer", lines(2))}
+        ${box("Ending (a summary, a call to action, or back to the hook)", lines(2))}
+        ${box("Three questions I might be asked, and the gist of my answers", lines(3))}
+        <p class="ex-more"><b>Prompt cards:</b> one card per section, with key words only. If you can read it out in full, there's too much on it.</p>`,
+      answers: lookForPage(h, "Presentation planner", [
+        "Check the purpose and audience are clear: a talk to persuade classmates sounds different from one to inform adults.",
+        "Each point needs its own evidence or example. Ask \"how do you know?\" for each one.",
+        "The counter-argument shows thinking at Merit or Distinction (GCSE) and helps SQA's \"content\" criterion.",
+        "Rehearse answering the three questions out loud: answers are assessed too, and short answers lose credit."])
+    }));
+
+  add("paper-sp-rehearse", SP_GCSE, "Spoken presentation: rehearsal record",
+    "Three rehearsals, each with a checklist for the listener (voice, pace, eye contact, Standard English, structure, answering questions) and one thing to improve next time. Works for GCSE and SQA.", (who, h) => {
+      const CHECK = ["Clear and loud enough to hear at the back", "Steady pace, with pauses at the important points", "Looks at the audience, not only at the cards", "Standard English: no slang or fillers (\"like\", \"basically\")", "A clear opening, three points and an ending", "Uses evidence or examples", "Answers questions with detail, not one word"];
+      return {
+        pupil: `${h.sheetHead("Rehearsal record", who)}${spStrip("GCSE and SQA talk", "Rehearse three times")}
+          <p class="gx-intro">Give your talk to a listener (or film it and watch it back). The listener ticks what went well, then you both agree <b>one</b> thing to improve.</p>
+          <table class="gx-track"><thead><tr><th>Checklist</th><th>Rehearsal 1</th><th>Rehearsal 2</th><th>Rehearsal 3</th></tr></thead>
+          <tbody>${CHECK.map(c => `<tr><td>${c}</td>${'<td class="gx-cell"></td>'.repeat(3)}</tr>`).join("")}
+          <tr><td>Time taken</td>${'<td class="gx-cell"></td>'.repeat(3)}</tr>
+          <tr><td><b>One thing to improve</b></td>${'<td class="gx-cell"></td>'.repeat(3)}</tr></tbody></table>
+          ${box("After rehearsal 3: what I'm most confident about, and what I'll watch for on the day", lines(3))}`,
+        answers: lookForPage(h, "Rehearsal record", [
+          "Be the audience: sit at the far side of the room, and ask two real questions at the end.",
+          "Give one target at a time. Pace and Standard English usually improve fastest; eye contact comes with knowing the talk well.",
+          "Filming on a phone and watching it back together is the quickest way for a student to hear their own fillers.",
+          "By rehearsal 3 the talk should run to time with prompt cards only."])
+      };
+    });
+
+  add("paper-sp-topics", SP_GCSE, "Presentation topics and the questions to expect",
+    "Twelve presentation topics, each with the questions an audience might ask, to choose from or to practise answering on the spot.", (who, h) => {
+      const TOPICS = [
+        ["Should the school day start later for teenagers?", "What would it cost? Wouldn't you just stay up later?"],
+        ["The job I'd most like to do, and how to get there", "What would you do if it didn't work out? What's the hardest part?"],
+        ["A book, film or game that changed how I think", "Who else should read or play it? Did anything about it annoy you?"],
+        ["Should mobile phones be banned in schools?", "What about emergencies? Who would enforce it?"],
+        ["A local place that deserves more visitors", "Why don't more people go? What would you change?"],
+        ["Is it better to be good at one thing or several?", "Which are you? Can you give a real example?"],
+        ["A skill everyone should learn before 18", "Why isn't it taught already? Who should teach it?"],
+        ["Should young people have to do volunteering?", "Would forcing people make it worse? How many hours?"],
+        ["The best invention of the last hundred years", "What would life be like without it? Has it caused problems?"],
+        ["Fast fashion: should we buy fewer clothes?", "Isn't it cheaper for families who need it? What can one person do?"],
+        ["My hobby, and why you should try it", "How much does it cost to start? What's the hardest bit?"],
+        ["Should voting age be 16 everywhere in the UK?", "Do most 16-year-olds know enough? What happened in Scotland?"]];
+      return {
+        pupil: `${h.sheetHead("Topics and questions to expect", who)}${spStrip("GCSE and SQA talk", "Choose one, or practise answering")}
+          <table class="ex-levels">${TOPICS.map(([t, q], i) => `<tr><th>${i + 1}</th><td><b>${t}</b><br><i>Questions to expect: ${q}</i></td></tr>`).join("")}</table>
+          <p class="ex-more"><b>Practice game:</b> an adult picks a topic and asks one of its questions. Answer for 30 seconds, in Standard English, with a reason and an example.</p>`,
+        answers: lookForPage(h, "Topics and questions to expect", [
+          "The best topic is one the student already knows and cares about: they'll speak more naturally and answer questions better.",
+          "Debate topics (\"should…?\") make it easy to include a counter-argument.",
+          "In the 30-second game, listen for a clear answer first, then a reason, then an example.",
+          "The topics are PopSpell's own suggestions; any topic the centre agrees is fine."])
+      };
+    });
+
+  add("paper-sp-sqa-guide", SP_N5, "SQA talk: what the spoken language performance asks",
+    "SQA's spoken language performance for National 5 and Higher English in a page: what counts, the individual presentation or group discussion, and what an assessor looks for, in plain words.", (who, h) => ({
+      pupil: `${h.sheetHead("SQA English: the spoken language performance", who)}${spStrip("National 5 and Higher English", "Read, then talk it through")}
+        ${box("What it is", `<p>National 5 and Higher English include a <b>spoken language performance</b>, assessed by your teacher. It isn't marked out of a number: it must be <b>achieved</b>, and you can't get the course award without it. It can be an <b>individual presentation</b> or a <b>group discussion</b>, on a topic linked to your course or your interests.</p>`)}
+        ${box("What the assessor looks for", spTable([
+          ["Content", "Ideas and information that suit the purpose and audience, developed with detail."],
+          ["Structure", "A clear order: an opening, ideas that link together, and an ending."],
+          ["Language", "Words and expressions chosen for the purpose and audience; accurate and clear."],
+          ["Non-verbal", "Eye contact, gesture, posture and voice that help the listener."],
+          ["Listening and responding", "In a discussion: listening, building on others' ideas, asking and answering questions, supporting and challenging politely."]]))}
+        ${box("National 5 or Higher?", `<p><b>Higher</b> asks for more: ideas that are more complex, more precisely expressed, and (in a discussion) more skilful at moving the talk on and challenging others' views.</p>`)}
+        ${box("What helps", spTicks(["Plan with the presentation planner.", "Rehearse at least three times with the rehearsal record.", "For a discussion, prepare facts and two questions to ask others.", "Use prompt cards, not a script."]))}`,
+      answers: lookForPage(h, "SQA English: the spoken language performance", [
+        "The performance must be achieved for the National 5 or Higher English award, so plan it early rather than leave it to the end of the year.",
+        "Private candidates: it is assessed by a teacher at the centre. Ask the exam centre how they arrange it (some use a recorded presentation).",
+        "Group discussion is often easier for quieter learners: they can prepare questions and build on others' points.",
+        "The criteria here are PopSpell's plain-words summary of SQA's course specification, not SQA's own wording."])
+    }));
+
+  add("paper-sp-sqa-discussion", SP_N5, "Group discussion: plan, roles and observation",
+    "For a group discussion assessment or practice: a short plan, the roles people can take, phrases for building on and challenging ideas, and an observation grid for the adult.", (who, h) => {
+      const PHRASES = [["Building on", "\"That's a good point, and it also means…\""], ["Asking", "\"What makes you think that?\" \"Can you give an example?\""], ["Challenging politely", "\"I see why you'd say that, but…\""], ["Bringing someone in", "\"What do you think, Sam?\""], ["Summarising", "\"So far we've agreed… but we still disagree about…\""]];
+      const OBS = ["Makes relevant points with detail", "Listens and builds on others' ideas", "Asks questions", "Challenges politely", "Brings others in or summarises", "Clear voice and eye contact"];
+      return {
+        pupil: `${h.sheetHead("Group discussion", who)}${spStrip("National 5 and Higher English", "Plan, then discuss")}
+          <p class="gx-plan">Question for discussion: ${blank(22)}</p>
+          ${box("My view, and two reasons", lines(3))}
+          ${box("Two facts or examples I can bring in", lines(2))}
+          ${box("Two questions I'll ask the others", lines(2))}
+          ${box("Phrases that earn credit", spTable(PHRASES))}
+          <table class="gx-track"><thead><tr><th>Observation (for the adult)</th><th>Often</th><th>Sometimes</th><th>Not yet</th></tr></thead>
+          <tbody>${OBS.map(o => `<tr><td>${o}</td>${'<td class="gx-cell"></td>'.repeat(3)}</tr>`).join("")}</tbody></table>`,
+        answers: lookForPage(h, "Group discussion", [
+          "At home, a discussion can be the learner, an adult and one other person (or a video call with a friend). Pick a question with two sides.",
+          "Tick the observation grid during the discussion, then share one strength and one target.",
+          "A learner who only gives their own view and never responds won't meet the listening and responding criterion: prompt them to use the building-on phrases.",
+          "Good questions for practice: Should school uniform be scrapped? Is social media good for young people? Should Scotland have more four-day weeks?"])
+      };
+    });
+
+  add("paper-sp-sqa-higher", SP_H, "Higher talk: developing and challenging an argument",
+    "For Higher English's spoken language performance: how to develop an idea in depth, use evidence, handle a counter-argument and challenge others' views with precision, with practice prompts.", (who, h) => ({
+      pupil: `${h.sheetHead("Higher talk: developing an argument", who)}${spStrip("Higher English", "Plan, then practise aloud")}
+        ${box("Develop each idea in three steps", `<p><b>Claim</b> (what you think) → <b>evidence</b> (a fact, example or quotation) → <b>so what?</b> (why it matters, or what follows). A Higher talk does this for every main point.</p>${lines(2)}`)}
+        ${box("Answer the other side", `<p>Name the strongest counter-argument fairly, then explain why your view still holds, or adjust it: "It's true that…, but…"</p>${lines(2)}`)}
+        ${box("Precise language", `<p>Swap vague words for exact ones: not "a lot of people" but "about a third of S5 pupils in a survey"; not "bad" but "unfair", "costly" or "short-sighted".</p>${lines(2)}`)}
+        ${box("Practice prompts (two minutes each, then questions)", `<ol class="ex-plan"><li>Should exams be replaced by coursework?</li><li>Is it ever right to break a rule?</li><li>Has the internet made us better informed?</li><li>Should Scots be taught in every Scottish school?</li></ol>`)}`,
+      answers: lookForPage(h, "Higher talk: developing an argument", [
+        "Listen for the \"so what?\" step: it is what lifts a National 5 point to Higher.",
+        "Ask one challenging question after each practice talk, and see if the learner defends or refines their view rather than repeating it.",
+        "Precision matters in talk as in writing: praise exact words and numbers.",
+        "The performance must be achieved for the Higher English award; check with the centre how it will be assessed."])
+    }));
+  /* ===================== Comprehension ladder, reading tests and novel task maps =====================
+     In the way tutoring comprehension sheets work: one page, a short text, a word box, then questions
+     that climb from finding information to inference and the writer's choices, with the answers on the back.
+     Eight rungs, from about age 6 to about age 14 (CfE First to Third level). Then four reading tests (P4 to P7,
+     England Years 3 to 6) with marks, like the end-of-year tests schools use, and task maps for reading a whole
+     novel. Every text is PopSpell's own, or a public-domain novel for the task maps. */
+
+  const lqStrip = (what, how) => `<p class="qd-strip"><b>${what}</b><span>${how}</span><span>Done ☐</span></p>`;
+  const lqMk = it => it.m ? ` <span class="gx-mk">(${it.m} mark${it.m > 1 ? "s" : ""})</span>` : "";
+  const lqQ = (it, i) => it.o
+    ? `<div class="pp-q"><p><b>${i}.</b> ${it.q}${lqMk(it)}</p><p class="lq-opts">${shuffle([it.a].concat(it.o)).map(o => `<span>☐ ${o}</span>`).join("")}</p></div>`
+    : `<div class="pp-q"><p><b>${i}.</b> ${it.q}${lqMk(it)}</p>${lines(it.l || 1)}</div>`;
+  const lqParas = s => s.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+  // q: question; a: answer; o: wrong options (a tick question); l: lines to write on; s: skill; m: marks (tests)
+  const LADDER = [
+    { n: 1, age: "about 6 to 7", level: "First", title: "The lost mitten", words: [["mitten", "a glove with one part for the thumb"], ["path", "a narrow way to walk along"], ["puffed", "breathed hard"]],
+      text: "Lily had one red mitten. The other one was lost. She looked in her bag. She looked under the bed. It was not there.\n\nShe went out to the garden. The snow was deep and white. Then Lily saw a little red dot by the path. She ran to it and puffed. It was her mitten! A robin was sitting on it.",
+      qs: [{ q: "What colour was the mitten?", a: "Red", o: ["Blue", "White"], s: "finding information" }, { q: "Where did Lily look first?", a: "In her bag", o: ["Under the bed", "In the garden"], s: "finding information" },
+        { q: "Where was the mitten in the end?", a: "In the garden, by the path", l: 1, s: "finding information" }, { q: "What was sitting on the mitten?", a: "A robin", l: 1, s: "finding information" },
+        { q: "How do you think Lily felt when she saw the red dot? Why?", a: "Excited or happy, because she thought it might be her mitten (she ran to it).", l: 2, s: "inference" }],
+      gap: ["Lily lost a red ___. She found it in the ___, by the ___.", ["mitten", "garden", "path"]] },
+    { n: 2, age: "about 7 to 8", level: "First", title: "Sports day", words: [["nervous", "a bit worried"], ["wobbled", "shook from side to side"], ["cheered", "shouted to help someone"]],
+      text: "It was sports day, and Omar felt nervous. His race was the egg and spoon. He held the spoon very still, but the egg wobbled every time he took a step.\n\nWhen the whistle went, the other children ran fast. Two eggs fell on the grass. Omar walked slowly and kept his eyes on his egg. His gran cheered from the fence.\n\nOmar did not come first. He came third. But his egg was still on his spoon at the end, and he got a sticker that said \"Steady hands\".",
+      qs: [{ q: "What race did Omar do?", a: "The egg and spoon race", o: ["The sack race", "The running race"], s: "finding information" }, { q: "Who cheered for Omar?", a: "His gran", o: ["His dad", "His teacher"], s: "finding information" },
+        { q: "What place did Omar come?", a: "Third", l: 1, s: "finding information" }, { q: "Find and copy a word that tells you how Omar felt at the start.", a: "nervous", l: 1, s: "vocabulary" },
+        { q: "Why do you think Omar walked slowly?", a: "So his egg would not fall off (he kept his eyes on it).", l: 2, s: "inference" }, { q: "Why did Omar get the \"Steady hands\" sticker?", a: "Because his egg stayed on his spoon all the way to the end.", l: 2, s: "inference" }],
+      gap: ["Omar did the ___ and spoon race. He came ___. His egg stayed on his ___.", ["egg", "third", "spoon"]] },
+    { n: 3, age: "about 8 to 9", level: "First", title: "How hedgehogs spend the winter", words: [["hibernate", "sleep through the winter"], ["burrow", "dig into"], ["shelter", "a safe, dry place"]],
+      text: "Hedgehogs are small animals covered in sharp spines. They come out at night to look for beetles, worms and slugs to eat.\n\nWhen the weather gets cold, there is not much food about. So in autumn, hedgehogs eat as much as they can to get fat. Then they find a shelter, such as a pile of leaves or a space under a shed, and burrow inside. They hibernate there until the spring.\n\nYou can help hedgehogs by leaving a wild corner in your garden, and by checking bonfires before they are lit.",
+      qs: [{ q: "When do hedgehogs look for food?", a: "At night", o: ["In the morning", "At lunchtime"], s: "finding information" }, { q: "Name two things hedgehogs eat.", a: "Two of: beetles, worms, slugs.", l: 1, s: "finding information" },
+        { q: "Why do hedgehogs eat a lot in autumn?", a: "To get fat, because there isn't much food in winter.", l: 2, s: "finding information" }, { q: "What does \"hibernate\" mean?", a: "Sleep through the winter", o: ["Run very fast", "Hide from people"], s: "vocabulary" },
+        { q: "Why should people check bonfires before they are lit?", a: "A hedgehog might be hiding (hibernating) in the pile.", l: 2, s: "inference" }, { q: "Is this text a story or an information text? How do you know?", a: "Information text: it gives facts about real animals, not characters and events.", l: 2, s: "type of text" }],
+      gap: ["Hedgehogs eat a lot in ___ and then ___ until spring in a ___.", ["autumn", "hibernate", "shelter"]] },
+    { n: 4, age: "about 9 to 10", level: "Second", title: "The night the lights went out", words: [["flickered", "went on and off quickly"], ["fumbled", "felt about clumsily"], ["gloom", "near darkness"]],
+      text: "The storm had been growling all evening. At eight o'clock, the kitchen light flickered twice and went out. The fridge stopped humming. Somewhere upstairs, Ellie's little brother began to wail.\n\nEllie fumbled in the drawer for the torch. Her fingers found string, a ruler and a sticky spoon before they closed round it. She clicked the switch. Nothing.\n\n\"Batteries,\" said Mum from the gloom. \"Top shelf.\"\n\nTen minutes later, they were all in the living room with three candles, a pack of cards and a tin of biscuits. Rain hammered the window. Ellie's brother had stopped crying and was trying to cheat at snap. Ellie realised, with some surprise, that this was the best evening they'd had all month.",
+      qs: [{ q: "What time did the light go out?", a: "Eight o'clock", o: ["Ten o'clock", "Seven o'clock"], s: "finding information" }, { q: "List two things Ellie found in the drawer before the torch.", a: "Two of: string, a ruler, a sticky spoon.", l: 1, s: "finding information" },
+        { q: "Why didn't the torch work?", a: "Its batteries were flat (Mum says the new batteries are on the top shelf).", l: 2, s: "inference" }, { q: "\"The storm had been growling.\" What does \"growling\" make the storm sound like?", a: "An angry or dangerous animal: it makes the storm sound threatening.", l: 2, s: "writer's choices" },
+        { q: "How did Ellie's brother feel at first, and at the end? Use evidence.", a: "Upset or scared at first (\"began to wail\"); happy or playful at the end (\"trying to cheat at snap\").", l: 3, s: "inference" }, { q: "Why was Ellie surprised that it was the best evening all month?", a: "Because a power cut sounds bad, but it brought the family together doing things they enjoyed.", l: 2, s: "inference" }],
+      gap: null },
+    { n: 5, age: "about 10 to 11", level: "Second", title: "The bridge that sings", words: [["suspension bridge", "a bridge hung from cables"], ["vibrate", "shake very fast"], ["engineers", "people who design and build structures"]],
+      text: "On windy days, people living near one suspension bridge in Scotland noticed something strange: the bridge was humming. On the worst days, the hum rose into a long, low note, like someone blowing across the top of a bottle.\n\nEngineers soon found the cause. The bridge had new safety barriers along its edges, made of thin metal strips. When strong wind blew across them at a certain angle, the strips began to vibrate, and the whole row \"sang\" together.\n\nSome local people liked the sound and said it made the bridge feel alive. Others found it kept them awake at night. In the end, the engineers fitted covers to the strips, which changed the way the air flowed. The bridge went quiet, although a few people say they miss its song.",
+      qs: [{ q: "When did the bridge hum?", a: "On windy days", o: ["Every night", "When it rained"], s: "finding information" }, { q: "What caused the sound?", a: "Thin metal strips on the new safety barriers vibrating in the wind.", l: 2, s: "finding information" },
+        { q: "Find and copy the simile the writer uses to describe the sound.", a: "\"like someone blowing across the top of a bottle\"", l: 1, s: "writer's choices" }, { q: "Why is \"sang\" in inverted commas?", a: "Because the bridge didn't really sing: it's a word used in a special or playful way.", l: 2, s: "writer's choices" },
+        { q: "Give one reason people liked the sound and one reason they didn't.", a: "Liked: it made the bridge feel alive. Didn't: it kept them awake at night.", l: 2, s: "finding information" }, { q: "Do you think the engineers made the right decision? Give a reason.", a: "Any answer with a reason from the text, e.g. yes, because people need to sleep; or no, because some people loved it.", l: 2, s: "evaluation" }],
+      gap: null },
+    { n: 6, age: "about 11 to 12", level: "Second", title: "Granny Nell's notebook", words: [["faded", "lost its colour"], ["meticulous", "very careful about small details"], ["inheritance", "something passed on after someone dies"]],
+      text: "When Granny Nell died, she left Kirsty a battered blue notebook. Its cover was faded, and the spine was held together with tape. Kirsty had expected jewellery, or maybe money. She was a little disappointed.\n\nThat evening she opened it. Every page was covered in Granny Nell's tiny, meticulous handwriting: the date, the weather, and what was flowering in the garden. \"14th March 1971. Frost. First daffodil by the gate.\" \"2nd June 1984. Hot. Roses out; Kirsty's mum learned to ride her bike.\" Fifty years of springs and summers were folded into its pages.\n\nKirsty read until midnight. The next morning she found a new notebook, wrote the date at the top, and went out into the cold to see what was flowering.",
+      qs: [{ q: "What three things did Granny Nell write on each page?", a: "The date, the weather, and what was flowering in the garden.", l: 2, s: "finding information" }, { q: "Why was Kirsty disappointed at first?", a: "She expected something valuable, like jewellery or money.", l: 2, s: "inference" },
+        { q: "What does \"meticulous\" tell you about Granny Nell?", a: "She was careful and patient; she paid attention to small details.", l: 2, s: "vocabulary" }, { q: "\"Fifty years of springs and summers were folded into its pages.\" Explain what this means.", a: "The notebook held a record of fifty years of seasons and memories, kept inside it like something folded and stored.", l: 2, s: "writer's choices" },
+        { q: "How do Kirsty's feelings about the notebook change? Use evidence.", a: "From disappointed (\"a little disappointed\") to fascinated (\"read until midnight\") and inspired (starts her own notebook).", l: 3, s: "inference" }, { q: "Why do you think the writer ends with Kirsty starting her own notebook?", a: "To show the notebook was a real inheritance: Kirsty carries on Granny Nell's habit, so the memory lives on.", l: 2, s: "structure" }],
+      gap: null },
+    { n: 7, age: "about 12 to 13", level: "Third", title: "Should we bring back the beaver?", words: [["reintroduce", "bring back to a place where it once lived"], ["habitat", "the natural home of an animal or plant"], ["controversial", "causing strong disagreement"]],
+      text: "Four hundred years ago, beavers were hunted to extinction in Britain for their fur. Today, they are back. Beavers have been reintroduced in parts of Scotland and England, and their return is one of the most controversial wildlife stories of our time.\n\nSupporters call beavers \"ecosystem engineers\". Their dams slow rivers down, creating ponds and wetlands where insects, frogs, birds and fish thrive. Some studies suggest beaver dams can even reduce flooding further downstream, by holding back water after heavy rain.\n\nNot everyone is convinced. Some farmers say that beaver dams flood valuable fields, and that beavers fell trees on their land. They argue that a farmer's livelihood should not be put at risk to suit wildlife campaigners.\n\nThe answer may lie in management: protecting beavers where they help, and moving them where they cause real damage. What seems certain is that, after four centuries away, the beaver will not leave quietly.",
+      qs: [{ q: "Why did beavers disappear from Britain?", a: "They were hunted to extinction for their fur.", l: 1, s: "finding information" }, { q: "Give two benefits of beaver dams mentioned in the text.", a: "Two of: they create ponds and wetlands; they help insects, frogs, birds and fish; they may reduce flooding downstream.", l: 2, s: "finding information" },
+        { q: "Why do supporters call beavers \"ecosystem engineers\"?", a: "Because they build things (dams) that change and shape the whole environment for other living things.", l: 2, s: "vocabulary" }, { q: "What is the farmers' main argument?", a: "Beavers damage their land (flooding fields, felling trees), and their livelihood shouldn't be put at risk for wildlife.", l: 2, s: "main ideas" },
+        { q: "Is the writer for or against beavers, or balanced? Give evidence.", a: "Balanced: gives supporters' and farmers' views and suggests a compromise (\"The answer may lie in management\").", l: 3, s: "writer's purpose" }, { q: "Comment on the effect of the last sentence.", a: "It's memorable and slightly humorous; \"will not leave quietly\" personifies the beaver and suggests the debate will continue.", l: 2, s: "writer's choices" }],
+      gap: null },
+    { n: 8, age: "about 13 to 14", level: "Third", title: "The last ferry", words: [["slipway", "a ramp leading down into the water"], ["reluctant", "unwilling"], ["receded", "moved back or away"]],
+      text: "The last ferry of the season left at four. By ten to, the slipway was empty apart from Callum, a holdall at his feet, and his father, who was pretending to study the timetable he had known by heart for thirty years.\n\nNeither of them had mentioned the university letter since it arrived. It sat now in Callum's inside pocket, folded so many times that the creases had begun to tear.\n\n\"You'll phone,\" his father said. It was not a question.\n\n\"Every Sunday.\"\n\nThe ferry's horn sounded across the bay, two long notes that Callum had heard every day of his life and had never, until now, listened to. His father picked up the holdall, carried it to the ramp, and set it down with great care, as if it held something that might break. Then, reluctant, he stepped back.\n\nFrom the deck, Callum watched the island shrink: the white houses, the shop, the single road climbing the hill. His father stayed on the slipway, one hand raised, until the island receded into the grey and the hand was impossible to see. Callum kept waving anyway.",
+      qs: [{ q: "Why is Callum leaving the island?", a: "To go to university.", l: 1, s: "inference" }, { q: "Why is the father \"pretending to study the timetable\"?", a: "He knows it already; he's hiding his feelings or avoiding talking about Callum leaving.", l: 2, s: "inference" },
+        { q: "What does the state of the letter (\"creases had begun to tear\") suggest?", a: "Callum has read or handled it many times: he is anxious or thinking about it constantly.", l: 2, s: "inference" }, { q: "\"It was not a question.\" What does this show about the father?", a: "He's telling, almost pleading: he needs Callum to stay in touch, and his feelings are strong but held in.", l: 2, s: "writer's choices" },
+        { q: "Explain the effect of the simile \"as if it held something that might break\".", a: "It shows the father's tenderness: the care for the bag stands for his care for Callum, and suggests the moment itself is fragile.", l: 3, s: "writer's choices" }, { q: "Why do you think the writer ends with \"Callum kept waving anyway\"?", a: "It shows Callum's love and loyalty to his father and home, even when they can't see each other: an emotional, open ending.", l: 2, s: "structure" }],
+      gap: null }
+  ];
+  const LQ_LESSON = { First: "lesson-first-comprehension-ladder", Second: "lesson-second-comprehension-ladder", Third: "lesson-third-comprehension-ladder" };
+  const lqSkills = qs => [...new Set(qs.map(q => q.s))].join(", ");
+  LADDER.forEach(r => {
+    add(`paper-comp-ladder-${r.n}`, LQ_LESSON[r.level], `Comprehension ladder, rung ${r.n}: ${r.title}`,
+      `A one-page comprehension for readers ${r.age}: the text, a word box, then ${r.qs.length} questions (${lqSkills(r.qs)})${r.gap ? ", and a fill-the-gap summary" : ""}. Answers on the back.`, (who, h) => ({
+        pupil: `${h.sheetHead(r.title, who)}${lqStrip(`Comprehension, rung ${r.n} of 8`, `${r.level} level, ${r.age}`)}
+          <div class="ex-text lq-text${r.level === "First" ? " lq-young" : ""}">${lqParas(r.text)}</div>
+          ${box("Word box", `<p>${r.words.map(([w, d]) => `<b>${w}</b>: ${d}`).join(" · ")}</p>`)}
+          ${r.qs.map((it, i) => lqQ(it, i + 1)).join("")}
+          ${r.gap ? `<div class="pp-q"><p><b>${r.qs.length + 1}.</b> Fill the gaps. Use the words: <b>${shuffle(r.gap[1]).join(", ")}</b>.</p><p>${r.gap[0].replace(/___/g, blank(5))}</p></div>` : ""}`,
+        answers: answersPage(h, r.title, r.qs.map(it => `${it.a} <span class="gx-how">(${it.s})</span>`).concat(r.gap ? [`Gaps: ${r.gap[1].join(", ")}`] : []),
+          "Accept answers in the pupil's own words that show the same understanding. For \"why\" and \"how\" questions, look for a reason or evidence from the text.")
+      }));
+  });
+
+  /* ---------- Reading tests: P4 to P7 (England Years 3 to 6) ---------- */
+  const TESTS = [
+    { id: "p4", year: "P4 (England Year 3)", level: "First", lesson: "lesson-first-reading-test", minutes: 30, texts: [
+      { title: "The new class pet", kind: "story", text: "On Monday, Mr Patel came into class carrying a box with holes in the lid. Everyone stopped talking.\n\n\"This,\" he said, \"is Pepper.\" He lifted the lid. Inside was a small brown guinea pig with a white patch over one eye, like a pirate.\n\nPepper squeaked. Jodie giggled. Ravi wanted to hold her straight away, but Mr Patel shook his head. \"Pepper needs time to get used to us,\" he said. \"We must be quiet and gentle.\"\n\nThat week, the class made a rota. Two children each day would give Pepper fresh water, hay and a piece of carrot. By Friday, Pepper squeaked happily whenever anyone said her name." }],
+      qs: [{ q: "What day did Pepper come to class?", a: "Monday", m: 1 }, { q: "What kind of animal is Pepper?", a: "A guinea pig", m: 1 }, { q: "Why did Mr Patel say Ravi could not hold Pepper straight away?", a: "Pepper needed time to get used to the class / it might scare her.", m: 1, l: 1 },
+        { q: "The white patch made Pepper look like a ___.", a: "pirate", m: 1 }, { q: "What is a rota? Tick one.", a: "A list of whose turn it is", o: ["A kind of food", "A pet's cage"], m: 1 }, { q: "Name two things the children gave Pepper each day.", a: "Two of: fresh water, hay, a piece of carrot.", m: 1, l: 1 },
+        { q: "How do you know Pepper was happy by Friday?", a: "She squeaked happily whenever anyone said her name.", m: 1, l: 1 }, { q: "Number these 1 to 3 in the order they happened: The class made a rota. / Pepper squeaked happily. / Mr Patel lifted the lid.", a: "Mr Patel lifted the lid (1), the class made a rota (2), Pepper squeaked happily (3).", m: 1, l: 1 },
+        { q: "Everyone stopped talking when Mr Patel came in. Why do you think they did?", a: "They were curious or excited about what was in the box.", m: 1, l: 1 }, { q: "Would you like a class pet? Give one reason from the story.", a: "Any opinion with a reason linked to the story, e.g. yes, because looking after Pepper was fun.", m: 1, l: 1 }] },
+    { id: "p5", year: "P5 (England Year 4)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 35, texts: [
+      { title: "Lighthouses", kind: "information", text: "For hundreds of years, lighthouses have kept sailors safe. They stand on rocks, cliffs and islands where ships could be wrecked, and shine a bright light out to sea at night.\n\nEach lighthouse has its own pattern of flashes, called its character. One might flash white every five seconds; another might flash red twice every fifteen. By counting the flashes, sailors can tell exactly which lighthouse they are looking at, and so where they are.\n\nIn the past, lighthouse keepers lived in the lighthouse. They climbed the stairs every evening to light the lamp, cleaned the huge glass lens, and kept a log of the weather. Today, almost every lighthouse in the UK is automatic: computers switch the lights on and off, and engineers visit only to check them.\n\nScotland has more than two hundred lighthouses. Many were built by one family, the Stevensons, over a hundred and fifty years." }],
+      qs: [{ q: "What do lighthouses do?", a: "Keep sailors safe by shining a light so ships aren't wrecked.", m: 1, l: 1 }, { q: "What is a lighthouse's \"character\"?", a: "Its own pattern of flashes.", m: 1, l: 1 }, { q: "How can sailors tell which lighthouse they are looking at?", a: "By counting its flashes (its pattern).", m: 1, l: 2 },
+        { q: "Give two jobs a lighthouse keeper did.", a: "Two of: lit the lamp, cleaned the lens, kept a weather log.", m: 2, l: 2 }, { q: "Find and copy one word that means \"works by itself\".", a: "automatic", m: 1, l: 1 }, { q: "Why don't lighthouses need keepers today?", a: "Computers switch the lights on and off (they are automatic).", m: 1, l: 2 },
+        { q: "How many lighthouses does Scotland have?", a: "More than two hundred", o: ["About fifty", "Exactly one hundred"], m: 1 }, { q: "Which family built many of Scotland's lighthouses?", a: "The Stevensons", m: 1, l: 1 },
+        { q: "This text is mostly… Tick one.", a: "to inform", o: ["to persuade", "to entertain with a story"], m: 1 }, { q: "Suggest a good subheading for the third paragraph.", a: "Something about keepers then and now, e.g. \"Lighthouse keepers\" or \"From keepers to computers\".", m: 1, l: 1 }] },
+    { id: "p6", year: "P6 (England Year 5)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 40, texts: [
+      { title: "The tunnel", kind: "story", text: "Nobody used the old railway tunnel any more. Weeds grew between the sleepers, and a sign at the entrance said DANGER: KEEP OUT in letters that had faded to pink.\n\nSo of course Finn and Aisha went in.\n\nIt was colder inside than they expected, and their voices came back to them strange and hollow. Aisha's torch lit up a few metres of curved brick, glistening with damp, and then nothing: just a darkness so thick it seemed to swallow the beam.\n\n\"We should go back,\" Finn whispered, although he didn't move.\n\nThen they heard it: a slow drip, drip, and under it something else. A soft, steady scratching, coming closer.\n\nAisha swung the torch. Two green eyes blazed back at them. For a terrible second neither of them breathed. Then a scrawny grey cat stepped into the light, blinked, and walked calmly past them towards the daylight, as if they were the ones who had no business being there." }],
+      qs: [{ q: "Why did nobody use the tunnel?", a: "It was old and disused / dangerous (weeds, a DANGER sign).", m: 1, l: 1 }, { q: "\"So of course Finn and Aisha went in.\" What does this sentence tell you about them?", a: "They were curious or adventurous, and ignored the warning; \"of course\" makes it sound typical of them.", m: 2, l: 2 },
+        { q: "Find and copy two words that describe the sound of their voices in the tunnel.", a: "strange, hollow", m: 1, l: 1 }, { q: "\"a darkness so thick it seemed to swallow the beam\". What does this suggest?", a: "The darkness was very deep: the torchlight didn't reach far, as if the dark ate it.", m: 2, l: 2 },
+        { q: "Finn says \"We should go back\" but doesn't move. Why?", a: "He's frightened but also curious, or too scared to move.", m: 1, l: 2 }, { q: "How does the writer build tension? Give two ways.", a: "Two of: short sentences/paragraphs; sounds (drip, scratching) coming closer; the dark; \"Then they heard it\"; \"For a terrible second\".", m: 2, l: 3 },
+        { q: "What was making the scratching?", a: "A cat", o: ["A rat", "A train"], m: 1 }, { q: "Explain the joke in the last sentence.", a: "The children were scared of the cat, but the cat acts as if they are the intruders.", m: 1, l: 2 }] },
+    { id: "p7", year: "P7 (England Year 6)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 45, texts: [
+      { title: "Why we should all learn to swim", kind: "argument", text: "Every summer, the same headlines appear: young people in difficulty in rivers, lochs and the sea. Many of these tragedies could be prevented. That is why swimming lessons should be guaranteed for every child, free of charge, before they leave primary school.\n\nSome will say this is too expensive. Pools cost money to run, and many councils are short of cash. But consider the alternative: rescue services, hospital care, and, worst of all, families who lose a child. Measured against that, a course of lessons is cheap.\n\nOthers argue that it is a parent's job, not a school's, to teach a child to swim. Yet not every parent can swim, or can afford lessons, or lives near a pool. Leaving it to families means the children who most need the skill are the least likely to get it.\n\nSwimming is not just about safety, either. It is exercise that children enjoy, a confidence-builder, and the start of a lifetime of fun in and around water.\n\nWe teach every child to read and to cross the road. Learning to swim belongs on the same list." }],
+      qs: [{ q: "What does the writer want to happen?", a: "Free swimming lessons for every child before they leave primary school.", m: 1, l: 1 }, { q: "What is the first counter-argument the writer mentions?", a: "It's too expensive (pools cost money; councils are short of cash).", m: 1, l: 1 },
+        { q: "How does the writer answer that counter-argument?", a: "Lessons are cheap compared with the cost of rescues, hospital care and losing a child.", m: 2, l: 2 }, { q: "\"the children who most need the skill are the least likely to get it\". Explain what this means.", a: "Children whose families can't swim, can't pay or don't live near a pool are the ones who'd miss out, though they need it most.", m: 2, l: 2 },
+        { q: "Give two benefits of swimming other than safety.", a: "Two of: exercise children enjoy, builds confidence, a lifetime of fun.", m: 1, l: 1 }, { q: "Why does the writer compare swimming to reading and crossing the road?", a: "To show swimming is a basic life skill every child should be taught, just like those.", m: 2, l: 2 },
+        { q: "Which word best describes the writer's tone?", a: "Persuasive and serious", o: ["Funny and silly", "Unsure and confused"], m: 1 }, { q: "Do you agree with the writer? Give a reason, using the text.", a: "Any view with a reason linked to the text.", m: 2, l: 2 }] }
+  ];
+  TESTS.forEach(t => {
+    const total = t.qs.reduce((s, q) => s + q.m, 0);
+    add(`paper-reading-test-${t.id}`, t.lesson, `Reading test: ${t.year}`,
+      `An end-of-year style reading test (${t.minutes} minutes, ${total} marks): one ${t.texts[0].kind} text and questions from finding information to explaining the writer's choices, with a mark scheme. PopSpell's own text.`, (who, h) => ({
+        pupil: `${h.sheetHead(`Reading test: ${t.texts[0].title}`, who)}<p class="qd-strip gx-strip"><b>Reading test</b><span>${t.year}</span><span>${t.minutes} minutes</span><span>Total ___ / ${total}</span></p>
+          <div class="ex-text lq-text"><p class="ex-src"><b>${t.texts[0].title}</b></p>${lqParas(t.texts[0].text)}</div>
+          ${t.qs.map((it, i) => lqQ(it, i + 1)).join("")}`,
+        answers: answersPage(h, `Reading test: ${t.year}`, t.qs.map(it => `${it.a} <span class="gx-of">(${it.m} mark${it.m > 1 ? "s" : ""})</span>`),
+          `Total ${total} marks. Accept answers in the pupil's own words with the same meaning. For 2-mark questions, give 1 mark for a simple point and 2 for a point explained or backed with evidence.`,
+          `<p class="gx-note">As a rough guide, about two-thirds of the marks or more suggests the pupil is reading at the expected level for ${t.year}. Use the questions they missed to choose what to teach next (finding information, vocabulary, inference or the writer's choices). It's a guide, not a standardised score.</p>`)
+      }));
+  });
+
+  /* ---------- Novel task maps: reading a whole book ---------- */
+  const MAP_KINDS = ["Before reading", "Characters", "Setting", "Prediction", "Words", "Writing", "Talk", "Create", "Plot", "Writing", "Thinking", "Review"];
+  const NOVELS = [
+    { id: "any", title: "Any novel", by: "", tasks: [
+      "Look at the cover and title. Predict three things that might happen.", "Draw the main character and write five words to describe them, with evidence.",
+      "Sketch the main setting and label it with words from the book.", "After each few chapters, write one sentence summary and one prediction.",
+      "Collect five new words. Write what each means and use it in a sentence.", "Write a diary entry as a character at a key moment.",
+      "Hot-seat a character: an adult asks questions and you answer in role.", "Design a new cover or a poster for the book, with a quotation on it.",
+      "Plot a story mountain: opening, build-up, problem, resolution, ending.", "Write a letter from one character to another.", "Which character changes most? Explain how and why.", "Write a review with a star rating and who should read it."] },
+    { id: "secret-garden", title: "The Secret Garden", by: "Frances Hodgson Burnett, 1911", tasks: [
+      "Read the first chapter. What is Mary like at the start? Find three words or phrases that show it.", "Make a character web for Mary, Colin and Dickon. How are they linked?",
+      "Draw the hidden garden when Mary first finds it, then again when it blooms.", "Predict: what will Mary find behind the door? Check your prediction later.",
+      "Find the Yorkshire dialect words Dickon and Martha use. What do they mean?", "Write Mary's diary on the day she first goes into the garden.",
+      "Debate: was it right for Mary to keep the garden a secret?", "Plant some seeds and keep a growing diary while you read.",
+      "Map how Mary changes from the start of the book to the end.", "Write a letter from Colin to his father.", "Why do you think the garden helps the children get better?", "Write a review for someone your age."] },
+    { id: "treasure-island", title: "Treasure Island", by: "Robert Louis Stevenson, 1883", tasks: [
+      "Before reading: what do you expect in a pirate story? List five things.", "Compare Jim and Long John Silver: what do they want, and can they be trusted?",
+      "Draw the treasure map with the places from the story labelled.", "At the end of each part, predict who will get the treasure.",
+      "Collect sea and pirate words (for example, schooner, mutiny). Make a glossary.", "Write the log of the Hispaniola for one day, as the captain.",
+      "Is Long John Silver a villain or a hero? Hold a class (or family) vote with reasons.", "Make a wanted poster for one of the pirates.",
+      "Plot the voyage on a story mountain.", "Write the letter Jim sends home after the voyage.", "Why do you think Jim goes home a different person from the boy at the inn?", "Write a review for someone your age."] },
+    { id: "alice", title: "Alice's Adventures in Wonderland", by: "Lewis Carroll, 1865", tasks: [
+      "Before reading: what makes a dream strange? Talk about a dream you remember.", "Make a gallery of Wonderland characters, with one line each that they say.",
+      "Draw the hall of doors, or the tea party, with labels from the text.", "Predict what will happen at the trial before you read it.",
+      "Find the made-up and nonsense words. Invent three of your own with meanings.", "Write a new chapter: Alice meets a creature of your own.",
+      "Act out the Mad Hatter's tea party with family or friends.", "Make an invitation to the tea party.",
+      "List how Alice's size changes and what causes each change.", "Write Alice's letter to her sister about her adventures.", "Which character is the most unfair? Explain.", "Write a review for someone your age."] },
+    { id: "wind-in-the-willows", title: "The Wind in the Willows", by: "Kenneth Grahame, 1908", tasks: [
+      "Before reading: what animals live by a river? Which might be good friends?", "Compare Mole, Ratty, Badger and Toad: draw a table of what each is like.",
+      "Draw the river bank, the Wild Wood and Toad Hall on one map.", "When Toad gets a motor car, predict what will go wrong.",
+      "Collect old-fashioned words (for example, \"motor-car\", \"poop-poop\"). What do they mean?", "Write a newspaper report on Toad's escape from prison.",
+      "Debate: is Toad a good friend?", "Design a new vehicle for Toad, with a label for each part.",
+      "Plot the battle for Toad Hall step by step.", "Write Ratty's invitation to Mole for a picnic.", "How do the friends help Toad change? Do you think he really does?", "Write a review for someone your age."] }
+  ];
+  NOVELS.forEach(nv => {
+    add(`paper-novel-map-${nv.id}`, "lesson-second-novel-task-map", `Novel task map: ${nv.title}`,
+      `${nv.by ? `For ${nv.title} (${nv.by}, public domain): ` : "For any class or home novel: "}twelve tasks across a whole book (characters, setting, plot, words, writing, talk and making), to tick off as you read. Choose at least one from each row.`, (who, h) => ({
+        pupil: `${h.sheetHead(`Task map: ${nv.title}`, who)}${lqStrip("Novel task map", nv.by || "Any novel")}
+          <p class="gx-intro">Pick a task, do it, then colour or tick its box. Aim for at least one task from each kind before you finish the book.</p>
+          <table class="gx-track"><tbody>${nv.tasks.map((t, i) => `<tr><td class="gx-topic">${MAP_KINDS[i]}</td><td>${t}</td><td class="gx-cell">☐</td></tr>`).join("")}</tbody></table>
+          ${box("My favourite task, and why", lines(2))}`,
+        answers: lookForPage(h, `Task map: ${nv.title}`, [
+          "Let the reader choose the order: choice keeps them reading. Check that by the end they have covered characters, setting, plot, words and writing.",
+          "For talk tasks, join in: hot-seating and debates work well with an adult asking real questions.",
+          nv.by ? `${nv.title} is out of copyright, so free editions are easy to find (libraries and second-hand bookshops have cheap or free copies).` : "Use it with any book: a class novel, a library book, or one the child chose.",
+          "Look for answers backed with evidence from the book (\"I think… because on page…\")."])
+      }));
+  });
+  /* ===================== Writing frames with success criteria, by text type =====================
+     In the way tutoring frames work: one page per text type, with the parts of the text in order, sentence
+     starters in each part, a word bank, and the success criteria as a tick list the writer checks before
+     handing in (a "me" column and an "adult" column). Two versions of each: First level (P2 to P4, short
+     starters, draw or write) and Second and Third level (P5 to S2, paragraphs and more formal features).
+     The writing itself goes on lined paper or in a jotter: the frame is the plan and the checklist. */
+
+  const WF = [
+    { id: "recount", name: "Recount", purpose: "to tell what happened, in order",
+      first: { parts: [["Who, where and when?", "On Saturday, I went to… with…"], ["First", "First, we…"], ["Next", "Next, …"], ["Then", "After that, …"], ["At the end", "Finally, … I felt… because…"]],
+        words: "first, next, then, after that, later, finally, because, so",
+        criteria: ["I said who, where and when.", "I told the events in order.", "I used time words (first, next, then).", "I said how I felt.", "I used capital letters and full stops."] },
+      second: { parts: [["Opening: set the scene", "Last weekend, my family and I travelled to… where…"], ["Event 1", "Our day began when…"], ["Event 2", "Later that morning, …"], ["Event 3", "By the afternoon, …"], ["Closing: looking back", "Looking back, the best part was… because…"]],
+        words: "meanwhile, shortly afterwards, by the time, eventually, as soon as, although, which meant that",
+        criteria: ["My opening answers who, what, where and when.", "Events are in time order, one paragraph each.", "I varied my time connectives.", "I added detail: what I saw, heard and felt.", "I wrote in the past tense throughout.", "My ending reflects on the experience."] } },
+    { id: "instructions", name: "Instructions", purpose: "to tell someone how to do or make something",
+      first: { parts: [["What you will make or do", "How to…"], ["You will need", "• \n• \n• "], ["Step 1", "First, …"], ["Step 2", "Next, …"], ["Step 3", "Then, …"], ["Step 4", "Last, …"]],
+        words: "first, next, then, after that, last, cut, fold, mix, put, stir",
+        criteria: ["I wrote a 'How to' title.", "I listed what you need.", "My steps are numbered and in order.", "Each step starts with a bossy verb.", "Someone could follow my steps."] },
+      second: { parts: [["Title and goal", "How to… (in about … minutes)"], ["Equipment", "You will need: …"], ["Method", "1. Begin by… \n2. Carefully… \n3. Once…, … \n4. …"], ["Tips and warnings", "Make sure that… / Be careful not to…"], ["Finish", "Your … is now ready to…"]],
+        words: "carefully, gently, once, until, while, make sure, be careful, approximately",
+        criteria: ["The title says exactly what will be made or done.", "The equipment list is complete.", "Steps are numbered, in order and start with imperative verbs.", "I used adverbs to say how (carefully, gently).", "I included a tip or a warning.", "A reader could follow it without asking me anything."] } },
+    { id: "report", name: "Information report", purpose: "to give facts about a topic",
+      first: { parts: [["Title", "All about…"], ["What is it?", "A … is a…"], ["What does it look like?", "It has…"], ["Where is it found?", "It lives / is found…"], ["An amazing fact", "Did you know that…?"]],
+        words: "has, have, is, are, can, lives, eats, most, some, many",
+        criteria: ["My title tells the topic.", "I wrote facts, not a story.", "Each part has a heading.", "I wrote in the present tense.", "I added an amazing fact."] },
+      second: { parts: [["Introduction", "… are… They are found…"], ["Sub-heading 1: appearance", "Most … have… which helps them…"], ["Sub-heading 2: habitat or uses", "… can be found in… because…"], ["Sub-heading 3: behaviour or facts", "Interestingly, … In addition, …"], ["Conclusion", "Overall, … are important because…"]],
+        words: "furthermore, in addition, for example, such as, however, most, some, unlike, similarly",
+        criteria: ["My introduction says what the report is about.", "I organised facts under sub-headings.", "I used technical vocabulary and explained it.", "I wrote in the third person and present tense.", "I added a diagram, caption or fact box.", "My conclusion sums up."] } },
+    { id: "persuasive", name: "Persuasive writing", purpose: "to make the reader agree or do something",
+      first: { parts: [["What I think", "I think that… should…"], ["Reason 1", "One reason is…"], ["Reason 2", "Also, …"], ["Reason 3", "Best of all, …"], ["Ending", "So you can see that…"]],
+        words: "I think, because, also, best of all, everyone, should, must, so",
+        criteria: ["I said what I think.", "I gave three reasons.", "I used 'because' to explain.", "I used a strong ending.", "I used capital letters and full stops."] },
+      second: { parts: [["Opening: state your view", "Have you ever wondered…? I strongly believe that…"], ["Point 1 with evidence", "Firstly, … For example, …"], ["Point 2 with evidence", "Furthermore, … This shows that…"], ["Counter-argument", "Some people say… However, …"], ["Conclusion: call to action", "In conclusion, … so we must…"]],
+        words: "firstly, furthermore, moreover, clearly, surely, however, therefore, in conclusion, imagine",
+        criteria: ["My opening grabs the reader and states my view.", "Each point is backed with evidence or an example.", "I answered a counter-argument.", "I used persuasive techniques (rhetorical question, rule of three, emotive words).", "I used formal connectives.", "My conclusion tells the reader what to do."] } },
+    { id: "narrative", name: "Story", purpose: "to entertain",
+      first: { parts: [["Opening: who and where?", "One day, …"], ["Something happens", "Suddenly, …"], ["The problem", "Oh no! …"], ["Sorting it out", "So, …"], ["Ending", "In the end, …"]],
+        words: "one day, suddenly, then, so, in the end, happy, scared, dark, huge, tiny",
+        criteria: ["My story has a character and a setting.", "Something goes wrong (a problem).", "The problem is sorted out.", "I used describing words.", "My story has an ending."] },
+      second: { parts: [["Opening: hook and setting", "Start with action, speech or a question: …"], ["Build-up", "Show the character's feelings: …"], ["Problem", "Without warning, …"], ["Resolution", "Just when…, …"], ["Ending", "Show how the character has changed: …"]],
+        words: "without warning, moments later, meanwhile, just as, trembling, gloomy, determined, whispered, muttered",
+        criteria: ["My opening hooks the reader.", "I showed feelings through actions and speech (show, don't tell).", "I described the setting using the senses.", "I punctuated speech correctly.", "I varied sentence openers and lengths.", "My ending links back to the opening or shows a change."] } },
+    { id: "letter", name: "Letter", purpose: "to write to someone for a reason",
+      first: { parts: [["My address and the date", "(top right)"], ["Greeting", "Dear …,"], ["Why I am writing", "I am writing to…"], ["More to say", "I would like to… / Did you know…"], ["Sign off", "From, / Love from, …"]],
+        words: "Dear, thank you, I hope, please, because, love from, from",
+        criteria: ["I wrote the address and date.", "I started with 'Dear'.", "I said why I am writing.", "I signed off with my name.", "I used capital letters for names."] },
+      second: { parts: [["Layout", "Your address (top right), the date, their address (left) if formal"], ["Greeting", "Dear Mr / Mrs / Ms … , or Dear Sir or Madam,"], ["Paragraph 1: purpose", "I am writing to… regarding…"], ["Paragraph 2: detail", "I would like to point out that… / I was disappointed to find…"], ["Paragraph 3: what you want", "I would be grateful if you could…"], ["Sign-off", "Yours sincerely (name known) / Yours faithfully (Dear Sir or Madam)"]],
+        words: "regarding, I would be grateful, furthermore, unfortunately, I look forward to hearing from you, yours sincerely, yours faithfully",
+        criteria: ["Layout: addresses and date in the right places.", "The greeting and sign-off match (sincerely or faithfully).", "Paragraph 1 states the purpose.", "Tone suits the reader (formal or friendly).", "Each paragraph has one main point.", "I said clearly what I want to happen next."] } },
+    { id: "explanation", name: "Explanation", purpose: "to explain how or why something happens",
+      first: { parts: [["Title: how or why?", "How does…? / Why do…?"], ["What it is", "A … is…"], ["First", "First, …"], ["This makes", "This makes… because…"], ["At the end", "So that is how…"]],
+        words: "first, then, because, so, this makes, when, after",
+        criteria: ["My title is a how or why question.", "I explained in order.", "I used 'because' and 'so'.", "I added a labelled picture.", "My ending sums up."] },
+      second: { parts: [["Title and introduction", "How does…? … is a process that…"], ["Stage 1", "To begin with, …"], ["Stage 2: cause and effect", "As a result, … This causes…"], ["Stage 3", "Consequently, …"], ["Diagram", "(a labelled diagram or flow chart)"], ["Conclusion", "This process is important because…"]],
+        words: "because, therefore, as a result, consequently, this causes, which leads to, when, if",
+        criteria: ["My introduction says what process I'm explaining.", "Stages are in a logical order.", "I used cause-and-effect connectives.", "I used technical words and explained them.", "I wrote in the present tense.", "My diagram matches the writing."] } },
+    { id: "discussion", name: "Discussion (balanced argument)", purpose: "to give both sides fairly, then a view",
+      first: { parts: [["The question", "Should…?"], ["Some people think yes", "Some people think… because…"], ["Other people think no", "Other people think… because…"], ["What I think", "I think… because…"]],
+        words: "some people, other people, but, because, I think, also",
+        criteria: ["I wrote the question.", "I gave a reason for yes.", "I gave a reason for no.", "I said what I think and why."] },
+      second: { parts: [["Introduction: the issue", "Many people disagree about whether… This piece will look at both sides."], ["Arguments for", "Supporters argue that… For example, …"], ["Arguments against", "On the other hand, … Critics point out that…"], ["Conclusion: weigh up and give your view", "Having considered both sides, I believe… because…"]],
+        words: "on the other hand, however, whereas, supporters, critics, it could be argued, having considered, overall",
+        criteria: ["My introduction sets out the issue neutrally.", "I gave at least two points for each side.", "Each point is backed with evidence or an example.", "I used contrast connectives (however, whereas).", "I stayed impersonal until the conclusion.", "My conclusion weighs both sides before giving my view."] } }
+  ];
+  const wfBox = (head, start, n) => box(head, `<p class="hint">${start.replace(/\n/g, "<br>")}</p>${lines(n)}`, "wf-box");
+  const wfTicks = c => `<table class="gx-track"><thead><tr><th>Success criteria</th><th>Me</th><th>Adult</th></tr></thead><tbody>${c.map(x => `<tr><td>${x}</td><td class="gx-cell">☐</td><td class="gx-cell">☐</td></tr>`).join("")}</tbody></table>`;
+  WF.forEach(t => {
+    [["first", "First", "lesson-first-writing-frames", "P2 to P4"], ["second", "Second and Third", "lesson-second-writing-frames", "P5 to S2"]].forEach(([k, lvl, lesson, ages]) => {
+      const f = t[k];
+      add(`paper-frame-${t.id}-${k}`, lesson, `Writing frame (${lvl} level): ${t.name}`,
+        `A one-page frame for ${t.name.toLowerCase()} writing (${t.purpose}), ${ages}: the parts in order with sentence starters, a word bank, and ${f.criteria.length} success criteria to tick before handing in.`, (who, h) => ({
+          pupil: `${h.sheetHead(`Writing frame: ${t.name}`, who)}${lqStrip(`${t.name}: ${t.purpose}`, `${lvl} level`)}
+            <p class="hint">Plan in the boxes, using the starters if they help. Then write it out in full on lined paper. Tick each success criterion when you've checked your writing.</p>
+            ${f.parts.map(([hd, st]) => wfBox(hd, st, f.parts.length > 5 ? 1 : 2)).join("")}
+            <p class="pp-bank"><b>Words to help:</b> ${f.words}</p>
+            ${wfTicks(f.criteria)}`,
+          answers: lookForPage(h, `Writing frame: ${t.name}`, f.criteria.map(c => c.replace(/^I |^My /, m => m === "I " ? "The writer " : "Their ")),
+            `Ask the writer to tick the "Me" column first, then check together. Pick one criterion they didn't meet as the next target, rather than correcting everything. Sentence starters are a support: praise a writer who changes them into their own words.`)
+        }));
+    });
+  });
+  /* ===================== Spot the difference =====================
+     Tutors use spot-the-difference sheets for looking closely, talking and taking turns. These are PopSpell's
+     own: line drawings built from simple shapes (so they print clearly in black and white and can be coloured
+     in), eight scenes at three sizes (5, 7 or 10 differences). A fresh pair of pictures is drawn each print, and
+     the answers page circles every difference on the second picture and says what changed. */
+
+  const SL = `fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+  const SD = `fill="#222"`;
+  const sdPts = (n, r1, r2, rot = -90) => Array.from({ length: n * 2 }, (_, i) => { const a = (rot + i * 180 / n) * Math.PI / 180, r = i % 2 ? r2 : r1; return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`; }).join(" ");
+  const sdRing = (n, r, f) => Array.from({ length: n }, (_, i) => { const a = (i * 360 / n - 90) * Math.PI / 180; return f(r * Math.cos(a), r * Math.sin(a), a); }).join("");
+  const sdFace = (y = 0) => `<circle cx="-4" cy="${y - 3}" r="1.6" ${SD}/><circle cx="4" cy="${y - 3}" r="1.6" ${SD}/><path d="M-4 ${y + 3} Q0 ${y + 7} 4 ${y + 3}" ${SL}/>`;
+  // Each kind: a name, a drawing (p holds the changes, all off in the first picture), and changes it can show.
+  const SPOT = {
+    sun: { n: "sun", d: p => `<circle r="10" ${SL}/>${sdRing(p.few ? 6 : 8, 1, (x, y) => `<line x1="${x * 14}" y1="${y * 14}" x2="${x * 22}" y2="${y * 22}" ${SL}/>`)}${p.face ? sdFace(2) : ""}`, t: [["few", "has fewer rays"], ["face", "has a face"]] },
+    cloud: { n: "cloud", d: p => `<path d="M-20 6 a8 8 0 0 1 2-15 a10 10 0 0 1 18-5 a9 9 0 0 1 16 6 a7 7 0 0 1 -2 14 z" ${SL}/>${p.rain ? `<path d="M-10 12 l-2 6 M0 12 l-2 6 M10 12 l-2 6" ${SL}/>` : ""}${p.bolt ? `<path d="M6 -24 l-4 6 h5 l-4 7" ${SL}/>` : ""}`, t: [["rain", "is raining"], ["bolt", "has a lightning bolt"]] },
+    tree: { n: "tree", d: p => `<rect x="-4" y="6" width="8" height="20" ${SL}/><circle cy="-8" r="16" ${SL}/>${[[-7, -12], [6, -4], [2, -16]].slice(0, p.fewer ? 2 : 3).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" ${SL}/>`).join("")}${p.hole ? `<ellipse cy="15" rx="2" ry="3" ${SD}/>` : ""}`, t: [["fewer", "has one fewer apple"], ["hole", "has a hole in its trunk"]] },
+    flower: { n: "flower", d: p => `<line y1="2" y2="26" ${SL}/>${p.noleaf ? "" : `<path d="M0 18 q8 -8 12 -4 q-6 6 -12 4" ${SL}/>`}<circle cy="-8" r="4" ${SL}/>${sdRing(p.five ? 5 : 6, 9, (x, y) => `<circle cx="${x.toFixed(1)}" cy="${(y - 8).toFixed(1)}" r="4.5" ${SL}/>`)}`, t: [["five", "has fewer petals"], ["noleaf", "has lost its leaf"]] },
+    house: { n: "house", d: p => `<rect x="-18" y="-4" width="36" height="28" ${SL}/><path d="M-22 -4 L0 -24 L22 -4" ${SL}/>${p.nochim ? "" : `<path d="M10 -14 v-8 h6 v13" ${SL}/>`}<rect x="-4" y="10" width="8" height="14" ${SL}/>${p.knob ? `<circle cx="2" cy="17" r="1" ${SD}/>` : ""}<rect x="-14" y="2" width="7" height="6" ${SL}/>${p.onewin ? "" : `<rect x="7" y="2" width="7" height="6" ${SL}/>`}`, t: [["nochim", "has no chimney"], ["onewin", "has a window missing"], ["knob", "has a door knob"]] },
+    fish: { n: "fish", d: p => `<ellipse rx="16" ry="9" ${SL}/><path d="M14 0 L24 -8 L24 8 Z" ${SL}/><circle cx="-9" cy="-2" r="1.6" ${SD}/>${p.nostripe ? "" : `<path d="M-2 -8 q2 8 0 16 M4 -8 q2 8 0 16" ${SL}/>`}${p.bubble ? `<circle cx="-20" cy="-12" r="2" ${SL}/><circle cx="-24" cy="-19" r="3" ${SL}/>` : ""}`, t: [["nostripe", "has lost its stripes"], ["bubble", "is blowing bubbles"]] },
+    star: { n: "star", d: p => `<polygon points="${sdPts(p.six ? 6 : 5, 18, 8)}" ${SL}/>${p.face ? sdFace(2) : ""}`, t: [["six", "has six points"], ["face", "has a face"]] },
+    bird: { n: "bird", d: p => `<ellipse rx="10" ry="7" ${SL}/><circle cx="9" cy="-8" r="5" ${SL}/><circle cx="10" cy="-9" r="1.2" ${SD}/>${p.nobeak ? "" : `<path d="M14 -10 L19 -8 L14 -6" ${SL}/>`}<path d="M-4 -2 q4 6 8 0" ${SL}/><path d="M-10 0 l-6 -4 M-10 2 l-6 2" ${SL}/><path d="M-2 7 v6 M3 7 v6" ${SL}/>${p.worm ? `<path d="M19 -8 q2 4 0 6 q-2 3 1 5" ${SL}/>` : ""}`, t: [["nobeak", "has no beak"], ["worm", "has a worm in its beak"]] },
+    boat: { n: "boat", d: p => `<path d="M-22 6 H22 L15 18 H-15 Z" ${SL}/><line y1="6" y2="-24" ${SL}/><path d="M2 -22 V2 H18 Z" ${SL}/>${p.flag ? `<path d="M0 -24 l-9 3 l9 3" ${SL}/>` : ""}${p.port ? `<circle cx="-8" cy="11" r="2.5" ${SL}/>` : ""}`, t: [["flag", "has a flag on its mast"], ["port", "has a round window"]] },
+    snowman: { n: "snowman", d: p => `<circle cy="12" r="13" ${SL}/><circle cy="-8" r="8" ${SL}/>${[5, 12, 19].slice(0, p.two ? 2 : 3).map(y => `<circle cy="${y}" r="1.6" ${SD}/>`).join("")}<circle cx="-3" cy="-10" r="1.2" ${SD}/><circle cx="3" cy="-10" r="1.2" ${SD}/><path d="M0 -7 l6 1 l-6 1" ${SL}/>${p.nohat ? "" : `<path d="M-9 -15 h18 M-6 -15 v-8 h12 v8" ${SL}/>`}${p.scarf ? `<path d="M-7 -1 h14 M4 -1 v8" ${SL}/>` : ""}`, t: [["two", "has one fewer button"], ["nohat", "has lost its hat"], ["scarf", "has a scarf"]] },
+    rocket: { n: "rocket", d: p => `<path d="M-8 18 V-8 L0 -26 L8 -8 V18 Z" ${SL}/><path d="M-8 8 L-15 20 L-8 18 M8 8 L15 20 L8 18" ${SL}/><circle cy="-6" r="3.5" ${SL}/>${p.onewin ? "" : `<circle cy="5" r="3.5" ${SL}/>`}${p.flame ? `<path d="M-5 20 l2 7 l3 -4 l3 4 l2 -7" ${SL}/>` : ""}`, t: [["onewin", "has one window fewer"], ["flame", "has flames coming out"]] },
+    planet: { n: "planet", d: p => `<circle r="12" ${SL}/>${p.noring ? "" : `<ellipse rx="24" ry="6" ${SL} transform="rotate(-15)"/>`}<circle cx="-4" cy="-4" r="2.5" ${SL}/>${p.moon ? `<circle cx="22" cy="-18" r="4" ${SL}/>` : ""}`, t: [["noring", "has lost its ring"], ["moon", "has a little moon"]] },
+    moon: { n: "moon", d: p => `<path d="M4 -18 A18 18 0 1 0 4 18 A14 14 0 1 1 4 -18 Z" ${SL}/>${p.face ? `<circle cx="-9" cy="-4" r="1.5" ${SD}/><path d="M-12 5 q3 3 6 0" ${SL}/>` : ""}${p.star ? `<polygon points="${sdPts(5, 5, 2)}" ${SL} transform="translate(16 -10)"/>` : ""}`, t: [["face", "has a face"], ["star", "has a star next to it"]] },
+    balloon: { n: "balloon", d: p => `<ellipse cy="-8" rx="12" ry="15" ${SL}/><path d="M-2 7 h4 l-2 3 z" ${SL}/><path d="M0 10 q-4 ${p.short ? "4 0 8" : "6 0 10 q4 4 0 8"}" ${SL}/>${p.stripe ? `<path d="M-11 -4 q11 6 22 0" ${SL}/>` : ""}`, t: [["stripe", "has a stripe"], ["short", "has a shorter string"]] },
+    kite: { n: "kite", d: p => `<path d="M0 -24 L14 -6 L0 12 L-14 -6 Z" ${SL}/>${p.nocross ? "" : `<path d="M0 -24 V12 M-14 -6 H14" ${SL}/>`}<path d="M0 12 q6 6 0 10 q-6 4 2 8" ${SL}/>${[[3, 16], [-2, 22], [2, 28]].slice(0, p.fewer ? 2 : 3).map(([x, y]) => `<path d="M${x - 3} ${y - 2} l6 4 m0 -4 l-6 4" ${SL}/>`).join("")}`, t: [["nocross", "has no cross on it"], ["fewer", "has one fewer bow on its tail"]] },
+    butterfly: { n: "butterfly", d: p => `<line y1="-10" y2="12" ${SL}/><ellipse cx="-10" cy="-5" rx="10" ry="8" ${SL}/><ellipse cx="10" cy="-5" rx="10" ry="8" ${SL}/><ellipse cx="-8" cy="8" rx="7" ry="6" ${SL}/><ellipse cx="8" cy="8" rx="7" ry="6" ${SL}/>${p.nospot ? "" : `<circle cx="-10" cy="-5" r="3" ${SD}/><circle cx="10" cy="-5" r="3" ${SD}/>`}${p.noant ? "" : `<path d="M0 -10 q-3 -8 -7 -10 M0 -10 q3 -8 7 -10" ${SL}/>`}`, t: [["nospot", "has lost its spots"], ["noant", "has no feelers"]] },
+    mushroom: { n: "mushroom", d: p => `<path d="M-18 0 A18 16 0 0 1 18 0 Z" ${SL}/><rect x="-6" y="0" width="12" height="18" ${SL}/>${[[-8, -6], [6, -9], [0, -2]].slice(0, p.fewer ? 1 : 3).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" ${SL}/>`).join("")}${p.door ? `<path d="M-3 18 v-7 a3 3 0 0 1 6 0 v7" ${SL}/>` : ""}`, t: [["fewer", "has fewer spots"], ["door", "has a tiny door"]] },
+    bucket: { n: "bucket", d: p => `<path d="M-14 -8 H14 L10 18 H-10 Z" ${SL}/>${p.nohandle ? "" : `<path d="M-14 -8 Q0 -26 14 -8" ${SL}/>`}${p.stripe ? `<line x1="-12" y1="4" x2="12" y2="4" ${SL}/>` : ""}`, t: [["nohandle", "has no handle"], ["stripe", "has a stripe"]] },
+    shell: { n: "shell", d: p => `<path d="M-18 8 Q0 -30 18 8 Q0 16 -18 8 Z" ${SL}/>${(p.three ? [-8, 0, 8] : [-12, -6, 0, 6, 12]).map(x => `<line x1="0" y1="10" x2="${x}" y2="${-4 - (12 - Math.abs(x)) * 0.6}" ${SL}/>`).join("")}`, t: [["three", "has fewer lines"]] },
+    crab: { n: "crab", d: p => `<ellipse cy="4" rx="14" ry="8" ${SL}/><path d="M-5 -4 v-8 M5 -4 v-8" ${SL}/><circle cx="-5" cy="-13" r="2" ${SD}/><circle cx="5" cy="-13" r="2" ${SD}/><path d="M-14 2 l-6 -6 M-20 -4 a4 4 0 1 1 2 -6" ${SL}/>${p.oneclaw ? "" : `<path d="M14 2 l6 -6 M20 -4 a4 4 0 1 0 -2 -6" ${SL}/>`}<path d="M-10 10 l-6 6 M-4 12 l-3 7 M10 10 l6 6 M4 12 l3 7" ${SL}/>${p.smile ? `<path d="M-4 5 q4 4 8 0" ${SL}/>` : ""}`, t: [["oneclaw", "has lost a claw"], ["smile", "is smiling"]] },
+    castle: { n: "sandcastle", d: p => `<rect x="-18" y="0" width="36" height="22" ${SL}/><path d="M-18 0 v-10 h10 v10 M8 0 v-10 h10 v10 M-5 0 v-16 h10 v16" ${SL}/>${p.noflag ? "" : `<path d="M0 -16 v-10 l7 3 l-7 3" ${SL}/>`}<path d="M-4 22 v-7 a4 4 0 0 1 8 0 v7" ${SL}/>${p.win ? `<rect x="-15" y="4" width="5" height="5" ${SL}/>` : ""}`, t: [["noflag", "has no flag"], ["win", "has a window"]] },
+    umbrella: { n: "umbrella", d: p => `<path d="M-22 -2 A22 20 0 0 1 22 -2 Q16 -6 11 -2 Q5 -6 0 -2 Q-5 -6 -11 -2 Q-16 -6 -22 -2 Z" ${SL}/><path d="M0 -2 V20 q0 4 -4 4 q-3 0 -3 -3" ${SL}/>${p.nostripe ? "" : `<path d="M-11 -2 Q-8 -14 0 -22 M11 -2 Q8 -14 0 -22" ${SL}/>`}${p.ball ? `<circle cy="-24" r="2" ${SD}/>` : ""}`, t: [["nostripe", "has lost its stripes"], ["ball", "has a knob on top"]] },
+    seaweed: { n: "seaweed", d: p => `<path d="M0 26 q-6 -10 0 -20 q6 -10 0 -20 q-4 -6 0 -10" ${SL}/>${[[0, 14, -1], [0, 4, 1], [0, -8, -1], [0, -18, 1]].slice(0, p.fewer ? 2 : 4).map(([x, y, s]) => `<path d="M${x} ${y} q${s * 8} -2 ${s * 10} -8 q${s * -6} 0 ${s * -10} 8" ${SL}/>`).join("")}`, t: [["fewer", "has fewer leaves"]] },
+    chicken: { n: "hen", d: p => `<ellipse cy="4" rx="12" ry="10" ${SL}/><circle cx="10" cy="-8" r="6" ${SL}/><circle cx="11" cy="-9" r="1.2" ${SD}/><path d="M15 -9 l5 2 l-5 2" ${SL}/>${p.nocomb ? "" : `<path d="M6 -13 q1 -5 3 -1 q1 -5 3 -1 q2 -4 3 0" ${SL}/>`}<path d="M-12 0 l-6 -6 l2 8" ${SL}/><path d="M-3 13 v7 M3 13 v7" ${SL}/>${p.egg ? `<ellipse cx="-16" cy="16" rx="3.5" ry="5" ${SL}/>` : ""}`, t: [["nocomb", "has no comb on its head"], ["egg", "has laid an egg"]] },
+    pig: { n: "pig", d: p => `<circle r="14" ${SL}/><path d="M-12 -8 l-2 -10 l9 5" ${SL}/>${p.noear ? "" : `<path d="M12 -8 l2 -10 l-9 5" ${SL}/>`}<ellipse cy="4" rx="6" ry="4" ${SL}/><circle cx="-2" cy="4" r="1" ${SD}/><circle cx="2" cy="4" r="1" ${SD}/><circle cx="-5" cy="-4" r="1.5" ${SD}/><circle cx="5" cy="-4" r="1.5" ${SD}/>${p.smile ? `<path d="M-5 10 q5 4 10 0" ${SL}/>` : ""}`, t: [["noear", "has lost an ear"], ["smile", "is smiling"]] },
+    sheep: { n: "sheep", d: p => `<path d="M-16 4 a6 6 0 0 1 2 -12 a7 7 0 0 1 12 -4 a7 7 0 0 1 12 2 a6 6 0 0 1 4 12 a6 6 0 0 1 -8 6 h-16 a6 6 0 0 1 -6 -4 z" ${SL}/><ellipse cx="18" cy="-4" rx="5" ry="7" ${SL}/><circle cx="19" cy="-6" r="1.2" ${SD}/><path d="M-10 8 v10 M-3 8 v10 M4 8 v10 M10 8 v10" ${SL}/>${p.bell ? `<circle cx="17" cy="6" r="2.5" ${SL}/>` : ""}${p.tail ? `<circle cx="-20" cy="-2" r="2.5" ${SL}/>` : ""}`, t: [["bell", "has a bell"], ["tail", "has a tail"]] },
+    car: { n: "car", d: p => `<path d="M-24 10 V0 L-14 -2 L-8 -12 H10 L16 -2 L24 0 V10 Z" ${SL}/><circle cx="-13" cy="11" r="5" ${SL}/><circle cx="13" cy="11" r="5" ${SL}/>${p.nodiv ? "" : `<line x1="1" y1="-12" x2="1" y2="-2" ${SL}/>`}${p.light ? `<circle cx="21" cy="3" r="2" ${SL}/>` : ""}`, t: [["nodiv", "has one big window instead of two"], ["light", "has a headlight"]] },
+    lamp: { n: "lamp post", d: p => `<line y1="26" y2="-14" ${SL}/><path d="M-7 -14 h14 l-3 -8 h-8 z" ${SL}/><path d="M-6 26 h12" ${SL}/>${p.lit ? `<path d="M-10 -10 l-4 3 M10 -10 l4 3 M0 -8 v4" ${SL}/>` : ""}${p.sign ? `<rect x="0" y="0" width="10" height="7" ${SL}/>` : ""}`, t: [["lit", "is lit up"], ["sign", "has a sign on it"]] },
+    lights: { n: "traffic light", d: p => `<rect x="-7" y="-24" width="14" height="32" rx="3" ${SL}/><line y1="8" y2="26" ${SL}/><circle cy="-17" r="3.5" ${p.top ? SD : SL}/>${p.nomid ? "" : `<circle cy="-8" r="3.5" ${SL}/>`}<circle cy="1" r="3.5" ${SL}/>`, t: [["top", "has its top light on"], ["nomid", "has a light missing"]] },
+    present: { n: "present", d: p => `<rect x="-14" y="-6" width="28" height="24" ${SL}/><path d="M0 -6 V18 M-14 4 H14" ${SL}/>${p.nobow ? "" : `<path d="M0 -6 q-10 -10 -8 -2 z M0 -6 q10 -10 8 -2 z" ${SL}/>`}${p.tag ? `<rect x="6" y="8" width="6" height="5" ${SL}/>` : ""}`, t: [["nobow", "has lost its bow"], ["tag", "has a label"]] },
+    snowflake: { n: "snowflake", d: p => sdRing(6, 18, (x, y) => `<line x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" ${SL}/>${p.nobranch ? "" : `<line x1="${(x * 0.55).toFixed(1)}" y1="${(y * 0.55).toFixed(1)}" x2="${(x * 0.55 + y * 0.25).toFixed(1)}" y2="${(y * 0.55 - x * 0.25).toFixed(1)}" ${SL}/>`}`) + (p.dot ? `<circle r="3" ${SL}/>` : ""), t: [["nobranch", "has lost its little branches"], ["dot", "has a circle in the middle"]] },
+    apple: { n: "apple", d: p => `<path d="M0 -8 C-8 -16 -20 -10 -18 2 C-16 14 -6 20 0 16 C6 20 16 14 18 2 C20 -10 8 -16 0 -8 Z" ${SL}/><path d="M0 -8 q1 -6 4 -10" ${SL}/>${p.noleaf ? "" : `<path d="M3 -14 q8 -6 10 0 q-6 4 -10 0" ${SL}/>`}${p.bite ? `<path d="M14 -6 a4 4 0 0 0 2 8 a4 4 0 0 0 1 6" ${SL}/>` : ""}`, t: [["noleaf", "has no leaf"], ["bite", "has a bite out of it"]] },
+    alien: { n: "alien", d: p => `<circle r="13" ${SL}/><path d="M-6 -12 l-4 -10 M6 -12 l4 -10" ${SL}/><circle cx="-10" cy="-23" r="2" ${SL}/>${p.oneant ? "" : `<circle cx="10" cy="-23" r="2" ${SL}/>`}${(p.two ? [-5, 5] : [-6, 0, 6]).map(x => `<circle cx="${x}" cy="-3" r="2.2" ${SD}/>`).join("")}<path d="M-5 6 q5 4 10 0" ${SL}/>`, t: [["two", "has two eyes instead of three"], ["oneant", "has lost the ball on an antenna"]] },
+    ball: { n: "ball", d: p => `<circle r="12" ${SL}/><path d="M-12 0 q12 ${p.flat ? "0" : "8"} 24 0" ${SL}/>${p.star ? `<polygon points="${sdPts(5, 5, 2)}" ${SL} transform="translate(0 -5)"/>` : ""}`, t: [["star", "has a star on it"], ["flat", "has a straight line instead of a curved one"]] }
+  };
+  const SPOT_SKY = new Set(["sun", "cloud", "bird", "kite", "balloon", "moon", "star", "planet", "snowflake"]);
+  const SPOT_THEMES = [
+    { id: "garden", title: "In the garden", ground: "land", kinds: ["sun", "cloud", "tree", "flower", "butterfly", "mushroom", "house", "bird", "apple", "flower"] },
+    { id: "beach", title: "At the beach", ground: "sand", kinds: ["sun", "cloud", "boat", "bucket", "shell", "crab", "castle", "umbrella", "bird", "ball"] },
+    { id: "space", title: "In space", ground: "space", kinds: ["planet", "moon", "star", "rocket", "alien", "star", "planet", "rocket"] },
+    { id: "farm", title: "On the farm", ground: "land", kinds: ["house", "tree", "chicken", "pig", "sheep", "sun", "flower", "car", "cloud"] },
+    { id: "town", title: "In town", ground: "land", kinds: ["house", "car", "lamp", "lights", "tree", "bird", "cloud", "balloon", "house"] },
+    { id: "sea", title: "Under the sea", ground: "sea", kinds: ["fish", "shell", "crab", "seaweed", "star", "fish", "seaweed"] },
+    { id: "winter", title: "A winter's night", ground: "land", kinds: ["snowman", "snowflake", "tree", "house", "present", "star", "moon", "bird", "snowman"] },
+    { id: "park", title: "In the park", ground: "land", kinds: ["kite", "balloon", "ball", "tree", "flower", "bird", "sun", "cloud", "butterfly", "umbrella"] }
+  ];
+  const SPOT_SIZES = [
+    { k: 5, cols: 4, rows: 2, missing: true, lesson: "lesson-early-spot-the-difference", label: "5 differences" },
+    { k: 7, cols: 4, rows: 3, missing: true, lesson: "lesson-first-spot-the-difference", label: "7 differences" },
+    { k: 10, cols: 5, rows: 3, missing: false, lesson: "lesson-first-spot-the-difference", label: "10 differences" }
+  ];
+  const SPOT_GROUND = {
+    land: `<path d="M0 198 H400" ${SL}/><path d="M30 198 l3 -5 l3 5 M120 198 l3 -5 l3 5 M250 198 l3 -5 l3 5 M350 198 l3 -5 l3 5" ${SL}/>`,
+    sand: `<path d="M0 196 q25 -6 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" ${SL}/>`,
+    sea: `<path d="M0 200 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" ${SL}/><path d="M0 6 q20 6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" ${SL}/>`,
+    space: [[18, 30], [380, 22], [200, 8], [90, 200], [310, 196], [12, 150], [392, 120]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.5" ${SD}/>`).join("")
+  };
+  const spotScene = (theme, size) => {
+    const n = size.cols * size.rows, cw = 400 / size.cols, top = theme.ground === "sea" ? 16 : 6, chh = (190 - top) / size.rows;
+    const s = Math.min(cw, chh) / 60 * 1.1;
+    // Things in the sky (sun, clouds, birds, kites) go in the top row; the rest stand lower down
+    const kinds = Array.from({ length: n }, () => pick(theme.kinds)).sort((a, b) => SPOT_SKY.has(b) - SPOT_SKY.has(a));
+    const objs = kinds.map((kind, i) => ({ kind, x: cw * (i % size.cols + 0.5) + rand(13) - 6, y: top + chh * (Math.floor(i / size.cols) + 0.5) + rand(7) - 3 }));
+    // Choose which objects change, and how: a toggle of its own, or (on the smaller sizes) missing altogether
+    const changed = shuffle(objs.map((_, i) => i)).slice(0, size.k).sort((a, b) => a - b);
+    changed.forEach(i => { const o = objs[i], opts = SPOT[o.kind].t.map(t => t[0]).concat(size.missing ? ["missing"] : []); o.change = pick(opts); });
+    const count = k => objs.filter(o => o.kind === k).length;
+    const draw = (two, marks) => `<svg class="sd-pic" viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="398" height="208" rx="6" ${SL}/>${SPOT_GROUND[theme.ground]}${objs.map(o => {
+      if (two && o.change === "missing") return "";
+      const p = two && o.change ? { [o.change]: true } : {};
+      return `<g transform="translate(${o.x.toFixed(1)} ${o.y.toFixed(1)}) scale(${s.toFixed(3)})">${SPOT[o.kind].d(p)}</g>`;
+    }).join("")}${marks ? changed.map((i, j) => { const o = objs[i]; return `<circle cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" r="${(30 * s).toFixed(1)}" fill="none" stroke="#d22" stroke-width="2.5" stroke-dasharray="5 3"/><text x="${(o.x + 22 * s).toFixed(1)}" y="${(o.y - 22 * s).toFixed(1)}" font-size="13" font-weight="700" fill="#d22">${j + 1}</text>`; }).join("") : ""}</svg>`;
+    const say = changed.map(i => { const o = objs[i], nm = SPOT[o.kind].n, who = count(o.kind) > 1 ? `One ${nm}` : `The ${nm}`;
+      return o.change === "missing" ? `${who} is missing.` : `${who} ${SPOT[o.kind].t.find(t => t[0] === o.change)[1]}.`; });
+    return { one: draw(false), two: draw(true), marked: draw(true, true), say };
+  };
+  SPOT_THEMES.forEach(theme => SPOT_SIZES.forEach(size => {
+    add(`paper-spot-${theme.id}-${size.k}`, size.lesson, `Spot the difference (${size.k}): ${theme.title}`,
+      `Two line drawings of ${theme.title.toLowerCase().replace(/^(in|at|on|under) /, "")}: find the ${size.k} differences and circle them. New pictures each time you print; the answers page circles each one. They can be coloured in afterwards.`, (who, h) => {
+        const sc = spotScene(theme, size);
+        return {
+          pupil: `${h.sheetHead(`Spot the difference: ${theme.title}`, who)}
+            <p class="sd-say"><b>Find ${size.k} differences.</b> Look at the top picture, then the bottom one. Circle each difference on the bottom picture and colour a star.</p>
+            ${sc.one}${sc.two}
+            <p class="sd-found">Found: ${"☆ ".repeat(size.k)}</p>`,
+          answers: answersPage(h, `Spot the difference: ${theme.title}`, sc.say, `Talk about each one: "What's different about the…?" Naming the change ("it has fewer petals") builds vocabulary as well as looking skills.`, sc.marked)
+        };
+      });
+  }));
+  /* ===================== Real past papers: tracker and topic map =====================
+     PopSpell never prints, copies or rewords an exam board's papers or mark schemes: they belong to the
+     boards. What it adds is the part around them. For each stage of each climb, one sheet: how to sit a real
+     past paper well, a question-by-question tracker, and a map from the paper's topics to the climb's own
+     numbered topics (each has a ready lesson and an Exam practice sheet), so every lost
+     mark turns into a next step. The back tells the adult where the free papers come from and how to read
+     that board's mark scheme. It's attached to each stage's mini papers lesson, so it's in the packs. */
+
+  const PP_MATHS_BANK = { gcse: () => window.PopActivities && window.PopActivities.examBank, sqa: () => window.PopActivities && window.PopActivities.examBank.scotland,
+    alevel: () => window.PopActivities && window.PopActivities.examBank.alevel, apps: () => window.PopActivities && window.PopActivities.examBank.apps };
+  const PP_WHERE = {
+    england: "From the school or college first: ask the subject teacher or the exams officer. They can print papers for you, including the most recent ones, which the boards often keep for teachers only for a year. The exam board itself publishes past papers, mark schemes and examiner reports free of charge, and a library can print them. Check which board and tier (or paper) the pupil is entered for: it's on their timetable or exam entry, or the school can tell you.",
+    scotland: "From the school or college first: ask the subject teacher, who can also tell you which past papers the class has already used. SQA publishes past papers and their marking instructions free of charge, and a library can print them. SQA also publishes a course report each year saying where candidates lost marks: it's worth reading with the paper."
+  };
+  const PP_COURSES = [
+    { id: "gcse", nation: "england", subject: "maths", exam: "GCSE Mathematics", boards: "AQA, Edexcel (Pearson) or OCR", rows: 30,
+      stages: [["s1", "lesson-england-gcse-climb-mini-papers", "Foundation tier"], ["s2", "lesson-england-gcse-climb-g5-mini-papers", "Foundation (late questions) or Higher (early questions)"], ["s3", "lesson-england-gcse-climb-gh-mini-papers", "Higher tier"]],
+      scheme: ["<b>M</b> marks are for a correct method, even if the answer is wrong. <b>A</b> marks are for an accurate answer, and usually need the M mark first. <b>B</b> marks stand alone.",
+        "<b>ft</b> (follow through): a later mark can still be earned using an earlier wrong answer. <b>oe</b>: or equivalent. <b>cao</b>: correct answer only.",
+        "A right answer with no working can lose marks when the question says \"show\" or \"you must show your working\"."] },
+    { id: "sqa", nation: "scotland", subject: "maths", exam: "SQA Mathematics", boards: "SQA", rows: 30,
+      stages: [["s1", "lesson-sqa-climb-n4-mini-papers", "National 5 papers (questions worth 1 or 2 marks), as National 4 has no final exam"], ["s2", "lesson-sqa-climb-n5-mini-papers", "National 5"], ["s3", "lesson-sqa-climb-nh-mini-papers", "Higher"], ["s4", "lesson-sqa-climb-ah-mini-papers", "Advanced Higher"]],
+      scheme: ["Each mark is a numbered bullet (•1, •2, •3) for one step, given in order in the marking instructions' \"expected response\".",
+        "The general marking principles at the start come first: they say when an error can be followed through, and what a bullet needs.",
+        "A correct answer with no working may get no marks: the working is where the marks are."] },
+    { id: "alevel", nation: "england", subject: "maths", exam: "A level Mathematics", boards: "AQA, Edexcel (Pearson), OCR A or OCR B (MEI)", rows: 20,
+      stages: [["s1", "lesson-alevel-maths-y12-mini-papers", "AS papers, or the A level questions on Year 12 content"], ["s2", "lesson-alevel-maths-y13-mini-papers", "A level papers"]],
+      scheme: ["<b>M</b> method, <b>A</b> accuracy (needs the M), <b>B</b> independent marks; <b>dM</b> is a method mark that needs an earlier M.",
+        "In a \"show that\" question the answer is given: every step must be written, or the marks are lost.",
+        "<b>ft</b>, <b>oe</b> and <b>cao</b> mean follow through, or equivalent and correct answer only."] },
+    { id: "apps", nation: "scotland", subject: "maths", exam: "SQA Applications of Mathematics", boards: "SQA", rows: 20,
+      stages: [["s1", "lesson-sqa-apps-ap5-mini-papers", "National 5 Applications of Mathematics"], ["s2", "lesson-sqa-apps-aph-mini-papers", "Higher Applications of Mathematics"]],
+      scheme: ["Each mark is a numbered bullet (•1, •2) for one step. Questions that ask for a decision need a reason that comes from the working.",
+        "The general marking principles at the start of the marking instructions say when an error can be followed through.",
+        "Rounding: round only at the end, to what the question asks; money to the nearest penny."] },
+    { id: "gcse", nation: "england", subject: "english", exam: "GCSE English Language", boards: "AQA, Edexcel (Pearson), OCR or Eduqas", rows: 10,
+      stages: [["s1", "lesson-england-english-climb-e1-mini-papers"], ["s2", "lesson-england-english-climb-e2-mini-papers"], ["s3", "lesson-england-english-climb-e3-mini-papers"]],
+      scheme: ["Short questions (finding information) get a mark a correct point.", "Longer questions are marked in <b>levels</b>: read each level's description, find the one that fits best overall, then decide whether it's at the top or bottom of that level.",
+        "The examiner report shows real answers at each level: compare the pupil's answer with them."] },
+    { id: "sqa", nation: "scotland", subject: "english", exam: "SQA English", boards: "SQA", rows: 12,
+      stages: [["s1", "lesson-sqa-english-climb-en4-mini-papers", "National 5 Reading for Understanding, Analysis and Evaluation (as practice; National 4 has no final exam)"], ["s2", "lesson-sqa-english-climb-en5-mini-papers"], ["s3", "lesson-sqa-english-climb-enh-mini-papers"], ["s4", "lesson-sqa-english-climb-enah-mini-papers"]],
+      scheme: ["Reading questions: marks go to each point that is explained, usually 1 mark for a reference with a basic comment and 2 for a more detailed one; quoting alone gets nothing.",
+        "Essays and the Scottish text question are marked in bands: find the band that fits best overall, then the mark within it.",
+        "The marking instructions list possible answers: other answers that make the same point also get the marks."] },
+    { id: "alevel", nation: "england", subject: "english", exam: "A level English Literature or Language", boards: "AQA, Edexcel (Pearson), OCR or Eduqas", rows: 8,
+      stages: [["s1", "lesson-alevel-english-al1-mini-papers", "A level English Literature"], ["s2", "lesson-alevel-english-al2-mini-papers", "A level English Language"]],
+      scheme: ["Answers are marked in levels against the assessment objectives (AO1 to AO5): the mark scheme says which ones each question tests, and how much each counts.",
+        "Find the level that fits best overall, then the mark within it. An answer that ignores one of the question's objectives is capped.",
+        "Set texts differ by board: use only questions on the texts the pupil has studied, or the unseen sections."] }
+  ];
+  // The climb's topics for a stage, as "n. title" (and where they come up in the exam, for English)
+  const ppTopics = (c, i) => {
+    if (c.subject === "maths") { const b = PP_MATHS_BANK[c.id](); const st = b && b.STAGES[i]; return st ? st.topics.map(t => ({ n: t.n, title: t.title, where: "" })) : []; }
+    const E = window.PopEnglishExam, course = E && E.course(c.id), st = course && E.stagesOf(course)[i];
+    return st ? st.topics.map(t => ({ n: t.n, title: t.title, where: t.paper || "" })) : [];
+  };
+  const ppStage = (c, i) => {
+    if (c.subject === "maths") { const b = PP_MATHS_BANK[c.id](); return b && b.STAGES[i] ? b.STAGES[i].title : `Stage ${i + 1}`; }
+    const E = window.PopEnglishExam, course = E && E.course(c.id), st = course && E.stagesOf(course)[i];
+    return st ? st.title : `Stage ${i + 1}`;
+  };
+  const ppRows = (n, from) => Array.from({ length: n }, (_, k) => `<tr><td>${from + k}</td><td></td><td></td><td></td></tr>`).join("");
+  const PP_NAMES = { "gcse maths": "GCSE maths climb", "sqa maths": "SQA maths climb", "alevel maths": "A level maths climb", "apps maths": "SQA Applications of Maths climb",
+    "gcse english": "GCSE English climb", "sqa english": "SQA English climb", "alevel english": "A level English climb" };
+  PP_COURSES.forEach(c => c.stages.forEach(([sk, lesson, papers], i) => {
+    const climb = PP_NAMES[`${c.id} ${c.subject}`];
+    add(`paper-pp-${c.subject}-${c.id}-${sk}`, lesson, `Real past papers (${climb}, stage ${i + 1}): tracker and topic map`,
+      `For a real ${c.exam} past paper from ${c.boards}: how to sit it, a question-by-question tracker, and a map from its topics to the climb's numbered topics, so every lost mark becomes a next step. The back says where the free papers come from and how to read the mark scheme. PopSpell doesn't reprint any board's papers.`, (who, h) => {
+        const topics = ppTopics(c, i), half = Math.ceil(c.rows / 2), eng = c.subject === "english";
+        return {
+          pupil: `${h.sheetHead("Real past paper: tracker", who)}<p class="qd-strip gx-strip"><b>Real past paper</b><span>${exEsc(ppStage(c, i))}</span><span>Paper: ${blank(6)} Year: ${blank(3)}</span></p>
+            <p class="pp-pp-how"><b>1.</b> Sit it like the real thing: a clear table, a timer, no help. <b>2.</b> When time's up, draw a line, then finish in a different colour, so you can see what extra time would have given. <b>3.</b> Mark it with the board's mark scheme, strictly. <b>4.</b> Fill in the tracker: for every question, write the topic number from the map. <b>5.</b> Circle the topics where you lost the most marks: they're your next steps.</p>
+            <div class="${eng ? "" : "pp-pp-two"}">${(eng ? [[c.rows, 1]] : [[half, 1], [c.rows - half, half + 1]]).map(([n, from]) => `<table class="gx-track pp-pp-t"><thead><tr><th>Q</th><th>Marks</th><th>I got</th><th>Topic no.</th></tr></thead><tbody>${ppRows(n, from)}</tbody></table>`).join("")}</div>
+            <p class="pp-pp-total"><b>Total:</b> ${blank(3)} out of ${blank(3)} = ${blank(3)} %${eng ? "" : `&nbsp;&nbsp; <b>Before the line:</b> ${blank(3)} &nbsp; <b>After:</b> ${blank(3)}`}</p>
+            ${box("Topic map: the climb's topics for this stage", `<ol class="pp-pp-map${eng ? "" : " pp-pp-cols"}">${topics.map(t => `<li value="${t.n}">${exEsc(t.title)}${t.where ? ` <span class="gx-how">(${exEsc(t.where)})</span>` : ""}</li>`).join("")}</ol>`)}
+            ${box("My next steps", `<p>The topics where I lost most marks: ${blank(3)} ${blank(3)} ${blank(3)}. For each: the climb's lesson for that topic, then its Exam practice sheet. Then try another paper.</p>`)}`,
+          answers: lookForPage(h, `Real past papers: ${c.exam}`, [
+            `<b>Which papers:</b> ${papers || c.exam}, from ${c.boards}. Use the papers for the board and level the pupil will sit.`,
+            `<b>Where to get them, free:</b> ${PP_WHERE[c.nation]}`,
+            `<b>Timing:</b> the stage's "what the exam expects" sheet in the climb gives the papers, times and marks. Sit the whole paper timed when you can; when you can't, do one section timed, at the same pace.`,
+            `<b>Reading the mark scheme:</b> ${c.scheme.join(" ")}`,
+            `<b>Filling in the map:</b> some questions use two topics: write both numbers. A question on something not in the map is from another stage: look it up in the climb's other stages.`,
+            `<b>How often:</b> one paper every two or three weeks is plenty in the months before the exam. In between, work on the circled topics: that's where the marks come from.`],
+            `PopSpell doesn't reprint or reword any board's papers or mark schemes: they belong to the boards, and the board's own versions are the ones to trust. This sheet is the tracker and map that go with them.`)
+        };
+      });
+  }));
   return { sheets, get: id => sheets[id] || null, forLesson: lessonId => Object.values(sheets).filter(s => s.lesson === lessonId) };
 })();

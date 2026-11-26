@@ -101,8 +101,8 @@ console.log(`Pupil app: ${ids.length} activities, ${screens} question screens ch
 // 2. The self-guided page: every bank question, shown and marked
 if (PART !== "app" && fs.existsSync(path.join(ROOT, "english-climb.html"))) {
   let n = 0;
-  for (const course of ["gcse", "sqa"]) {
-    await page.goto(`${base}/english-climb.html${course === "sqa" ? "?course=sqa" : ""}`);
+  for (const course of ["gcse", "sqa", "alevel"]) {
+    await page.goto(`${base}/english-climb.html${course === "gcse" ? "" : `?course=${course}`}`);
     const ok = await page.evaluate(c => Boolean(window.PopEnglishExam.course(c)), course);
     if (!ok) continue;
     const all = await page.evaluate(c => window.PopEnglishExam.stagesOf(window.PopEnglishExam.course(c)).flatMap(st => st.topics.flatMap(t => t.items.map((it, i) => `${t.id}:${i}`))), course);

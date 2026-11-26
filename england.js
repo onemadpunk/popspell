@@ -1,5 +1,5 @@
 /* England: the national curriculum (Years 1 to 11) and the EYFS Early Learning Goals (Reception),
-   for pupils whose year group is an English one (Reception, Year 1 … Year 11).
+   for pupils whose year group is an English one (Reception, Year 1 … Year 13; Years 12 and 13 follow the A level climbs).
 
    England's curriculum has no codes like Scotland's: it's set out by year and domain, with statutory
    statements. PopSpell shows the year, the domain and the official wording. The statements below are
@@ -1009,6 +1009,18 @@
     "lesson-england-english-climb-e3-mini-papers":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
     "lesson-england-english-climb-e3-writing":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
     "lesson-england-english-climb-my-next-step":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-first-comprehension-ladder":["en-y2-reading-comprehension-17","en-y1-reading-comprehension-12","en-y2-reading-comprehension-15"],
+    "lesson-second-comprehension-ladder":["en-y5-6-reading-comprehension-13","en-y5-6-reading-comprehension-14","en-y3-4-reading-comprehension-17"],
+    "lesson-third-comprehension-ladder":["en-y7-9-reading-11","en-y7-9-reading-15","en-y7-9-reading-8"],
+    "lesson-first-reading-test":["en-y3-4-reading-comprehension-17","en-y2-reading-comprehension-17"],
+    "lesson-second-reading-tests":["en-y5-6-reading-comprehension-13","en-y5-6-reading-comprehension-19","en-y5-6-reading-comprehension-18","en-y3-4-reading-comprehension-17"],
+    "lesson-second-novel-task-map":["en-y5-6-reading-comprehension-2","en-y5-6-reading-comprehension-5","en-y5-6-reading-comprehension-13"],
+    "lesson-first-writing-frames":["en-y2-writing-composition-3","en-y2-writing-composition-5","en-y2-writing-composition-12"],
+    "lesson-second-writing-frames":["en-y5-6-writing-composition-2","en-y5-6-writing-composition-10","en-y3-4-writing-composition-8","en-y3-4-writing-composition-6"],
+    "lesson-third-writing-frames":["en-y7-9-writing-2","en-y7-9-writing-8","en-y7-9-writing-9"],
+    "lesson-early-spot-the-difference":["en-yR-speaking-1","en-yR-listening-attention-and-understanding-3"],
+    "lesson-first-spot-the-difference":["en-y1-6-spoken-language-3","en-y1-6-spoken-language-1"],
+    "lesson-england-english-climb-spoken":["en-y10-11-spoken-english-1","en-y10-11-spoken-english-2","en-y10-11-spoken-english-5","en-y10-11-spoken-english-6"],
     "g-hopper-short":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-digraphs":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-long-a":["en-y1-reading-word-reading-2","en-y1-writing-transcription-spelling-2"],
@@ -1453,7 +1465,9 @@
     ["Year 3", "3", "Key stage 2", "7–8"], ["Year 4", "4", "Key stage 2", "8–9"],
     ["Year 5", "5", "Key stage 2", "9–10"], ["Year 6", "6", "Key stage 2", "10–11"],
     ["Year 7", "7", "Key stage 3", "11–12"], ["Year 8", "8", "Key stage 3", "12–13"], ["Year 9", "9", "Key stage 3", "13–14"],
-    ["Year 10", "10", "Key stage 4", "14–15"], ["Year 11", "11", "Key stage 4", "15–16"]
+    ["Year 10", "10", "Key stage 4", "14–15"], ["Year 11", "11", "Key stage 4", "15–16"],
+    // Sixth form: no national curriculum, so PopSpell uses the A level subject content (A level climbs)
+    ["Year 12", "12", "Key stage 5 (sixth form)", "16–17"], ["Year 13", "13", "Key stage 5 (sixth form)", "17–18"]
   ];
   const BY_NAME = Object.fromEntries(YEARS.map(y => [y[0], y]));
   const isEngland = yearGroup => Boolean(BY_NAME[yearGroup]);
@@ -1465,6 +1479,7 @@
     : key.includes("-") ? `Years ${key.replace("-", "–")}` : `Year ${key}`);
   const rangeLabel = (lo, hi) => {
     const one = n => (n === 0 ? "Reception" : `Year ${n}`);
+    if (lo >= 12) return "Sixth form (A level)";
     if (lo >= 10) return "Key stage 4";
     if (lo >= 7) return hi >= 10 ? "Key stages 3 and 4" : "Key stage 3";
     return lo === hi ? one(lo) : lo === 0 ? `Reception to Year ${hi}` : hi >= 7 ? `${one(lo)} to key stage ${hi >= 10 ? 4 : 3}` : `Years ${lo}–${hi}`;
@@ -1538,6 +1553,8 @@
   // { lo, hi, label, strand, domain, statements } — statements empty when England's primary
   // curriculum has nothing matching (probability, for example, starts in key stage 3).
   function forWork(id) {
+    // A level work (Years 12 and 13) follows the DfE's A level subject content, not the national curriculum
+    if (aLevel(id)) return { lo: 12, hi: 13, label: /(^|-)y12-/.test(id) ? "A level (Year 12)" : /(^|-)y13-/.test(id) ? "A level (Year 13)" : /(^|-)al1-/.test(id) ? "A level English Literature" : /(^|-)al2-/.test(id) ? "A level English Language" : "A level (Years 12 and 13)", strand: "", domain: "A level subject content", statements: [] };
     const ids = idsFor(id);
     if (!ids) return null;
     const statements = ids.map(i => byId[i]).filter(Boolean);
@@ -1556,6 +1573,7 @@
     return { lo, hi, label: lesson(id) ? rangeLabel(lo, hi) : yearLabel(main.year), strand: strandOf(main.domain),
       domain: domainLabel(main.domain), statements };
   }
+  const aLevel = id => /^(lesson-alevel-|paper-al-|y1[23]-|paper-ex-(write-)?al[12]-|paper-ex-alevel-|al[12]-)/.test(String(id));
   const lesson = id => Boolean(window.PopLessons && window.PopLessons.get(id));
   const climb = id => /^(gf-|g5-|gh-|paper-gx-|lesson-england-gcse-climb-|e[123]-|lit-|paper-ex-|lesson-england-english-climb-)/.test(String(id));
   // The English climb's ids name their stage: e1- (grade 1 to 3), e2- (4 and 5), e3- (6 to 9), lit- (Literature)
@@ -1587,7 +1605,7 @@
   }
 
   // Library bands: the national curriculum's own groupings (English is set out for Years 3–4 and 5–6 together)
-  const BANDS = [["Reception", 0, 0], ["Year 1", 1, 1], ["Year 2", 2, 2], ["Years 3–4", 3, 4], ["Years 5–6", 5, 6], ["Key stage 3", 7, 9], ["Key stage 4", 10, 11]];
+  const BANDS = [["Reception", 0, 0], ["Year 1", 1, 1], ["Year 2", 2, 2], ["Years 3–4", 3, 4], ["Years 5–6", 5, 6], ["Key stage 3", 7, 9], ["Key stage 4", 10, 11], ["Sixth form (A level)", 12, 13]];
   const bandOf = work => (work && work.lo !== null ? (BANDS.find(([, lo, hi]) => work.lo >= lo && work.lo <= hi) || [""])[0] : "");
 
   window.PopEngland = {

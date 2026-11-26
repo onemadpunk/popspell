@@ -8,7 +8,7 @@ import { runInNewContext } from "node:vm";
 const read = f => readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
 const page = { PopSpell: { LISTS: {} }, PASSAGES: [], STORIES: [] };
 page.window = page;
-runInNewContext(["words.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/bank.js", "activities.js", "lessons.js", "paper-sheets.js"].map(read).join("\n"), page);
+runInNewContext(["words.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/alevel.js", "exam-english/bank.js", "activities.js", "lessons.js", "paper-sheets.js"].map(read).join("\n"), page);
 const A = page.PopActivities, L = page.PopLessons, P = page.PopPaper, X = page.PopEnglishExam, C = X.course("gcse");
 const kit = { sheetHead: t => `<h1>${t}</h1>`, brandHead: t => `<h1>${t}</h1>`, handwritingRow: () => "", esc: x => String(x), phonicsWords: () => [] };
 const topics = X.stagesOf(C).flatMap(st => st.topics);
@@ -116,11 +116,61 @@ test("SQA: folio tasks, mini papers and every sheet build", () => {
     if (p.ref) assert.ok(X.topic(p.ref) && X.topic(p.ref).written.marks > 0, `${m.id}: ${p.ref}`);
     else assert.ok(p.q && p.marks > 0 && p.look, `${m.id}: ${p.q}`);
   }
-  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-"));
+  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-") && !s.id.startsWith("paper-pp-")) // the past paper trackers are tested in past-papers.test.mjs;
   assert.equal(ex.length, 32 + 4 * 3 + 8 + 8 + 2);
   for (const s of ex) for (let i = 0; i < 3; i++) {
     const b = s.build("Pupil", kit);
     assert.ok(b.pupil && b.answers && !/undefined|NaN/.test(b.pupil + b.answers), s.id);
   }
   for (const st of S.STAGES) assert.equal(X.check(st.key).length, st.topics.length * (st.n === 1 ? 2 : 1));
+});
+
+// England's A level climb: Literature and Language, one stage each (exam-english/alevel.js, sheets/19-alevel-english.js)
+const AL = X.course("alevel"), aTopics = X.stagesOf(AL).flatMap(st => st.topics);
+
+test("A level: two stages of eight topics, each with online practice, a lesson and an exam sheet, in its own Library area", () => {
+  assert.equal(AL.STAGES.map(s => s.topics.length).join(), "8,8");
+  const area = A.AREAS.find(a => a.id === "english-exam-alevel");
+  assert.ok(area && area.assignedOnly && area.england);
+  for (const t of aTopics) {
+    assert.ok(A.get(t.id) && A.get(t.id).area === "english-exam-alevel" && A.get(t.id).level === "Senior", `${t.id} online`);
+    const l = L.get(`lesson-alevel-english-${t.id}`);
+    assert.ok(l && l.use.includes(t.id) && l.alevel && l.england, `${t.id} lesson`);
+    assert.equal(P.get(`paper-ex-${t.id}`).lesson, l.id);
+  }
+});
+
+test("A level: every question has one right answer, different options, a reason, and quoted lines that are in its text", () => {
+  for (const t of aTopics) {
+    for (const it of t.items) {
+      const all = [it.a].concat(it.o);
+      assert.equal(new Set(all).size, all.length, `${t.id}: ${it.q}`);
+      assert.ok(it.o.length >= 2 && it.why, `${t.id}: ${it.q}`);
+      if (it.t) assert.ok(X.text(it.t), `${t.id}: no text ${it.t}`);
+      if (it.x) assert.ok(it.t && X.text(it.t).text.includes(it.x) && !/\n/.test(it.x), `${t.id}: "${it.x}" isn't in ${it.t}`);
+    }
+    const w = t.written;
+    assert.ok(w && w.q && w.model && w.levels.length && w.look.length && w.marks > 0, t.id);
+    for (const id of w.texts || (w.t ? [w.t] : [])) assert.ok(X.text(id), `${t.id}: ${id}`);
+  }
+});
+
+test("A level: writing tasks, mini papers and every sheet build, and the lessons name sheets that exist", () => {
+  assert.equal(AL.WRITING.length, 2);
+  for (const m of AL.MINI) for (const p of m.parts) {
+    if (p.ref) assert.ok(X.topic(p.ref) && X.topic(p.ref).written.marks > 0, `${m.id}: ${p.ref}`);
+    else assert.ok(p.q && p.marks > 0 && p.look && p.levels, `${m.id}: ${p.q}`);
+  }
+  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-alevel-english-") && !s.id.startsWith("paper-pp-"));
+  assert.equal(ex.length, 16 + 2 * 3 + 2 + 4 + 1);
+  const titles = new Set(ex.map(s => s.title));
+  for (const s of ex) for (let i = 0; i < 3; i++) {
+    const b = s.build("Pupil", kit);
+    assert.ok(b.pupil && b.answers && !/undefined|NaN/.test(b.pupil + b.answers), s.id);
+  }
+  for (const s of ex) {
+    const l = L.get(s.lesson);
+    for (const [, name] of `${l.steps.practise} ${l.steps.teach} ${l.steps.check}`.matchAll(/“?"([^"]+)"/g)) assert.ok(titles.has(name), `${l.id} names "${name}"`);
+  }
+  for (const st of AL.STAGES) assert.equal(X.check(st.key).length, st.topics.length * (st.n === 1 ? 2 : 1));
 });
