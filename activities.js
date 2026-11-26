@@ -2002,6 +2002,130 @@ window.PopActivities = (() => {
   const linear = (a, b, v = "x") => (b ? `${termText(a, v)} ${b < 0 ? "−" : "+"} ${Math.abs(b)}` : termText(a, v));
   const spaced = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
+  /* ---------- Second level (P5 to P7, Years 5 and 6): practice at the level of the Second level lessons ---------- */
+  // Some Second level lessons only had First level practice to link to (three-digit sums for a lesson on
+  // numbers to a million). These match the lessons' own success criteria. Each question's explain is
+  // written as a worked example: it is shown after a miss, and the home-school packs use one as the
+  // "do this one together" example.
+  const numeracySecond = [
+    { id: "s-add-sub", title: "Adding and subtracting large numbers and decimals", level: "Second", organiser: NUM, check: false,
+      blurb: "Add and subtract numbers up to a million and decimals with two places, and check with the inverse.",
+      make: () => distinct(10, () => {
+        const k = rand(6);
+        if (k === 0) { const a = rand(400000) + 20000, b = rand(300000) + 10000;
+          return typed(`${big(a)} + ${big(b)} =`, a + b, { label: `${a}+${b}`, skill: "adding large numbers",
+            explain: `Write ${big(a)} above ${big(b)} with the ones lined up. Add the ones first, then the tens, hundreds and so on, carrying a 1 into the next column whenever a column makes 10 or more: ${big(a + b)}.` }); }
+        if (k === 1) { const x = rand(800000) + 100000, y = rand(x - 10000) + 5000; if (String(x).slice(-3) >= String(y).padStart(6, "0").slice(-3)) return { label: "no exchange" };
+          return typed(`${big(x)} − ${big(y)} =`, x - y, { label: `${x}-${y}`, skill: "subtracting large numbers",
+            explain: `Line up the columns and subtract from the ones. When the top digit is smaller, exchange 1 from the next column (one ten becomes ten ones). ${big(x)} − ${big(y)} = ${big(x - y)}. Check: ${big(x - y)} + ${big(y)} = ${big(x)}.` }); }
+        if (k === 2) { const a = (rand(1900) + 101) / 100, b = (rand(90) + 11) / 10, s = roundDp(a + b);
+          return typed(`${fixDp(a, 2)} + ${fixDp(b, 1)} =`, String(s), { input: "decimal", accept: [fixDp(s, 2)], label: `${a}+${b}`, skill: "adding decimals",
+            explain: `Line up the decimal points, and write ${fixDp(b, 1)} as ${fixDp(b, 2)} so both have two places: ${fixDp(a, 2)} + ${fixDp(b, 2)} = ${fixDp(s, 2)}.` }); }
+        if (k === 3) { const w = pick([10, 20, 50, 100]), b = (rand(w * 100 - 200) + 101) / 100, d = roundDp(w - b);
+          return typed(`${w} − ${fixDp(b, 2)} =`, String(d), { input: "decimal", accept: [fixDp(d, 2)], label: `${w}-${b}`, skill: "subtracting decimals",
+            explain: `Write ${w} as ${w}.00 so the decimal points line up, then subtract, exchanging as you go: ${w}.00 − ${fixDp(b, 2)} = ${fixDp(d, 2)}. Check: ${fixDp(d, 2)} + ${fixDp(b, 2)} = ${w}.` }); }
+        if (k === 4) { const x = (rand(800) + 150) / 100, y = (rand(600) + 120) / 100, note = x + y < 10 ? 10 : 20, left = roundDp(note - x - y);
+          return typed(`Jo has £${note}. She buys a book for £${fixDp(x, 2)} and a pen for £${fixDp(y, 2)}. How much change does she get? (£)`, String(left), { input: "decimal", accept: [fixDp(left, 2), `£${fixDp(left, 2)}`], label: `change ${note} ${x} ${y}`, skill: "money problems",
+            explain: `First add what she spends: £${fixDp(x, 2)} + £${fixDp(y, 2)} = £${fixDp(x + y, 2)}. Then take it from £${note}: £${note}.00 − £${fixDp(x + y, 2)} = £${fixDp(left, 2)}.` }); }
+        const x = rand(8000) + 2000, y = rand(x - 1000) + 500, right = rand(2), shown = right ? x - y : x - y + pick([100, -100, 10, 1000]);
+        if (shown <= 0) return { label: "neg" };
+        return choice(`Mark says ${big(x)} − ${big(y)} = ${big(shown)}. Check it with an addition. Is he right?`, right ? "Yes" : "No", [right ? "No" : "Yes"], { label: `check ${x}-${y}-${shown}`, skill: "checking with the inverse",
+          explain: `Add the answer back on: ${big(shown)} + ${big(y)} = ${big(shown + y)}. ${right ? `That is ${big(x)}, so he is right.` : `That should be ${big(x)}, so he is wrong: the answer is ${big(x - y)}.`}` });
+      }) },
+    { id: "s-rounding", title: "Rounding large numbers and decimals", level: "Second", organiser: ROUND, check: false,
+      blurb: "Round numbers to the nearest 10, 100, 1000, 10 000 or 100 000, and decimals to a whole number or one decimal place.",
+      make: () => distinct(10, () => {
+        const k = rand(3);
+        if (k < 2) { const n = rand(900000) + 10000, to = pick([10, 100, 1000, 10000, 100000]), r = Math.round(n / to) * to, d = Math.floor(n / (to / 10)) % 10;
+          if (r === 0) return { label: "zero" };
+          return typed(`Round ${big(n)} to the nearest ${big(to)}.`, r, { label: `${n} ${to}`, skill: "rounding large numbers",
+            explain: `Look at the digit after the ${big(to)}s place: it is ${d}. ${d >= 5 ? "5 or more, so round up" : "Less than 5, so round down"}: ${big(r)}.` }); }
+        const x = (rand(9000) + 100) / 100, one = rand(2), r = one ? roundDp(x, 1) : Math.round(x), d = one ? Math.round(x * 100) % 10 : Math.round(x * 10) % 10;
+        return typed(`Round ${fixDp(x, 2)} to ${one ? "one decimal place" : "the nearest whole number"}.`, one ? fixDp(r, 1) : r, { input: "decimal", accept: one ? [String(r)] : [], label: `${x} ${one}`, skill: "rounding decimals",
+          explain: `Look at the ${one ? "hundredths" : "tenths"} digit: it is ${d}. ${d >= 5 ? "5 or more, so round up" : "Less than 5, so round down"}: ${one ? fixDp(r, 1) : r}.` });
+      }) },
+    { id: "s-durations", title: "Durations, time units and journeys", level: "Second", organiser: TIME, check: false,
+      blurb: "Change between hours and minutes, work out how long things take across the hour, and use speed for journey times.",
+      make: () => distinct(10, () => {
+        const k = rand(5), hm = m => [m >= 60 ? `${Math.floor(m / 60)} hour${Math.floor(m / 60) === 1 ? "" : "s"}` : "", m % 60 ? `${m % 60} minutes` : ""].filter(Boolean).join(" "), t24 = m => `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`;
+        if (k === 0) { const h = rand(3) + 1, q = pick([[0.25, "¼"], [0.5, "½"], [0.75, "¾"]]), m = (h + q[0]) * 60;
+          return typed(`How many minutes are in ${h}${q[1]} hours?`, m, { label: `${h}${q[1]}h`, skill: "hours to minutes",
+            explain: `${h} hour${h > 1 ? "s" : ""} is ${h} × 60 = ${h * 60} minutes, and ${q[1]} of an hour is ${q[0] * 60} minutes: ${h * 60} + ${q[0] * 60} = ${m} minutes.` }); }
+        if (k === 1) { const m = (rand(16) + 5) * 5 + 60;
+          return choice(`Write ${m} minutes in hours and minutes.`, hm(m), [hm(m + 20), hm(m - 15)], { label: `min ${m}`, skill: "minutes to hours",
+            explain: `There are 60 minutes in an hour. ${m} − 60 = ${m - 60}${m - 60 >= 60 ? `, and again ${m - 120}` : ""}, so ${m} minutes is ${hm(m)}.` }); }
+        if (k === 2) { const s = (rand(40) + 28) * 15, len = (rand(14) + 5) * 10 + (rand(2) ? 5 : 0), e = s + len; if (Math.floor(e / 60) - Math.ceil(s / 60) < 1 || e % 60 === 0) return { label: "same hour" };
+          return typed(`A film starts at ${t24(s)} and finishes at ${t24(e)}. How many minutes long is it?`, len, { label: `dur ${s} ${e}`, skill: "durations across the hour",
+            explain: `Count on in steps: from ${t24(s)} to ${t24(Math.ceil(s / 60) * 60)} is ${Math.ceil(s / 60) * 60 - s} minutes, then to ${t24(Math.floor(e / 60) * 60)} is ${Math.floor(e / 60) * 60 - Math.ceil(s / 60) * 60} more, then ${e % 60} minutes to ${t24(e)}. Altogether ${len} minutes (${hm(len)}).` }); }
+        if (k === 3) { const s = (rand(48) + 36) * 5 + 600, len = (rand(10) + 6) * 15, e = s + len; if (len % 60 === 0) return { label: "whole hours" };
+          return choice(`A train leaves at ${t24(s)}. The journey takes ${hm(len)}. When does it arrive?`, t24(e), [t24(e + 40), t24(e - 60)], { label: `arr ${s} ${len}`, skill: "finding the end time",
+            explain: `Add the hours first: ${t24(s)} + ${Math.floor(len / 60)} hour${Math.floor(len / 60) === 1 ? "" : "s"} is ${t24(s + Math.floor(len / 60) * 60)}. Then add ${len % 60} minutes, going past the hour if you need to: ${t24(e)}.` }); }
+        const sp = pick([4, 5, 6, 30, 40, 50, 60, 80]), t = pick([1.5, 2, 2.5, 3]), d = sp * t, find = rand(2);
+        return find ? typed(`A car travels at ${sp} km per hour for ${t === 1.5 ? "1½" : t === 2.5 ? "2½" : t} hours. How far does it go? (km)`, d, { label: `d ${sp} ${t}`, skill: "speed and distance",
+            explain: `In 1 hour it goes ${sp} km, so in ${t} hours it goes ${sp} × ${t} = ${d} km.` })
+          : typed(`Mo walks ${d} km at ${sp} km per hour. How many minutes does the walk take?`, t * 60, { label: `t ${d} ${sp}`, skill: "journey times",
+            explain: `Each hour he walks ${sp} km. ${d} ÷ ${sp} = ${t} hours, and ${t} × 60 = ${t * 60} minutes.` });
+      }) },
+    { id: "s-special-numbers", title: "Square, cube, prime and triangular numbers", level: "Second", organiser: PATTERN, check: false,
+      blurb: "Square and cube numbers, primes to 50, triangular numbers and the Fibonacci sequence.",
+      make: () => distinct(10, () => {
+        const k = rand(6);
+        if (k === 0) { const n = rand(10) + 3; return typed(`What is ${n}²?`, n * n, { label: `sq ${n}`, skill: "square numbers", explain: `${n}² means ${n} × ${n} = ${n * n}, not ${n} × 2.` }); }
+        if (k === 1) { const n = rand(4) + 2; return typed(`What is ${n}³?`, n ** 3, { label: `cube ${n}`, skill: "cube numbers", explain: `${n}³ means ${n} × ${n} × ${n}: ${n} × ${n} = ${n * n}, then × ${n} = ${n ** 3}.` }); }
+        if (k === 2) { const sq = pick([16, 25, 36, 49, 64, 81, 100, 121, 144]), o = shuffle([18, 24, 27, 32, 40, 45, 50, 60, 72, 90, 110, 120]).slice(0, 2);
+          return choice(`Which of these is a square number?`, sq, o, { label: `which sq ${sq}`, skill: "recognising square numbers", explain: `${sq} = ${Math.sqrt(sq)} × ${Math.sqrt(sq)}, a number times itself. The others aren't.` }); }
+        if (k === 3) { const p = pick([11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]), o = shuffle([15, 21, 27, 33, 35, 39, 45, 49]).slice(0, 2), f = x => [3, 5, 7].find(d => x % d === 0);
+          return choice(`Which of these is a prime number?`, p, o, { label: `prime ${p}`, skill: "prime numbers", explain: `${p} has only two factors, 1 and ${p}. ${o.map(x => `${x} = ${f(x)} × ${x / f(x)}`).join(" and ")}.` }); }
+        if (k === 4) { const n = rand(4) + 4, tri = range(1, n).map(i => i * (i + 1) / 2);
+          return typed(`What is the next triangular number? ${tri.join(", ")}, …`, (n + 1) * (n + 2) / 2, { label: `tri ${n}`, skill: "triangular numbers", explain: `Triangular numbers add 1 more each time: +2, +3, +4… The last step was +${n}, so add ${n + 1}: ${tri[n - 1]} + ${n + 1} = ${(n + 1) * (n + 2) / 2}.` }); }
+        const fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89], s = rand(4) + 2, show = fib.slice(s, s + 5);
+        return typed(`What comes next in this Fibonacci sequence? ${show.join(", ")}, …`, fib[s + 5], { label: `fib ${s}`, skill: "the Fibonacci sequence", explain: `Each number is the two before it added together: ${show[3]} + ${show[4]} = ${fib[s + 5]}.` });
+      }) },
+    { id: "s-equations", title: "Solving simple equations", level: "Second", organiser: EQUATION, check: false,
+      blurb: "Find the value of a letter in one-step and two-step equations, and write an equation from words.",
+      make: () => distinct(10, () => {
+        const v = pick(["n", "x", "a", "y"]), k = rand(4), x = rand(11) + 2;
+        if (k === 0) { const b = rand(20) + 3; return typed(`${v} + ${b} = ${x + b}. What is ${v}?`, x, { label: `${v}+${b}=${x + b}`, skill: "one-step equations", explain: `Do the opposite of + ${b}: take ${b} from both sides. ${x + b} − ${b} = ${x}, so ${v} = ${x}. Check: ${x} + ${b} = ${x + b}.` }); }
+        if (k === 1) { const a = rand(8) + 2; return typed(`${a}${v} = ${a * x}. What is ${v}?`, x, { label: `${a}${v}=${a * x}`, skill: "one-step equations", explain: `${a}${v} means ${a} × ${v}. Do the opposite: divide both sides by ${a}. ${a * x} ÷ ${a} = ${x}, so ${v} = ${x}.` }); }
+        if (k === 2) { const a = rand(6) + 2, b = rand(15) + 1; return typed(`${a}${v} + ${b} = ${a * x + b}. What is ${v}?`, x, { label: `${a}${v}+${b}`, skill: "two-step equations", explain: `Undo in reverse order. First take ${b} from both sides: ${a}${v} = ${a * x}. Then divide by ${a}: ${v} = ${x}. Check: ${a} × ${x} + ${b} = ${a * x + b}.` }); }
+        const a = rand(4) + 2, b = rand(10) + 2;
+        return typed(`I think of a number, multiply it by ${a} and add ${b}. The answer is ${a * x + b}. What was my number?`, x, { label: `think ${a} ${b} ${x}`, skill: "equations from words",
+          explain: `Write it as ${a}${v} + ${b} = ${a * x + b}. Take ${b} away: ${a * x}. Divide by ${a}: ${x}.` });
+      }) },
+    { id: "s-shapes", title: "3D shapes, nets and circles", level: "Second", organiser: SHAPE, check: false,
+      blurb: "Faces, edges and vertices of 3D shapes, which net makes which shape, and the parts of a circle.",
+      make: () => distinct(10, () => {
+        const solids = [["cube", 6, 12, 8], ["cuboid", 6, 12, 8], ["triangular prism", 5, 9, 6], ["square-based pyramid", 5, 8, 5], ["tetrahedron (triangular-based pyramid)", 4, 6, 4], ["pentagonal prism", 7, 15, 10], ["hexagonal prism", 8, 18, 12]];
+        const k = rand(4);
+        if (k === 0) { const [s, f, e, v] = pick(solids), what = pick([["faces", f], ["edges", e], ["vertices (corners)", v]]);
+          return typed(`How many ${what[0]} does a ${s} have?`, what[1], { label: `${s} ${what[0]}`, skill: "faces, edges and vertices",
+            explain: `A ${s} has ${f} faces, ${e} edges and ${v} vertices. Check with Euler's rule: faces + vertices − edges = ${f} + ${v} − ${e} = 2.` }); }
+        if (k === 1) { const [net, ans, o] = pick([["6 squares", "a cube", ["a square-based pyramid", "a cuboid made of rectangles"]], ["1 square and 4 triangles", "a square-based pyramid", ["a cube", "a triangular prism"]], ["2 triangles and 3 rectangles", "a triangular prism", ["a tetrahedron", "a cuboid"]], ["4 triangles", "a tetrahedron", ["a square-based pyramid", "a triangular prism"]], ["2 circles and a rectangle", "a cylinder", ["a cone", "a sphere"]]]);
+          return choice(`A net is made of ${net}. Which 3D shape does it fold into?`, ans, o, { label: `net ${net}`, skill: "nets", explain: `Count the faces the shape needs: ${ans} has exactly ${net} as its faces.` }); }
+        if (k === 2) { const r = rand(18) + 2, give = rand(2);
+          return give ? typed(`A circle has a radius of ${r} cm. What is its diameter? (cm)`, 2 * r, { label: `d ${r}`, skill: "radius and diameter", explain: `The diameter goes right across through the centre, so it is two radii: 2 × ${r} = ${2 * r} cm.` })
+            : typed(`A circle has a diameter of ${2 * r} cm. What is its radius? (cm)`, r, { label: `r ${2 * r}`, skill: "radius and diameter", explain: `The radius is from the centre to the edge, half the diameter: ${2 * r} ÷ 2 = ${r} cm.` }); }
+        const [q, a, o] = pick([["the distance all the way round a circle", "circumference", ["radius", "diameter"]], ["a straight line from the centre of a circle to its edge", "radius", ["diameter", "circumference"]], ["a straight line across a circle through its centre", "diameter", ["radius", "circumference"]]]);
+        return choice(`What is the name for ${q}?`, a, o, { label: `circle ${a}`, skill: "parts of a circle", explain: `That is the ${a}. Radius: centre to edge. Diameter: edge to edge through the centre, two radii. Circumference: all the way round.` });
+      }) },
+    { id: "s-data", title: "Pie charts, line graphs and averages", level: "Second", organiser: DATA, check: false,
+      blurb: "Read pie charts as fractions of the whole, read between points on a line graph, and find the mean and range.",
+      make: () => distinct(10, () => {
+        const k = rand(4);
+        if (k === 0) { const tot = pick([20, 24, 36, 40, 60, 80, 120]), [f, name] = pick([[0.5, "half"], [0.25, "a quarter"], [0.75, "three-quarters"], [0.1, "a tenth"]]);
+          if (!Number.isInteger(tot * f)) return { label: "frac" };
+          return typed(`A pie chart shows how ${tot} pupils travel to school. The walking slice is ${name} of the circle. How many pupils walk?`, tot * f, { label: `pie ${tot} ${f}`, skill: "reading pie charts", explain: `The whole circle is all ${tot} pupils. ${name[0].toUpperCase() + name.slice(1)} of ${tot} is ${tot * f}.` }); }
+        if (k === 1) { const tot = pick([36, 60, 72, 90, 120, 180]), n = pick(range(1, tot / 2).filter(x => 360 * x % tot === 0)), ang = 360 * n / tot;
+          return typed(`${tot} people were asked their favourite fruit. ${n} chose apples. What angle is the apples slice on a pie chart? (°)`, ang, { label: `ang ${tot} ${n}`, skill: "pie chart angles", explain: `The whole circle is 360° for ${tot} people, so each person gets 360 ÷ ${tot} = ${360 / tot}°. ${n} × ${360 / tot} = ${ang}°.` }); }
+        if (k === 2) { const t1 = rand(10) + 6, rise = pick([2, 4, 6, 8]), h = rand(4) + 9;
+          return typed(`A line graph shows the temperature was ${t1}°C at ${h}:00 and ${t1 + rise}°C at ${h + 2}:00, rising steadily. Estimate the temperature at ${h + 1}:00. (°C)`, t1 + rise / 2, { label: `lg ${t1} ${rise}`, skill: "reading between points", explain: `${h + 1}:00 is halfway between, and the line rises steadily, so read halfway: ${t1} + ${rise / 2} = ${t1 + rise / 2}°C.` }); }
+        const vals = Array.from({ length: 5 }, () => rand(20) + 5), sum = vals.reduce((a, b) => a + b, 0), range_ = Math.max(...vals) - Math.min(...vals);
+        if (rand(2)) return typed(`What is the range of ${vals.join(", ")}?`, range_, { label: `range ${vals}`, skill: "the range", explain: `Range = biggest − smallest = ${Math.max(...vals)} − ${Math.min(...vals)} = ${range_}. It tells you how spread out the numbers are.` });
+        if (sum % 5) return { label: "mean" };
+        return typed(`What is the mean of ${vals.join(", ")}?`, sum / 5, { label: `mean ${vals}`, skill: "the mean", explain: `Add them all: ${vals.join(" + ")} = ${sum}. Divide by how many there are, 5: ${sum} ÷ 5 = ${sum / 5}.` });
+      }) }
+  ];
+
   // Two wrong options, never the same as each other
   const others2u = (answer, pool) => others2(answer, [...new Set(pool.map(String))]);
   const numeracyUpper = [
@@ -4826,7 +4950,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracySecond, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {

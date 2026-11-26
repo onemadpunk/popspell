@@ -87,14 +87,16 @@ window.PopHome = (() => {
     return out;
   }
   // A worked example to show first: a practice question that comes with an explanation
+  // Practice at the lesson's own level comes first, and the example is from the middle of the set (the
+  // questions run easy to hard), so it shows the lesson's method rather than a warm-up fact
   function exampleOf(l) {
-    for (const id of l.use || []) {
-      const act = A() && A().get(id);
-      if (!act || act.game || act.area === "listening" || act.passage) continue;
+    const acts = (l.use || []).map(id => A() && A().get(id)).filter(act => act && !act.game && act.area !== "listening" && !act.passage);
+    acts.sort((a, b) => (b.level === l.level) - (a.level === l.level));
+    for (const act of acts) {
       let qs = [];
       try { qs = act.make() || []; } catch { qs = []; }
-      const q = qs.filter(printable).find(x => x.explain && x.explain.length > 12);
-      if (q) return q;
+      const ok = qs.filter(printable).filter(x => x.explain && x.explain.length > 12);
+      if (ok.length) return ok[Math.floor(ok.length * 0.6)];
     }
     return null;
   }
