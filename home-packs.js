@@ -116,9 +116,10 @@ window.PopHome = (() => {
         m.number = sessions.filter(x => x.kind === "lesson" && x.n <= m.n).length;
       } else {
         const per = m.kind === "final" ? Math.max(1, Math.min(2, Math.floor(30 / m.from.length))) : 2;
+        // a review is one page of ten; a final check up to three
         const pool = m.from.map(l => itemsOf(l, per)), items = [];
         // One from each lesson first, then a second, so every lesson is checked; a final check stops at 30
-        for (let k = 0; k < per; k++) pool.forEach(list => { if (list[k] && items.length < (m.kind === "final" ? 30 : 12)) items.push(list[k]); });
+        for (let k = 0; k < per; k++) pool.forEach(list => { if (list[k] && items.length < (m.kind === "final" ? 30 : PER_PAGE)) items.push(list[k]); });
         m.items = items;
       }
     });
@@ -198,14 +199,19 @@ window.PopHome = (() => {
     blocks.push(block(`<div class="cs-notes"><b>Your notes</b> (score ___ / ${m.items.length || "—"}; lessons to go over again)</div>`));
     return doc(head, more, blocks, true);
   }
-  function reviewSheet(made, m) {
-    if (!m.items.length) return null;
-    const title = m.kind === "final" ? "Final check" : "Review";
-    const head = `${K.sheetHead(title, made.who)}${stamp(made, sLabel(made, m))}`;
-    const blocks = [block(`<p>${made.pack.age === "young" ? "Your adult can read the questions to you. " : ""}Answer each question on your own. Do the ones you know first.</p>`)];
-    let n = 0;
-    m.items.forEach(q => { n++; blocks.push(block(`<div class="ws-q"><p><b>${n}.</b> ${esc(q.prompt)}</p>${q.options ? `<div class="ws-options">${q.options.map(o => `<span><i></i>${esc(o)}</span>`).join("")}</div>` : `<div class="ws-answer"><span class="ws-blank"></span></div>`}</div>`)); });
-    return doc(head, `${K.sheetHead(`${title} (continued)`, made.who)}${stamp(made)}`, blocks, false, made.pack.age);
+  // The child's sheet: ten questions a page, laid out like the Library's activity sheets
+  const PER_PAGE = 10;
+  function reviewSheets(made, m) {
+    const title = m.kind === "final" ? "Final check" : "Review", pages = [];
+    for (let i = 0; i < m.items.length; i += PER_PAGE) {
+      const part = m.items.slice(i, i + PER_PAGE), more = m.items.length > PER_PAGE ? ` (part ${i / PER_PAGE + 1})` : "";
+      const qs = part.map((q, k) => `<div class="ws-q"><p><b>${i + k + 1}.</b> ${esc(q.prompt)}</p>${q.options ? `<div class="ws-options">${q.options.map(o => `<span><i></i>${esc(o)}</span>`).join("")}</div>` : `<div class="ws-answer"><span class="ws-blank"></span></div>`}</div>`);
+      const short = part.every(q => String(q.prompt).length <= 60 && (!q.options || q.options.every(o => String(o).length <= 24)));
+      pages.push(K.ageLook(`${K.sheetHead(`${title}${more}`, made.who)}${stamp(made, sLabel(made, m))}
+        <p>${made.pack.age === "young" ? "Your adult can read the questions to you. " : ""}Answer each question on your own. Do the ones you know first.</p>
+        <div class="ws-qs${short ? " ws-cols" : ""}" data-cols="no">${qs.join("")}</div>`, made.pack.age));
+    }
+    return pages;
   }
   function reviewAnswers(made, m) {
     if (!m.items.length) return null;
@@ -307,7 +313,7 @@ window.PopHome = (() => {
         if (copy !== "pupil") m.lp.adult.filter(p => p.label !== "Lesson plan" && (!p.has || p.has())).forEach(p => Ad(tag(p.html(), made, m)));
       } else {
         if (copy !== "pupil") paginate(reviewPage(made, m)).forEach(Ad);
-        if (copy !== "answers") paginate(reviewSheet(made, m)).forEach(P);
+        if (copy !== "answers") reviewSheets(made, m).forEach(P);
         if (copy !== "pupil") paginate(reviewAnswers(made, m)).forEach(Ad);
       }
     });
@@ -343,6 +349,8 @@ window.PopHome = (() => {
     printing = sheet;
     await Promise.all([...sheet.querySelectorAll("img")].map(img => (img.complete ? null : new Promise(r => { img.onload = img.onerror = r; }))));
     K.fitPages(sheet, T().sheetClass(CLASS));
+    // A sheet that fitting splits in two gets the usual footer on its new page: paper only has no web address
+    if (made.paper) sheet.querySelectorAll(".ws-foot").forEach(f => { f.textContent = "PopSpell · free literacy and numeracy practice"; });
     return sheet.querySelectorAll(":scope > .ws-page").length;
   }
   async function printPages(which, copy) {
