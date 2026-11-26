@@ -550,6 +550,18 @@ window.PopCourse = (() => {
   // ---------- The page ----------
   const $ = id => (typeof document !== "undefined" && document.getElementById ? document.getElementById(id) : null);
   const app = $("app");
+  // Home-school packs for every level (home-data.js, made in the app at #/home): a parent's guide, then
+  // each session's parent's page, sheets and answers, online or paper only
+  function homePacks() {
+    const H = window.PopHomeData;
+    if (!H) return "";
+    const group = (nation, subject) => H.PACKS.filter(p => p.nation === nation && p.subject === subject)
+      .map(p => `<li><a href="./#/home/${esc(p.id)}">${esc(p.title)}</a> <span class="pk-small">${esc(p.ages)}</span></li>`).join("");
+    return `<section class="pk-pack cs-home" id="home-packs"><h2>Home-school packs for every level</h2>
+      <p>Parent-led courses in English and maths for Scotland (Early level to Advanced Higher) and England (Reception to GCSE), made the same way as the parent edition above: a parent's guide that assumes no teaching confidence, a plan and a tracker, then for every session a page that says what to do and what to say, your child's sheets, and the answers, with a review every six lessons and a final check. Each pack comes <b>online</b> (names the free practice on PopSpell) or <b>paper only</b> (no internet, no web links).</p>
+      <div class="cs-home-grid"><div><h3>Scotland: maths</h3><ul>${group("scotland", "Maths")}</ul></div><div><h3>Scotland: English</h3><ul>${group("scotland", "Literacy")}</ul></div>
+        <div><h3>England: maths</h3><ul>${group("england", "Maths")}</ul></div><div><h3>England: English</h3><ul>${group("england", "Literacy")}</ul></div></div></section>`;
+  }
   function render() {
     const C = DATA.courses[0], n = C.sessions.length, groups = [];
     for (let i = 1; i <= n; i += 20) groups.push(`${i}-${Math.min(n, i + 19)}`);
@@ -580,6 +592,7 @@ window.PopCourse = (() => {
             : `<p class="pk-small">It takes a few seconds to make. Then print the guide first, and the sessions in three parts of 20.</p>`}
         </section>
         <section class="pk-pack"><h2>The ${n} sessions</h2><ol class="cs-sessions">${C.sessions.map(s => `<li>${esc(s.t)}</li>`).join("")}</ol></section>
+        ${homePacks()}
         <p class="pk-foot">Questions are PopSpell's own, in the exam's style, not past papers. Nothing you type here is saved or sent anywhere.</p>
       </main>`;
     $("make").onclick = async () => {

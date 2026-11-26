@@ -5426,6 +5426,7 @@
     });
   }
 
-  window.PopTeacher = { show };
+  // The home-school packs (home-packs.js) print each lesson's own pages, made the way the Library makes them
+  window.PopTeacher = { show, lessonPages, viewOf, sheetClass, sheetFonts, bandForLevel, kduOf, pupilVoice };
 })();
 

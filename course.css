@@ -29,3 +29,7 @@
 :is(.worksheet-print, .sheet-preview-page) .cs-answers li { margin-bottom: 4px; }
 :is(.worksheet-print, .sheet-preview-page) .cs-home, :is(.worksheet-print, .sheet-preview-page) .cs-rate { font-size: 10.5pt; }
 :is(.worksheet-print, .sheet-preview-page) .cs-notes { border: 1.5px dashed #8a9ab4; border-radius: 6px; padding: 4px 8px; min-height: 30mm; font-size: 10pt; color: #33405a; margin-top: 6px; }
+.cs-home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15em, 1fr)); gap: 0 24px; }
+.cs-home-grid h3 { margin: 10px 0 4px; }
+.cs-home-grid ul { margin: 0; padding-left: 1.1em; }
+.cs-home-grid li { margin: 3px 0; }

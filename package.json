@@ -11,6 +11,7 @@
     "sheet-check": "node tools/sheet-fit.mjs",
     "english-check": "node tools/english-fit.mjs",
     "exam-check": "node tools/exam-fit.mjs",
-    "course-pdf": "node tools/course-pdf.mjs"
+    "course-pdf": "node tools/course-pdf.mjs",
+    "home-pdf": "node tools/home-pdf.mjs"
   }
 }
