@@ -625,12 +625,13 @@
     all.forEach((e, i) => {
       e.order = i;
       e.codes = e.codes || (e.type === "check" || e.type === "paper" ? [] : codesOf(e.id, e.level));
+      e.kdu = e.type === "check" || e.england ? "" : kduOf({ subject: e.subject, strand: e.strand, level: e.level, sqa: e.lesson && e.lesson.sqa });
       // England: the national curriculum year, band and strand for the same work
       const w = e.type === "check" ? null : enWork(e.id);
       e.en = w;
       e.band = w ? E_().bandOf(w) || EN_NONE : "";
       e.enStrand = e.type === "check" ? FIND_LEVEL : w && w.strand ? w.strand : EN_NONE;
-      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
+      e.search = fold(`${e.title} ${e.also || ""} ${e.enTitle || ""} ${SUBJECT_WORDS[e.subject] || ""} ${e.strand} ${e.stage || ""} ${e.organiser || ""} ${e.codes.join(" ")} ${e.kdu} ${e.level} ${LIB_TYPES[e.type]} ${e.detail} ${e.list ? e.list.items.map(it => it.spelling).join(" ") : ""}
         ${w ? `${w.label} ${w.domain} ${w.strand} ${w.statements.map(s => s.wording).join(" ")}` : ""} ${e.print ? "printable worksheet sheet" : "online"}`);
       SEARCH_ALSO.forEach(([found, also]) => { if (found.test(e.search)) e.search += ` ${also}`; });
       // Teachers' other names for tricky words, found from the title so the whole phonics strand doesn't match
@@ -644,6 +645,9 @@
 
   // Where a ready lesson sits in Scotland's draft Know, Do, Understand frameworks (Education Scotland, November 2026).
   // The drafts have no statement codes and may change, so this names the strand and heading only. It is a provisional guide.
+  // Numeracy and mathematics are one draft framework ("Draft Technical Framework: Numeracy and Mathematics", November 2026),
+  // with no separate numeracy strand, so the old MNU (numeracy) outcomes map through the same strands as MTH ones.
+  // The same tags go on every activity, sheet and word list in the Library, from its strand and level (libraryEntries).
   const KDU_LIT_YOUNG = {
     "Handwriting": "Language Foundation · Concepts of print and letter knowledge",
     "Listening and sounds": "Oral Language and Interaction; Language Foundation · Phonological awareness, phonemic awareness and phonics",
@@ -657,6 +661,7 @@
   };
   const KDU_LIT_OLDER = {
     "Handwriting": "Tools for Writing",
+    "Listening and sounds": "Communicating and Interacting",
     "Listening and talking": "Communicating and Interacting",
     "Reading: phonics and tricky words": "Tools for Reading Comprehension",
     "Reading: understanding stories": "Story and Identity; How Texts Work; Tools for Reading Comprehension",
@@ -668,12 +673,12 @@
   const KDU_MATHS = {
     "Number": "Quantity, Numbers and the Algebraic Properties of Number · Number systems and structures; Number relationships and operations",
     "Money": "Quantity, Numbers and the Algebraic Properties of Number · Finance",
-    "Fractions, decimals and percentages": "Proportional reasoning",
+    "Fractions, decimals and percentages": "Quantity, Numbers and the Algebraic Properties of Number · Proportional reasoning",
     "Patterns and missing numbers": "Quantity, Numbers and the Algebraic Properties of Number · Patterns and sequences; Expressions, equations and relationships",
     "Measurement": "Shape, Space and Measurement · Measures",
     "Time": "Shape, Space and Measurement · Measures",
     "Shape and angles": "Shape, Space and Measurement · Properties of shapes and solids; Position and movement",
-    "Data and chance": "Information, Data and Uncertainty"
+    "Data and chance": "Information, Data and Uncertainty · Data management; Data analysis and interpretation; Probability"
   };
   const kduOf = l => {
     if (!l || l.england || !l.strand || l.sqa) return "";
@@ -785,7 +790,7 @@
       ? `<span class="lib-level lv-${(e.band || "any").toLowerCase().replace(/[^a-z0-9]+/g, "-")}">${esc(e.type === "check" ? "Any year" : e.en ? e.en.label : "Any year")}</span>`
       : `<span class="lib-level${e.level ? ` lv-${e.level.toLowerCase()}` : ""}">${e.level ? esc(levelName(e.level)) : "Any level"}</span>`);
     const codesLine = e => (en ? (e.en && e.en.statements.length ? `<p class="prog-codes">${esc(ncSource(e.en))}: ${esc(e.en.label)} · ${esc(e.en.domain)}</p>` : "")
-      : e.codes.length ? `<p class="prog-codes">CfE ${esc(e.codes.join(", "))}</p>` : "");
+      : e.codes.length || e.kdu ? `<p class="prog-codes">${e.codes.length ? `CfE ${esc(e.codes.join(", "))}` : ""}${e.codes.length && e.kdu ? " · " : ""}${e.kdu ? `<span title="Scotland's draft Know, Do, Understand framework (November 2026): may still change">New curriculum (draft): ${esc(e.kdu)}</span>` : ""}</p>` : "");
     // My folder: the resources a teacher uses most, kept on this device
     const favKey = `popspell-folder-${me ? me.uid : "teacher"}`;
     const favs = new Set((() => { try { return JSON.parse(localStorage.getItem(favKey) || "[]"); } catch { return []; } })());
