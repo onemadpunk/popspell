@@ -1032,6 +1032,33 @@
    "lookFor": "Says unanswered questions score nothing; a rushed writing question can lose more marks than a weak reading answer."
   },
   {
+   "id": "lesson-england-english-climb-spoken",
+   "england": true,
+   "level": "Fourth",
+   "subject": "Literacy",
+   "strand": "Listening and talking",
+   "codes": [],
+   "title": "GCSE English climb: the Spoken Language endorsement (presentation, questions and feedback)",
+   "intention": "We are learning to plan, rehearse and give a presentation in Standard English, and to answer questions and respond to feedback, for the GCSE Spoken Language endorsement.",
+   "criteria": [
+    "I can plan a presentation for a purpose and audience, with three points and evidence.",
+    "I can speak in Standard English from prompt cards, not a script.",
+    "I can answer questions with developed detail.",
+    "I know what Pass, Merit and Distinction look like."
+   ],
+   "steps": {
+    "start": "Ask: what makes a talk easy to listen to? List three things together.",
+    "teach": "Read the \"GCSE Spoken Language: what the endorsement asks\" sheet together. Choose a topic from \"Presentation topics and the questions to expect\", then plan it with the \"Spoken presentation planner\" sheet and make prompt cards.",
+    "practise": "Rehearse three times with the \"Spoken presentation: rehearsal record\" sheet, filming at least once. After each, ask two questions and agree one thing to improve.",
+    "check": "The learner gives the full presentation and answers three questions. Use the level descriptions on the guide to say which level it would reach, and why."
+   },
+   "use": [],
+   "home": "Play the 30-second answer game from the topics sheet once a day for a week.",
+   "vocab": "presentation, Standard English, audience, purpose, prompt card, endorsement",
+   "understand": "Why must you answer questions with detail, not just yes or no?",
+   "lookFor": "Says answering questions is part of the assessment, and developed answers show real understanding of the topic."
+  },
+  {
    "id": "lesson-england-english-climb-my-next-step",
    "england": true,
    "level": "Fourth",

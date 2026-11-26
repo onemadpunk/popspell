@@ -187,6 +187,7 @@ MAP = {
   "e2-check": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "e2-mixed": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-start-here": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-mini-papers": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-writing": "en 10-11 gel 5; en 10-11 gel 6; en 10-11 writ 9",
   "e3-check": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "e3-mixed": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-start-here": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-mini-papers": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-writing": "en 10-11 gel 5; en 10-11 gel 6; en 10-11 writ 9",
   "lesson-england-english-climb-my-next-step": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5",
+  "lesson-england-english-climb-spoken": "en 10-11 se 1; en 10-11 se 2; en 10-11 se 5; en 10-11 se 6",
   # Literacy: games and activities
   "g-hopper-short": "en R wread 1; en 1 wr 2", "g-hopper-digraphs": "en R wread 1; en 1 wr 2",
   "g-hopper-long-a": "en 1 wr 2; en 1 sp 2", "g-hopper-r": "en 1 wr 2; en 1 sp 2",

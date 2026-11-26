@@ -1009,6 +1009,7 @@
     "lesson-england-english-climb-e3-mini-papers":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
     "lesson-england-english-climb-e3-writing":["en-y10-11-gcse-english-language-5","en-y10-11-gcse-english-language-6","en-y10-11-writing-9"],
     "lesson-england-english-climb-my-next-step":["en-y10-11-gcse-english-language-1","en-y10-11-gcse-english-language-3","en-y10-11-gcse-english-language-5"],
+    "lesson-england-english-climb-spoken":["en-y10-11-spoken-english-1","en-y10-11-spoken-english-2","en-y10-11-spoken-english-5","en-y10-11-spoken-english-6"],
     "g-hopper-short":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-digraphs":["en-yR-word-reading-1","en-y1-reading-word-reading-2"],
     "g-hopper-long-a":["en-y1-reading-word-reading-2","en-y1-writing-transcription-spelling-2"],

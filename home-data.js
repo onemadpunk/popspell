@@ -44,7 +44,7 @@ window.PopHomeData = (() => {
     add("england", subject, "ks4", `${word}: Key stage 4, the GCSE content`, "Years 10 and 11 (age 14 to 16)", { band: "Key stage 4", climb: false }, { age: "older", perWeek: 2 });
     const g = word === "Maths" ? "GCSE maths" : "GCSE English Language";
     const re = word === "Maths" ? ["^lesson-england-gcse-climb-(?!g5-|gh-|my-next)", "^lesson-england-gcse-climb-g5-", "^lesson-england-gcse-climb-gh-"]
-      : ["^lesson-england-english-climb-(e1-|start|what|my-next)", "^lesson-england-english-climb-e2-", "^lesson-england-english-climb-(e3-|lit-)"];
+      : ["^lesson-england-english-climb-(e1-|start|what|my-next)", "^lesson-england-english-climb-(e2-|spoken)", "^lesson-england-english-climb-(e3-|lit-)"];
     add("england", subject, "gcse-1", `${g}: grade 1 to 3`, "Years 10 and 11, or a resit", { climb: re[0] }, { age: "older", exam: true, perWeek: 2 });
     add("england", subject, "gcse-2", `${g}: grades 4 and 5`, "Years 10 and 11, or a resit", { climb: re[1] }, { age: "older", exam: true, perWeek: 2 });
     add("england", subject, "gcse-3", `${g}: grades 6 to 9${word === "Maths" ? " (Higher)" : " and Literature"}`, "Years 10 and 11", { climb: re[2] }, { age: "older", exam: true, perWeek: 2 });

@@ -1250,6 +1250,58 @@
    "understand": "Why should you count your own marks, not just read the model answer?",
    "lookFor": "Says counting shows exactly which comment was basic and which was detailed, so you know what to change next time.",
    "sqa": "National 5 English"
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Listening and talking",
+   "codes": [],
+   "id": "lesson-sqa-talk-n5",
+   "sqa": "National 5 English",
+   "title": "SQA English: the spoken language performance (National 5)",
+   "intention": "We are learning to plan and give a presentation, or take part in a group discussion, that meets SQA's spoken language performance for National 5 English.",
+   "criteria": [
+    "I can plan a talk with content and structure that suit my purpose and audience.",
+    "I can choose clear, suitable language and use eye contact and voice to help my listener.",
+    "In a discussion, I can listen, build on others' ideas, ask questions and challenge politely."
+   ],
+   "steps": {
+    "start": "Ask: what's the difference between a good presentation and a good discussion? What does each need?",
+    "teach": "Read the \"SQA talk: what the spoken language performance asks\" sheet together. Decide: individual presentation or group discussion. For a discussion, plan with the \"Group discussion: plan, roles and observation\" sheet; for a presentation, use the presentation planner and rehearsal record from the Library (search for presentation planner).",
+    "practise": "Hold a practice discussion and fill in the observation grid on the \"Group discussion: plan, roles and observation\" sheet, or rehearse a presentation three times with the rehearsal record.",
+    "check": "Go through the five criteria on the guide: which are clearly met, and which need one more practice?"
+   },
+   "use": [],
+   "home": "Watch a short talk or debate online and note one thing the speaker did well.",
+   "vocab": "content, structure, non-verbal, listening and responding, achieved",
+   "understand": "Why must the spoken language performance be done well before the exam?",
+   "lookFor": "Says it must be achieved to get the course award, so leaving it late is a risk."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Listening and talking",
+   "codes": [],
+   "id": "lesson-sqa-talk-higher",
+   "sqa": "Higher English",
+   "title": "SQA English: the spoken language performance (Higher)",
+   "intention": "We are learning to develop and challenge an argument in talk, with precise language, for SQA's Higher English spoken language performance.",
+   "criteria": [
+    "I can develop each idea with a claim, evidence and why it matters.",
+    "I can answer the strongest counter-argument.",
+    "I can use precise language and respond to challenges in a discussion."
+   ],
+   "steps": {
+    "start": "Ask the learner to give a 30-second view on a topic, then ask \"so what?\". What changes?",
+    "teach": "Go through the \"Higher talk: developing and challenging an argument\" sheet. Show how a claim, evidence and \"so what?\" build a Higher-level point.",
+    "practise": "Two of the practice prompts on the \"Higher talk: developing and challenging an argument\" sheet, two minutes each, then a challenging question.",
+    "check": "Ask the learner to defend their view against your counter-argument. Do they refine it rather than repeat it?"
+   },
+   "use": [],
+   "home": "Pick a news story each day and give a one-minute argued view on it, with a counter-argument.",
+   "vocab": "claim, evidence, counter-argument, precise, refine",
+   "understand": "What lifts a spoken point from National 5 to Higher?",
+   "lookFor": "Says developing it further (why it matters) and dealing with the other side, in precise language."
   }
  ]
 }
