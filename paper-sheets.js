@@ -14,6 +14,8 @@ window.PopPaper = (() => {
   const rand = n => Math.floor(Math.random() * n);
   const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const pick = arr => arr[rand(arr.length)];
+  // Round to dp places as a calculator does (plain toFixed turns 5527.125 into 5527.12, because of how it is stored)
+  const fixDp = (x, dp) => (Math.round(Number((x * 10 ** dp).toPrecision(12))) / 10 ** dp).toFixed(dp);
 
   // Shared pieces
   const answersPage = (h, title, items, note = "", after = "") => `${h.brandHead(`Answers: ${title}`, "For the adult, not the pupil.")}
@@ -3861,7 +3863,7 @@ window.PopPaper = (() => {
     "Write percentage changes as multipliers, work out compound interest and depreciation, and find the original amount. Calculator needed.", Y1011, 15, () => {
       const mult = mdMany(4, () => { const p = pick([3, 4, 5, 12, 15, 20, 35, 2.5, 7]), up = rand(2); return [`${up ? "Increase" : "Decrease"} by ${p}%`, `× ${mdD(up ? 1 + p / 100 : 1 - p / 100, 3)}`]; });
       const ci = mdMany(3, () => { const P = pick([500, 800, 1000, 2000, 2500]), r = pick([2, 3, 4, 5]), n = mdR(2, 5), up = rand(2);
-        return up ? [`£${P} at ${r}% compound interest for ${n} years`, `£${(P * (1 + r / 100) ** n).toFixed(2)}`] : [`A £${P * 10} car loses ${r * 3}% a year. Its value after ${n} years`, `£${(P * 10 * (1 - r * 3 / 100) ** n).toFixed(2)}`]; });
+        return up ? [`£${P} at ${r}% compound interest for ${n} years`, `£${fixDp((P * (1 + r / 100) ** n), 2)}`] : [`A £${P * 10} car loses ${r * 3}% a year. Its value after ${n} years`, `£${fixDp((P * 10 * (1 - r * 3 / 100) ** n), 2)}`]; });
       const rev = mdMany(3, () => { const p = pick([10, 20, 25, 40, 15]), up = rand(2), old = mdR(4, 40) * 20, now = old * (100 + (up ? p : -p)) / 100;
         return [`After a ${p}% ${up ? "rise" : "cut"} a price is £${mdD(now)}. The original price?`, `£${old}`]; });
       return {
@@ -3889,9 +3891,9 @@ window.PopPaper = (() => {
   mdDrill("paper-drill-ks4-bounds", "lesson-england-limits-of-accuracy-rounding-truncating-and-bounds-years-10-and-11", "bounds and error intervals",
     "Write error intervals for rounded and truncated numbers, and use upper and lower bounds in calculations.", Y1011, 10, () => {
       const err = mdMany(4, () => { const k = rand(3);
-        if (k === 0) { const t = mdR(11, 99); return [`x = ${(t / 10).toFixed(1)} to 1 decimal place`, `${((t * 10 - 5) / 100).toFixed(2)} ≤ x &lt; ${((t * 10 + 5) / 100).toFixed(2)}`]; }
+        if (k === 0) { const t = mdR(11, 99); return [`x = ${fixDp((t / 10), 1)} to 1 decimal place`, `${fixDp(((t * 10 - 5) / 100), 2)} ≤ x &lt; ${fixDp(((t * 10 + 5) / 100), 2)}`]; }
         if (k === 1) { const v = mdR(12, 95) * 10; return [`y = ${v} to the nearest 10`, `${v - 5} ≤ y &lt; ${v + 5}`]; }
-        const t = mdR(11, 99); return [`z = ${(t / 10).toFixed(1)}, truncated to 1 decimal place`, `${(t / 10).toFixed(1)} ≤ z &lt; ${((t + 1) / 10).toFixed(1)}`]; });
+        const t = mdR(11, 99); return [`z = ${fixDp((t / 10), 1)}, truncated to 1 decimal place`, `${fixDp((t / 10), 1)} ≤ z &lt; ${fixDp(((t + 1) / 10), 1)}`]; });
       const calc = mdMany(3, () => { const a = mdR(4, 15), b = mdR(3, 12), k = rand(3);
         if (k === 0) return [`A rectangle is ${a} cm by ${b} cm, both to the nearest cm. Upper bound of the area?`, `${(a + 0.5) * (b + 0.5)} cm²`];
         if (k === 1) return [`A square has sides of ${a} cm to the nearest cm. Lower bound of the perimeter?`, `${4 * (a - 0.5)} cm`];
@@ -4343,9 +4345,9 @@ window.PopPaper = (() => {
       const a = rand(40) + 21, b = rand(9) + 2, c = rand(7) + 3, d = 2 + rand(8), e = rand(80) + 15, pr = (rand(400) + 120) / 100;
       const [hrs, mins] = pick([[2.75, "2 hours 45 minutes"], [1.4, "1 hour 24 minutes"], [3.2, "3 hours 12 minutes"], [0.85, "51 minutes"]]);
       const items = [
-        [`Work out (${a} + ${b}) ÷ ${c}. Give your answer to 1 decimal place.`, ((a + b) / c).toFixed(1), `Type the brackets, or press = after the top: ${a + b} ÷ ${c} = ${((a + b) / c).toFixed(3)}… → ${((a + b) / c).toFixed(1)}. Without brackets the calculator does ${b} ÷ ${c} first.`],
-        [`Work out ${d} × £${pr.toFixed(2)}. Give your answer in pounds.`, `£${(d * pr).toFixed(2)}`, `The display may show ${+(d * pr).toFixed(2)}: money always has 2 decimal places, £${(d * pr).toFixed(2)}.`],
-        [`Work out √${e} × ${b}. Give your answer to 2 decimal places.`, (Math.sqrt(e) * b).toFixed(2), `Keep the full √${e} on the screen and round only at the end: ${(Math.sqrt(e) * b).toFixed(2)}. Rounding √${e} first gives a different answer.`],
+        [`Work out (${a} + ${b}) ÷ ${c}. Give your answer to 1 decimal place.`, fixDp(((a + b) / c), 1), `Type the brackets, or press = after the top: ${a + b} ÷ ${c} = ${fixDp(((a + b) / c), 3)}… → ${fixDp(((a + b) / c), 1)}. Without brackets the calculator does ${b} ÷ ${c} first.`],
+        [`Work out ${d} × £${fixDp(pr, 2)}. Give your answer in pounds.`, `£${fixDp((d * pr), 2)}`, `The display may show ${+fixDp((d * pr), 2)}: money always has 2 decimal places, £${fixDp((d * pr), 2)}.`],
+        [`Work out √${e} × ${b}. Give your answer to 2 decimal places.`, fixDp((Math.sqrt(e) * b), 2), `Keep the full √${e} on the screen and round only at the end: ${fixDp((Math.sqrt(e) * b), 2)}. Rounding √${e} first gives a different answer.`],
         [`A calculator shows ${hrs} hours. Write this in hours and minutes.`, mins, `Only the decimal part is minutes: ${gfrac(hrs)} × 60. Not ${String(hrs).split(".")[1]} minutes.`],
         [`Work out 3/8 + 2/5 using the fraction button. Give your answer as a fraction.`, "31/40", "Use the fraction key (a b/c or ▭/▭). 15/40 + 16/40 = 31/40."],
         [`Kai works out 48.7 × 21.3 and gets 10 373.1. Use an estimate to show he is wrong.`, "50 × 20 = 1000, so 10 373.1 is about ten times too big (it is 1037.31)", "1 mark for the estimate 50 × 20 = 1000, 1 mark for saying it doesn't match."]];

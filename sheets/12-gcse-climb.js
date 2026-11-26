@@ -130,9 +130,9 @@
       const a = rand(40) + 21, b = rand(9) + 2, c = rand(7) + 3, d = 2 + rand(8), e = rand(80) + 15, pr = (rand(400) + 120) / 100;
       const [hrs, mins] = pick([[2.75, "2 hours 45 minutes"], [1.4, "1 hour 24 minutes"], [3.2, "3 hours 12 minutes"], [0.85, "51 minutes"]]);
       const items = [
-        [`Work out (${a} + ${b}) ÷ ${c}. Give your answer to 1 decimal place.`, ((a + b) / c).toFixed(1), `Type the brackets, or press = after the top: ${a + b} ÷ ${c} = ${((a + b) / c).toFixed(3)}… → ${((a + b) / c).toFixed(1)}. Without brackets the calculator does ${b} ÷ ${c} first.`],
-        [`Work out ${d} × £${pr.toFixed(2)}. Give your answer in pounds.`, `£${(d * pr).toFixed(2)}`, `The display may show ${+(d * pr).toFixed(2)}: money always has 2 decimal places, £${(d * pr).toFixed(2)}.`],
-        [`Work out √${e} × ${b}. Give your answer to 2 decimal places.`, (Math.sqrt(e) * b).toFixed(2), `Keep the full √${e} on the screen and round only at the end: ${(Math.sqrt(e) * b).toFixed(2)}. Rounding √${e} first gives a different answer.`],
+        [`Work out (${a} + ${b}) ÷ ${c}. Give your answer to 1 decimal place.`, fixDp(((a + b) / c), 1), `Type the brackets, or press = after the top: ${a + b} ÷ ${c} = ${fixDp(((a + b) / c), 3)}… → ${fixDp(((a + b) / c), 1)}. Without brackets the calculator does ${b} ÷ ${c} first.`],
+        [`Work out ${d} × £${fixDp(pr, 2)}. Give your answer in pounds.`, `£${fixDp((d * pr), 2)}`, `The display may show ${+fixDp((d * pr), 2)}: money always has 2 decimal places, £${fixDp((d * pr), 2)}.`],
+        [`Work out √${e} × ${b}. Give your answer to 2 decimal places.`, fixDp((Math.sqrt(e) * b), 2), `Keep the full √${e} on the screen and round only at the end: ${fixDp((Math.sqrt(e) * b), 2)}. Rounding √${e} first gives a different answer.`],
         [`A calculator shows ${hrs} hours. Write this in hours and minutes.`, mins, `Only the decimal part is minutes: ${gfrac(hrs)} × 60. Not ${String(hrs).split(".")[1]} minutes.`],
         [`Work out 3/8 + 2/5 using the fraction button. Give your answer as a fraction.`, "31/40", "Use the fraction key (a b/c or ▭/▭). 15/40 + 16/40 = 31/40."],
         [`Kai works out 48.7 × 21.3 and gets 10 373.1. Use an estimate to show he is wrong.`, "50 × 20 = 1000, so 10 373.1 is about ten times too big (it is 1037.31)", "1 mark for the estimate 50 × 20 = 1000, 1 mark for saying it doesn't match."]];

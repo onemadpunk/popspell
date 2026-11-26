@@ -52,11 +52,10 @@
       "steps": {
         "start": "Work out 8 + 4 × 3 and (8 + 4) × 3. Why are they different?",
         "teach": "Review the order of operations: brackets, powers, then multiplying and dividing, then adding and subtracting. Place brackets in 2 + 6 × 5 − 3 to make as many different answers as you can. Solve an unfamiliar problem by asking: what do I know, what do I need, which problem is this like? Model a three-step problem (planning a school trip cost with a discount and a deposit) and write each step.",
-        "practise": "Multi-step problems, then the \"Plan it step by step\" sheet.",
+        "practise": "Decimals and the order of operations, then the \"Plan it step by step\" sheet.",
         "check": "Work out 36 ÷ (4 + 2) × 3 − 2². Then solve a new multi-step problem and explain your plan."
       },
       "use": [
-        "en-multistep",
         "t-calc"
       ],
       "home": "Plan the cost of a family day out with tickets, travel and food, step by step.",
@@ -113,12 +112,11 @@
       "steps": {
         "start": "Which is easiest to work out in your head: 25% of 48, ¼ of 48, or 0·25 × 48? Why?",
         "teach": "Talk through when each form is quickest: ¼ for mental work, 0·25 with a calculator, % for comparing. Find a percentage change: (change ÷ original) × 100. A bike's price goes from £240 to £276: a 15% increase. Use multipliers: a 15% increase is × 1·15; a 20% decrease is × 0·8. Compare two shops' price rises.",
-        "practise": "Percentages, then the \"Up or down?\" sheet.",
+        "practise": "Percentage increase and decrease, then the \"Up or down?\" sheet.",
         "check": "A phone falls from £450 to £378. What is the percentage decrease? Increase £80 by 12·5% using a multiplier."
       },
       "use": [
-        "f-percent-change",
-        "n-percent"
+        "f-percent-change"
       ],
       "home": "Track the price of something you buy often and work out the percentage change over a few months.",
       "vocab": "percentage increase, percentage decrease, multiplier, original value, efficient",
@@ -143,12 +141,10 @@
       "steps": {
         "start": "A recipe needs 1½ cups of flour. You make 2½ times the recipe. How much flour?",
         "teach": "Review adding with a common denominator. Multiply fractions as part of a part (⅔ × ¾ = 6/12 = ½), cancelling first where you can. Change mixed numbers to improper fractions to multiply: 1½ × 2½ = 3/2 × 5/2 = 15/4 = 3¾. Solve problems: lengths of wood, recipe scaling, time in hours.",
-        "practise": "Mixed numbers and calculating with fractions, then the \"Fractions at work\" sheet.",
+        "practise": "Multiplying and dividing fractions, then the \"Fractions at work\" sheet.",
         "check": "Work out 2⅓ + 1¾ and 2⅖ × 1¼. A plank is 3¾ m long; ⅖ is cut off. How long is the piece cut off?"
       },
       "use": [
-        "en-fractions-y6",
-        "en-fractions-y5",
         "f-fraction-calc"
       ],
       "home": "Use fractions when cooking: scale a recipe by 1½.",
@@ -178,8 +174,7 @@
         "check": "6 litres of fuel take a car 84 km. How far on 10 litres? A journey takes 3 hours at 60 km/h. How long at 45 km/h?"
       },
       "use": [
-        "sec-proportion",
-        "en-ratio"
+        "sec-proportion"
       ],
       "home": "Spot direct and inverse proportion at home: cooking times, sharing costs, how long chores take with more helpers.",
       "vocab": "direct proportion, inverse proportion, unitary method, rate, constant",
@@ -208,7 +203,7 @@
         "check": "Someone works 37 hours at £12 and 4 hours' overtime at time and a half. Find their gross pay. With £68·40 deducted, what is their net pay?"
       },
       "use": [
-        "n-best-value"
+        "t-best-buy"
       ],
       "home": "Look at a real (or example) payslip with a grown-up and find gross pay, deductions and net pay.",
       "vocab": "gross pay, net pay, deduction, overtime, commission, income tax, National Insurance, pension",
@@ -240,7 +235,8 @@
         "check": "Which costs less: a £900 loan repaid at £80 a month for 12 months, or saving £75 a month for 12 months then buying? Explain the impact of each choice."
       },
       "use": [
-        "n-best-value"
+        "g5-growth",
+        "t-best-buy"
       ],
       "home": "Compare the real cost of buying something on a payment plan with saving up for it.",
       "vocab": "credit, debt, interest, APR, savings account, loan, exchange rate, commission, budget",
@@ -266,12 +262,11 @@
       "steps": {
         "start": "A flight leaves Glasgow at 21:40 and takes 7 hours 50 minutes. New York is 5 hours behind. What is the local time when it lands?",
         "teach": "Use a timeline to cross midnight and change time zone in separate steps. Convert minutes to decimal hours (36 minutes = 0·6 hours) and back. Calculate a speed from a time like 2 hours 24 minutes (2·4 hours). Count durations across months, remembering month lengths. Plan a revision timetable that fits around fixed times.",
-        "practise": "12-hour and 24-hour time, then the \"Around the world\" sheet.",
+        "practise": "Speed, distance and time, then the \"Around the world\" sheet.",
         "check": "A train travels 186 km in 1 hour 33 minutes. What is its average speed? How many days from 18 March to 4 May?"
       },
       "use": [
-        "n-time-24",
-        "n-durations"
+        "t-speed"
       ],
       "home": "Plan a call to someone in another time zone at a time that suits you both.",
       "vocab": "time zone, GMT, BST, duration, decimal hours, average speed, timetable",
@@ -298,12 +293,10 @@
       "steps": {
         "start": "Which box needs less card to make: a 10 cm cube, or a 20 cm × 10 cm × 5 cm cuboid? Both hold 1000 cm³.",
         "teach": "Derive the trapezium formula ½(a + b)h by doubling it into a parallelogram, and the kite as half the product of its diagonals. Draw nets to find surface areas: cuboid 2(lb + bh + lh); a cylinder's curved surface unrolls to a rectangle 2πr by h. Compare the card needed for packaging that holds the same amount, keeping full accuracy until the end.",
-        "practise": "Area and perimeter, then the \"Wrap it up\" sheet.",
+        "practise": "Volume and surface area of prisms and cylinders, then the \"Wrap it up\" sheet.",
         "check": "Find the area of a trapezium with parallel sides 7 cm and 11 cm and height 5 cm. Find the surface area of a cylinder with radius 3 cm and height 10 cm."
       },
       "use": [
-        "n-area",
-        "en-area-formulae",
         "f-prisms"
       ],
       "home": "Measure a cereal box and work out how much card it uses.",
@@ -333,8 +326,8 @@
         "check": "Find the volume of a triangular prism with triangle base 6 cm, height 4 cm and length 15 cm, and of a cylinder with radius 5 cm and height 12 cm."
       },
       "use": [
-        "en-area-formulae",
-        "f-prisms"
+        "f-prisms",
+        "f-circles"
       ],
       "home": "Work out how many litres a mug, a vase or a fish tank holds, then check with water.",
       "vocab": "prism, cross-section, volume, cylinder, capacity, litre, cm³",
@@ -386,7 +379,7 @@
       "steps": {
         "start": "Tables in a row seat 6, 10, 14, 18 people. How many seats for 25 tables?",
         "teach": "Draw the tables pattern and see why it goes up by 4 each time: each new table adds 4 seats. Find the nth term as 4n + 2 by comparing with the 4 times table. Check with n = 1. Use the formula backwards: how many tables to seat 150? Repeat with a decreasing sequence.",
-        "practise": "Number patterns, then the \"nth term\" sheet.",
+        "practise": "The nth term, then the \"nth term\" sheet.",
         "check": "Find the nth term of 7, 11, 15, 19 … Which term is 123? Is 200 in the sequence?"
       },
       "use": [
@@ -423,7 +416,6 @@
         "check": "Find the gradient through (1, 2) and (5, 10). What is the equation of the line through (3, −1) and (3, 4)? Does a ramp rising 0·5 m over 5 m meet a 1 in 12 rule?"
       },
       "use": [
-        "en-coordinates",
         "k4-lines"
       ],
       "home": "Measure a ramp or slope near you and work out its gradient.",
@@ -481,7 +473,7 @@
       "steps": {
         "start": "Two phone plans: £15 plus £2 a gigabyte, or £25 plus £1 a gigabyte. When do they cost the same?",
         "teach": "Write the plans as 15 + 2g = 25 + g and solve by balancing (take g from both sides first). Solve 3(x − 2) = x + 8 by expanding first. Solve inequalities like a balance too: 4x − 3 > 13 gives x > 4; show it on a number line. Solve −2 ≤ x + 3 < 5 and list the whole numbers that fit.",
-        "practise": "Missing numbers and signs, then the \"Balance it\" sheet.",
+        "practise": "Solve linear equations and Harder equations and inequalities, then the \"Balance it\" sheet.",
         "check": "Solve 5x + 4 = 2x + 19 and 4(x + 1) = 2(x + 7). Solve 3x − 5 ≤ 16. When is the first phone plan cheaper?"
       },
       "use": [
@@ -607,11 +599,10 @@
       "steps": {
         "start": "How many times does a square look the same as you turn it through one full turn?",
         "teach": "Plot a shape in all four quadrants. Translate it by a vector, such as 3 right and 2 down, and reflect it in the x-axis, the y-axis and a line such as x = 1. Describe a given transformation fully. Find the order of rotational symmetry of letters, logos and regular polygons with tracing paper, then complete a design with order 4.",
-        "practise": "Coordinates: plotting, translating and reflecting, then the \"Move it and turn it\" sheet.",
+        "practise": "Coordinates and transformations, then the \"Move it and turn it\" sheet.",
         "check": "Reflect triangle (1, 1), (3, 1), (3, 4) in the x-axis and give the new coordinates. What is the order of rotational symmetry of a regular hexagon?"
       },
       "use": [
-        "en-coordinates",
         "t-transform"
       ],
       "home": "Find logos with rotational symmetry and give each one's order.",
@@ -637,12 +628,11 @@
       "steps": {
         "start": "Five people earn £18 000, £20 000, £21 000, £22 000 and £150 000. What is the 'average' pay?",
         "teach": "Find the mean (£46 200) and median (£21 000) of the pay data and discuss which is fairer. Find the mode of shoe sizes for a shop order. Use the range to compare spread. Decide which average suits each situation: house prices (median), most popular size (mode), test scores with no extreme values (mean).",
-        "practise": "The mean, then the \"Which average?\" sheet.",
+        "practise": "Averages and spread, then the \"Which average?\" sheet.",
         "check": "Find the mean, median, mode and range of 4, 7, 7, 9, 12, 15. A company says its 'average' pay is £46 200. Why could that mislead?"
       },
       "use": [
-        "f-averages",
-        "en-mean"
+        "f-averages"
       ],
       "home": "Collect a week of temperatures or bus journey times and find all four statistics.",
       "vocab": "mean, median, mode, range, average, spread, outlier, misleading",
@@ -669,12 +659,10 @@
       "steps": {
         "start": "Do taller people have bigger feet? How could we find out, and how would we show it?",
         "teach": "Draw a scatter graph of height against foot length and describe the correlation (positive, negative, none) and its strength. Discuss why correlation doesn't prove one causes the other. Make an ordered stem and leaf diagram of test scores and read the median from it. Sort data into discrete, continuous and grouped, and match each to a suitable chart.",
-        "practise": "Reading tables, then the \"What does the data say?\" sheet.",
+        "practise": "Grouped data, quartiles, samples and correlation (Years 10 and 11), then the \"What does the data say?\" sheet.",
         "check": "Describe the correlation in a given scatter graph. Which diagram would you choose for 30 reaction times, and why?"
       },
       "use": [
-        "n-table",
-        "n-bar",
         "k4-statistics"
       ],
       "home": "Find a graph in the news and write two sentences about what it shows and one about what it doesn't.",
@@ -700,12 +688,12 @@
       "steps": {
         "start": "A game costs £1 to play. You win £5 if you roll a 6. Over 60 games, would you expect to win or lose money?",
         "teach": "Calculate expected frequency = probability × number of trials. Work out the expected result of the game (60 × ⅙ = 10 wins, £50 won, £60 spent). Use relative frequency from an experiment to estimate a probability. Discuss risk as probability and consequence together, with examples like insurance, weather warnings and medical tests.",
-        "practise": "How likely is it?, then the \"Risky business\" sheet.",
+        "practise": "Probability: missing values and expected results (Years 10 and 11) and Probability from 0 to 1, then the \"Risky business\" sheet.",
         "check": "The probability a phone is faulty is 0·02. How many faulty phones would you expect in a batch of 1500? Is a 1% chance of losing £1000 worse than a 50% chance of losing £10? Explain."
       },
       "use": [
-        "n-chance",
-        "k4-probability"
+        "k4-probability",
+        "t-probability"
       ],
       "home": "Look at a weather warning or an insurance offer and talk about the probability and the consequences.",
       "vocab": "probability, expected frequency, relative frequency, risk, prediction, outcome",

@@ -87,14 +87,16 @@ window.PopHome = (() => {
     return out;
   }
   // A worked example to show first: a practice question that comes with an explanation
+  // Practice at the lesson's own level comes first, and the example is from the middle of the set (the
+  // questions run easy to hard), so it shows the lesson's method rather than a warm-up fact
   function exampleOf(l) {
-    for (const id of l.use || []) {
-      const act = A() && A().get(id);
-      if (!act || act.game || act.area === "listening" || act.passage) continue;
+    const acts = (l.use || []).map(id => A() && A().get(id)).filter(act => act && !act.game && act.area !== "listening" && !act.passage);
+    acts.sort((a, b) => (b.level === l.level) - (a.level === l.level));
+    for (const act of acts) {
       let qs = [];
       try { qs = act.make() || []; } catch { qs = []; }
-      const q = qs.filter(printable).find(x => x.explain && x.explain.length > 12);
-      if (q) return q;
+      const ok = qs.filter(printable).filter(x => x.explain && x.explain.length > 12);
+      if (ok.length) return ok[Math.floor(ok.length * 0.6)];
     }
     return null;
   }
@@ -250,7 +252,7 @@ window.PopHome = (() => {
     const head = `${K.brandHead(`Teaching ${pack.title} at home`, `${esc(pack.ages)}. ${made.paper ? "A parent's guide, paper only." : "A parent's guide."} Read this first.`)}${stamp(made)}`;
     const blocks = [
       block(box(`You don't need to be a teacher${maths ? ", or good at maths" : ""}`, `<p>Everything is written out for you. Each session has a <b>parent's page</b> that says what to do, step by step, and what to say. The <b>answer pages</b> have every answer. Your job is to keep it calm and short, mark with the answer pages, and ask your child to explain their thinking. Learning alongside them is fine: say so.</p>`)),
-      block(box("The pack", `<p>${n} sessions of about ${minutes(pack)} minutes: ${lessons} lessons, a review after every ${REVIEW_EVERY}, and a final check. At ${made.perWeek} a week that's about ${weeks} weeks. ${made.paper ? "Everything is on paper: no internet needed." : "Each lesson also names free online practice on popspell.com that marks itself (no login)."}</p>`)),
+      block(box("The pack", `<p>${n} sessions of about ${minutes(pack)} minutes: ${lessons} lessons, a review after every ${REVIEW_EVERY}, and a final check. At ${made.perWeek} a week that's about ${weeks} weeks, or about ${Math.max(1, Math.round(n * minutes(pack) / 60))} hours in all. That covers the main ideas, not everything a school would teach in a year, so use it alongside daily reading and other practice. ${made.paper ? "Everything is on paper: no internet needed." : "Each lesson also names free online practice on popspell.com that marks itself (no login)."}</p>`)),
       block(box("Before each session (5 minutes)", `<p>Read that session's parent's page. Put out the pupil's sheets, the answer pages (on your side of the table), a pencil and anything in “You need”. Phones away, TV off.</p>`)),
       block(box("Every lesson has four steps", `<ol class="cs-list"><li><b>Warm up</b> (${STEP_MINUTES(pack)[0]} minutes): something quick to get going.</li><li><b>Show and explain</b> (${STEP_MINUTES(pack)[1]} minutes): read the explanation out or say it your way, then do one together.</li>
         <li><b>Practise</b> (${STEP_MINUTES(pack)[2]} minutes): the sheet, marked as you go.</li><li><b>Check</b> (${STEP_MINUTES(pack)[3]} minutes): one or two questions on their own, and a question to see if they understand why. This tells you whether to move on.</li></ol>`)),
