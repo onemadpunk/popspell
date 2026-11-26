@@ -187,6 +187,18 @@ MAP = {
   "e2-check": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "e2-mixed": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-start-here": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-mini-papers": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e2-writing": "en 10-11 gel 5; en 10-11 gel 6; en 10-11 writ 9",
   "e3-check": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "e3-mixed": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-start-here": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-mini-papers": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5", "lesson-england-english-climb-e3-writing": "en 10-11 gel 5; en 10-11 gel 6; en 10-11 writ 9",
   "lesson-england-english-climb-my-next-step": "en 10-11 gel 1; en 10-11 gel 3; en 10-11 gel 5",
+  # Literacy extras (comprehension ladder, reading tests, novel task maps, writing frames, spot the difference)
+  "lesson-first-comprehension-ladder": "en 2 rc 17; en 1 rc 12; en 2 rc 15",
+  "lesson-second-comprehension-ladder": "en 5-6 rc 13; en 5-6 rc 14; en 3-4 rc 17",
+  "lesson-third-comprehension-ladder": "en 7-9 read 11; en 7-9 read 15; en 7-9 read 8",
+  "lesson-first-reading-test": "en 3-4 rc 17; en 2 rc 17",
+  "lesson-second-reading-tests": "en 5-6 rc 13; en 5-6 rc 19; en 5-6 rc 18; en 3-4 rc 17",
+  "lesson-second-novel-task-map": "en 5-6 rc 2; en 5-6 rc 5; en 5-6 rc 13",
+  "lesson-first-writing-frames": "en 2 co 3; en 2 co 5; en 2 co 12",
+  "lesson-second-writing-frames": "en 5-6 co 2; en 5-6 co 10; en 3-4 co 8; en 3-4 co 6",
+  "lesson-third-writing-frames": "en 7-9 writ 2; en 7-9 writ 8; en 7-9 writ 9",
+  "lesson-early-spot-the-difference": "en R spk 1; en R lau 3",
+  "lesson-first-spot-the-difference": "en 1-6 sl 3; en 1-6 sl 1",
   "lesson-england-english-climb-spoken": "en 10-11 se 1; en 10-11 se 2; en 10-11 se 5; en 10-11 se 6",
   # Literacy: games and activities
   "g-hopper-short": "en R wread 1; en 1 wr 2", "g-hopper-digraphs": "en R wread 1; en 1 wr 2",

@@ -1705,6 +1705,15 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .qd-strip b { letter-spacing: .04em; text-transform: uppercase; }
 .qd-strip span:last-child { margin-left: auto; }
 .qd-task { margin: 10px 0 6px !important; font-weight: 600; }
+/* Comprehension ladder and reading tests (sheets/22-comprehension-ladder.js): bigger print for younger readers, tick options in a row */
+.lq-text { font-size: 12pt; }
+.lq-text.lq-young { font-size: 13.5pt; line-height: 1.55; }
+.lq-opts { margin: 2px 0 4px 1.4em !important; display: flex; flex-wrap: wrap; gap: 2px 26px; }
+.wf-box .ws-lines { margin-top: 2px; }
+/* Spot the difference (sheets/24-spot-difference.js): two line drawings, one above the other */
+.sd-pic { display: block; width: 100%; max-height: 10.2cm; margin: 6px 0; }
+.sd-say { margin: 0 0 4px !important; }
+.sd-found { font-size: 16pt; letter-spacing: .1em; margin: 4px 0 0 !important; }
 .qd-n { display: inline-grid; place-items: center; width: 1.5em; height: 1.5em; border-radius: 50%; background: #ffc837; color: #111; font-weight: 700; margin-right: 4px;
   -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .qd-rows { display: grid; gap: 8px 24px; margin: 4px 0 6px; }

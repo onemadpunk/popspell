@@ -5863,5 +5863,356 @@ window.PopPaper = (() => {
         "Precision matters in talk as in writing: praise exact words and numbers.",
         "The performance must be achieved for the Higher English award; check with the centre how it will be assessed."])
     }));
+  /* ===================== Comprehension ladder, reading tests and novel task maps =====================
+     In the way tutoring comprehension sheets work: one page, a short text, a word box, then questions
+     that climb from finding information to inference and the writer's choices, with the answers on the back.
+     Eight rungs, from about age 6 to about age 14 (CfE First to Third level). Then four reading tests (P4 to P7,
+     England Years 3 to 6) with marks, like the end-of-year tests schools use, and task maps for reading a whole
+     novel. Every text is PopSpell's own, or a public-domain novel for the task maps. */
+
+  const lqStrip = (what, how) => `<p class="qd-strip"><b>${what}</b><span>${how}</span><span>Done ☐</span></p>`;
+  const lqMk = it => it.m ? ` <span class="gx-mk">(${it.m} mark${it.m > 1 ? "s" : ""})</span>` : "";
+  const lqQ = (it, i) => it.o
+    ? `<div class="pp-q"><p><b>${i}.</b> ${it.q}${lqMk(it)}</p><p class="lq-opts">${shuffle([it.a].concat(it.o)).map(o => `<span>☐ ${o}</span>`).join("")}</p></div>`
+    : `<div class="pp-q"><p><b>${i}.</b> ${it.q}${lqMk(it)}</p>${lines(it.l || 1)}</div>`;
+  const lqParas = s => s.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+  // q: question; a: answer; o: wrong options (a tick question); l: lines to write on; s: skill; m: marks (tests)
+  const LADDER = [
+    { n: 1, age: "about 6 to 7", level: "First", title: "The lost mitten", words: [["mitten", "a glove with one part for the thumb"], ["path", "a narrow way to walk along"], ["puffed", "breathed hard"]],
+      text: "Lily had one red mitten. The other one was lost. She looked in her bag. She looked under the bed. It was not there.\n\nShe went out to the garden. The snow was deep and white. Then Lily saw a little red dot by the path. She ran to it and puffed. It was her mitten! A robin was sitting on it.",
+      qs: [{ q: "What colour was the mitten?", a: "Red", o: ["Blue", "White"], s: "finding information" }, { q: "Where did Lily look first?", a: "In her bag", o: ["Under the bed", "In the garden"], s: "finding information" },
+        { q: "Where was the mitten in the end?", a: "In the garden, by the path", l: 1, s: "finding information" }, { q: "What was sitting on the mitten?", a: "A robin", l: 1, s: "finding information" },
+        { q: "How do you think Lily felt when she saw the red dot? Why?", a: "Excited or happy, because she thought it might be her mitten (she ran to it).", l: 2, s: "inference" }],
+      gap: ["Lily lost a red ___. She found it in the ___, by the ___.", ["mitten", "garden", "path"]] },
+    { n: 2, age: "about 7 to 8", level: "First", title: "Sports day", words: [["nervous", "a bit worried"], ["wobbled", "shook from side to side"], ["cheered", "shouted to help someone"]],
+      text: "It was sports day, and Omar felt nervous. His race was the egg and spoon. He held the spoon very still, but the egg wobbled every time he took a step.\n\nWhen the whistle went, the other children ran fast. Two eggs fell on the grass. Omar walked slowly and kept his eyes on his egg. His gran cheered from the fence.\n\nOmar did not come first. He came third. But his egg was still on his spoon at the end, and he got a sticker that said \"Steady hands\".",
+      qs: [{ q: "What race did Omar do?", a: "The egg and spoon race", o: ["The sack race", "The running race"], s: "finding information" }, { q: "Who cheered for Omar?", a: "His gran", o: ["His dad", "His teacher"], s: "finding information" },
+        { q: "What place did Omar come?", a: "Third", l: 1, s: "finding information" }, { q: "Find and copy a word that tells you how Omar felt at the start.", a: "nervous", l: 1, s: "vocabulary" },
+        { q: "Why do you think Omar walked slowly?", a: "So his egg would not fall off (he kept his eyes on it).", l: 2, s: "inference" }, { q: "Why did Omar get the \"Steady hands\" sticker?", a: "Because his egg stayed on his spoon all the way to the end.", l: 2, s: "inference" }],
+      gap: ["Omar did the ___ and spoon race. He came ___. His egg stayed on his ___.", ["egg", "third", "spoon"]] },
+    { n: 3, age: "about 8 to 9", level: "First", title: "How hedgehogs spend the winter", words: [["hibernate", "sleep through the winter"], ["burrow", "dig into"], ["shelter", "a safe, dry place"]],
+      text: "Hedgehogs are small animals covered in sharp spines. They come out at night to look for beetles, worms and slugs to eat.\n\nWhen the weather gets cold, there is not much food about. So in autumn, hedgehogs eat as much as they can to get fat. Then they find a shelter, such as a pile of leaves or a space under a shed, and burrow inside. They hibernate there until the spring.\n\nYou can help hedgehogs by leaving a wild corner in your garden, and by checking bonfires before they are lit.",
+      qs: [{ q: "When do hedgehogs look for food?", a: "At night", o: ["In the morning", "At lunchtime"], s: "finding information" }, { q: "Name two things hedgehogs eat.", a: "Two of: beetles, worms, slugs.", l: 1, s: "finding information" },
+        { q: "Why do hedgehogs eat a lot in autumn?", a: "To get fat, because there isn't much food in winter.", l: 2, s: "finding information" }, { q: "What does \"hibernate\" mean?", a: "Sleep through the winter", o: ["Run very fast", "Hide from people"], s: "vocabulary" },
+        { q: "Why should people check bonfires before they are lit?", a: "A hedgehog might be hiding (hibernating) in the pile.", l: 2, s: "inference" }, { q: "Is this text a story or an information text? How do you know?", a: "Information text: it gives facts about real animals, not characters and events.", l: 2, s: "type of text" }],
+      gap: ["Hedgehogs eat a lot in ___ and then ___ until spring in a ___.", ["autumn", "hibernate", "shelter"]] },
+    { n: 4, age: "about 9 to 10", level: "Second", title: "The night the lights went out", words: [["flickered", "went on and off quickly"], ["fumbled", "felt about clumsily"], ["gloom", "near darkness"]],
+      text: "The storm had been growling all evening. At eight o'clock, the kitchen light flickered twice and went out. The fridge stopped humming. Somewhere upstairs, Ellie's little brother began to wail.\n\nEllie fumbled in the drawer for the torch. Her fingers found string, a ruler and a sticky spoon before they closed round it. She clicked the switch. Nothing.\n\n\"Batteries,\" said Mum from the gloom. \"Top shelf.\"\n\nTen minutes later, they were all in the living room with three candles, a pack of cards and a tin of biscuits. Rain hammered the window. Ellie's brother had stopped crying and was trying to cheat at snap. Ellie realised, with some surprise, that this was the best evening they'd had all month.",
+      qs: [{ q: "What time did the light go out?", a: "Eight o'clock", o: ["Ten o'clock", "Seven o'clock"], s: "finding information" }, { q: "List two things Ellie found in the drawer before the torch.", a: "Two of: string, a ruler, a sticky spoon.", l: 1, s: "finding information" },
+        { q: "Why didn't the torch work?", a: "Its batteries were flat (Mum says the new batteries are on the top shelf).", l: 2, s: "inference" }, { q: "\"The storm had been growling.\" What does \"growling\" make the storm sound like?", a: "An angry or dangerous animal: it makes the storm sound threatening.", l: 2, s: "writer's choices" },
+        { q: "How did Ellie's brother feel at first, and at the end? Use evidence.", a: "Upset or scared at first (\"began to wail\"); happy or playful at the end (\"trying to cheat at snap\").", l: 3, s: "inference" }, { q: "Why was Ellie surprised that it was the best evening all month?", a: "Because a power cut sounds bad, but it brought the family together doing things they enjoyed.", l: 2, s: "inference" }],
+      gap: null },
+    { n: 5, age: "about 10 to 11", level: "Second", title: "The bridge that sings", words: [["suspension bridge", "a bridge hung from cables"], ["vibrate", "shake very fast"], ["engineers", "people who design and build structures"]],
+      text: "On windy days, people living near one suspension bridge in Scotland noticed something strange: the bridge was humming. On the worst days, the hum rose into a long, low note, like someone blowing across the top of a bottle.\n\nEngineers soon found the cause. The bridge had new safety barriers along its edges, made of thin metal strips. When strong wind blew across them at a certain angle, the strips began to vibrate, and the whole row \"sang\" together.\n\nSome local people liked the sound and said it made the bridge feel alive. Others found it kept them awake at night. In the end, the engineers fitted covers to the strips, which changed the way the air flowed. The bridge went quiet, although a few people say they miss its song.",
+      qs: [{ q: "When did the bridge hum?", a: "On windy days", o: ["Every night", "When it rained"], s: "finding information" }, { q: "What caused the sound?", a: "Thin metal strips on the new safety barriers vibrating in the wind.", l: 2, s: "finding information" },
+        { q: "Find and copy the simile the writer uses to describe the sound.", a: "\"like someone blowing across the top of a bottle\"", l: 1, s: "writer's choices" }, { q: "Why is \"sang\" in inverted commas?", a: "Because the bridge didn't really sing: it's a word used in a special or playful way.", l: 2, s: "writer's choices" },
+        { q: "Give one reason people liked the sound and one reason they didn't.", a: "Liked: it made the bridge feel alive. Didn't: it kept them awake at night.", l: 2, s: "finding information" }, { q: "Do you think the engineers made the right decision? Give a reason.", a: "Any answer with a reason from the text, e.g. yes, because people need to sleep; or no, because some people loved it.", l: 2, s: "evaluation" }],
+      gap: null },
+    { n: 6, age: "about 11 to 12", level: "Second", title: "Granny Nell's notebook", words: [["faded", "lost its colour"], ["meticulous", "very careful about small details"], ["inheritance", "something passed on after someone dies"]],
+      text: "When Granny Nell died, she left Kirsty a battered blue notebook. Its cover was faded, and the spine was held together with tape. Kirsty had expected jewellery, or maybe money. She was a little disappointed.\n\nThat evening she opened it. Every page was covered in Granny Nell's tiny, meticulous handwriting: the date, the weather, and what was flowering in the garden. \"14th March 1971. Frost. First daffodil by the gate.\" \"2nd June 1984. Hot. Roses out; Kirsty's mum learned to ride her bike.\" Fifty years of springs and summers were folded into its pages.\n\nKirsty read until midnight. The next morning she found a new notebook, wrote the date at the top, and went out into the cold to see what was flowering.",
+      qs: [{ q: "What three things did Granny Nell write on each page?", a: "The date, the weather, and what was flowering in the garden.", l: 2, s: "finding information" }, { q: "Why was Kirsty disappointed at first?", a: "She expected something valuable, like jewellery or money.", l: 2, s: "inference" },
+        { q: "What does \"meticulous\" tell you about Granny Nell?", a: "She was careful and patient; she paid attention to small details.", l: 2, s: "vocabulary" }, { q: "\"Fifty years of springs and summers were folded into its pages.\" Explain what this means.", a: "The notebook held a record of fifty years of seasons and memories, kept inside it like something folded and stored.", l: 2, s: "writer's choices" },
+        { q: "How do Kirsty's feelings about the notebook change? Use evidence.", a: "From disappointed (\"a little disappointed\") to fascinated (\"read until midnight\") and inspired (starts her own notebook).", l: 3, s: "inference" }, { q: "Why do you think the writer ends with Kirsty starting her own notebook?", a: "To show the notebook was a real inheritance: Kirsty carries on Granny Nell's habit, so the memory lives on.", l: 2, s: "structure" }],
+      gap: null },
+    { n: 7, age: "about 12 to 13", level: "Third", title: "Should we bring back the beaver?", words: [["reintroduce", "bring back to a place where it once lived"], ["habitat", "the natural home of an animal or plant"], ["controversial", "causing strong disagreement"]],
+      text: "Four hundred years ago, beavers were hunted to extinction in Britain for their fur. Today, they are back. Beavers have been reintroduced in parts of Scotland and England, and their return is one of the most controversial wildlife stories of our time.\n\nSupporters call beavers \"ecosystem engineers\". Their dams slow rivers down, creating ponds and wetlands where insects, frogs, birds and fish thrive. Some studies suggest beaver dams can even reduce flooding further downstream, by holding back water after heavy rain.\n\nNot everyone is convinced. Some farmers say that beaver dams flood valuable fields, and that beavers fell trees on their land. They argue that a farmer's livelihood should not be put at risk to suit wildlife campaigners.\n\nThe answer may lie in management: protecting beavers where they help, and moving them where they cause real damage. What seems certain is that, after four centuries away, the beaver will not leave quietly.",
+      qs: [{ q: "Why did beavers disappear from Britain?", a: "They were hunted to extinction for their fur.", l: 1, s: "finding information" }, { q: "Give two benefits of beaver dams mentioned in the text.", a: "Two of: they create ponds and wetlands; they help insects, frogs, birds and fish; they may reduce flooding downstream.", l: 2, s: "finding information" },
+        { q: "Why do supporters call beavers \"ecosystem engineers\"?", a: "Because they build things (dams) that change and shape the whole environment for other living things.", l: 2, s: "vocabulary" }, { q: "What is the farmers' main argument?", a: "Beavers damage their land (flooding fields, felling trees), and their livelihood shouldn't be put at risk for wildlife.", l: 2, s: "main ideas" },
+        { q: "Is the writer for or against beavers, or balanced? Give evidence.", a: "Balanced: gives supporters' and farmers' views and suggests a compromise (\"The answer may lie in management\").", l: 3, s: "writer's purpose" }, { q: "Comment on the effect of the last sentence.", a: "It's memorable and slightly humorous; \"will not leave quietly\" personifies the beaver and suggests the debate will continue.", l: 2, s: "writer's choices" }],
+      gap: null },
+    { n: 8, age: "about 13 to 14", level: "Third", title: "The last ferry", words: [["slipway", "a ramp leading down into the water"], ["reluctant", "unwilling"], ["receded", "moved back or away"]],
+      text: "The last ferry of the season left at four. By ten to, the slipway was empty apart from Callum, a holdall at his feet, and his father, who was pretending to study the timetable he had known by heart for thirty years.\n\nNeither of them had mentioned the university letter since it arrived. It sat now in Callum's inside pocket, folded so many times that the creases had begun to tear.\n\n\"You'll phone,\" his father said. It was not a question.\n\n\"Every Sunday.\"\n\nThe ferry's horn sounded across the bay, two long notes that Callum had heard every day of his life and had never, until now, listened to. His father picked up the holdall, carried it to the ramp, and set it down with great care, as if it held something that might break. Then, reluctant, he stepped back.\n\nFrom the deck, Callum watched the island shrink: the white houses, the shop, the single road climbing the hill. His father stayed on the slipway, one hand raised, until the island receded into the grey and the hand was impossible to see. Callum kept waving anyway.",
+      qs: [{ q: "Why is Callum leaving the island?", a: "To go to university.", l: 1, s: "inference" }, { q: "Why is the father \"pretending to study the timetable\"?", a: "He knows it already; he's hiding his feelings or avoiding talking about Callum leaving.", l: 2, s: "inference" },
+        { q: "What does the state of the letter (\"creases had begun to tear\") suggest?", a: "Callum has read or handled it many times: he is anxious or thinking about it constantly.", l: 2, s: "inference" }, { q: "\"It was not a question.\" What does this show about the father?", a: "He's telling, almost pleading: he needs Callum to stay in touch, and his feelings are strong but held in.", l: 2, s: "writer's choices" },
+        { q: "Explain the effect of the simile \"as if it held something that might break\".", a: "It shows the father's tenderness: the care for the bag stands for his care for Callum, and suggests the moment itself is fragile.", l: 3, s: "writer's choices" }, { q: "Why do you think the writer ends with \"Callum kept waving anyway\"?", a: "It shows Callum's love and loyalty to his father and home, even when they can't see each other: an emotional, open ending.", l: 2, s: "structure" }],
+      gap: null }
+  ];
+  const LQ_LESSON = { First: "lesson-first-comprehension-ladder", Second: "lesson-second-comprehension-ladder", Third: "lesson-third-comprehension-ladder" };
+  const lqSkills = qs => [...new Set(qs.map(q => q.s))].join(", ");
+  LADDER.forEach(r => {
+    add(`paper-comp-ladder-${r.n}`, LQ_LESSON[r.level], `Comprehension ladder, rung ${r.n}: ${r.title}`,
+      `A one-page comprehension for readers ${r.age}: the text, a word box, then ${r.qs.length} questions (${lqSkills(r.qs)})${r.gap ? ", and a fill-the-gap summary" : ""}. Answers on the back.`, (who, h) => ({
+        pupil: `${h.sheetHead(r.title, who)}${lqStrip(`Comprehension, rung ${r.n} of 8`, `${r.level} level, ${r.age}`)}
+          <div class="ex-text lq-text${r.level === "First" ? " lq-young" : ""}">${lqParas(r.text)}</div>
+          ${box("Word box", `<p>${r.words.map(([w, d]) => `<b>${w}</b>: ${d}`).join(" · ")}</p>`)}
+          ${r.qs.map((it, i) => lqQ(it, i + 1)).join("")}
+          ${r.gap ? `<div class="pp-q"><p><b>${r.qs.length + 1}.</b> Fill the gaps. Use the words: <b>${shuffle(r.gap[1]).join(", ")}</b>.</p><p>${r.gap[0].replace(/___/g, blank(5))}</p></div>` : ""}`,
+        answers: answersPage(h, r.title, r.qs.map(it => `${it.a} <span class="gx-how">(${it.s})</span>`).concat(r.gap ? [`Gaps: ${r.gap[1].join(", ")}`] : []),
+          "Accept answers in the pupil's own words that show the same understanding. For \"why\" and \"how\" questions, look for a reason or evidence from the text.")
+      }));
+  });
+
+  /* ---------- Reading tests: P4 to P7 (England Years 3 to 6) ---------- */
+  const TESTS = [
+    { id: "p4", year: "P4 (England Year 3)", level: "First", lesson: "lesson-first-reading-test", minutes: 30, texts: [
+      { title: "The new class pet", kind: "story", text: "On Monday, Mr Patel came into class carrying a box with holes in the lid. Everyone stopped talking.\n\n\"This,\" he said, \"is Pepper.\" He lifted the lid. Inside was a small brown guinea pig with a white patch over one eye, like a pirate.\n\nPepper squeaked. Jodie giggled. Ravi wanted to hold her straight away, but Mr Patel shook his head. \"Pepper needs time to get used to us,\" he said. \"We must be quiet and gentle.\"\n\nThat week, the class made a rota. Two children each day would give Pepper fresh water, hay and a piece of carrot. By Friday, Pepper squeaked happily whenever anyone said her name." }],
+      qs: [{ q: "What day did Pepper come to class?", a: "Monday", m: 1 }, { q: "What kind of animal is Pepper?", a: "A guinea pig", m: 1 }, { q: "Why did Mr Patel say Ravi could not hold Pepper straight away?", a: "Pepper needed time to get used to the class / it might scare her.", m: 1, l: 1 },
+        { q: "The white patch made Pepper look like a ___.", a: "pirate", m: 1 }, { q: "What is a rota? Tick one.", a: "A list of whose turn it is", o: ["A kind of food", "A pet's cage"], m: 1 }, { q: "Name two things the children gave Pepper each day.", a: "Two of: fresh water, hay, a piece of carrot.", m: 1, l: 1 },
+        { q: "How do you know Pepper was happy by Friday?", a: "She squeaked happily whenever anyone said her name.", m: 1, l: 1 }, { q: "Number these 1 to 3 in the order they happened: The class made a rota. / Pepper squeaked happily. / Mr Patel lifted the lid.", a: "Mr Patel lifted the lid (1), the class made a rota (2), Pepper squeaked happily (3).", m: 1, l: 2 },
+        { q: "Everyone stopped talking when Mr Patel came in. Why do you think they did?", a: "They were curious or excited about what was in the box.", m: 1, l: 1 }, { q: "Would you like a class pet? Give one reason from the story.", a: "Any opinion with a reason linked to the story, e.g. yes, because looking after Pepper was fun.", m: 1, l: 2 }] },
+    { id: "p5", year: "P5 (England Year 4)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 35, texts: [
+      { title: "Lighthouses", kind: "information", text: "For hundreds of years, lighthouses have kept sailors safe. They stand on rocks, cliffs and islands where ships could be wrecked, and shine a bright light out to sea at night.\n\nEach lighthouse has its own pattern of flashes, called its character. One might flash white every five seconds; another might flash red twice every fifteen. By counting the flashes, sailors can tell exactly which lighthouse they are looking at, and so where they are.\n\nIn the past, lighthouse keepers lived in the lighthouse. They climbed the stairs every evening to light the lamp, cleaned the huge glass lens, and kept a log of the weather. Today, almost every lighthouse in the UK is automatic: computers switch the lights on and off, and engineers visit only to check them.\n\nScotland has more than two hundred lighthouses. Many were built by one family, the Stevensons, over a hundred and fifty years." }],
+      qs: [{ q: "What do lighthouses do?", a: "Keep sailors safe by shining a light so ships aren't wrecked.", m: 1, l: 1 }, { q: "What is a lighthouse's \"character\"?", a: "Its own pattern of flashes.", m: 1, l: 1 }, { q: "How can sailors tell which lighthouse they are looking at?", a: "By counting its flashes (its pattern).", m: 1, l: 2 },
+        { q: "Give two jobs a lighthouse keeper did.", a: "Two of: lit the lamp, cleaned the lens, kept a weather log.", m: 2, l: 2 }, { q: "Find and copy one word that means \"works by itself\".", a: "automatic", m: 1, l: 1 }, { q: "Why don't lighthouses need keepers today?", a: "Computers switch the lights on and off (they are automatic).", m: 1, l: 2 },
+        { q: "How many lighthouses does Scotland have?", a: "More than two hundred", o: ["About fifty", "Exactly one hundred"], m: 1 }, { q: "Which family built many of Scotland's lighthouses?", a: "The Stevensons", m: 1, l: 1 },
+        { q: "This text is mostly… Tick one.", a: "to inform", o: ["to persuade", "to entertain with a story"], m: 1 }, { q: "Suggest a good subheading for the third paragraph.", a: "Something about keepers then and now, e.g. \"Lighthouse keepers\" or \"From keepers to computers\".", m: 1, l: 1 }] },
+    { id: "p6", year: "P6 (England Year 5)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 40, texts: [
+      { title: "The tunnel", kind: "story", text: "Nobody used the old railway tunnel any more. Weeds grew between the sleepers, and a sign at the entrance said DANGER: KEEP OUT in letters that had faded to pink.\n\nSo of course Finn and Aisha went in.\n\nIt was colder inside than they expected, and their voices came back to them strange and hollow. Aisha's torch lit up a few metres of curved brick, glistening with damp, and then nothing: just a darkness so thick it seemed to swallow the beam.\n\n\"We should go back,\" Finn whispered, although he didn't move.\n\nThen they heard it: a slow drip, drip, and under it something else. A soft, steady scratching, coming closer.\n\nAisha swung the torch. Two green eyes blazed back at them. For a terrible second neither of them breathed. Then a scrawny grey cat stepped into the light, blinked, and walked calmly past them towards the daylight, as if they were the ones who had no business being there." }],
+      qs: [{ q: "Why did nobody use the tunnel?", a: "It was old and disused / dangerous (weeds, a DANGER sign).", m: 1, l: 1 }, { q: "\"So of course Finn and Aisha went in.\" What does this sentence tell you about them?", a: "They were curious or adventurous, and ignored the warning; \"of course\" makes it sound typical of them.", m: 2, l: 2 },
+        { q: "Find and copy two words that describe the sound of their voices in the tunnel.", a: "strange, hollow", m: 1, l: 1 }, { q: "\"a darkness so thick it seemed to swallow the beam\". What does this suggest?", a: "The darkness was very deep: the torchlight didn't reach far, as if the dark ate it.", m: 2, l: 2 },
+        { q: "Finn says \"We should go back\" but doesn't move. Why?", a: "He's frightened but also curious, or too scared to move.", m: 1, l: 2 }, { q: "How does the writer build tension? Give two ways.", a: "Two of: short sentences/paragraphs; sounds (drip, scratching) coming closer; the dark; \"Then they heard it\"; \"For a terrible second\".", m: 2, l: 3 },
+        { q: "What was making the scratching?", a: "A cat", o: ["A rat", "A train"], m: 1 }, { q: "Explain the joke in the last sentence.", a: "The children were scared of the cat, but the cat acts as if they are the intruders.", m: 1, l: 2 }] },
+    { id: "p7", year: "P7 (England Year 6)", level: "Second", lesson: "lesson-second-reading-tests", minutes: 45, texts: [
+      { title: "Why we should all learn to swim", kind: "argument", text: "Every summer, the same headlines appear: young people in difficulty in rivers, lochs and the sea. Many of these tragedies could be prevented. That is why swimming lessons should be guaranteed for every child, free of charge, before they leave primary school.\n\nSome will say this is too expensive. Pools cost money to run, and many councils are short of cash. But consider the alternative: rescue services, hospital care, and, worst of all, families who lose a child. Measured against that, a course of lessons is cheap.\n\nOthers argue that it is a parent's job, not a school's, to teach a child to swim. Yet not every parent can swim, or can afford lessons, or lives near a pool. Leaving it to families means the children who most need the skill are the least likely to get it.\n\nSwimming is not just about safety, either. It is exercise that children enjoy, a confidence-builder, and the start of a lifetime of fun in and around water.\n\nWe teach every child to read and to cross the road. Learning to swim belongs on the same list." }],
+      qs: [{ q: "What does the writer want to happen?", a: "Free swimming lessons for every child before they leave primary school.", m: 1, l: 1 }, { q: "What is the first counter-argument the writer mentions?", a: "It's too expensive (pools cost money; councils are short of cash).", m: 1, l: 1 },
+        { q: "How does the writer answer that counter-argument?", a: "Lessons are cheap compared with the cost of rescues, hospital care and losing a child.", m: 2, l: 2 }, { q: "\"the children who most need the skill are the least likely to get it\". Explain what this means.", a: "Children whose families can't swim, can't pay or don't live near a pool are the ones who'd miss out, though they need it most.", m: 2, l: 2 },
+        { q: "Give two benefits of swimming other than safety.", a: "Two of: exercise children enjoy, builds confidence, a lifetime of fun.", m: 1, l: 1 }, { q: "Why does the writer compare swimming to reading and crossing the road?", a: "To show swimming is a basic life skill every child should be taught, just like those.", m: 2, l: 2 },
+        { q: "Which word best describes the writer's tone?", a: "Persuasive and serious", o: ["Funny and silly", "Unsure and confused"], m: 1 }, { q: "Do you agree with the writer? Give a reason, using the text.", a: "Any view with a reason linked to the text.", m: 2, l: 2 }] }
+  ];
+  TESTS.forEach(t => {
+    const total = t.qs.reduce((s, q) => s + q.m, 0);
+    add(`paper-reading-test-${t.id}`, t.lesson, `Reading test: ${t.year}`,
+      `An end-of-year style reading test (${t.minutes} minutes, ${total} marks): one ${t.texts[0].kind} text and questions from finding information to explaining the writer's choices, with a mark scheme. PopSpell's own text.`, (who, h) => ({
+        pupil: `${h.sheetHead(`Reading test: ${t.texts[0].title}`, who)}<p class="qd-strip gx-strip"><b>Reading test</b><span>${t.year}</span><span>${t.minutes} minutes</span><span>Total ___ / ${total}</span></p>
+          <div class="ex-text lq-text${t.level === "First" ? " lq-young" : ""}"><p class="ex-src"><b>${t.texts[0].title}</b></p>${lqParas(t.texts[0].text)}</div>
+          ${t.qs.map((it, i) => lqQ(it, i + 1)).join("")}`,
+        answers: answersPage(h, `Reading test: ${t.year}`, t.qs.map(it => `${it.a} <span class="gx-of">(${it.m} mark${it.m > 1 ? "s" : ""})</span>`),
+          `Total ${total} marks. Accept answers in the pupil's own words with the same meaning. For 2-mark questions, give 1 mark for a simple point and 2 for a point explained or backed with evidence.`,
+          `<p class="gx-note">As a rough guide, about two-thirds of the marks or more suggests the pupil is reading at the expected level for ${t.year}. Use the questions they missed to choose what to teach next (finding information, vocabulary, inference or the writer's choices). It's a guide, not a standardised score.</p>`)
+      }));
+  });
+
+  /* ---------- Novel task maps: reading a whole book ---------- */
+  const MAP_KINDS = ["Before reading", "Characters", "Setting", "Prediction", "Words", "Writing", "Talk", "Create", "Plot", "Writing", "Thinking", "Review"];
+  const NOVELS = [
+    { id: "any", title: "Any novel", by: "", tasks: [
+      "Look at the cover and title. Predict three things that might happen.", "Draw the main character and write five words to describe them, with evidence.",
+      "Sketch the main setting and label it with words from the book.", "After each few chapters, write one sentence summary and one prediction.",
+      "Collect five new words. Write what each means and use it in a sentence.", "Write a diary entry as a character at a key moment.",
+      "Hot-seat a character: an adult asks questions and you answer in role.", "Design a new cover or a poster for the book, with a quotation on it.",
+      "Plot a story mountain: opening, build-up, problem, resolution, ending.", "Write a letter from one character to another.", "Which character changes most? Explain how and why.", "Write a review with a star rating and who should read it."] },
+    { id: "secret-garden", title: "The Secret Garden", by: "Frances Hodgson Burnett, 1911", tasks: [
+      "Read the first chapter. What is Mary like at the start? Find three words or phrases that show it.", "Make a character web for Mary, Colin and Dickon. How are they linked?",
+      "Draw the hidden garden when Mary first finds it, then again when it blooms.", "Predict: what will Mary find behind the door? Check your prediction later.",
+      "Find the Yorkshire dialect words Dickon and Martha use. What do they mean?", "Write Mary's diary on the day she first goes into the garden.",
+      "Debate: was it right for Mary to keep the garden a secret?", "Plant some seeds and keep a growing diary while you read.",
+      "Map how Mary changes from the start of the book to the end.", "Write a letter from Colin to his father.", "Why do you think the garden helps the children get better?", "Write a review for someone your age."] },
+    { id: "treasure-island", title: "Treasure Island", by: "Robert Louis Stevenson, 1883", tasks: [
+      "Before reading: what do you expect in a pirate story? List five things.", "Compare Jim and Long John Silver: what do they want, and can they be trusted?",
+      "Draw the treasure map with the places from the story labelled.", "At the end of each part, predict who will get the treasure.",
+      "Collect sea and pirate words (for example, schooner, mutiny). Make a glossary.", "Write the log of the Hispaniola for one day, as the captain.",
+      "Is Long John Silver a villain or a hero? Hold a class (or family) vote with reasons.", "Make a wanted poster for one of the pirates.",
+      "Plot the voyage on a story mountain.", "Write the letter Jim sends home after the voyage.", "Why do you think Jim goes home a different person from the boy at the inn?", "Write a review for someone your age."] },
+    { id: "alice", title: "Alice's Adventures in Wonderland", by: "Lewis Carroll, 1865", tasks: [
+      "Before reading: what makes a dream strange? Talk about a dream you remember.", "Make a gallery of Wonderland characters, with one line each that they say.",
+      "Draw the hall of doors, or the tea party, with labels from the text.", "Predict what will happen at the trial before you read it.",
+      "Find the made-up and nonsense words. Invent three of your own with meanings.", "Write a new chapter: Alice meets a creature of your own.",
+      "Act out the Mad Hatter's tea party with family or friends.", "Make an invitation to the tea party.",
+      "List how Alice's size changes and what causes each change.", "Write Alice's letter to her sister about her adventures.", "Which character is the most unfair? Explain.", "Write a review for someone your age."] },
+    { id: "wind-in-the-willows", title: "The Wind in the Willows", by: "Kenneth Grahame, 1908", tasks: [
+      "Before reading: what animals live by a river? Which might be good friends?", "Compare Mole, Ratty, Badger and Toad: draw a table of what each is like.",
+      "Draw the river bank, the Wild Wood and Toad Hall on one map.", "When Toad gets a motor car, predict what will go wrong.",
+      "Collect old-fashioned words (for example, \"motor-car\", \"poop-poop\"). What do they mean?", "Write a newspaper report on Toad's escape from prison.",
+      "Debate: is Toad a good friend?", "Design a new vehicle for Toad, with a label for each part.",
+      "Plot the battle for Toad Hall step by step.", "Write Ratty's invitation to Mole for a picnic.", "How do the friends help Toad change? Do you think he really does?", "Write a review for someone your age."] }
+  ];
+  NOVELS.forEach(nv => {
+    add(`paper-novel-map-${nv.id}`, "lesson-second-novel-task-map", `Novel task map: ${nv.title}`,
+      `${nv.by ? `For ${nv.title} (${nv.by}, public domain): ` : "For any class or home novel: "}twelve tasks across a whole book (characters, setting, plot, words, writing, talk and making), to tick off as you read. Choose at least one from each row.`, (who, h) => ({
+        pupil: `${h.sheetHead(`Task map: ${nv.title}`, who)}${lqStrip("Novel task map", nv.by || "Any novel")}
+          <p class="gx-intro">Pick a task, do it, then colour or tick its box. Aim for at least one task from each kind before you finish the book.</p>
+          <table class="gx-track"><tbody>${nv.tasks.map((t, i) => `<tr><td class="gx-topic">${MAP_KINDS[i]}</td><td>${t}</td><td class="gx-cell">☐</td></tr>`).join("")}</tbody></table>
+          ${box("My favourite task, and why", lines(2))}`,
+        answers: lookForPage(h, `Task map: ${nv.title}`, [
+          "Let the reader choose the order: choice keeps them reading. Check that by the end they have covered characters, setting, plot, words and writing.",
+          "For talk tasks, join in: hot-seating and debates work well with an adult asking real questions.",
+          nv.by ? `${nv.title} is out of copyright, so free editions are easy to find (libraries and second-hand bookshops have cheap or free copies).` : "Use it with any book: a class novel, a library book, or one the child chose.",
+          "Look for answers backed with evidence from the book (\"I think… because on page…\")."])
+      }));
+  });
+  /* ===================== Writing frames with success criteria, by text type =====================
+     In the way tutoring frames work: one page per text type, with the parts of the text in order, sentence
+     starters in each part, a word bank, and the success criteria as a tick list the writer checks before
+     handing in (a "me" column and an "adult" column). Two versions of each: First level (P2 to P4, short
+     starters, draw or write) and Second and Third level (P5 to S2, paragraphs and more formal features).
+     The writing itself goes on lined paper or in a jotter: the frame is the plan and the checklist. */
+
+  const WF = [
+    { id: "recount", name: "Recount", purpose: "to tell what happened, in order",
+      first: { parts: [["Who, where and when?", "On Saturday, I went to… with…"], ["First", "First, we…"], ["Next", "Next, …"], ["Then", "After that, …"], ["At the end", "Finally, … I felt… because…"]],
+        words: "first, next, then, after that, later, finally, because, so",
+        criteria: ["I said who, where and when.", "I told the events in order.", "I used time words (first, next, then).", "I said how I felt.", "I used capital letters and full stops."] },
+      second: { parts: [["Opening: set the scene", "Last weekend, my family and I travelled to… where…"], ["Event 1", "Our day began when…"], ["Event 2", "Later that morning, …"], ["Event 3", "By the afternoon, …"], ["Closing: looking back", "Looking back, the best part was… because…"]],
+        words: "meanwhile, shortly afterwards, by the time, eventually, as soon as, although, which meant that",
+        criteria: ["My opening answers who, what, where and when.", "Events are in time order, one paragraph each.", "I varied my time connectives.", "I added detail: what I saw, heard and felt.", "I wrote in the past tense throughout.", "My ending reflects on the experience."] } },
+    { id: "instructions", name: "Instructions", purpose: "to tell someone how to do or make something",
+      first: { parts: [["What you will make or do", "How to…"], ["You will need", "• \n• \n• "], ["Step 1", "First, …"], ["Step 2", "Next, …"], ["Step 3", "Then, …"], ["Step 4", "Last, …"]],
+        words: "first, next, then, after that, last, cut, fold, mix, put, stir",
+        criteria: ["I wrote a 'How to' title.", "I listed what you need.", "My steps are numbered and in order.", "Each step starts with a bossy verb.", "Someone could follow my steps."] },
+      second: { parts: [["Title and goal", "How to… (in about … minutes)"], ["Equipment", "You will need: …"], ["Method", "1. Begin by… \n2. Carefully… \n3. Once…, … \n4. …"], ["Tips and warnings", "Make sure that… / Be careful not to…"], ["Finish", "Your … is now ready to…"]],
+        words: "carefully, gently, once, until, while, make sure, be careful, approximately",
+        criteria: ["The title says exactly what will be made or done.", "The equipment list is complete.", "Steps are numbered, in order and start with imperative verbs.", "I used adverbs to say how (carefully, gently).", "I included a tip or a warning.", "A reader could follow it without asking me anything."] } },
+    { id: "report", name: "Information report", purpose: "to give facts about a topic",
+      first: { parts: [["Title", "All about…"], ["What is it?", "A … is a…"], ["What does it look like?", "It has…"], ["Where is it found?", "It lives / is found…"], ["An amazing fact", "Did you know that…?"]],
+        words: "has, have, is, are, can, lives, eats, most, some, many",
+        criteria: ["My title tells the topic.", "I wrote facts, not a story.", "Each part has a heading.", "I wrote in the present tense.", "I added an amazing fact."] },
+      second: { parts: [["Introduction", "… are… They are found…"], ["Sub-heading 1: appearance", "Most … have… which helps them…"], ["Sub-heading 2: habitat or uses", "… can be found in… because…"], ["Sub-heading 3: behaviour or facts", "Interestingly, … In addition, …"], ["Conclusion", "Overall, … are important because…"]],
+        words: "furthermore, in addition, for example, such as, however, most, some, unlike, similarly",
+        criteria: ["My introduction says what the report is about.", "I organised facts under sub-headings.", "I used technical vocabulary and explained it.", "I wrote in the third person and present tense.", "I added a diagram, caption or fact box.", "My conclusion sums up."] } },
+    { id: "persuasive", name: "Persuasive writing", purpose: "to make the reader agree or do something",
+      first: { parts: [["What I think", "I think that… should…"], ["Reason 1", "One reason is…"], ["Reason 2", "Also, …"], ["Reason 3", "Best of all, …"], ["Ending", "So you can see that…"]],
+        words: "I think, because, also, best of all, everyone, should, must, so",
+        criteria: ["I said what I think.", "I gave three reasons.", "I used 'because' to explain.", "I used a strong ending.", "I used capital letters and full stops."] },
+      second: { parts: [["Opening: state your view", "Have you ever wondered…? I strongly believe that…"], ["Point 1 with evidence", "Firstly, … For example, …"], ["Point 2 with evidence", "Furthermore, … This shows that…"], ["Counter-argument", "Some people say… However, …"], ["Conclusion: call to action", "In conclusion, … so we must…"]],
+        words: "firstly, furthermore, moreover, clearly, surely, however, therefore, in conclusion, imagine",
+        criteria: ["My opening grabs the reader and states my view.", "Each point is backed with evidence or an example.", "I answered a counter-argument.", "I used persuasive techniques (rhetorical question, rule of three, emotive words).", "I used formal connectives.", "My conclusion tells the reader what to do."] } },
+    { id: "narrative", name: "Story", purpose: "to entertain",
+      first: { parts: [["Opening: who and where?", "One day, …"], ["Something happens", "Suddenly, …"], ["The problem", "Oh no! …"], ["Sorting it out", "So, …"], ["Ending", "In the end, …"]],
+        words: "one day, suddenly, then, so, in the end, happy, scared, dark, huge, tiny",
+        criteria: ["My story has a character and a setting.", "Something goes wrong (a problem).", "The problem is sorted out.", "I used describing words.", "My story has an ending."] },
+      second: { parts: [["Opening: hook and setting", "Start with action, speech or a question: …"], ["Build-up", "Show the character's feelings: …"], ["Problem", "Without warning, …"], ["Resolution", "Just when…, …"], ["Ending", "Show how the character has changed: …"]],
+        words: "without warning, moments later, meanwhile, just as, trembling, gloomy, determined, whispered, muttered",
+        criteria: ["My opening hooks the reader.", "I showed feelings through actions and speech (show, don't tell).", "I described the setting using the senses.", "I punctuated speech correctly.", "I varied sentence openers and lengths.", "My ending links back to the opening or shows a change."] } },
+    { id: "letter", name: "Letter", purpose: "to write to someone for a reason",
+      first: { parts: [["My address and the date", "(top right)"], ["Greeting", "Dear …,"], ["Why I am writing", "I am writing to…"], ["More to say", "I would like to… / Did you know…"], ["Sign off", "From, / Love from, …"]],
+        words: "Dear, thank you, I hope, please, because, love from, from",
+        criteria: ["I wrote the address and date.", "I started with 'Dear'.", "I said why I am writing.", "I signed off with my name.", "I used capital letters for names."] },
+      second: { parts: [["Layout", "Your address (top right), the date, their address (left) if formal"], ["Greeting", "Dear Mr / Mrs / Ms … , or Dear Sir or Madam,"], ["Paragraph 1: purpose", "I am writing to… regarding…"], ["Paragraph 2: detail", "I would like to point out that… / I was disappointed to find…"], ["Paragraph 3: what you want", "I would be grateful if you could…"], ["Sign-off", "Yours sincerely (name known) / Yours faithfully (Dear Sir or Madam)"]],
+        words: "regarding, I would be grateful, furthermore, unfortunately, I look forward to hearing from you, yours sincerely, yours faithfully",
+        criteria: ["Layout: addresses and date in the right places.", "The greeting and sign-off match (sincerely or faithfully).", "Paragraph 1 states the purpose.", "Tone suits the reader (formal or friendly).", "Each paragraph has one main point.", "I said clearly what I want to happen next."] } },
+    { id: "explanation", name: "Explanation", purpose: "to explain how or why something happens",
+      first: { parts: [["Title: how or why?", "How does…? / Why do…?"], ["What it is", "A … is…"], ["First", "First, …"], ["This makes", "This makes… because…"], ["At the end", "So that is how…"]],
+        words: "first, then, because, so, this makes, when, after",
+        criteria: ["My title is a how or why question.", "I explained in order.", "I used 'because' and 'so'.", "I added a labelled picture.", "My ending sums up."] },
+      second: { parts: [["Title and introduction", "How does…? … is a process that…"], ["Stage 1", "To begin with, …"], ["Stage 2: cause and effect", "As a result, … This causes…"], ["Stage 3", "Consequently, …"], ["Diagram", "(a labelled diagram or flow chart)"], ["Conclusion", "This process is important because…"]],
+        words: "because, therefore, as a result, consequently, this causes, which leads to, when, if",
+        criteria: ["My introduction says what process I'm explaining.", "Stages are in a logical order.", "I used cause-and-effect connectives.", "I used technical words and explained them.", "I wrote in the present tense.", "My diagram matches the writing."] } },
+    { id: "discussion", name: "Discussion (balanced argument)", purpose: "to give both sides fairly, then a view",
+      first: { parts: [["The question", "Should…?"], ["Some people think yes", "Some people think… because…"], ["Other people think no", "Other people think… because…"], ["What I think", "I think… because…"]],
+        words: "some people, other people, but, because, I think, also",
+        criteria: ["I wrote the question.", "I gave a reason for yes.", "I gave a reason for no.", "I said what I think and why."] },
+      second: { parts: [["Introduction: the issue", "Many people disagree about whether… This piece will look at both sides."], ["Arguments for", "Supporters argue that… For example, …"], ["Arguments against", "On the other hand, … Critics point out that…"], ["Conclusion: weigh up and give your view", "Having considered both sides, I believe… because…"]],
+        words: "on the other hand, however, whereas, supporters, critics, it could be argued, having considered, overall",
+        criteria: ["My introduction sets out the issue neutrally.", "I gave at least two points for each side.", "Each point is backed with evidence or an example.", "I used contrast connectives (however, whereas).", "I stayed impersonal until the conclusion.", "My conclusion weighs both sides before giving my view."] } }
+  ];
+  const wfBox = (head, start, n) => box(head, `<p class="hint">${start.replace(/\n/g, "<br>")}</p>${lines(n)}`, "wf-box");
+  const wfTicks = c => `<table class="gx-track"><thead><tr><th>Success criteria</th><th>Me</th><th>Adult</th></tr></thead><tbody>${c.map(x => `<tr><td>${x}</td><td class="gx-cell">☐</td><td class="gx-cell">☐</td></tr>`).join("")}</tbody></table>`;
+  WF.forEach(t => {
+    [["first", "First", "lesson-first-writing-frames", "P2 to P4"], ["second", "Second and Third", "lesson-second-writing-frames", "P5 to S2"]].forEach(([k, lvl, lesson, ages]) => {
+      const f = t[k];
+      add(`paper-frame-${t.id}-${k}`, lesson, `Writing frame (${lvl} level): ${t.name}`,
+        `A one-page frame for ${t.name.toLowerCase()} writing (${t.purpose}), ${ages}: the parts in order with sentence starters, a word bank, and ${f.criteria.length} success criteria to tick before handing in.`, (who, h) => ({
+          pupil: `${h.sheetHead(`Writing frame: ${t.name}`, who)}${lqStrip(`${t.name}: ${t.purpose}`, `${lvl} level`)}
+            <p class="hint">Plan in the boxes, using the starters if they help. Then write it out in full on lined paper. Tick each success criterion when you've checked your writing.</p>
+            ${f.parts.map(([hd, st]) => wfBox(hd, st, f.parts.length > 5 ? 1 : 2)).join("")}
+            <p class="pp-bank"><b>Words to help:</b> ${f.words}</p>
+            ${wfTicks(f.criteria)}`,
+          answers: lookForPage(h, `Writing frame: ${t.name}`, f.criteria.map(c => c.replace(/^I |^My /, m => m === "I " ? "The writer " : "Their ")),
+            `Ask the writer to tick the "Me" column first, then check together. Pick one criterion they didn't meet as the next target, rather than correcting everything. Sentence starters are a support: praise a writer who changes them into their own words.`)
+        }));
+    });
+  });
+  /* ===================== Spot the difference =====================
+     Tutors use spot-the-difference sheets for looking closely, talking and taking turns. These are PopSpell's
+     own: line drawings built from simple shapes (so they print clearly in black and white and can be coloured
+     in), eight scenes at three sizes (5, 7 or 10 differences). A fresh pair of pictures is drawn each print, and
+     the answers page circles every difference on the second picture and says what changed. */
+
+  const SL = `fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+  const SD = `fill="#222"`;
+  const sdPts = (n, r1, r2, rot = -90) => Array.from({ length: n * 2 }, (_, i) => { const a = (rot + i * 180 / n) * Math.PI / 180, r = i % 2 ? r2 : r1; return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`; }).join(" ");
+  const sdRing = (n, r, f) => Array.from({ length: n }, (_, i) => { const a = (i * 360 / n - 90) * Math.PI / 180; return f(r * Math.cos(a), r * Math.sin(a), a); }).join("");
+  const sdFace = (y = 0) => `<circle cx="-4" cy="${y - 3}" r="1.6" ${SD}/><circle cx="4" cy="${y - 3}" r="1.6" ${SD}/><path d="M-4 ${y + 3} Q0 ${y + 7} 4 ${y + 3}" ${SL}/>`;
+  // Each kind: a name, a drawing (p holds the changes, all off in the first picture), and changes it can show.
+  const SPOT = {
+    sun: { n: "sun", d: p => `<circle r="10" ${SL}/>${sdRing(p.few ? 6 : 8, 1, (x, y) => `<line x1="${x * 14}" y1="${y * 14}" x2="${x * 22}" y2="${y * 22}" ${SL}/>`)}${p.face ? sdFace(2) : ""}`, t: [["few", "has fewer rays"], ["face", "has a face"]] },
+    cloud: { n: "cloud", d: p => `<path d="M-20 6 a8 8 0 0 1 2-15 a10 10 0 0 1 18-5 a9 9 0 0 1 16 6 a7 7 0 0 1 -2 14 z" ${SL}/>${p.rain ? `<path d="M-10 12 l-2 6 M0 12 l-2 6 M10 12 l-2 6" ${SL}/>` : ""}${p.bolt ? `<path d="M6 -24 l-4 6 h5 l-4 7" ${SL}/>` : ""}`, t: [["rain", "is raining"], ["bolt", "has a lightning bolt"]] },
+    tree: { n: "tree", d: p => `<rect x="-4" y="6" width="8" height="20" ${SL}/><circle cy="-8" r="16" ${SL}/>${[[-7, -12], [6, -4], [2, -16]].slice(0, p.fewer ? 2 : 3).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" ${SL}/>`).join("")}${p.hole ? `<ellipse cy="15" rx="2" ry="3" ${SD}/>` : ""}`, t: [["fewer", "has one fewer apple"], ["hole", "has a hole in its trunk"]] },
+    flower: { n: "flower", d: p => `<line y1="2" y2="26" ${SL}/>${p.noleaf ? "" : `<path d="M0 18 q8 -8 12 -4 q-6 6 -12 4" ${SL}/>`}<circle cy="-8" r="4" ${SL}/>${sdRing(p.five ? 5 : 6, 9, (x, y) => `<circle cx="${x.toFixed(1)}" cy="${(y - 8).toFixed(1)}" r="4.5" ${SL}/>`)}`, t: [["five", "has fewer petals"], ["noleaf", "has lost its leaf"]] },
+    house: { n: "house", d: p => `<rect x="-18" y="-4" width="36" height="28" ${SL}/><path d="M-22 -4 L0 -24 L22 -4" ${SL}/>${p.nochim ? "" : `<path d="M10 -14 v-8 h6 v13" ${SL}/>`}<rect x="-4" y="10" width="8" height="14" ${SL}/>${p.knob ? `<circle cx="2" cy="17" r="1" ${SD}/>` : ""}<rect x="-14" y="2" width="7" height="6" ${SL}/>${p.onewin ? "" : `<rect x="7" y="2" width="7" height="6" ${SL}/>`}`, t: [["nochim", "has no chimney"], ["onewin", "has a window missing"], ["knob", "has a door knob"]] },
+    fish: { n: "fish", d: p => `<ellipse rx="16" ry="9" ${SL}/><path d="M14 0 L24 -8 L24 8 Z" ${SL}/><circle cx="-9" cy="-2" r="1.6" ${SD}/>${p.nostripe ? "" : `<path d="M-2 -8 q2 8 0 16 M4 -8 q2 8 0 16" ${SL}/>`}${p.bubble ? `<circle cx="-20" cy="-12" r="2" ${SL}/><circle cx="-24" cy="-19" r="3" ${SL}/>` : ""}`, t: [["nostripe", "has lost its stripes"], ["bubble", "is blowing bubbles"]] },
+    star: { n: "star", d: p => `<polygon points="${sdPts(p.six ? 6 : 5, 18, 8)}" ${SL}/>${p.face ? sdFace(2) : ""}`, t: [["six", "has six points"], ["face", "has a face"]] },
+    bird: { n: "bird", d: p => `<ellipse rx="10" ry="7" ${SL}/><circle cx="9" cy="-8" r="5" ${SL}/><circle cx="10" cy="-9" r="1.2" ${SD}/>${p.nobeak ? "" : `<path d="M14 -10 L19 -8 L14 -6" ${SL}/>`}<path d="M-4 -2 q4 6 8 0" ${SL}/><path d="M-10 0 l-6 -4 M-10 2 l-6 2" ${SL}/><path d="M-2 7 v6 M3 7 v6" ${SL}/>${p.worm ? `<path d="M19 -8 q2 4 0 6 q-2 3 1 5" ${SL}/>` : ""}`, t: [["nobeak", "has no beak"], ["worm", "has a worm in its beak"]] },
+    boat: { n: "boat", d: p => `<path d="M-22 6 H22 L15 18 H-15 Z" ${SL}/><line y1="6" y2="-24" ${SL}/><path d="M2 -22 V2 H18 Z" ${SL}/>${p.flag ? `<path d="M0 -24 l-9 3 l9 3" ${SL}/>` : ""}${p.port ? `<circle cx="-8" cy="11" r="2.5" ${SL}/>` : ""}`, t: [["flag", "has a flag on its mast"], ["port", "has a round window"]] },
+    snowman: { n: "snowman", d: p => `<circle cy="12" r="13" ${SL}/><circle cy="-8" r="8" ${SL}/>${[5, 12, 19].slice(0, p.two ? 2 : 3).map(y => `<circle cy="${y}" r="1.6" ${SD}/>`).join("")}<circle cx="-3" cy="-10" r="1.2" ${SD}/><circle cx="3" cy="-10" r="1.2" ${SD}/><path d="M0 -7 l6 1 l-6 1" ${SL}/>${p.nohat ? "" : `<path d="M-9 -15 h18 M-6 -15 v-8 h12 v8" ${SL}/>`}${p.scarf ? `<path d="M-7 -1 h14 M4 -1 v8" ${SL}/>` : ""}`, t: [["two", "has one fewer button"], ["nohat", "has lost its hat"], ["scarf", "has a scarf"]] },
+    rocket: { n: "rocket", d: p => `<path d="M-8 18 V-8 L0 -26 L8 -8 V18 Z" ${SL}/><path d="M-8 8 L-15 20 L-8 18 M8 8 L15 20 L8 18" ${SL}/><circle cy="-6" r="3.5" ${SL}/>${p.onewin ? "" : `<circle cy="5" r="3.5" ${SL}/>`}${p.flame ? `<path d="M-5 20 l2 7 l3 -4 l3 4 l2 -7" ${SL}/>` : ""}`, t: [["onewin", "has one window fewer"], ["flame", "has flames coming out"]] },
+    planet: { n: "planet", d: p => `<circle r="12" ${SL}/>${p.noring ? "" : `<ellipse rx="24" ry="6" ${SL} transform="rotate(-15)"/>`}<circle cx="-4" cy="-4" r="2.5" ${SL}/>${p.moon ? `<circle cx="22" cy="-18" r="4" ${SL}/>` : ""}`, t: [["noring", "has lost its ring"], ["moon", "has a little moon"]] },
+    moon: { n: "moon", d: p => `<path d="M4 -18 A18 18 0 1 0 4 18 A14 14 0 1 1 4 -18 Z" ${SL}/>${p.face ? `<circle cx="-9" cy="-4" r="1.5" ${SD}/><path d="M-12 5 q3 3 6 0" ${SL}/>` : ""}${p.star ? `<polygon points="${sdPts(5, 5, 2)}" ${SL} transform="translate(16 -10)"/>` : ""}`, t: [["face", "has a face"], ["star", "has a star next to it"]] },
+    balloon: { n: "balloon", d: p => `<ellipse cy="-8" rx="12" ry="15" ${SL}/><path d="M-2 7 h4 l-2 3 z" ${SL}/><path d="M0 10 q-4 ${p.short ? "4 0 8" : "6 0 10 q4 4 0 8"}" ${SL}/>${p.stripe ? `<path d="M-11 -4 q11 6 22 0" ${SL}/>` : ""}`, t: [["stripe", "has a stripe"], ["short", "has a shorter string"]] },
+    kite: { n: "kite", d: p => `<path d="M0 -24 L14 -6 L0 12 L-14 -6 Z" ${SL}/>${p.nocross ? "" : `<path d="M0 -24 V12 M-14 -6 H14" ${SL}/>`}<path d="M0 12 q6 6 0 10 q-6 4 2 8" ${SL}/>${[[3, 16], [-2, 22], [2, 28]].slice(0, p.fewer ? 2 : 3).map(([x, y]) => `<path d="M${x - 3} ${y - 2} l6 4 m0 -4 l-6 4" ${SL}/>`).join("")}`, t: [["nocross", "has no cross on it"], ["fewer", "has one fewer bow on its tail"]] },
+    butterfly: { n: "butterfly", d: p => `<line y1="-10" y2="12" ${SL}/><ellipse cx="-10" cy="-5" rx="10" ry="8" ${SL}/><ellipse cx="10" cy="-5" rx="10" ry="8" ${SL}/><ellipse cx="-8" cy="8" rx="7" ry="6" ${SL}/><ellipse cx="8" cy="8" rx="7" ry="6" ${SL}/>${p.nospot ? "" : `<circle cx="-10" cy="-5" r="3" ${SD}/><circle cx="10" cy="-5" r="3" ${SD}/>`}${p.noant ? "" : `<path d="M0 -10 q-3 -8 -7 -10 M0 -10 q3 -8 7 -10" ${SL}/>`}`, t: [["nospot", "has lost its spots"], ["noant", "has no feelers"]] },
+    mushroom: { n: "mushroom", d: p => `<path d="M-18 0 A18 16 0 0 1 18 0 Z" ${SL}/><rect x="-6" y="0" width="12" height="18" ${SL}/>${[[-8, -6], [6, -9], [0, -2]].slice(0, p.fewer ? 1 : 3).map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" ${SL}/>`).join("")}${p.door ? `<path d="M-3 18 v-7 a3 3 0 0 1 6 0 v7" ${SL}/>` : ""}`, t: [["fewer", "has fewer spots"], ["door", "has a tiny door"]] },
+    bucket: { n: "bucket", d: p => `<path d="M-14 -8 H14 L10 18 H-10 Z" ${SL}/>${p.nohandle ? "" : `<path d="M-14 -8 Q0 -26 14 -8" ${SL}/>`}${p.stripe ? `<line x1="-12" y1="4" x2="12" y2="4" ${SL}/>` : ""}`, t: [["nohandle", "has no handle"], ["stripe", "has a stripe"]] },
+    shell: { n: "shell", d: p => `<path d="M-18 8 Q0 -30 18 8 Q0 16 -18 8 Z" ${SL}/>${(p.three ? [-8, 0, 8] : [-12, -6, 0, 6, 12]).map(x => `<line x1="0" y1="10" x2="${x}" y2="${-4 - (12 - Math.abs(x)) * 0.6}" ${SL}/>`).join("")}`, t: [["three", "has fewer lines"]] },
+    crab: { n: "crab", d: p => `<ellipse cy="4" rx="14" ry="8" ${SL}/><path d="M-5 -4 v-8 M5 -4 v-8" ${SL}/><circle cx="-5" cy="-13" r="2" ${SD}/><circle cx="5" cy="-13" r="2" ${SD}/><path d="M-14 2 l-6 -6 M-20 -4 a4 4 0 1 1 2 -6" ${SL}/>${p.oneclaw ? "" : `<path d="M14 2 l6 -6 M20 -4 a4 4 0 1 0 -2 -6" ${SL}/>`}<path d="M-10 10 l-6 6 M-4 12 l-3 7 M10 10 l6 6 M4 12 l3 7" ${SL}/>${p.smile ? `<path d="M-4 5 q4 4 8 0" ${SL}/>` : ""}`, t: [["oneclaw", "has lost a claw"], ["smile", "is smiling"]] },
+    castle: { n: "sandcastle", d: p => `<rect x="-18" y="0" width="36" height="22" ${SL}/><path d="M-18 0 v-10 h10 v10 M8 0 v-10 h10 v10 M-5 0 v-16 h10 v16" ${SL}/>${p.noflag ? "" : `<path d="M0 -16 v-10 l7 3 l-7 3" ${SL}/>`}<path d="M-4 22 v-7 a4 4 0 0 1 8 0 v7" ${SL}/>${p.win ? `<rect x="-15" y="4" width="5" height="5" ${SL}/>` : ""}`, t: [["noflag", "has no flag"], ["win", "has a window"]] },
+    umbrella: { n: "umbrella", d: p => `<path d="M-22 -2 A22 20 0 0 1 22 -2 Q16 -6 11 -2 Q5 -6 0 -2 Q-5 -6 -11 -2 Q-16 -6 -22 -2 Z" ${SL}/><path d="M0 -2 V20 q0 4 -4 4 q-3 0 -3 -3" ${SL}/>${p.nostripe ? "" : `<path d="M-11 -2 Q-8 -14 0 -22 M11 -2 Q8 -14 0 -22" ${SL}/>`}${p.ball ? `<circle cy="-24" r="2" ${SD}/>` : ""}`, t: [["nostripe", "has lost its stripes"], ["ball", "has a knob on top"]] },
+    seaweed: { n: "seaweed", d: p => `<path d="M0 26 q-6 -10 0 -20 q6 -10 0 -20 q-4 -6 0 -10" ${SL}/>${[[0, 14, -1], [0, 4, 1], [0, -8, -1], [0, -18, 1]].slice(0, p.fewer ? 2 : 4).map(([x, y, s]) => `<path d="M${x} ${y} q${s * 8} -2 ${s * 10} -8 q${s * -6} 0 ${s * -10} 8" ${SL}/>`).join("")}`, t: [["fewer", "has fewer leaves"]] },
+    chicken: { n: "hen", d: p => `<ellipse cy="4" rx="12" ry="10" ${SL}/><circle cx="10" cy="-8" r="6" ${SL}/><circle cx="11" cy="-9" r="1.2" ${SD}/><path d="M15 -9 l5 2 l-5 2" ${SL}/>${p.nocomb ? "" : `<path d="M6 -13 q1 -5 3 -1 q1 -5 3 -1 q2 -4 3 0" ${SL}/>`}<path d="M-12 0 l-6 -6 l2 8" ${SL}/><path d="M-3 13 v7 M3 13 v7" ${SL}/>${p.egg ? `<ellipse cx="-16" cy="16" rx="3.5" ry="5" ${SL}/>` : ""}`, t: [["nocomb", "has no comb on its head"], ["egg", "has laid an egg"]] },
+    pig: { n: "pig", d: p => `<circle r="14" ${SL}/><path d="M-12 -8 l-2 -10 l9 5" ${SL}/>${p.noear ? "" : `<path d="M12 -8 l2 -10 l-9 5" ${SL}/>`}<ellipse cy="4" rx="6" ry="4" ${SL}/><circle cx="-2" cy="4" r="1" ${SD}/><circle cx="2" cy="4" r="1" ${SD}/><circle cx="-5" cy="-4" r="1.5" ${SD}/><circle cx="5" cy="-4" r="1.5" ${SD}/>${p.smile ? `<path d="M-5 10 q5 4 10 0" ${SL}/>` : ""}`, t: [["noear", "has lost an ear"], ["smile", "is smiling"]] },
+    sheep: { n: "sheep", d: p => `<path d="M-16 4 a6 6 0 0 1 2 -12 a7 7 0 0 1 12 -4 a7 7 0 0 1 12 2 a6 6 0 0 1 4 12 a6 6 0 0 1 -8 6 h-16 a6 6 0 0 1 -6 -4 z" ${SL}/><ellipse cx="18" cy="-4" rx="5" ry="7" ${SL}/><circle cx="19" cy="-6" r="1.2" ${SD}/><path d="M-10 8 v10 M-3 8 v10 M4 8 v10 M10 8 v10" ${SL}/>${p.bell ? `<circle cx="17" cy="6" r="2.5" ${SL}/>` : ""}${p.tail ? `<circle cx="-20" cy="-2" r="2.5" ${SL}/>` : ""}`, t: [["bell", "has a bell"], ["tail", "has a tail"]] },
+    car: { n: "car", d: p => `<path d="M-24 10 V0 L-14 -2 L-8 -12 H10 L16 -2 L24 0 V10 Z" ${SL}/><circle cx="-13" cy="11" r="5" ${SL}/><circle cx="13" cy="11" r="5" ${SL}/>${p.nodiv ? "" : `<line x1="1" y1="-12" x2="1" y2="-2" ${SL}/>`}${p.light ? `<circle cx="21" cy="3" r="2" ${SL}/>` : ""}`, t: [["nodiv", "has one big window instead of two"], ["light", "has a headlight"]] },
+    lamp: { n: "lamp post", d: p => `<line y1="26" y2="-14" ${SL}/><path d="M-7 -14 h14 l-3 -8 h-8 z" ${SL}/><path d="M-6 26 h12" ${SL}/>${p.lit ? `<path d="M-10 -10 l-4 3 M10 -10 l4 3 M0 -8 v4" ${SL}/>` : ""}${p.sign ? `<rect x="0" y="0" width="10" height="7" ${SL}/>` : ""}`, t: [["lit", "is lit up"], ["sign", "has a sign on it"]] },
+    lights: { n: "traffic light", d: p => `<rect x="-7" y="-24" width="14" height="32" rx="3" ${SL}/><line y1="8" y2="26" ${SL}/><circle cy="-17" r="3.5" ${p.top ? SD : SL}/>${p.nomid ? "" : `<circle cy="-8" r="3.5" ${SL}/>`}<circle cy="1" r="3.5" ${SL}/>`, t: [["top", "has its top light on"], ["nomid", "has a light missing"]] },
+    present: { n: "present", d: p => `<rect x="-14" y="-6" width="28" height="24" ${SL}/><path d="M0 -6 V18 M-14 4 H14" ${SL}/>${p.nobow ? "" : `<path d="M0 -6 q-10 -10 -8 -2 z M0 -6 q10 -10 8 -2 z" ${SL}/>`}${p.tag ? `<rect x="6" y="8" width="6" height="5" ${SL}/>` : ""}`, t: [["nobow", "has lost its bow"], ["tag", "has a label"]] },
+    snowflake: { n: "snowflake", d: p => sdRing(6, 18, (x, y) => `<line x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" ${SL}/>${p.nobranch ? "" : `<line x1="${(x * 0.55).toFixed(1)}" y1="${(y * 0.55).toFixed(1)}" x2="${(x * 0.55 + y * 0.25).toFixed(1)}" y2="${(y * 0.55 - x * 0.25).toFixed(1)}" ${SL}/>`}`) + (p.dot ? `<circle r="3" ${SL}/>` : ""), t: [["nobranch", "has lost its little branches"], ["dot", "has a circle in the middle"]] },
+    apple: { n: "apple", d: p => `<path d="M0 -8 C-8 -16 -20 -10 -18 2 C-16 14 -6 20 0 16 C6 20 16 14 18 2 C20 -10 8 -16 0 -8 Z" ${SL}/><path d="M0 -8 q1 -6 4 -10" ${SL}/>${p.noleaf ? "" : `<path d="M3 -14 q8 -6 10 0 q-6 4 -10 0" ${SL}/>`}${p.bite ? `<path d="M14 -6 a4 4 0 0 0 2 8 a4 4 0 0 0 1 6" ${SL}/>` : ""}`, t: [["noleaf", "has no leaf"], ["bite", "has a bite out of it"]] },
+    alien: { n: "alien", d: p => `<circle r="13" ${SL}/><path d="M-6 -12 l-4 -10 M6 -12 l4 -10" ${SL}/><circle cx="-10" cy="-23" r="2" ${SL}/>${p.oneant ? "" : `<circle cx="10" cy="-23" r="2" ${SL}/>`}${(p.two ? [-5, 5] : [-6, 0, 6]).map(x => `<circle cx="${x}" cy="-3" r="2.2" ${SD}/>`).join("")}<path d="M-5 6 q5 4 10 0" ${SL}/>`, t: [["two", "has two eyes instead of three"], ["oneant", "has lost the ball on an antenna"]] },
+    ball: { n: "ball", d: p => `<circle r="12" ${SL}/><path d="M-12 0 q12 ${p.flat ? "0" : "8"} 24 0" ${SL}/>${p.star ? `<polygon points="${sdPts(5, 5, 2)}" ${SL} transform="translate(0 -5)"/>` : ""}`, t: [["star", "has a star on it"], ["flat", "has a straight line instead of a curved one"]] }
+  };
+  const SPOT_SKY = new Set(["sun", "cloud", "bird", "kite", "balloon", "moon", "star", "planet", "snowflake"]);
+  const SPOT_THEMES = [
+    { id: "garden", title: "In the garden", ground: "land", kinds: ["sun", "cloud", "tree", "flower", "butterfly", "mushroom", "house", "bird", "apple", "flower"] },
+    { id: "beach", title: "At the beach", ground: "sand", kinds: ["sun", "cloud", "boat", "bucket", "shell", "crab", "castle", "umbrella", "bird", "ball"] },
+    { id: "space", title: "In space", ground: "space", kinds: ["planet", "moon", "star", "rocket", "alien", "star", "planet", "rocket"] },
+    { id: "farm", title: "On the farm", ground: "land", kinds: ["house", "tree", "chicken", "pig", "sheep", "sun", "flower", "car", "cloud"] },
+    { id: "town", title: "In town", ground: "land", kinds: ["house", "car", "lamp", "lights", "tree", "bird", "cloud", "balloon", "house"] },
+    { id: "sea", title: "Under the sea", ground: "sea", kinds: ["fish", "shell", "crab", "seaweed", "star", "fish", "seaweed"] },
+    { id: "winter", title: "A winter's night", ground: "land", kinds: ["snowman", "snowflake", "tree", "house", "present", "star", "moon", "bird", "snowman"] },
+    { id: "park", title: "In the park", ground: "land", kinds: ["kite", "balloon", "ball", "tree", "flower", "bird", "sun", "cloud", "butterfly", "umbrella"] }
+  ];
+  const SPOT_SIZES = [
+    { k: 5, cols: 4, rows: 2, missing: true, lesson: "lesson-early-spot-the-difference", label: "5 differences" },
+    { k: 7, cols: 4, rows: 3, missing: true, lesson: "lesson-first-spot-the-difference", label: "7 differences" },
+    { k: 10, cols: 5, rows: 3, missing: false, lesson: "lesson-first-spot-the-difference", label: "10 differences" }
+  ];
+  const SPOT_GROUND = {
+    land: `<path d="M0 198 H400" ${SL}/><path d="M30 198 l3 -5 l3 5 M120 198 l3 -5 l3 5 M250 198 l3 -5 l3 5 M350 198 l3 -5 l3 5" ${SL}/>`,
+    sand: `<path d="M0 196 q25 -6 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0" ${SL}/>`,
+    sea: `<path d="M0 200 q20 -8 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" ${SL}/><path d="M0 6 q20 6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" ${SL}/>`,
+    space: [[18, 30], [380, 22], [200, 8], [90, 200], [310, 196], [12, 150], [392, 120]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.5" ${SD}/>`).join("")
+  };
+  const spotScene = (theme, size) => {
+    const n = size.cols * size.rows, cw = 400 / size.cols, top = theme.ground === "sea" ? 16 : 6, chh = (190 - top) / size.rows;
+    const s = Math.min(cw, chh) / 60 * 1.1;
+    // Things in the sky (sun, clouds, birds, kites) go in the top row; the rest stand lower down
+    const kinds = Array.from({ length: n }, () => pick(theme.kinds)).sort((a, b) => SPOT_SKY.has(b) - SPOT_SKY.has(a));
+    const objs = kinds.map((kind, i) => ({ kind, x: cw * (i % size.cols + 0.5) + rand(13) - 6, y: top + chh * (Math.floor(i / size.cols) + 0.5) + rand(7) - 3 }));
+    // Choose which objects change, and how: a toggle of its own, or (on the smaller sizes) missing altogether
+    const changed = shuffle(objs.map((_, i) => i)).slice(0, size.k).sort((a, b) => a - b);
+    changed.forEach(i => { const o = objs[i], opts = SPOT[o.kind].t.map(t => t[0]).concat(size.missing ? ["missing"] : []); o.change = pick(opts); });
+    const count = k => objs.filter(o => o.kind === k).length;
+    const draw = (two, marks) => `<svg class="sd-pic" viewBox="0 0 400 210" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="398" height="208" rx="6" ${SL}/>${SPOT_GROUND[theme.ground]}${objs.map(o => {
+      if (two && o.change === "missing") return "";
+      const p = two && o.change ? { [o.change]: true } : {};
+      return `<g transform="translate(${o.x.toFixed(1)} ${o.y.toFixed(1)}) scale(${s.toFixed(3)})">${SPOT[o.kind].d(p)}</g>`;
+    }).join("")}${marks ? changed.map((i, j) => { const o = objs[i]; return `<circle cx="${o.x.toFixed(1)}" cy="${o.y.toFixed(1)}" r="${(30 * s).toFixed(1)}" fill="none" stroke="#d22" stroke-width="2.5" stroke-dasharray="5 3"/><text x="${(o.x + 22 * s).toFixed(1)}" y="${(o.y - 22 * s).toFixed(1)}" font-size="13" font-weight="700" fill="#d22">${j + 1}</text>`; }).join("") : ""}</svg>`;
+    const say = changed.map(i => { const o = objs[i], nm = SPOT[o.kind].n, who = count(o.kind) > 1 ? `One ${nm}` : `The ${nm}`;
+      return o.change === "missing" ? `${who} is missing.` : `${who} ${SPOT[o.kind].t.find(t => t[0] === o.change)[1]}.`; });
+    return { one: draw(false), two: draw(true), marked: draw(true, true), say };
+  };
+  SPOT_THEMES.forEach(theme => SPOT_SIZES.forEach(size => {
+    add(`paper-spot-${theme.id}-${size.k}`, size.lesson, `Spot the difference (${size.k}): ${theme.title}`,
+      `Two line drawings of ${theme.title.toLowerCase().replace(/^(in|at|on|under) /, "")}: find the ${size.k} differences and circle them. New pictures each time you print; the answers page circles each one. They can be coloured in afterwards.`, (who, h) => {
+        const sc = spotScene(theme, size);
+        return {
+          pupil: `${h.sheetHead(`Spot the difference: ${theme.title}`, who)}
+            <p class="sd-say"><b>Find ${size.k} differences.</b> Look at the top picture, then the bottom one. Circle each difference on the bottom picture and colour a star.</p>
+            ${sc.one}${sc.two}
+            <p class="sd-found">Found: ${"☆ ".repeat(size.k)}</p>`,
+          answers: answersPage(h, `Spot the difference: ${theme.title}`, sc.say, `Talk about each one: "What's different about the…?" Naming the change ("it has fewer petals") builds vocabulary as well as looking skills.`, sc.marked)
+        };
+      });
+  }));
   return { sheets, get: id => sheets[id] || null, forLesson: lessonId => Object.values(sheets).filter(s => s.lesson === lessonId) };
 })();
