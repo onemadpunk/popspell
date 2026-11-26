@@ -436,7 +436,7 @@ window.PopHome = (() => {
       <p>Free courses for a parent teaching their own child at home, from the first year of school to the last. Each one is a parent's guide, a plan and a tracker, then a session at a time: what to do and say, your child's sheets, and the answers. Choose online (names free practice on PopSpell) or paper only (no internet needed).</p>
       <div class="hm-grid"><div><h2>Scotland: maths</h2><ul>${group("scotland", "Maths")}</ul></div><div><h2>Scotland: English</h2><ul>${group("scotland", "Literacy")}</ul></div>
         <div><h2>England: maths</h2><ul>${group("england", "Maths")}</ul></div><div><h2>England: English</h2><ul>${group("england", "Literacy")}</ul></div></div>
-      <p class="hint">Scotland follows the Curriculum for Excellence levels and the SQA courses; England follows the 2014 national curriculum, GCSE, and A level for Years 12 and 13.</p></section>`;
+      <p class="hint">Scotland follows the Curriculum for Excellence levels and the SQA courses (Mathematics, Applications of Mathematics and English); England follows the 2014 national curriculum, GCSE, and A level for Years 12 and 13.</p></section>`;
   }
 
   return { show, make, plan, lessonsFor, pagesOf, prepare, use: m => { made = m; return made; }, offline, paperText };

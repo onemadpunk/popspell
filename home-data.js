@@ -30,6 +30,9 @@ window.PopHomeData = (() => {
     add("scotland", subject, "higher", `Higher ${sqa}`, "S5 to S6 (age 15 to 18)", { sqa: `Higher ${sqa}` }, { age: "older", exam: true, perWeek: 2 });
     add("scotland", subject, "ah", `Advanced Higher ${sqa}`, "S6 (age 16 to 18)", { sqa: `Advanced Higher ${sqa}` }, { age: "older", exam: true, perWeek: 2 });
   });
+  // Scotland's other maths course: Applications of Mathematics (the SQA Applications climb)
+  add("scotland", "Maths", "apps-n5", "National 5 Applications of Mathematics", "S4 to S5 (age 14 to 17)", { sqa: "National 5 Applications of Mathematics" }, { age: "older", exam: true, perWeek: 2 });
+  add("scotland", "Maths", "apps-higher", "Higher Applications of Mathematics", "S5 to S6 (age 15 to 18)", { sqa: "Higher Applications of Mathematics" }, { age: "older", exam: true, perWeek: 2 });
   // England: the national curriculum's own year bands, then the GCSE climbs
   [["Maths", "Maths"], ["Literacy", "English"]].forEach(([subject, word]) => {
     add("england", subject, "reception", `${word}: Reception`, "Reception (age 4 to 5)", { band: "Reception" });

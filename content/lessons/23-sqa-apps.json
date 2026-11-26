@@ -1,0 +1,659 @@
+{
+ "section": "Scotland: SQA Applications of Mathematics climb (National 5 and Higher)",
+ "lessons": [
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-start-here",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (National 5) start here: check and plan",
+   "intention": "We are finding out which of the National 5 Applications of Mathematics topics are already secure and which to learn first, and making a plan.",
+   "criteria": [
+    "I can try one exam question on each of the 10 National 5 topics.",
+    "I know which topics I will work on first, and why.",
+    "I know how each topic works: lesson, online practice, exam-style sheet, then mini papers."
+   ],
+   "steps": {
+    "start": "Talk about the goal: National 5 Applications of Mathematics, practical maths in real contexts (money, statistics, measurement, planning).",
+    "teach": "Read the \"What the exam expects: SQA Applications of Mathematics\" sheet together. Then do the National 5 check (online or on paper), with a calculator but no help: it is a map, not a test.",
+    "practise": "The \"SQA Applications of Maths climb: National 5 check\" sheet, or the online National 5 check.",
+    "check": "Mark the check together and fill in the \"SQA Applications of Maths climb: National 5 tracker\" sheet: the topics that lost marks go first, in climb order."
+   },
+   "use": [
+    "ap5-check"
+   ],
+   "home": "Look at the tracker together and agree a weekly time for online practice.",
+   "vocab": "course, paper, marking, step, secure",
+   "understand": "Why should every answer say what it means in the context?",
+   "lookFor": "Says Applications questions are about real decisions, and the last mark is often for the decision with a reason."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-numeracy",
+   "strand": "Number",
+   "title": "SQA Applications of Maths climb (National 5) 1: Numeracy: rounding, estimating and calculating in context",
+   "intention": "We are learning to round, estimate and carry out multi-step calculations in real contexts, and to check answers make sense.",
+   "criteria": [
+    "I can round to decimal places and significant figures.",
+    "I can estimate to check a calculation.",
+    "I can work through a multi-step money problem."
+   ],
+   "steps": {
+    "start": "A shop till says 4 items at £2.95 cost £118. How can you tell at once it's wrong?",
+    "teach": "Estimate first (round to 1 significant figure), then calculate, then compare. For multi-step problems, write each step on its own line with what it finds. Round only at the end, and to what the question asks.",
+    "practise": "The \"Exam practice (National 5 Applications) 1: Numeracy: rounding, estimating and calculating in context\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to estimate 48.7 × 6.2, then calculate it and say if the answer is sensible."
+   },
+   "use": [
+    "ap5-numeracy"
+   ],
+   "home": "Estimate the total at the supermarket before you reach the till.",
+   "vocab": "round, estimate, significant figure, decimal place, multi-step",
+   "understand": "Why estimate before you calculate?",
+   "lookFor": "Says it catches calculator slips, because a wrong answer will be far from the estimate."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-pay",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (National 5) 2: Finance: pay, deductions and budgets",
+   "intention": "We are learning to work out gross pay (including overtime and commission), deductions and net pay, and to plan a budget.",
+   "criteria": [
+    "I can work out pay with overtime and commission.",
+    "I can work out income tax from a given allowance and rate.",
+    "I can find net pay from a payslip.",
+    "I can balance a simple budget."
+   ],
+   "steps": {
+    "start": "Show a payslip. What's the difference between gross pay and net pay?",
+    "teach": "Gross pay = basic + overtime (time and a half is 1.5 × the hourly rate) + commission (a percentage of sales, often above a threshold). Deductions: income tax on pay above the personal allowance, National Insurance and pension. Net = gross − deductions. A budget lists income and spending; what's left can be saved.",
+    "practise": "The \"Exam practice (National 5 Applications) 2: Finance: pay, deductions and budgets\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to work out the net pay from a made-up payslip with three deductions."
+   },
+   "use": [
+    "ap5-pay"
+   ],
+   "home": "Look at a real payslip or bill together (with permission) and name each line.",
+   "vocab": "gross pay, net pay, overtime, commission, income tax, National Insurance, personal allowance, budget",
+   "understand": "Why is the tax rate applied only to income above the personal allowance?",
+   "lookFor": "Says the allowance is tax-free, so only the part above it is taxed."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-deals",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (National 5) 3: Finance: best deals, exchange rates, saving and borrowing",
+   "intention": "We are learning to compare deals, change currency, and work out interest, depreciation and the cost of borrowing.",
+   "criteria": [
+    "I can compare deals and say which is better value, with a reason.",
+    "I can convert currency, including commission.",
+    "I can work out simple and compound interest and depreciation.",
+    "I can find the total cost of a loan."
+   ],
+   "steps": {
+    "start": "Two phone contracts: £20 a month, or £100 up front and £15 a month. Which is cheaper?",
+    "teach": "Compare deals on the same basis (the same time or quantity) and finish with a decision and a reason. Exchange: take off commission first, then multiply by the rate. Compound interest: multiply by (1 + r) once a year. Depreciation: multiply by (1 − r). Cost of a loan: total repaid − amount borrowed.",
+    "practise": "The \"Exam practice (National 5 Applications) 3: Finance: best deals, exchange rates, saving and borrowing\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to compare two contracts over 24 months and state which is cheaper and by how much."
+   },
+   "use": [
+    "ap5-deals"
+   ],
+   "home": "Find two deals on the same thing online and work out which is better value.",
+   "vocab": "best value, exchange rate, commission, compound interest, depreciation, loan",
+   "understand": "Why must a 'which is cheaper' answer include both totals?",
+   "lookFor": "Says the decision mark needs a reason that comes from the working, and the totals are that reason."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-statistics",
+   "strand": "Data and chance",
+   "title": "SQA Applications of Maths climb (National 5) 4: Statistics: averages, spread and comparing data sets",
+   "intention": "We are learning to calculate averages and measures of spread, including the standard deviation, and to compare two data sets in context.",
+   "criteria": [
+    "I can find the mean, median and interquartile range.",
+    "I can calculate a standard deviation.",
+    "I can compare two data sets with one comment on average and one on spread."
+   ],
+   "steps": {
+    "start": "Two bus routes average 20 minutes. Which would you rather take, if one varies a lot more?",
+    "teach": "Averages say what's typical; spread (range, interquartile range, standard deviation) says how consistent. A comparison needs two sentences in context: one on the average, one on the spread (smaller spread = more consistent).",
+    "practise": "The \"Exam practice (National 5 Applications) 4: Statistics: averages, spread and comparing data sets\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to compare two sets of times with one comment on average and one on consistency."
+   },
+   "use": [
+    "ap5-statistics"
+   ],
+   "home": "Time the same journey for a week and work out the mean and range.",
+   "vocab": "mean, median, quartile, interquartile range, standard deviation, consistent",
+   "understand": "Why does a comparison need a comment on spread as well as the average?",
+   "lookFor": "Says two sets can have the same average but very different consistency."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-scatter",
+   "strand": "Data and chance",
+   "title": "SQA Applications of Maths climb (National 5) 5: Scattergraphs, probability and expected frequency",
+   "intention": "We are learning to describe correlation, use a line of best fit, and work out probabilities and expected frequencies.",
+   "criteria": [
+    "I can describe correlation on a scattergraph.",
+    "I can use a line of best fit to estimate.",
+    "I can find a probability and an expected frequency."
+   ],
+   "steps": {
+    "start": "Does more revision mean a higher mark? How could you show it?",
+    "teach": "Correlation: positive, negative or none. A line of best fit goes through the middle of the points; use it to estimate within the data. Probability = favourable ÷ total; expected frequency = probability × number of trials.",
+    "practise": "The \"Exam practice (National 5 Applications) 5: Scattergraphs, probability and expected frequency\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to estimate a value from a line of best fit and say how many times to expect an outcome in 60 trials."
+   },
+   "use": [
+    "ap5-scatter"
+   ],
+   "home": "Roll a dice 60 times and compare the results with what you'd expect.",
+   "vocab": "correlation, line of best fit, probability, expected frequency, relative frequency",
+   "understand": "Why is a prediction from a line of best fit only an estimate?",
+   "lookFor": "Says the points don't lie exactly on the line, so real values vary around it."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-geometry",
+   "strand": "Shape and angles",
+   "title": "SQA Applications of Maths climb (National 5) 6: Geometry: Pythagoras, gradient and area",
+   "intention": "We are learning to use Pythagoras, gradient and area in practical problems.",
+   "criteria": [
+    "I can use Pythagoras to find a missing side in context.",
+    "I can work out a gradient and compare it with a limit.",
+    "I can find the area of composite shapes."
+   ],
+   "steps": {
+    "start": "A ladder leans against a wall. What do you need to know to find how high it reaches?",
+    "teach": "Pythagoras: the longest side squared equals the sum of the other two squared. Gradient = vertical ÷ horizontal, in the same units; compare it with any limit and say if it's acceptable. Composite areas: split into rectangles, triangles and circles, then add or subtract.",
+    "practise": "The \"Exam practice (National 5 Applications) 6: Geometry: Pythagoras, gradient and area\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to check if a ramp rising 30 cm over 4 m meets a 1/12 rule."
+   },
+   "use": [
+    "ap5-geometry"
+   ],
+   "home": "Measure a ramp or slope near you and work out its gradient.",
+   "vocab": "Pythagoras, hypotenuse, gradient, composite shape, area",
+   "understand": "Why must rise and run be in the same units?",
+   "lookFor": "Says gradient is a ratio, so mixing cm and m gives the wrong value."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-volume",
+   "strand": "Measurement",
+   "title": "SQA Applications of Maths climb (National 5) 7: Measurement: volume, surface area and packing",
+   "intention": "We are learning to work out volumes and surface areas, and how many boxes fit in a container.",
+   "criteria": [
+    "I can find the volume of prisms, cylinders, cones and spheres.",
+    "I can find a surface area.",
+    "I can work out how many boxes fit in a container."
+   ],
+   "steps": {
+    "start": "How many shoeboxes would fit in a car boot? How could you find out without trying?",
+    "teach": "Volume formulas: prism = area of cross-section × length; cylinder πr²h; cone ⅓πr²h; sphere ⁴⁄₃πr³. Packing: divide each dimension of the container by the box's, round down, then multiply.",
+    "practise": "The \"Exam practice (National 5 Applications) 7: Measurement: volume, surface area and packing\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them how many 10 cm × 8 cm × 5 cm boxes fit in a 45 cm × 30 cm × 22 cm container."
+   },
+   "use": [
+    "ap5-volume"
+   ],
+   "home": "Measure a cereal box and a kitchen cupboard: how many boxes fit?",
+   "vocab": "volume, surface area, prism, cylinder, cone, sphere, packing",
+   "understand": "Why do you round down when packing?",
+   "lookFor": "Says a part of a box can't be packed, so only whole boxes count."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-scale",
+   "strand": "Measurement",
+   "title": "SQA Applications of Maths climb (National 5) 8: Scale drawings, bearings and navigation",
+   "intention": "We are learning to use scales and three-figure bearings, including back bearings, to plan routes.",
+   "criteria": [
+    "I can use a map scale both ways.",
+    "I can measure and use three-figure bearings.",
+    "I can find a back bearing."
+   ],
+   "steps": {
+    "start": "On a 1 : 25 000 map, how far is 4 cm in real life?",
+    "teach": "Scale: real = map × scale factor (then change units). Bearings are measured clockwise from north, with three figures. The back bearing is the bearing ± 180°.",
+    "practise": "The \"Exam practice (National 5 Applications) 8: Scale drawings, bearings and navigation\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to find the real distance for 6.5 cm on a 1 : 50 000 map and the back bearing of 070°."
+   },
+   "use": [
+    "ap5-scale"
+   ],
+   "home": "Plan a walk on an OS map and write the bearings for each leg.",
+   "vocab": "scale, scale factor, bearing, three-figure bearing, back bearing",
+   "understand": "Why do bearings use three figures?",
+   "lookFor": "Says it avoids confusion, so 045° can't be misread as 45 or 450."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-time",
+   "strand": "Measurement",
+   "title": "SQA Applications of Maths climb (National 5) 9: Time, speed, time zones and planning tasks",
+   "intention": "We are learning to work with time, speed and time zones, and to find the shortest time for a set of tasks.",
+   "criteria": [
+    "I can work out durations with the 24-hour clock.",
+    "I can use speed, distance and time.",
+    "I can adjust times for time zones.",
+    "I can find the shortest time for tasks that can overlap."
+   ],
+   "steps": {
+    "start": "A flight leaves at 22:30 and takes 9 hours. The destination is 5 hours behind. When does it land?",
+    "teach": "Durations: count up to the next hour. D = S × T, and convert minutes to hours. Time zones: find the time at home, then add if the place is ahead, take away if behind. Tasks: list which must follow which; tasks that can happen together take the longest of them.",
+    "practise": "The \"Exam practice (National 5 Applications) 9: Time, speed, time zones and planning tasks\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to plan a meal of four tasks and find the shortest time."
+   },
+   "use": [
+    "ap5-time"
+   ],
+   "home": "Plan a real day trip with departure times and journey times.",
+   "vocab": "24-hour clock, duration, speed, time zone, precedence",
+   "understand": "Why do tasks that happen at the same time only count once?",
+   "lookFor": "Says they run side by side, so only the longer one adds to the total time."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-logic",
+   "strand": "Measurement",
+   "title": "SQA Applications of Maths climb (National 5) 10: Tolerance, tariffs, flowcharts and reading charts",
+   "intention": "We are learning to use tolerance, read tariffs and tables, and follow flowcharts.",
+   "criteria": [
+    "I can find the range allowed by a tolerance.",
+    "I can decide if a measurement is acceptable.",
+    "I can work out a bill from a tariff.",
+    "I can follow a flowchart."
+   ],
+   "steps": {
+    "start": "A bag of crisps says 25 g ± 1 g. Is a 23.5 g bag acceptable?",
+    "teach": "Tolerance: m ± t means from m − t to m + t; inside is acceptable. Tariffs: fixed charges (per day or month) plus a rate per unit; change pence to pounds at the end. Flowcharts: follow each decision box exactly.",
+    "practise": "The \"Exam practice (National 5 Applications) 10: Tolerance, tariffs, flowcharts and reading charts\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to find an electricity bill from a standing charge and a unit rate."
+   },
+   "use": [
+    "ap5-logic"
+   ],
+   "home": "Look at a real energy bill and find the standing charge and unit rate.",
+   "vocab": "tolerance, tariff, standing charge, unit rate, flowchart",
+   "understand": "Why does a tolerance have two limits?",
+   "lookFor": "Says a part can be too small or too large, so both ends matter."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "id": "lesson-sqa-apps-ap5-mini-papers",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb: mini papers (National 5)",
+   "intention": "We are practising exam questions from all the topics together, under exam conditions, and using the results to plan what to revise.",
+   "criteria": [
+    "I can answer mixed questions without being told the topic.",
+    "I show my working and say what each answer means.",
+    "I can use my marks to choose which topics to go back to."
+   ],
+   "steps": {
+    "start": "Recap the habits: read twice, one step a line, money to two decimal places, and a decision with a reason.",
+    "teach": "Set up exam conditions: 20 to 25 minutes, quiet, calculator allowed. Do the questions you can first.",
+    "practise": "The \"Mini paper: mixed questions (National 5 Applications)\" or \"Mini paper: longer questions (National 5 Applications)\" sheet. Each print is a new paper.",
+    "check": "Mark it together one bullet a mark, then write the score and the topics to go back to on the tracker."
+   },
+   "use": [
+    "ap5-mixed"
+   ],
+   "home": "Redo the questions that lost marks, then the online mixed exam questions.",
+   "vocab": "exam conditions, marking, topic, revise",
+   "understand": "Your mini paper shows you lost marks on two topics. What do you do next?",
+   "lookFor": "Goes back to those topics' lessons or exam sheets before the next mini paper."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-start-here",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (Higher) start here: check and plan",
+   "intention": "We are finding out which of the Higher Applications of Mathematics topics are already secure and which to learn first, and making a plan.",
+   "criteria": [
+    "I can try one exam question on each of the 7 Higher topics.",
+    "I know which topics I will work on first, and why.",
+    "I know how each topic works: lesson, online practice, exam-style sheet, then mini papers."
+   ],
+   "steps": {
+    "start": "Talk about the goal: Higher Applications of Mathematics, which builds on National 5's finance and statistics and adds planning, modelling and a project.",
+    "teach": "Read the \"What the exam expects: SQA Applications of Mathematics\" sheet together. Then do the Higher check (online or on paper), with a calculator but no help: it is a map, not a test.",
+    "practise": "The \"SQA Applications of Maths climb: Higher check\" sheet, or the online Higher check.",
+    "check": "Mark the check together and fill in the \"SQA Applications of Maths climb: Higher tracker\" sheet: the topics that lost marks go first, in climb order."
+   },
+   "use": [
+    "aph-check"
+   ],
+   "home": "Look at the tracker together and agree a weekly time for online practice.",
+   "vocab": "course, paper, marking, step, secure",
+   "understand": "Why should every answer say what it means in the context?",
+   "lookFor": "Says Applications questions are about real decisions, and the last mark is often for the decision with a reason."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-borrowing",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (Higher) 1: Finance: borrowing, loans and mortgages",
+   "intention": "We are learning to work out the cost of borrowing and mortgage repayments, and to compare loans.",
+   "criteria": [
+    "I can find the total repaid and the extra cost of a loan.",
+    "I can express the extra as a percentage.",
+    "I can work out a mortgage repayment from a rate per £1000."
+   ],
+   "steps": {
+    "start": "Two loans of £5000: one over 2 years, one over 5. Which costs more in total, and why?",
+    "teach": "Total repaid = monthly payment × number of months; extra = total − borrowed; as a percentage, ÷ borrowed × 100. Mortgages: borrowed = price − deposit; repayment = (borrowed ÷ 1000) × rate per £1000.",
+    "practise": "The \"Exam practice (Higher Applications) 1: Finance: borrowing, loans and mortgages\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them for the monthly repayment on a £180 000 flat with a 10% deposit at £5.20 per £1000."
+   },
+   "use": [
+    "aph-borrowing"
+   ],
+   "home": "Compare two real loan adverts: which costs more in total?",
+   "vocab": "loan, APR, total repayable, mortgage, deposit, per £1000",
+   "understand": "Why can a lower monthly payment cost more overall?",
+   "lookFor": "Says it is spread over more months, so the total repaid can be higher."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-saving",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb (Higher) 2: Finance: saving, investing and inflation",
+   "intention": "We are learning to compare savings with AER, and to understand inflation and pay in real terms.",
+   "criteria": [
+    "I can use compound interest and depreciation.",
+    "I can work out an AER from a monthly rate.",
+    "I can apply inflation over several years.",
+    "I can say if pay has risen in real terms."
+   ],
+   "steps": {
+    "start": "Your pay rose 3% but prices rose 5%. Are you better off?",
+    "teach": "AER = (1 + monthly rate)¹² − 1. Inflation multiplies prices by (1 + i) each year. Real change = (pay multiplier ÷ price multiplier) − 1: negative means buying power fell.",
+    "practise": "The \"Exam practice (Higher Applications) 2: Finance: saving, investing and inflation\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to work out the real change when pay rises 4% and prices 6.8%."
+   },
+   "use": [
+    "aph-saving"
+   ],
+   "home": "Find the current inflation rate and a savings rate: is the money growing in real terms?",
+   "vocab": "AER, compound interest, inflation, real terms, buying power",
+   "understand": "Why compare savings with AER?",
+   "lookFor": "Says accounts pay interest at different intervals; AER puts them all on a yearly basis."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-sampling",
+   "strand": "Data and chance",
+   "title": "SQA Applications of Maths climb (Higher) 3: Statistics: sampling, summaries and outliers",
+   "intention": "We are learning to choose a sample, summarise data and spot outliers.",
+   "criteria": [
+    "I can name and describe kinds of sample.",
+    "I can work out a stratified sample.",
+    "I can find mean and standard deviation from sums.",
+    "I can test for outliers."
+   ],
+   "steps": {
+    "start": "You want to know what a school of 900 thinks. Who would you ask?",
+    "teach": "Samples: simple random, systematic, stratified, quota, cluster, opportunity; say the bias each might have. Stratified: each group's share × sample size. Outliers: beyond 1.5 × IQR from the quartiles.",
+    "practise": "The \"Exam practice (Higher Applications) 3: Statistics: sampling, summaries and outliers\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to plan a stratified sample of 40 from three groups."
+   },
+   "use": [
+    "aph-sampling"
+   ],
+   "home": "Design a short survey for your family or friends and say how you'd sample.",
+   "vocab": "sample, bias, stratified, systematic, standard deviation, outlier",
+   "understand": "Why might an opportunity sample be biased?",
+   "lookFor": "Says it only includes people easy to reach, who may not represent everyone."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-regression",
+   "strand": "Data and chance",
+   "title": "SQA Applications of Maths climb (Higher) 4: Correlation and linear regression",
+   "intention": "We are learning to interpret correlation coefficients and use regression lines to make predictions.",
+   "criteria": [
+    "I can describe correlation from r.",
+    "I can use a regression equation to predict.",
+    "I can say when a prediction is reliable."
+   ],
+   "steps": {
+    "start": "Ice cream sales and temperature: what would you expect a scattergraph to show?",
+    "teach": "r near 1 or −1 is strong; near 0 is weak. A regression line y = a + bx predicts y; within the data range (interpolation) it is reasonably reliable, outside it (extrapolation) it is not. Correlation is not causation.",
+    "practise": "The \"Exam practice (Higher Applications) 4: Correlation and linear regression\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to predict from y = 12 + 2.5x and say if it is reliable at x = 90 when the data ran from 10 to 40."
+   },
+   "use": [
+    "aph-regression"
+   ],
+   "home": "Collect paired data (height and arm span) and plot it.",
+   "vocab": "correlation coefficient, regression line, interpolation, extrapolation, causation",
+   "understand": "Why is extrapolation unreliable?",
+   "lookFor": "Says we don't know the pattern continues outside the data we have."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-probability",
+   "strand": "Data and chance",
+   "title": "SQA Applications of Maths climb (Higher) 5: Probability, conditional probability and expected value",
+   "intention": "We are learning to use probability rules, conditional probability and expected value to make decisions.",
+   "criteria": [
+    "I can use the addition rule.",
+    "I can test if events are independent.",
+    "I can find a conditional probability.",
+    "I can work out an expected value."
+   ],
+   "steps": {
+    "start": "A raffle ticket costs £2 and there's a 1 in 50 chance of winning £60. Is it worth it?",
+    "teach": "P(A or B) = P(A) + P(B) − P(A and B). Independent if P(A and B) = P(A) × P(B). P(A given B) = P(A and B) ÷ P(B). Expected value = sum of outcome × probability, minus any cost.",
+    "practise": "The \"Exam practice (Higher Applications) 5: Probability, conditional probability and expected value\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to find the expected gain of a game and say if it is fair."
+   },
+   "use": [
+    "aph-probability"
+   ],
+   "home": "Work out the expected value of a real raffle or prize draw.",
+   "vocab": "probability, independent, conditional, expected value, fair game",
+   "understand": "What does a negative expected value mean?",
+   "lookFor": "Says that on average, over many games, you lose money."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-planning",
+   "strand": "Measurement",
+   "title": "SQA Applications of Maths climb (Higher) 6: Planning and decision making: critical paths and float",
+   "intention": "We are learning to plan projects with precedence tables, find the critical path and float.",
+   "criteria": [
+    "I can draw a precedence network.",
+    "I can find the critical path and the shortest time.",
+    "I can find the float of an activity."
+   ],
+   "steps": {
+    "start": "Redecorating a room: which jobs must wait for others?",
+    "teach": "List activities with durations and what they depend on. Paths through the network: the longest is the critical path, and its length is the shortest project time. Float = how long a non-critical activity can be delayed without delaying the project.",
+    "practise": "The \"Exam practice (Higher Applications) 6: Planning and decision making: critical paths and float\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to find the critical path and one float in a five-activity project."
+   },
+   "use": [
+    "aph-planning"
+   ],
+   "home": "Plan a real job at home (cooking, decorating) as a network.",
+   "vocab": "precedence, network, critical path, float, Gantt chart",
+   "understand": "Why is the shortest project time the length of the longest path?",
+   "lookFor": "Says every path must be finished, so the project can't end before its longest path does."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-modelling",
+   "strand": "Patterns and missing numbers",
+   "title": "SQA Applications of Maths climb (Higher) 7: Mathematical modelling: linear and exponential",
+   "intention": "We are learning to build and use linear and exponential models, and to judge them.",
+   "criteria": [
+    "I can use a linear model to find a value.",
+    "I can use an exponential growth or decay model.",
+    "I can find when a model passes a target.",
+    "I can comment on a model's limits."
+   ],
+   "steps": {
+    "start": "A town grows 4% a year. Will it double in 10 years?",
+    "teach": "Linear: y = a + bx (a fixed start, the same amount each step). Exponential: y = a × (1 + r)ⁿ (the same percentage each step). To find when it passes a target, work year by year (or use logs). Comment on assumptions: will the rate really stay the same?",
+    "practise": "The \"Exam practice (Higher Applications) 7: Mathematical modelling: linear and exponential\" sheet, marked one bullet a mark, then the online practice.",
+    "check": "Ask them to find when £2000 at 5% a year passes £3000, and one assumption the model makes."
+   },
+   "use": [
+    "aph-modelling"
+   ],
+   "home": "Model a real cost (a phone plan, a taxi) and check it against a bill.",
+   "vocab": "model, linear, exponential, growth rate, assumption",
+   "understand": "When is an exponential model better than a linear one?",
+   "lookFor": "Says when it changes by the same percentage each time rather than the same amount."
+  },
+  {
+   "level": "Senior",
+   "subject": "Maths",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "id": "lesson-sqa-apps-aph-mini-papers",
+   "strand": "Money",
+   "title": "SQA Applications of Maths climb: mini papers (Higher)",
+   "intention": "We are practising exam questions from all the topics together, under exam conditions, and using the results to plan what to revise.",
+   "criteria": [
+    "I can answer mixed questions without being told the topic.",
+    "I show my working and say what each answer means.",
+    "I can use my marks to choose which topics to go back to."
+   ],
+   "steps": {
+    "start": "Recap the habits: read twice, one step a line, money to two decimal places, and a decision with a reason.",
+    "teach": "Set up exam conditions: 20 to 25 minutes, quiet, calculator allowed. Do the questions you can first.",
+    "practise": "The \"Mini paper: mixed questions (Higher Applications)\" or \"Mini paper: longer questions (Higher Applications)\" sheet. Each print is a new paper.",
+    "check": "Mark it together one bullet a mark, then write the score and the topics to go back to on the tracker."
+   },
+   "use": [
+    "aph-mixed"
+   ],
+   "home": "Redo the questions that lost marks, then the online mixed exam questions.",
+   "vocab": "exam conditions, marking, topic, revise",
+   "understand": "Your mini paper shows you lost marks on two topics. What do you do next?",
+   "lookFor": "Goes back to those topics' lessons or exam sheets before the next mini paper."
+  },
+  {
+   "id": "lesson-sqa-apps-what-the-exam-expects",
+   "level": "Senior",
+   "subject": "Maths",
+   "strand": "Money",
+   "codes": [],
+   "sqa": "National 5 Applications of Mathematics",
+   "title": "SQA Applications of Maths climb: what the exam expects",
+   "intention": "We are learning how Applications of Mathematics is examined and marked: the papers, the Higher project, step marks and decisions with reasons.",
+   "criteria": [
+    "I know the papers for National 5 and Higher.",
+    "I know marks are given one step at a time.",
+    "I know a decision needs a reason from my working."
+   ],
+   "steps": {
+    "start": "Show an answer that says only 'Contract A'. How many marks should it get?",
+    "teach": "Go through the \"What the exam expects: SQA Applications of Mathematics\" sheet and mark its model answers together.",
+    "practise": "Mark the model answers on the \"What the exam expects: SQA Applications of Mathematics\" sheet together, then the online mixed exam questions.",
+    "check": "Ask them what a decision question needs for full marks."
+   },
+   "use": [
+    "ap5-mixed",
+    "aph-mixed"
+   ],
+   "home": "Find SQA's specimen paper for the course and look at its first page.",
+   "vocab": "paper, project, step mark, decision, context",
+   "understand": "Why does the working matter even when the answer is right?",
+   "lookFor": "Says marks are for each step, and the reason for a decision comes from the working."
+  },
+  {
+   "id": "lesson-sqa-apps-my-next-step",
+   "level": "Senior",
+   "subject": "Maths",
+   "strand": "Money",
+   "codes": [],
+   "sqa": "Higher Applications of Mathematics",
+   "title": "SQA Applications of Maths climb: my next step (working on your own)",
+   "intention": "We are learning to follow the climb on our own: take the check, practise the next topic, mark our own work and know when to move on.",
+   "criteria": [
+    "I can open the climb page and follow My next step.",
+    "I read the marking after every question.",
+    "I know when a topic is secure and when to move on."
+   ],
+   "steps": {
+    "start": "Ask: when you study on your own, how do you decide what to do next?",
+    "teach": "Open popspell.com/climb.html?course=apps together. Show My next step: the check first, then the first topic that needs work, then a mini paper when a stage is nearly done. Progress stays on this device only.",
+    "practise": "The \"SQA Applications of Maths climb: my route through National 5 and Higher\" sheet, then one practice set on the climb page.",
+    "check": "Ask them to show their next step and explain why that topic comes next."
+   },
+   "use": [
+    "ap5-check",
+    "aph-check"
+   ],
+   "home": "Three sessions a week on the climb page, about 45 minutes each.",
+   "vocab": "self-guided, marking, secure, next step",
+   "understand": "Why read the marking even when you got the answer right?",
+   "lookFor": "Says it shows which steps earn marks, so you can write them in the exam."
+  }
+ ]
+}

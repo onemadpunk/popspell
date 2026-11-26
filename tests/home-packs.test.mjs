@@ -15,7 +15,7 @@ page.PopTeacher = { viewOf: (l, cur) => (cur !== "england" && l.cfe ? Object.ass
 const H = page.PopHome, D = page.PopHomeData, L = page.PopLessons;
 
 test("every pack has lessons of its own subject, none twice, and a review every six", () => {
-  assert.equal(D.PACKS.length, 50);
+  assert.equal(D.PACKS.length, 52);
   assert.equal(new Set(D.PACKS.map(p => p.id)).size, D.PACKS.length);
   for (const p of D.PACKS) {
     const lessons = H.lessonsFor(p);

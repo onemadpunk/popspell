@@ -4770,6 +4770,157 @@ window.PopActivities = (() => {
       make: () => shuffle(st.topics).slice(0, 12).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }))
   ];
 
+  /* ---------- SQA Applications of Mathematics climb (Scotland): National 5 and Higher ---------- */
+  // Scotland's other maths course, for learners who want maths for life, work and further study rather than
+  // algebra and calculus: finance, statistics, geometry and measurement, planning and modelling (SQA's National 5
+  // and Higher Applications of Mathematics course specifications). The same shape as the SQA and A level climbs:
+  // a check, topics in climb order, exam-style questions with one marking bullet a mark, mixed questions and mini
+  // papers. Where the content matches it reuses the National 4/5, GCSE and A level questions; finance, planning,
+  // tolerance and modelling questions are new. Rates and allowances in questions are given, never assumed to be
+  // this year's real ones. Questions are PopSpell's own, never SQA past papers.
+  const AP = "Mathematics · SQA Applications of Maths climb (Scotland)";
+  const apSq = (id, at) => { const m = sqTopic(id).makers; return at.map(i => m[i]); };
+  const apGf = (id, at) => sqFrom(id, at);
+  const ap2 = p => (p / 100).toFixed(2); // pence to pounds, always 2 decimal places
+  const apT = m => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  // National 5: finance
+  const apOvertime = () => { const r = gfR(19, 32) * 50, basic = pick([35, 36, 37.5, 38, 40]), h = gfR(3, 9), b = Math.round(r * basic), o = Math.round(r * 1.5 * h), g = b + o;
+    return gfQ(`Lena earns £${ap2(r)} an hour for a ${basic}-hour week. Overtime is paid at time and a half. One week she works ${h} hours of overtime. Work out her gross pay for the week. (£)`, ap2(g), 3,
+      `•1 basic pay ${basic} × £${ap2(r)} = £${ap2(b)} (1 mark). •2 overtime ${h} × 1.5 × £${ap2(r)} = £${ap2(o)} (1 mark). •3 £${ap2(b)} + £${ap2(o)} = £${ap2(g)} (1 mark).`, { calc: true, unit: "£", label: `ot ${r}${basic}${h}`, skill: "gross pay with overtime" }); };
+  const apCommission = () => { const S = gfR(14, 22) * 100, c = pick([2, 3, 4, 5]), T = gfR(4, 8) * 1000, X = T + gfR(3, 18) * 500, com = (X - T) * c / 100, g = S + com;
+    return gfQ(`A salesperson earns a basic £${gfBig(S)} a month plus ${c}% commission on sales over £${gfBig(T)}. One month they sell £${gfBig(X)} of goods. Work out their gross pay that month. (£)`, ap2(g * 100), 2,
+      `•1 commission ${c}% × (£${gfBig(X)} − £${gfBig(T)}) = £${ap2(com * 100)} (1 mark). •2 £${gfBig(S)} + £${ap2(com * 100)} = £${ap2(g * 100)} (1 mark).`, { calc: true, unit: "£", label: `cm ${S}${c}${T}${X}`, skill: "commission" }); };
+  const apTax = () => { const s = gfR(40, 90) * 500, PA = 12570, tax = Math.round((s - PA) * 20); // pence
+    return gfQ(`Asha earns £${gfBig(s)} a year. Assume a personal allowance of £12 570, and income tax at 20% on everything above it. How much income tax does she pay in a year? (£)`, ap2(tax), 2,
+      `•1 taxable income £${gfBig(s)} − £12 570 = £${gfBig(s - PA)} (1 mark). •2 20% × £${gfBig(s - PA)} = £${ap2(tax)} (1 mark).`, { calc: true, unit: "£", label: `tx ${s}`, skill: "income tax" }); };
+  const apNet = () => { const g = gfR(180, 320) * 1000, t = gfR(18, 40) * 1000 + gfR(0, 99), n = gfR(8, 20) * 1000 + gfR(0, 99), pc = pick([3, 4, 5, 6]), pen = Math.round(g * pc / 100), net = g - t - n - pen;
+    return gfQ(`A monthly payslip shows gross pay £${ap2(g)}, income tax £${ap2(t)} and National Insurance £${ap2(n)}. The pension takes ${pc}% of gross pay. Work out the net pay. (£)`, ap2(net), 3,
+      `•1 pension ${pc}% × £${ap2(g)} = £${ap2(pen)} (1 mark). •2 total deductions £${ap2(t + n + pen)} (1 mark). •3 net pay £${ap2(g)} − £${ap2(t + n + pen)} = £${ap2(net)} (1 mark).`, { calc: true, unit: "£", label: `np ${g}${t}${n}${pc}`, skill: "net pay" }); };
+  const apBudget = () => { const inc = gfR(160, 260) * 1000, rent = gfR(55, 90) * 1000, bills = gfR(15, 30) * 1000, food = gfR(25, 45) * 1000, trav = gfR(5, 15) * 1000, left = inc - rent - bills - food - trav;
+    return gfQ(`A monthly budget: income £${ap2(inc)}. Spending: rent £${ap2(rent)}, bills £${ap2(bills)}, food £${ap2(food)}, travel £${ap2(trav)}. How much is left each month? (£)`, ap2(left), 2,
+      `•1 total spending £${ap2(rent + bills + food + trav)} (1 mark). •2 £${ap2(inc)} − £${ap2(rent + bills + food + trav)} = £${ap2(left)} (1 mark).`, { calc: true, unit: "£", label: `bd ${inc}${rent}${bills}${food}`, skill: "budgeting" }); };
+  const apExchange = () => { const P = gfR(3, 12) * 50, c = pick([1, 1.5, 2, 2.5, 3]), r = pick([1.12, 1.14, 1.16, 1.18, 1.21]), after = P * (1 - c / 100), e = Math.round(after * r * 100);
+    if (Math.abs((after * r * 100) % 1 - 0.5) < 1e-6) return {};
+    return gfQ(`A bureau de change takes ${c}% commission on the pounds you change, then gives €${r.toFixed(2)} for each £1. How many euros do you get for £${P}? Give your answer to the nearest cent. (€)`, ap2(e), 3,
+      `•1 commission ${c}% × £${P} = £${gfP(P * c / 100)} (1 mark). •2 £${gfP(after)} left to change (1 mark). •3 £${gfP(after)} × ${r.toFixed(2)} = €${ap2(e)} (1 mark).`, { calc: true, unit: "€", label: `fx ${P}${c}${r}`, skill: "foreign exchange with commission" }); };
+  const apLoan = () => { const L = gfR(10, 60) * 100, n = pick([12, 18, 24, 36]), m = Math.round(L * (1 + pick([6, 8, 9, 11, 12]) / 100 * n / 12) / n * 100), tot = m * n, extra = tot - L * 100;
+    return gfQ(`Ross borrows £${gfBig(L)}. He repays £${ap2(m)} a month for ${n} months. How much more than he borrowed does he pay back? (£)`, ap2(extra), 2,
+      `•1 total repaid ${n} × £${ap2(m)} = £${ap2(tot)} (1 mark). •2 £${ap2(tot)} − £${gfBig(L)} = £${ap2(extra)} (1 mark).`, { calc: true, unit: "£", label: `ln ${L}${n}${m}`, skill: "cost of a loan" }); };
+  const apDeal = () => { let U, a, b; do { U = gfR(0, 8) * 25; a = gfR(10, 30); b = gfR(14, 40); } while (U + 24 * a === 24 * b);
+    const A = U + 24 * a, B = 24 * b, ans = A < B ? "Contract A" : "Contract B";
+    return gfQ(`Two phone contracts, each for 24 months. Contract A: £${U} up front, then £${a} a month. Contract B: nothing up front, then £${b} a month. Which is cheaper over the 24 months?`, ans, 3,
+      `•1 A: £${U} + 24 × £${a} = £${A} (1 mark). •2 B: 24 × £${b} = £${B} (1 mark). •3 ${ans} is cheaper, by £${Math.abs(A - B)} (1 mark).`, { calc: true, options: [ans === "Contract A" ? "Contract B" : "Contract A"], label: `dl ${U}${a}${b}`, skill: "best deal" }); };
+  // National 5: geometry, measurement, planning and logic
+  const apRamp = () => { const run = gfR(30, 80) * 10, rise = gfR(20, 90), g = rise / run, ok = g <= 1 / 12, ans = ok ? "Yes" : "No";
+    if (Math.abs(g - 1 / 12) < 0.0015) return {};
+    return gfQ(`A wheelchair ramp must have a gradient of no more than 1/12 (about 0.083). A ramp rises ${rise} cm over a horizontal distance of ${run / 100} m. Does it meet the rule?`, ans, 2,
+      `•1 gradient = ${rise} ÷ ${run} = ${gfD(g)} (same units, cm) (1 mark). •2 ${gfD(g)} ${ok ? "≤" : ">"} 0.083, so ${ok ? "yes, it meets the rule" : "no, it is too steep"} (1 mark).`, { calc: true, options: [ok ? "No" : "Yes"], label: `rp ${rise}${run}`, skill: "gradient in context" }); };
+  const apPack = () => { const l = pick([10, 12, 15, 20]), w = pick([8, 10, 12]), h = pick([5, 6, 8, 10]), L = l * gfR(3, 6) + gfR(0, l - 1), W = w * gfR(2, 5) + gfR(0, w - 1), H = h * gfR(2, 4) + gfR(0, h - 1);
+    const a = Math.floor(L / l), b = Math.floor(W / w), c = Math.floor(H / h), n = a * b * c;
+    return gfQ(`Boxes ${l} cm long, ${w} cm wide and ${h} cm high are packed, all the same way up, into a container ${L} cm long, ${W} cm wide and ${H} cm high. What is the greatest number of boxes that fit?`, n, 3,
+      `•1 along the length ${L} ÷ ${l} → ${a} (1 mark). •2 across ${W} ÷ ${w} → ${b}, up ${H} ÷ ${h} → ${c} (1 mark). •3 ${a} × ${b} × ${c} = ${n} (1 mark).`, { calc: true, label: `pk ${l}${w}${h}${L}${W}${H}`, skill: "packing a container" }); };
+  const apBack = () => { const b = gfR(1, 35) * 10 + pick([0, 5]), back = (b + 180) % 360, f = x => String(x).padStart(3, "0");
+    return gfQ(`A boat sails from a harbour on a bearing of ${f(b)}°. On what bearing must it sail to come straight back? (°)`, f(back), 1, `•1 ${f(b)} ${b < 180 ? "+" : "−"} 180 = ${f(back)}° (1 mark).`, { accept: [String(back)], label: `bb ${b}`, skill: "back bearings" }); };
+  const apZone = () => { const dep = gfR(6, 20) * 60 + pick([0, 15, 30, 45]), dur = gfR(2, 9) * 60 + pick([0, 15, 30, 45]), k = pick([-5, -4, 1, 2, 3, 4, 5, 8]), arr = ((dep + dur + k * 60) % 1440 + 1440) % 1440;
+    return gfQ(`A flight leaves Glasgow at ${apT(dep)} (local time) and takes ${Math.floor(dur / 60)} h ${dur % 60} min. The destination is ${Math.abs(k)} hour${Math.abs(k) === 1 ? "" : "s"} ${k > 0 ? "ahead of" : "behind"} Glasgow. What is the local time when it lands? Give a 24-hour time.`, apT(arr), 2,
+      `•1 Glasgow time on landing ${apT(dep + dur)} (1 mark). •2 ${k > 0 ? "add" : "take away"} ${Math.abs(k)} h: ${apT(arr)} (1 mark).`, { label: `tz ${dep}${dur}${k}`, skill: "time zones" }); };
+  const apTasks = () => { const a = gfR(5, 20), b = gfR(10, 40), c = gfR(10, 40), d = gfR(5, 20), t = a + Math.max(b, c) + d;
+    return gfQ(`Making a meal: A, prepare the vegetables (${a} min). B, cook the sauce (${b} min), after A. C, roast the vegetables (${c} min), after A; B and C can happen at the same time. D, serve (${d} min), after B and C. What is the shortest time to make the meal? (min)`, t, 2,
+      `•1 B and C side by side take the longer: ${Math.max(b, c)} min (1 mark). •2 ${a} + ${Math.max(b, c)} + ${d} = ${t} min (1 mark).`, { label: `ts ${a}${b}${c}${d}`, skill: "planning tasks" }); };
+  const apTol = () => { const m = pick([20, 25, 40, 50, 75, 120]), tol = pick([0.2, 0.3, 0.5, 1.5, 2]), lo = m - tol, hi = m + tol, x = Math.round((m + (rand(2) ? 1 : -1) * tol * pick([0.4, 0.6, 1.5, 1.9])) * 10) / 10, ok = x >= lo && x <= hi, ans = ok ? "Yes" : "No";
+    return gfQ(`A part must be ${m} ± ${tol} mm long. One part measures ${x} mm. Is it acceptable?`, ans, 2,
+      `•1 acceptable range ${gfD(lo)} mm to ${gfD(hi)} mm (1 mark). •2 ${x} is ${ok ? "inside" : "outside"} it, so ${ok ? "yes" : "no"} (1 mark).`, { options: [ok ? "No" : "Yes"], label: `tl ${m}${tol}${x}`, skill: "tolerance" }); };
+  const apTolMin = () => { const m = pick([30, 45, 60, 80, 250]), tol = pick([0.5, 1, 2.5, 5]);
+    return gfQ(`A bag of flour is labelled ${m * 10} g ± ${tol * 2} g. What is the smallest acceptable weight? (g)`, gfD(m * 10 - tol * 2), 1, `•1 ${m * 10} − ${gfD(tol * 2)} = ${gfD(m * 10 - tol * 2)} g (1 mark).`, { label: `tm ${m}${tol}`, skill: "tolerance" }); };
+  const apFlow = () => { const k = gfR(10, 30), m = pick([2, 3, 4]), a = gfR(5, 15), x = gfR(5, 40), out = x > k ? x * m : x + a;
+    return gfQ(`A flowchart: start with a number. Is it greater than ${k}? If yes, multiply it by ${m}. If no, add ${a}. Then output the result. What is the output when the input is ${x}?`, out, 1,
+      `•1 ${x} ${x > k ? ">" : "≤"} ${k}, so ${x > k ? `${x} × ${m}` : `${x} + ${a}`} = ${out} (1 mark).`, { label: `fl ${k}${m}${a}${x}`, skill: "flowcharts" }); };
+  const apTariff = () => { const std = gfR(20, 35), units = gfR(150, 400), p = gfR(22, 30), total = std * 30 + p * units;
+    return gfQ(`An electricity tariff: a standing charge of ${std}p a day, plus ${p}p for each unit used. In a 30-day month a home uses ${units} units. Work out the bill. (£)`, ap2(total), 3,
+      `•1 standing charge 30 × ${std}p = £${ap2(std * 30)} (1 mark). •2 units ${units} × ${p}p = £${ap2(p * units)} (1 mark). •3 £${ap2(total)} (1 mark).`, { calc: true, unit: "£", label: `tf ${std}${p}${units}`, skill: "reading a tariff" }); };
+  // Higher: finance
+  const apMortgage = () => { const price = gfR(12, 30) * 10000, dep = pick([5, 10, 15]), B = price * (100 - dep) / 100, r = pick([4.85, 5.12, 5.47, 5.83, 6.21]), m = Math.round(B / 1000 * r * 100);
+    return gfQ(`A flat costs £${gfBig(price)}. The buyer pays a ${dep}% deposit and borrows the rest. The lender charges £${r.toFixed(2)} a month for every £1000 borrowed. Work out the monthly repayment. (£)`, ap2(m), 3,
+      `•1 deposit £${gfBig(price * dep / 100)}, so borrowed £${gfBig(B)} (1 mark). •2 ${B / 1000} thousands (1 mark). •3 ${B / 1000} × £${r.toFixed(2)} = £${ap2(m)} (1 mark).`, { calc: true, unit: "£", label: `mg ${price}${dep}${r}`, skill: "mortgages" }); };
+  const apLoanPc = () => { const L = gfR(20, 80) * 100, n = pick([24, 36, 48]), m = Math.round(L * (1 + pick([5, 7, 8, 10]) / 100 * n / 12) / n * 100) + gfR(3, 47), tot = m * n, extra = tot - L * 100, pc = extra / L;
+    return sqSafe(pc, 1) ? gfQ(`A loan of £${gfBig(L)} is repaid at £${ap2(m)} a month for ${n} months. Express the extra paid as a percentage of the amount borrowed, to 1 decimal place. (%)`, sqR(pc, 1), 3,
+      `•1 total repaid £${ap2(tot)} (1 mark). •2 extra £${ap2(extra)} (1 mark). •3 £${ap2(extra)} ÷ £${gfBig(L)} × 100 = ${sqR(pc, 1)}% (1 mark).`, { calc: true, unit: "%", label: `lp ${L}${n}${m}`, skill: "cost of borrowing" }) : {}; };
+  const apAER = () => { const m = pick([0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6]), aer = ((1 + m / 100) ** 12 - 1) * 100;
+    return sqSafe(aer, 2) ? gfQ(`A savings account pays ${m}% interest a month, compounded monthly. Work out the AER (the equivalent yearly rate), to 2 decimal places. (%)`, sqR(aer, 2), 2,
+      `•1 1.00${String(Math.round(m * 100)).padStart(2, "0")}¹² = ${((1 + m / 100) ** 12).toFixed(5)} (1 mark). •2 AER = ${sqR(aer, 2)}% (1 mark).`, { calc: true, unit: "%", label: `ae ${m}`, skill: "AER" }) : {}; };
+  const apInfl = () => { const P = gfR(20, 90) * 10, i1 = pick([2.5, 3.2, 4.1, 6.7, 9.6]), i2 = pick([1.8, 2.3, 3.9, 4.6]), v = P * (1 + i1 / 100) * (1 + i2 / 100);
+    return sqSafe(v, 2) ? gfQ(`A weekly shop costs £${P}. Prices rise by ${i1}% one year and ${i2}% the next. What does the same shop cost after the two years? (£)`, v.toFixed(2), 2,
+      `•1 £${P} × ${(1 + i1 / 100).toFixed(3)} × ${(1 + i2 / 100).toFixed(3)} (1 mark). •2 = £${v.toFixed(2)} (1 mark).`, { calc: true, unit: "£", label: `if ${P}${i1}${i2}`, skill: "inflation" }) : {}; };
+  const apReal = () => { const p = pick([2, 3, 3.5, 4, 5, 6]), i = pick([2.5, 4.2, 5.1, 6.8, 8.4]), real = ((1 + p / 100) / (1 + i / 100) - 1) * 100;
+    return sqSafe(real, 1) ? gfQ(`Pay rises by ${p}% in a year when prices rise by ${i}%. By what percentage has the buying power of the pay changed? Give your answer to 1 decimal place, with a minus sign for a fall. (%)`, sqR(real, 1), 3,
+      `•1 pay multiplier ${(1 + p / 100).toFixed(3)}, price multiplier ${(1 + i / 100).toFixed(3)} (1 mark). •2 ${(1 + p / 100).toFixed(3)} ÷ ${(1 + i / 100).toFixed(3)} = ${((1 + p / 100) / (1 + i / 100)).toFixed(4)} (1 mark). •3 a change of ${sqR(real, 1)}% (1 mark).`, { calc: true, unit: "%", accept: [String(Number(real.toFixed(1)))], label: `rl ${p}${i}`, skill: "real terms" }) : {}; };
+  // Higher: statistics and probability
+  const apPredict = () => { const a = gfR(5, 40), b = pick([0.8, 1.2, 1.5, 2.4, 3.5]), lo = gfR(10, 20), hi = lo + gfR(20, 40), x = gfR(lo + 2, hi - 2), y = a + b * x;
+    return gfQ(`The regression line of y on x for a set of data (x from ${lo} to ${hi}) is y = ${a} + ${b}x. Use it to estimate y when x = ${x}.`, gfD(y), 1, `•1 ${a} + ${b} × ${x} = ${gfD(y)} (1 mark).`, { calc: true, label: `pr ${a}${b}${x}`, skill: "using a regression line" }); };
+  const apExtrap = () => { const lo = gfR(10, 20), hi = lo + gfR(20, 40), inside = rand(2) === 1, x = inside ? gfR(lo + 2, hi - 2) : hi + gfR(15, 60), ans = inside ? "Reliable: it is inside the data (interpolation)" : "Not reliable: it is outside the data (extrapolation)";
+    return gfQ(`A regression line was found from data with x between ${lo} and ${hi}. It is used to predict y when x = ${x}. How reliable is the prediction?`, ans, 1,
+      `•1 ${x} is ${inside ? "inside" : "outside"} ${lo} to ${hi}: ${inside ? "interpolation, reasonably reliable" : "extrapolation, unreliable"} (1 mark).`, { options: [inside ? "Not reliable: it is outside the data (extrapolation)" : "Reliable: it is inside the data (interpolation)", "Reliable, whatever x is"], label: `ex ${lo}${hi}${x}`, skill: "interpolation and extrapolation" }); };
+  const apCorr = () => { const [r, ans] = pick([["0.92", "Strong positive"], ["0.85", "Strong positive"], ["−0.88", "Strong negative"], ["−0.95", "Strong negative"], ["0.35", "Weak positive"], ["−0.31", "Weak negative"], ["0.04", "Little or no correlation"]]);
+    return gfQ(`The correlation coefficient for a set of data is r = ${r}. Which describes the correlation?`, ans, 1, `•1 r = ${r}: ${ans.toLowerCase()} (1 mark).`, { options: ["Strong positive", "Strong negative", "Weak positive", "Weak negative", "Little or no correlation"].filter(o => o !== ans).slice(0, 3), label: `cr ${r}`, skill: "correlation coefficient" }); };
+  const apExpect = () => { const c = pick([1, 2, 3, 5]), w = pick([5, 10, 20, 25, 50]), d = pick([4, 5, 10, 20]), n = 1, e = w / d - c, money = x => (x < 0 ? `−£${gfP(-x)}` : `£${gfP(x)}`);
+    return gfQ(`A game costs £${c} to play. You win £${w} with probability ${n}/${d}; otherwise you win nothing. Work out the expected gain per game (negative for a loss). (£)`, gfP(e).replace("-", "−"), 2,
+      `•1 expected winnings ${n}/${d} × £${w} = £${gfP(w / d)} (1 mark). •2 £${gfP(w / d)} − £${c} = ${money(e)} (1 mark).`, { calc: true, unit: "£", accept: [gfP(e)], label: `ev ${c}${w}${d}`, skill: "expected value" }); };
+  // Higher: planning (critical path) and modelling
+  const apCrit = () => { const a = gfR(2, 6), b = gfR(3, 9), c = gfR(3, 12), d = gfR(2, 8), e = gfR(1, 5), t = a + Math.max(b + d, c) + e;
+    return (b + d !== c) ? gfQ(`A project's activities, in days: A (${a}) first; B (${b}) and C (${c}) both follow A; D (${d}) follows B; E (${e}) follows both C and D. What is the shortest time to complete the project? (days)`, t, 2,
+      `•1 paths A-B-D-E = ${a + b + d + e}, A-C-E = ${a + c + e} (1 mark). •2 the longer (critical) path: ${t} days (1 mark).`, { label: `cp ${a}${b}${c}${d}${e}`, skill: "critical path" }) : {}; };
+  const apFloat = () => { const a = gfR(2, 6), b = gfR(4, 9), d = gfR(3, 8), c = gfR(2, b + d - 1), e = gfR(1, 5), f = b + d - c;
+    return gfQ(`A project's activities, in days: A (${a}) first; B (${b}) and C (${c}) both follow A; D (${d}) follows B; E (${e}) follows both C and D. How many days of float does activity C have? (days)`, f, 2,
+      `•1 B then D take ${b + d} days, C takes ${c} (1 mark). •2 float of C = ${b + d} − ${c} = ${f} days (1 mark).`, { label: `fd ${a}${b}${c}${d}${e}`, skill: "float time" }); };
+  const apLinear = () => { const f = gfR(2, 5) + pick([0, 0.5]), k = pick([1.4, 1.6, 1.8, 2.2, 2.5]), C = gfR(12, 40), miles = (C - f) / k;
+    return sqSafe(miles, 1) ? gfQ(`A taxi firm charges £${gfP(f)} plus £${k.toFixed(2)} a mile, so C = ${gfP(f)} + ${k}m. A journey costs £${C}. How long was it, to 1 decimal place? (miles)`, sqR(miles, 1), 2,
+      `•1 ${C} = ${gfP(f)} + ${k}m, so ${k}m = ${gfP(C - f)} (1 mark). •2 m = ${sqR(miles, 1)} miles (1 mark).`, { calc: true, unit: "miles", label: `lm ${f}${k}${C}`, skill: "linear models" }) : {}; };
+  const apExpYear = () => { const P = gfR(20, 60) * 100, r = pick([3, 4, 5, 6, 8]), T = Math.round(P * pick([1.3, 1.5, 1.8, 2])); let n = 0, v = P; while (v <= T) { v *= 1 + r / 100; n++; }
+    const before = P * (1 + r / 100) ** (n - 1);
+    return gfQ(`A town has ${gfBig(P)} households, growing by ${r}% a year. After how many whole years will it first be more than ${gfBig(T)}?`, n, 3,
+      `•1 model: ${gfBig(P)} × ${(1 + r / 100).toFixed(2)}ⁿ (1 mark). •2 after ${n - 1} years about ${gfBig(Math.round(before))}, not yet over (1 mark). •3 after ${n} years about ${gfBig(Math.round(v))}: ${n} years (1 mark).`, { calc: true, label: `ey ${P}${r}${T}`, skill: "exponential models" }); };
+
+  // The two stages' topics: [slug, short, title, strand, blurb, makers]
+  const AP_N5 = [
+    ["numeracy", "Numeracy", "Numeracy: rounding, estimating and calculating in context", "Number", "Rounding, estimating, negative numbers and multi-step money problems, the numeracy every Applications paper starts with.", apSq("n4-number", [4, 5, 7]).concat(apSq("n4-calc", [5, 6]), apSq("n4-percent", [5]))],
+    ["pay", "Pay and budgets", "Finance: pay, deductions and budgets", "Money", "Gross pay with overtime and commission, income tax, net pay from a payslip, and a monthly budget.", [apOvertime, apCommission, apTax, apNet, apBudget]],
+    ["deals", "Best deals and borrowing", "Finance: best deals, exchange rates, saving and borrowing", "Money", "Best value, foreign exchange with commission, simple and compound interest, depreciation and the cost of a loan.", apSq("n4-ratio", [4]).concat([apExchange, apDeal, apLoan], apSq("n4-percent", [6]), apSq("n5-percent", [3, 4]))],
+    ["statistics", "Comparing data", "Statistics: averages, spread and comparing data sets", "Data and chance", "Mean, median, interquartile range and standard deviation, and comparing two data sets in context.", apSq("n5-statistics", [0, 1, 2, 3]).concat(apGf("g5-grouped", [4]), apGf("gh-statistics", [4]))],
+    ["scatter", "Scattergraphs and probability", "Scattergraphs, probability and expected frequency", "Data and chance", "Correlation and lines of best fit, probability, expected frequency and relative frequency.", apSq("n5-statistics", [4]).concat(apSq("n4-data", [7, 9, 12, 13, 14]))],
+    ["geometry", "Pythagoras and gradient", "Geometry: Pythagoras, gradient and area", "Shape and angles", "Pythagoras in context, gradient as rise over run (including ramps), and the area of composite shapes.", apSq("n4-pythagoras", [0, 1, 5]).concat(apSq("n4-graphs", [9]), apSq("n4-area", [4, 11]), [apRamp])],
+    ["volume", "Volume and packing", "Measurement: volume, surface area and packing", "Measurement", "Volumes of prisms, cylinders, cones and spheres, surface area, and packing boxes into a container.", apSq("n4-area", [6, 8, 12]).concat(apSq("n5-solids", [2, 3, 5]), [apPack])],
+    ["scale", "Scale and bearings", "Scale drawings, bearings and navigation", "Measurement", "Map scales, scale drawings, three-figure bearings and back bearings.", apSq("n4-measures", [8, 9]).concat([apBack, apBack])],
+    ["time", "Time and planning", "Time, speed, time zones and planning tasks", "Measurement", "Durations and the 24-hour clock, speed, distance and time, time zones, and the shortest time for a set of tasks.", apSq("n4-measures", [1, 3, 4]).concat([apZone, apTasks])],
+    ["logic", "Tolerance and charts", "Tolerance, tariffs, flowcharts and reading charts", "Measurement", "Tolerance, reading tariffs and tables, and following flowcharts and logic diagrams.", [apTol, apTolMin, apFlow, apTariff]]
+  ];
+  const AP_H = [
+    ["borrowing", "Borrowing and mortgages", "Finance: borrowing, loans and mortgages", "Money", "The cost of a loan, the extra paid as a percentage, and mortgage repayments from a lender's table rate.", [apLoan, apLoanPc, apMortgage]],
+    ["saving", "Saving and inflation", "Finance: saving, investing and inflation", "Money", "Compound interest, AER, depreciation, inflation over several years and pay in real terms.", apSq("n5-percent", [3, 4, 5]).concat([apAER, apInfl, apReal])],
+    ["sampling", "Sampling and summaries", "Statistics: sampling, summaries and outliers", "Data and chance", "Kinds of sample, stratified samples, mean and standard deviation from sums, quartiles and outliers.", [alSampleKind, alStratified, alSummary, alOutlier].concat(apSq("n5-statistics", [1, 2]))],
+    ["regression", "Correlation and regression", "Correlation and linear regression", "Data and chance", "Interpreting the correlation coefficient, using a regression line, and when a prediction is reliable.", [apCorr, apPredict, apExtrap].concat(apSq("n5-statistics", [4]))],
+    ["probability", "Probability and expected value", "Probability, conditional probability and expected value", "Data and chance", "The addition rule, independent events, conditional probability and expected value.", [alUnion, alIndep, alCond, apExpect]],
+    ["planning", "Planning projects", "Planning and decision making: critical paths and float", "Measurement", "Precedence, the critical path, the shortest completion time and float.", [apTasks, apCrit, apFloat]],
+    ["modelling", "Mathematical modelling", "Mathematical modelling: linear and exponential", "Patterns and missing numbers", "Linear models, exponential growth and decay, and when a model passes a target.", [apLinear, apExpYear].concat(apGf("g5-growth", [3, 4]))]
+  ];
+  const AP_STAGES = [
+    { id: "sqa-apps-national-5", n: 1, key: "ap5", course: "National 5", grades: "National 5", goal: "National 5 Applications of Mathematics", title: "Stage 1: National 5 Applications", topics: AP_N5 },
+    { id: "sqa-apps-higher", n: 2, key: "aph", course: "Higher", grades: "Higher", goal: "Higher Applications of Mathematics", title: "Stage 2: Higher Applications", topics: AP_H }
+  ];
+  AP_STAGES.forEach(st => { st.topics = st.topics.map(([slug, short, title, strand, blurb, makers], i) => ({ id: `${st.key}-${slug}`, n: i + 1, short, title, strand, blurb, makers, stage: st })); });
+  const AP_ALL = AP_STAGES.flatMap(st => st.topics);
+  const apTopic = id => AP_ALL.find(t => t.id === id);
+  const apStage = key => AP_STAGES.find(st => st.key === key || st.id === key || st.n === key);
+  const numeracyApps = [
+    ...AP_STAGES.map(st => ({ id: `${st.key}-check`, title: `SQA Applications of Maths climb: ${st.course} check`, level: "Senior", organiser: AP, check: false,
+      blurb: `One exam question on each of the ${st.topics.length} ${st.goal} topics, in the order of the climb. The results show which topics to work on first.`,
+      make: () => sqCheck(st).map((it, i) => Object.assign(gfOnline(it, `${it.topic.n}. ${it.topic.short}: `), { skill: `${it.topic.n}. ${it.topic.short}`, diff: i })) })),
+    ...AP_ALL.map(t => ({ id: t.id, title: `SQA Applications of Maths climb (${t.stage.course}) ${t.n}: ${t.title}`, level: "Senior", organiser: AP, check: false, blurb: `${t.blurb} Exam-style questions with marks and a marking scheme.`,
+      make: () => gfItems(t, 10).map(it => Object.assign(gfOnline(it), { diff: it.marks * 100 + rand(50) })) })),
+    ...AP_STAGES.map(st => ({ id: `${st.key}-mixed`, title: `SQA Applications of Maths climb: mixed exam questions (${st.course})`, level: "Senior", organiser: AP, check: false,
+      blurb: `Ten exam-style questions from across the ${st.goal} topics, a new mix every time, for revision once topics have been taught.`,
+      make: () => shuffle(st.topics.concat(st.topics)).slice(0, 10).sort((a, b) => a.n - b.n).map((t, i) => Object.assign(gfOnline(gfItems(t, 1)[0], `${t.short}: `), { diff: i })) }))
+  ];
+
   const numeracyExam = [
     { id: "gf-baseline", title: "GCSE maths climb: baseline check (grade 1 to 3)", level: "Fourth", organiser: GF, check: false,
       blurb: "Two quick questions on each of the 14 Foundation topics, in the order of the climb. The results show which topics to teach first.",
@@ -5100,7 +5251,7 @@ window.PopActivities = (() => {
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },
     { id: "listening", title: "Listening and sounds", colour: "#12C6B7", icon: "👂", activities: listening.concat(passageActivities.filter(a => a.area === "listening")) },
-    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, numeracyALevel, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
+    { id: "numeracy", title: "Numeracy and maths", colour: "#FF4081", icon: "🔢", activities: numeracy.concat(numeracyMore, numeracyUpper, numeracyUpperMore, numeracyGCSE, numeracyExam, numeracySQA, numeracyALevel, numeracyApps, secondary.filter(a => /^Numeracy/.test(a.organiser)).map(a => Object.assign(a, { check: false }))) }
   ];
   AREAS.forEach(area => area.activities.forEach(a => { a.area = area.id; a.colour = area.colour; a.icon = area.icon; if (area.game) a.game = true; }));
   function difficulty(q) {
@@ -5216,7 +5367,8 @@ window.PopActivities = (() => {
       // Scotland's version: the SQA climb (National 4 skills, National 5, Higher), the same shape
       scotland: { STAGES: SQA_STAGES, TOPICS: SQ_N4, ALL: SQ_ALL, topic: sqTopic, stage: sqStage, items: (id, n, keep) => gfItems(sqTopic(id), n, keep), baseline: () => sqCheck(SQA_STAGES[0]), check: key => sqCheck(sqStage(key)), online: gfOnline },
       // England's A level Mathematics (Years 12 and 13), the same shape
-      alevel: { STAGES: AL_STAGES, ALL: AL_ALL, topic: alTopic, stage: alStage, items: (id, n, keep) => gfItems(alTopic(id), n, keep), baseline: () => sqCheck(AL_STAGES[0]), check: key => sqCheck(alStage(key)), online: gfOnline } },
+      alevel: { STAGES: AL_STAGES, ALL: AL_ALL, topic: alTopic, stage: alStage, items: (id, n, keep) => gfItems(alTopic(id), n, keep), baseline: () => sqCheck(AL_STAGES[0]), check: key => sqCheck(alStage(key)), online: gfOnline },
+      apps: { STAGES: AP_STAGES, ALL: AP_ALL, topic: apTopic, stage: apStage, items: (id, n, keep) => gfItems(apTopic(id), n, keep), baseline: () => sqCheck(AP_STAGES[0]), check: key => sqCheck(apStage(key)), online: gfOnline } },
     demand, // how demanding a question is: activities put their questions easy to hard by this
     // Spellings a child might mix up with this sound (ai → ay, a–e): the assessment's near-misses
     alternatives: token => (MAP_ALTERNATIVES[token] || fallbackOptions(token)).slice(),

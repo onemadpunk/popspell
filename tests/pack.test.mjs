@@ -13,10 +13,10 @@ const K = page.PopPacks, P = page.PopPaper;
 
 test("every GCSE, SQA and A level maths climb stage has a pack, and every sheet it names exists", () => {
   const stages = K.stages();
-  assert.equal(stages.map(st => st.id).join(), "gcse-1,gcse-2,gcse-3,sqa-1,sqa-2,sqa-3,sqa-4,alevel-1,alevel-2");
+  assert.equal(stages.map(st => st.id).join(), "gcse-1,gcse-2,gcse-3,sqa-1,sqa-2,sqa-3,sqa-4,alevel-1,alevel-2,apps-1,apps-2");
   for (const st of stages) {
-    assert.equal(st.topics.length, 14, st.id);
-    assert.equal(st.papers.length, 3, st.id);
+    assert.equal(st.topics.length, { "apps-1": 10, "apps-2": 7 }[st.id] || 14, st.id);
+    assert.equal(st.papers.length, st.id.startsWith("apps") ? 2 : 3, st.id);
     for (const id of K.sheetsOf(st)) assert.ok(P.get(id), `${st.id}: ${id}`);
   }
 });
@@ -26,7 +26,7 @@ test("a pack has a plan, the work in study order and an answers section, all wit
     const made = K.make(st, "Sam");
     assert.match(made.code, /^\d{6}-[A-Z0-9]{3}$/);
     assert.equal(made.parts.length, K.sheetsOf(st).length);
-    assert.equal(made.parts[0].id, st.id.startsWith("sqa") ? "paper-sq-route" : st.id.startsWith("alevel") ? "paper-al-route" : "paper-gx-route");
+    assert.equal(made.parts[0].id, st.id.startsWith("sqa") ? "paper-sq-route" : st.id.startsWith("alevel") ? "paper-al-route" : st.id.startsWith("apps") ? "paper-ap-route" : "paper-gx-route");
     assert.ok(made.parts.findIndex(p => p.id === st.check) < made.parts.findIndex(p => p.id === st.topics[0]), "check before the topics");
     assert.equal(made.parts.at(-1).id, st.papers.at(-1));
     // Every topic and paper has its answers, and the cover lists every part to tick off
