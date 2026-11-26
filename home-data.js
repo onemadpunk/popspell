@@ -7,7 +7,8 @@
    Understand strands named where they're known) and the SQA courses for S4 to S6; England follows the
    2014 national curriculum by year band, and the GCSE climbs for Years 10 and 11.
 
-   pick says which lessons: { level } a CfE level (Scotland's view of each lesson), { sqa } an SQA course,
+   pick says which lessons: { level } a CfE level (Scotland's view of each lesson; with part, one of its three
+   school years), { sqa } an SQA course,
    { band } an England library band (england.js), { climb } a GCSE climb stage (lesson ids), { not } ids
    to leave out. This file needs nothing else loaded, so course.html can list the packs on its own. */
 window.PopHomeData = (() => {
@@ -18,8 +19,9 @@ window.PopHomeData = (() => {
   // Scotland: CfE levels, then the SQA courses (senior phase)
   [["Maths", "Maths"], ["Literacy", "English"]].forEach(([subject, word]) => {
     add("scotland", subject, "early", `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: Early level`, "P1 (age 4 to 6)", { level: "Early" });
-    add("scotland", subject, "first", `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: First level`, "P2 to P4 (age 6 to 9)", { level: "First" });
-    add("scotland", subject, "second", `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: Second level`, "P5 to P7 (age 9 to 12)", { level: "Second" }, { age: "middle" });
+    // First and Second level each cover three school years: one pack a year (home-packs.js splits the level's lessons)
+    ["P2", "P3", "P4"].forEach((p, i) => add("scotland", subject, p.toLowerCase(), `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: ${p} (First level)`, `${p} (age ${5 + i} to ${7 + i})`, { level: "First", part: i }));
+    ["P5", "P6", "P7"].forEach((p, i) => add("scotland", subject, p.toLowerCase(), `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: ${p} (Second level)`, `${p} (age ${8 + i} to ${10 + i})`, { level: "Second", part: i }, { age: "middle" }));
     add("scotland", subject, "third", `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: Third level`, "S1 to S2 (age 11 to 14)", { level: "Third" }, { age: "older" });
     add("scotland", subject, "fourth", `${word === "Maths" ? "Numeracy and maths" : "Literacy and English"}: Fourth level`, "S3 (age 13 to 15)", { level: "Fourth" }, { age: "older" });
     const sqa = word === "Maths" ? "Mathematics" : "English";

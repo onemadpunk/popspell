@@ -31,12 +31,32 @@ window.PopHome = (() => {
   const climbLesson = id => /-climb-/.test(id);
   function lessonsFor(pack) {
     const all = L().all().filter(l => l.subject === pack.subject), p = pack.pick;
-    if (p.level) return all.filter(l => !l.sqa && (l.england ? l.cfe && l.cfe.level === p.level : l.level === p.level)).map(l => T().viewOf(l, ""));
+    if (p.level) {
+      const level = all.filter(l => !l.sqa && (l.england ? l.cfe && l.cfe.level === p.level : l.level === p.level));
+      return (p.part === undefined ? level : yearOf(level, p)).map(l => T().viewOf(l, ""));
+    }
     if (p.sqa) return byRank(all.filter(l => l.sqa === p.sqa));
     if (typeof p.climb === "string") { const re = new RegExp(p.climb); return byRank(all.filter(l => re.test(l.id))); }
     // England's year bands: the lessons the Library puts in that band, earliest year first
     const inBand = all.map((l, i) => ({ l, i, w: E().forWork(l.id) })).filter(x => x.w && E().bandOf(x.w) === p.band && !(p.climb === false && climbLesson(x.l.id)));
     return inBand.sort((a, b) => (a.w.lo - b.w.lo) || (a.i - b.i)).map(x => x.l);
+  }
+  // One school year of a CfE level (First: P2 to P4, Second: P5 to P7). Each lesson gets a place in the level:
+  // the England year it's mapped to (P3 is Year 2), or, with no mapping, how far along its strand it comes.
+  // The level's lessons are put in that order and cut into three equal parts; each part keeps teaching order.
+  const YEARS = { First: 1, Second: 4 };
+  function yearOf(level, p) {
+    const lo = YEARS[p.level], strandAt = {};
+    level.forEach(l => { (strandAt[l.strand] = strandAt[l.strand] || []).push(l.id); });
+    const place = l => {
+      const w = E() && E().forWork(l.id);
+      if (w && w.lo !== null && Number.isFinite(w.lo)) return Math.min(lo + 2.99, Math.max(lo, (w.lo + Math.min(w.hi, w.lo + 1)) / 2));
+      const st = strandAt[l.strand];
+      return lo + 3 * st.indexOf(l.id) / st.length;
+    };
+    const sorted = level.map((l, i) => ({ l, i, at: place(l) })).sort((a, b) => a.at - b.at || a.i - b.i);
+    const n = sorted.length, from = Math.round(n * p.part / 3), to = Math.round(n * (p.part + 1) / 3);
+    return sorted.slice(from, to).sort((a, b) => a.i - b.i).map(x => x.l);
   }
   const cur = pack => (pack.nation === "england" ? "england" : "");
 
