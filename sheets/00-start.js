@@ -14,6 +14,8 @@ window.PopPaper = (() => {
   const rand = n => Math.floor(Math.random() * n);
   const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rand(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const pick = arr => arr[rand(arr.length)];
+  // Round to dp places as a calculator does (plain toFixed turns 5527.125 into 5527.12, because of how it is stored)
+  const fixDp = (x, dp) => (Math.round(Number((x * 10 ** dp).toPrecision(12))) / 10 ** dp).toFixed(dp);
 
   // Shared pieces
   const answersPage = (h, title, items, note = "", after = "") => `${h.brandHead(`Answers: ${title}`, "For the adult, not the pupil.")}

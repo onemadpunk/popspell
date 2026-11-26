@@ -295,7 +295,7 @@
     "Write percentage changes as multipliers, work out compound interest and depreciation, and find the original amount. Calculator needed.", Y1011, 15, () => {
       const mult = mdMany(4, () => { const p = pick([3, 4, 5, 12, 15, 20, 35, 2.5, 7]), up = rand(2); return [`${up ? "Increase" : "Decrease"} by ${p}%`, `× ${mdD(up ? 1 + p / 100 : 1 - p / 100, 3)}`]; });
       const ci = mdMany(3, () => { const P = pick([500, 800, 1000, 2000, 2500]), r = pick([2, 3, 4, 5]), n = mdR(2, 5), up = rand(2);
-        return up ? [`£${P} at ${r}% compound interest for ${n} years`, `£${(P * (1 + r / 100) ** n).toFixed(2)}`] : [`A £${P * 10} car loses ${r * 3}% a year. Its value after ${n} years`, `£${(P * 10 * (1 - r * 3 / 100) ** n).toFixed(2)}`]; });
+        return up ? [`£${P} at ${r}% compound interest for ${n} years`, `£${fixDp((P * (1 + r / 100) ** n), 2)}`] : [`A £${P * 10} car loses ${r * 3}% a year. Its value after ${n} years`, `£${fixDp((P * 10 * (1 - r * 3 / 100) ** n), 2)}`]; });
       const rev = mdMany(3, () => { const p = pick([10, 20, 25, 40, 15]), up = rand(2), old = mdR(4, 40) * 20, now = old * (100 + (up ? p : -p)) / 100;
         return [`After a ${p}% ${up ? "rise" : "cut"} a price is £${mdD(now)}. The original price?`, `£${old}`]; });
       return {
@@ -323,9 +323,9 @@
   mdDrill("paper-drill-ks4-bounds", "lesson-england-limits-of-accuracy-rounding-truncating-and-bounds-years-10-and-11", "bounds and error intervals",
     "Write error intervals for rounded and truncated numbers, and use upper and lower bounds in calculations.", Y1011, 10, () => {
       const err = mdMany(4, () => { const k = rand(3);
-        if (k === 0) { const t = mdR(11, 99); return [`x = ${(t / 10).toFixed(1)} to 1 decimal place`, `${((t * 10 - 5) / 100).toFixed(2)} ≤ x &lt; ${((t * 10 + 5) / 100).toFixed(2)}`]; }
+        if (k === 0) { const t = mdR(11, 99); return [`x = ${fixDp((t / 10), 1)} to 1 decimal place`, `${fixDp(((t * 10 - 5) / 100), 2)} ≤ x &lt; ${fixDp(((t * 10 + 5) / 100), 2)}`]; }
         if (k === 1) { const v = mdR(12, 95) * 10; return [`y = ${v} to the nearest 10`, `${v - 5} ≤ y &lt; ${v + 5}`]; }
-        const t = mdR(11, 99); return [`z = ${(t / 10).toFixed(1)}, truncated to 1 decimal place`, `${(t / 10).toFixed(1)} ≤ z &lt; ${((t + 1) / 10).toFixed(1)}`]; });
+        const t = mdR(11, 99); return [`z = ${fixDp((t / 10), 1)}, truncated to 1 decimal place`, `${fixDp((t / 10), 1)} ≤ z &lt; ${fixDp(((t + 1) / 10), 1)}`]; });
       const calc = mdMany(3, () => { const a = mdR(4, 15), b = mdR(3, 12), k = rand(3);
         if (k === 0) return [`A rectangle is ${a} cm by ${b} cm, both to the nearest cm. Upper bound of the area?`, `${(a + 0.5) * (b + 0.5)} cm²`];
         if (k === 1) return [`A square has sides of ${a} cm to the nearest cm. Lower bound of the perimeter?`, `${4 * (a - 0.5)} cm`];
