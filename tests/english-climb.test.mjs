@@ -116,7 +116,7 @@ test("SQA: folio tasks, mini papers and every sheet build", () => {
     if (p.ref) assert.ok(X.topic(p.ref) && X.topic(p.ref).written.marks > 0, `${m.id}: ${p.ref}`);
     else assert.ok(p.q && p.marks > 0 && p.look, `${m.id}: ${p.q}`);
   }
-  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-"));
+  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-") && !s.id.startsWith("paper-pp-")) // the past paper trackers are tested in past-papers.test.mjs;
   assert.equal(ex.length, 32 + 4 * 3 + 8 + 8 + 2);
   for (const s of ex) for (let i = 0; i < 3; i++) {
     const b = s.build("Pupil", kit);
@@ -161,7 +161,7 @@ test("A level: writing tasks, mini papers and every sheet build, and the lessons
     if (p.ref) assert.ok(X.topic(p.ref) && X.topic(p.ref).written.marks > 0, `${m.id}: ${p.ref}`);
     else assert.ok(p.q && p.marks > 0 && p.look && p.levels, `${m.id}: ${p.q}`);
   }
-  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-alevel-english-"));
+  const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-alevel-english-") && !s.id.startsWith("paper-pp-"));
   assert.equal(ex.length, 16 + 2 * 3 + 2 + 4 + 1);
   const titles = new Set(ex.map(s => s.title));
   for (const s of ex) for (let i = 0; i < 3; i++) {

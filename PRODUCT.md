@@ -58,3 +58,7 @@ The current subject focus is spelling, reading, writing and numeracy, with Scotl
 Feature counts and coverage should be checked against the current content and build checks before making claims about them.
 
 **Literacy extras from Sara's folder** (November 2026): a Kip-style comprehension ladder (8 rungs, age 6 to 14), P4 to P7 reading tests with mark schemes, novel task maps (any novel plus four public-domain classics), writing frames with success criteria for eight text types at two levels, and spot-the-difference line drawings (8 scenes, 5/7/10 differences, fresh each print). All PopSpell's own texts and drawings; 11 new CfE lessons mapped to England, so they flow into the home-school packs.
+
+**Real past papers** (November 2026): Steven OK'd a past-paper add-on only if it adds real value and never hosts or rewords board papers. Built as our own tracker and topic map, one per climb stage (20), attached to the mini papers lessons: how to sit a real paper, a question tracker, a map from questions to the climb's numbered topics, and (for the adult) where the free papers come from and how to read the board's mark scheme. No board content is reproduced.
+
+**Draft Know, Do, Understand tags** (November 2026): every Library entry shows its draft strand ("New curriculum (draft)") beside the CfE codes, and it is searchable. Numeracy and mathematics are one draft framework, so numeracy work shares the maths strands.
