@@ -24,7 +24,8 @@ const KEEP = arg("pdf");
 const ONLY = arg("id") ? new RegExp(arg("id")) : null; // --id regex: only entries whose id matches
 const PAPER = arg("paper"); // --paper Letter: as if the printer were set to other paper than the sheet's A4
 const KEEP_ALL = process.argv.includes("--keep-all"); // with --pdf: keep every PDF, not just the ones that don't fit
-const TWO_PAGES = /^(letter-formation|lesson-early-forming-lowercase-letters)$/;
+// Allowed two pages: letter formation, and the P4 reading test printed from its lesson (bigger First-level print, like a real test booklet)
+const TWO_PAGES = /^(letter-formation|lesson-early-forming-lowercase-letters|lesson-first-reading-test)$/;
 
 let chromium;
 try { ({ chromium } = await import("playwright")); } catch {
