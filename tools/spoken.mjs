@@ -15,7 +15,7 @@ export function loadSite() {
   // the recordings robot listed, instead of turning up a different handful of rare ones each time.
   runInNewContext(`(() => { let s = 20261124; Math.random = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; })();`, page);
-  for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/bank.js", "activities.js", "speech-text.js", "audio/index.js"])
+  for (const file of ["words.js", "sentences.js", "passages.js", "stories.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/alevel.js", "exam-english/bank.js", "activities.js", "speech-text.js", "audio/index.js"])
     runInNewContext(read(file), page);
   return page;
 }

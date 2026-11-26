@@ -1542,7 +1542,7 @@
   // curriculum has nothing matching (probability, for example, starts in key stage 3).
   function forWork(id) {
     // A level work (Years 12 and 13) follows the DfE's A level subject content, not the national curriculum
-    if (aLevel(id)) return { lo: 12, hi: 13, label: /(^|-)y12-/.test(id) ? "A level (Year 12)" : /(^|-)y13-/.test(id) ? "A level (Year 13)" : "A level (Years 12 and 13)", strand: "", domain: "A level subject content", statements: [] };
+    if (aLevel(id)) return { lo: 12, hi: 13, label: /(^|-)y12-/.test(id) ? "A level (Year 12)" : /(^|-)y13-/.test(id) ? "A level (Year 13)" : /(^|-)al1-/.test(id) ? "A level English Literature" : /(^|-)al2-/.test(id) ? "A level English Language" : "A level (Years 12 and 13)", strand: "", domain: "A level subject content", statements: [] };
     const ids = idsFor(id);
     if (!ids) return null;
     const statements = ids.map(i => byId[i]).filter(Boolean);
@@ -1561,7 +1561,7 @@
     return { lo, hi, label: lesson(id) ? rangeLabel(lo, hi) : yearLabel(main.year), strand: strandOf(main.domain),
       domain: domainLabel(main.domain), statements };
   }
-  const aLevel = id => /^(lesson-alevel-|paper-al-|y1[23]-|lesson-alevel-english-|paper-ae-|al[12]e?-)/.test(String(id));
+  const aLevel = id => /^(lesson-alevel-|paper-al-|y1[23]-|paper-ex-(write-)?al[12]-|paper-ex-alevel-|al[12]-)/.test(String(id));
   const lesson = id => Boolean(window.PopLessons && window.PopLessons.get(id));
   const climb = id => /^(gf-|g5-|gh-|paper-gx-|lesson-england-gcse-climb-|e[123]-|lit-|paper-ex-|lesson-england-english-climb-)/.test(String(id));
   // The English climb's ids name their stage: e1- (grade 1 to 3), e2- (4 and 5), e3- (6 to 9), lit- (Literature)

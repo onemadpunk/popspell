@@ -8,14 +8,14 @@ import { runInNewContext } from "node:vm";
 const read = f => readFileSync(new URL(`../${f}`, import.meta.url), "utf8");
 const page = { PopSpell: { LISTS: {} }, PASSAGES: [], STORIES: [], document: { getElementById: () => null }, addEventListener: () => {} };
 page.window = page;
-runInNewContext(["words.js", "lessons.js", "england.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/bank.js",
+runInNewContext(["words.js", "lessons.js", "england.js", "exam-english/texts.js", "exam-english/gcse.js", "exam-english/sqa.js", "exam-english/alevel.js", "exam-english/bank.js",
   "activities.js", "sheet-print.js", "paper-sheets.js", "home-data.js", "home-packs.js"].map(read).join("\n"), page);
 // The teacher area's Scotland view of a lesson (teacher.js viewOf), as the packs use it
 page.PopTeacher = { viewOf: (l, cur) => (cur !== "england" && l.cfe ? Object.assign(Object.create(l), { title: l.cfe.title, level: l.cfe.level, codes: l.cfe.codes, criteria: l.cfe.criteria, england: false }) : l) };
 const H = page.PopHome, D = page.PopHomeData, L = page.PopLessons;
 
 test("every pack has lessons of its own subject, none twice, and a review every six", () => {
-  assert.equal(D.PACKS.length, 48);
+  assert.equal(D.PACKS.length, 50);
   assert.equal(new Set(D.PACKS.map(p => p.id)).size, D.PACKS.length);
   for (const p of D.PACKS) {
     const lessons = H.lessonsFor(p);

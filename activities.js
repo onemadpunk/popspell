@@ -5095,6 +5095,7 @@ window.PopActivities = (() => {
     { id: "england-english", title: "More spelling and grammar from England's curriculum", colour: "#6D28D9", icon: "📝", activities: englandEnglish, assignedOnly: true, england: true },
     { id: "english-exam", title: "English exam climb (GCSE)", colour: "#1E40AF", icon: "🎓", activities: englishExam("gcse"), assignedOnly: true },
     { id: "english-exam-sqa", title: "English exam climb (SQA National 5 to Advanced Higher)", colour: "#1E3A8A", icon: "🎓", activities: englishExam("sqa"), assignedOnly: true },
+    { id: "english-exam-alevel", title: "English exam climb (A level, Years 12 and 13)", colour: "#172554", icon: "🎓", activities: englishExam("alevel"), assignedOnly: true, england: true },
     { id: "secondary", title: "Secondary practice", colour: "#2563A6", icon: "📘", activities: secondary.filter(a => !/^Numeracy/.test(a.organiser)), assignedOnly: true },
     { id: "reading", title: "Reading", colour: "#0EB5F2", icon: "📖", activities: reading },
     { id: "stories", title: "Stories to read by myself", colour: "#F59E0B", icon: "📚", activities: stories },

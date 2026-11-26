@@ -128,6 +128,27 @@ window.PopPacks = (() => {
       papers: SQ().WRITING.filter(w => w.stage === st.key).map(w => `paper-ex-write-${w.id}`).concat(SQ().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
       next: st.n < SQ().STAGES.length ? `stage ${st.n + 1} (${SQ().STAGES[st.n].goal})` : "" }))
   });
+  // The A level English climb (England, Years 12 and 13): Literature and Language, two separate A levels
+  const AE = () => window.PopEnglishExam && window.PopEnglishExam.course("alevel");
+  if (AE()) add({
+    id: "english-alevel", title: "A level English climb", where: "England, A level English Literature or English Language (Years 12 and 13)", online: "english-climb.html?course=alevel",
+    words: {
+      work: "Read the text first, then answer. Every point needs a short quotation or example and what it shows, linked to your argument.",
+      again: "Not secure yet? Find your answer's band with the bands at the back, compare it with the model, then try the question again a few days later.",
+      papers: "Do the writing task, check it against its list, then the mini papers, timed.",
+      pass: "About 60% or more",
+      paperTodo: "Timed, like the real exam: plan for 5 to 10 minutes, then write an argued answer.",
+      writeTodo: "Plan, draft on lined paper, tick the checklist honestly, then improve one thing.",
+      topicTodo: "Tick the quick questions, then write the exam answer. Find its band with the bands at the back; three-quarters of the quick questions and the 16–20 band or above makes it secure.",
+      marking: "Quick questions have one right answer and a reason. Long answers are marked out of 25 in bands: find the band that fits best overall, then go up or down within it, and compare with the model answer."
+    },
+    stages: () => AE().STAGES.map(st => ({
+      id: `english-alevel-${st.n}`, title: st.title, short: st.goal, about: st.about,
+      read: ["paper-ex-alevel-route", `paper-ex-${st.key}-expects`], check: `paper-ex-${st.key}-check`, tracker: `paper-ex-${st.key}-tracker`,
+      topics: st.topics.map(t => `paper-ex-${t.id}`),
+      papers: AE().WRITING.filter(w => w.stage === st.key).map(w => `paper-ex-write-${w.id}`).concat(AE().MINI.filter(m => m.id.startsWith(`${st.key}-`)).map(m => `paper-ex-${m.id}`)),
+      next: "" }))
+  });
   const allStages = () => PACKS.flatMap(p => p.stages().map(st => Object.assign({ pack: p }, st)));
   const sheetsOf = st => [...st.read, st.check, st.tracker, ...st.topics, ...st.papers];
 

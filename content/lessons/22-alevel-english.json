@@ -1,0 +1,670 @@
+{
+ "section": "England: A level English exam climb (Literature and Language, Years 12 and 13)",
+ "lessons": [
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-start-here",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb, Literature: start here",
+   "intention": "We are finding out which A level English Literature topics are secure and which to learn first, learning what the course expects, and making a plan.",
+   "criteria": [
+    "I can try a question on each Literature topic and show what I already know.",
+    "I know how A level English Literature is examined and what coursework is worth.",
+    "I have a plan with exam and coursework dates."
+   ],
+   "steps": {
+    "start": "Talk about the goal: A level English Literature. Find out the exam board and the set texts: the climb's method works for any board.",
+    "teach": "Read the \"What the exam expects: A level English Literature\" sheet together. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"A level English climb: Literature check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"A level English climb: Literature tracker\" sheet: topics marked ✗ go first. Agree the exam dates, the coursework deadline and sessions a week."
+   },
+   "use": [
+    "al1-check"
+   ],
+   "home": "Read every day: a set text, a long article, or a transcript, and write one sentence on how it works.",
+   "vocab": "specification, assessment objective, coursework, mark bands, argument",
+   "understand": "Why find out the exam board first?",
+   "lookFor": "Says each board sets its own texts, papers and coursework rules, though the skills are the same."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-unseen",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.1: Unseen prose: reading closely (Literature)",
+   "intention": "We are learning to read an unseen prose extract closely and build an argued answer about how its meaning is shaped.",
+   "criteria": [
+    "I can say what an extract is about and what matters most in it.",
+    "I can analyse how the writer's choices shape meaning.",
+    "I can organise an answer around a line of argument."
+   ],
+   "steps": {
+    "start": "Read the Chopin extract once for meaning. In one sentence: what is happening to Louise?",
+    "teach": "First reading for meaning, second for method. Write a one-sentence argument, then choose three or four moments that prove it, each analysed closely (word, image, sentence, structure) and linked back to the argument.",
+    "practise": "The \"A level English practice 1.1: Unseen prose: reading closely\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Give a new short extract and ask for a one-sentence argument and two pieces of evidence in five minutes."
+   },
+   "use": [
+    "al1-unseen"
+   ],
+   "home": "Read one short story a week from a free public-domain collection and write its argument in one sentence.",
+   "vocab": "argument, thesis, close reading, method, effect, narrative voice",
+   "understand": "Why is a list of techniques weaker than an argument?",
+   "lookFor": "Says techniques only earn marks for what they show; an argument explains why they matter."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-poetry",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.2: Poetry: form, voice and sound (Literature)",
+   "intention": "We are learning to analyse how poets shape meaning through form, voice, imagery, sound and structure.",
+   "criteria": [
+    "I can explain how a poem's form supports its meaning.",
+    "I can analyse imagery and sound closely.",
+    "I can write about structure, including turns and endings."
+   ],
+   "steps": {
+    "start": "Read “Remember” aloud. Where does the poem change direction?",
+    "teach": "Form first: the sonnet's volta, Hardy's quatrains. Then voice (who speaks, to whom), imagery, sound and structure. Every point ties back to what the poem means.",
+    "practise": "The \"A level English practice 1.2: Poetry: form, voice and sound\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to explain the effect of the final couplet of “Remember” in three sentences."
+   },
+   "use": [
+    "al1-poetry"
+   ],
+   "home": "Learn one short poem by heart and say why its last line matters.",
+   "vocab": "sonnet, volta, quatrain, couplet, imagery, pathetic fallacy, paradox",
+   "understand": "Why should a third of a poetry answer be about form and structure?",
+   "lookFor": "Says form and structure carry meaning too, and the marking rewards analysis of all the writer's methods."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-drama",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.3: Drama: dialogue, stagecraft and comedy (Literature)",
+   "intention": "We are learning to analyse drama as performance: dialogue, stage directions, timing and the audience's response.",
+   "criteria": [
+    "I can explain how stage directions shape a scene.",
+    "I can analyse dialogue for character and comedy.",
+    "I can write about the audience's response."
+   ],
+   "steps": {
+    "start": "Read the handbag scene aloud in two voices. Where does the audience laugh?",
+    "teach": "A play is written to be performed. Look at stage directions, repetition, timing and who has power in the dialogue. Say what the audience sees and hears, and what that makes them think.",
+    "practise": "The \"A level English practice 1.3: Drama: dialogue, stagecraft and comedy\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to explain how one stage direction changes the meaning of a line."
+   },
+   "use": [
+    "al1-drama"
+   ],
+   "home": "Watch a free filmed scene of a play and note one moment where staging changes the meaning.",
+   "vocab": "stage direction, dialogue, dramatic irony, comic timing, satire, soliloquy",
+   "understand": "Why write about an audience when analysing a play?",
+   "lookFor": "Says plays make meaning in performance, so the audience's response is part of the effect."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-context",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.4: Context: how texts are shaped by when and where they are written and read (Literature)",
+   "intention": "We are learning to use context as part of an argument, linked to specific choices in the text.",
+   "criteria": [
+    "I can link a contextual fact to a word or image.",
+    "I can explain a context of reception as well as of production.",
+    "I avoid bolted-on history."
+   ],
+   "steps": {
+    "start": "Show a paragraph of history about the 1790s and a sentence linking “charter’d” to it. Which earns more marks?",
+    "teach": "Context earns marks only when it explains a choice in the text. Use the pattern: word or image, context, effect. Think about when a text was written and how readers now see it.",
+    "practise": "The \"A level English practice 1.4: Context: how texts are shaped by when and where they are written and read\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to write one sentence that links a context to a quotation from “London”."
+   },
+   "use": [
+    "al1-context"
+   ],
+   "home": "Find one fact about when your set text was written and link it to one quotation.",
+   "vocab": "context of production, context of reception, AO3, radical, Romantic",
+   "understand": "Why is a paragraph of history at the start of an essay weak?",
+   "lookFor": "Says it isn't linked to the text, so it doesn't show how context shapes meaning."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-critics",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.5: Critical views and different interpretations (Literature)",
+   "intention": "We are learning to weigh different readings of a text and use them to build our own argument.",
+   "criteria": [
+    "I can explain a feminist, Marxist or psychoanalytic reading.",
+    "I can test a critical view against the text.",
+    "I can reach my own judgement."
+   ],
+   "steps": {
+    "start": "Read the statement about Victor's horror. Agree, disagree or partly? Why?",
+    "teach": "Interpretations are tools: state one, test it against evidence, then judge. Use tentative language (“could be read as”). A critic's words are brief and always tested.",
+    "practise": "The \"A level English practice 1.5: Critical views and different interpretations\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to give two readings of one quotation and say which is more convincing."
+   },
+   "use": [
+    "al1-critics"
+   ],
+   "home": "Find a short review or critical comment on a text you're reading. Do you agree?",
+   "vocab": "interpretation, AO5, feminist, Marxist, psychoanalytic, tentative",
+   "understand": "Why is quoting critics at length weak?",
+   "lookFor": "Says the marks are for your argument; critics only help if you test them against the text."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-compare",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 1.6: Comparing texts (Literature)",
+   "intention": "We are learning to compare two texts through a shared idea, discussing both in each paragraph.",
+   "criteria": [
+    "I can find a shared idea and a real difference.",
+    "I can write integrated comparison.",
+    "I can say what the comparison reveals."
+   ],
+   "steps": {
+    "start": "Read “Remember” and “Neutral Tones”. What do they share? What is different?",
+    "teach": "Organise by idea, not by text. Each paragraph: a comparative topic sentence, evidence from both, analysis, and a link to the argument. End with what the comparison shows that neither text does alone.",
+    "practise": "The \"A level English practice 1.6: Comparing texts\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to write one integrated comparative sentence with a quotation from each poem."
+   },
+   "use": [
+    "al1-compare"
+   ],
+   "home": "Pair two songs or poems you know and write three ways they are alike and different.",
+   "vocab": "compare, contrast, whereas, similarly, AO4, integrated",
+   "understand": "Why are two separate mini-essays weaker than integrated comparison?",
+   "lookFor": "Says the marks are for the connections between texts, which separate essays don't make."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-essay",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb 1.7: Writing the A level literature essay (Literature)",
+   "intention": "We are learning to plan and write an argued essay on a set text: thesis, topic sentences, embedded quotation and a judgement.",
+   "criteria": [
+    "I can write a thesis that answers the whole question.",
+    "I can write topic sentences that make claims.",
+    "I can embed short quotations and analyse them.",
+    "I can conclude with a judgement."
+   ],
+   "steps": {
+    "start": "Show two opening sentences for the same essay: one summary, one argument. Which is stronger?",
+    "teach": "Spend 5 to 10 minutes planning: a thesis, four or five steps of argument, two quotations each. Write each paragraph as claim, evidence, analysis, link. Conclude with a judgement.",
+    "practise": "The \"A level English practice 1.7: Writing the A level literature essay\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to plan an essay on a new question in eight minutes."
+   },
+   "use": [
+    "al1-essay"
+   ],
+   "home": "Write one essay plan a week on your set texts.",
+   "vocab": "thesis, topic sentence, embedded quotation, judgement, how far",
+   "understand": "Why plan before writing a timed essay?",
+   "lookFor": "Says a plan keeps the argument sustained and stops the essay becoming a list or running out of time."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-nea",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb 1.8: Coursework (non-exam assessment): choosing texts and a question (Literature)",
+   "intention": "We are learning to plan the literature coursework: choosing two texts, framing a question, finding sources and drafting.",
+   "criteria": [
+    "I can choose two texts with a real connection.",
+    "I can frame a focused, comparative question.",
+    "I can plan sources, a draft and a timeline."
+   ],
+   "steps": {
+    "start": "Compare three coursework questions. Which is focused, comparative and arguable?",
+    "teach": "Good coursework starts with a good question. Choose texts that share a theme but differ, plan three lines of argument across both, and keep a bibliography from day one. Check the board's rules on length and feedback.",
+    "practise": "The \"A level English practice 1.8: Coursework (non-exam assessment): choosing texts and a question\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to improve a weak coursework question."
+   },
+   "use": [
+    "al1-nea"
+   ],
+   "home": "Start a reading log for possible coursework texts.",
+   "vocab": "non-exam assessment, comparative, bibliography, plagiarism, draft",
+   "understand": "Why is a focused question better than a topic?",
+   "lookFor": "Says a question gives the essay an argument to prove, while a topic leads to description."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-writing",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb, Literature: critical essay",
+   "intention": "We are learning to plan, draft, check and improve a critical essay, aiming at grade A or B.",
+   "criteria": [
+    "I can plan before drafting.",
+    "I can check my draft against the list and correct it.",
+    "I can act on one round of feedback."
+   ],
+   "steps": {
+    "start": "What makes the difference between a C and an A in this kind of writing? List three things.",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The \"A level English writing task: critical essay (A level English Literature)\" sheet, or the writing task on the My next step page.",
+    "check": "Mark with the bands on the answers page. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 20 minutes once a week and check it against the list.",
+   "vocab": "thesis, plan, draft, redraft, band",
+   "understand": "Why aim to change one thing in a redraft, not ten?",
+   "lookFor": "Says one clear target is achievable and lifts the work a band; ten at once gets nothing done well."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Literature",
+   "id": "lesson-alevel-english-al1-mini-papers",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb, Literature: mini papers",
+   "intention": "We are practising under exam conditions: timed answers marked with the bands, then using the marks to plan.",
+   "criteria": [
+    "I can plan and write a sustained answer in the time.",
+    "I can mark my answer honestly with the bands.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's times. How long will you spend reading and planning?",
+    "teach": "Sit a mini paper, timed. Then mark it with the answers page and the bands, and note on the tracker what to work on.",
+    "practise": "The stage's mini paper sheets (\"Mini paper: unseen poetry (A level Literature)\" and \"Mini paper: comparison (A level Literature)\"), or the mini paper on the My next step page.",
+    "check": "About 60% or more means the stage is going well. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "al1-mixed"
+   ],
+   "home": "Rewrite the weakest paragraph of the mini paper answer.",
+   "vocab": "timing, bands, argument, sustained",
+   "understand": "Why spend ten minutes planning a one-hour answer?",
+   "lookFor": "Says the argument decides what to analyse; without a plan the answer becomes a list."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-start-here",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb, Language: start here",
+   "intention": "We are finding out which A level English Language topics are secure and which to learn first, learning what the course expects, and making a plan.",
+   "criteria": [
+    "I can try a question on each Language topic and show what I already know.",
+    "I know how A level English Language is examined and what coursework is worth.",
+    "I have a plan with exam and coursework dates."
+   ],
+   "steps": {
+    "start": "Talk about the goal: A level English Language. Find out the exam board and the set texts or topics: the climb's method works for any board.",
+    "teach": "Read the \"What the exam expects: A level English Language\" sheet together. Then do the check (online or on paper), with no help: it's a map, not a test.",
+    "practise": "The \"A level English climb: Language check\" sheet, or the online check.",
+    "check": "Mark the check together. Fill in the \"A level English climb: Language tracker\" sheet: topics marked ✗ go first. Agree the exam dates, the coursework deadline and sessions a week."
+   },
+   "use": [
+    "al2-check"
+   ],
+   "home": "Read every day: a set text, a long article, or a transcript, and write one sentence on how it works.",
+   "vocab": "specification, assessment objective, coursework, mark bands, argument",
+   "understand": "Why find out the exam board first?",
+   "lookFor": "Says each board sets its own texts, papers and coursework rules, though the skills are the same."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-levels",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.1: The language levels: a toolkit for analysis (Language)",
+   "intention": "We are learning to use the language levels precisely and link each feature to meaning and context.",
+   "criteria": [
+    "I can name features at each language level.",
+    "I can link a feature to audience and purpose.",
+    "I avoid feature-spotting."
+   ],
+   "steps": {
+    "start": "Show the café web page. Who is it for, and what does it want them to do?",
+    "teach": "The levels: lexis and semantics, grammar, phonology, pragmatics, discourse, graphology. For every feature: name it, quote it, explain its effect in context (mode, audience, purpose).",
+    "practise": "The \"A level English practice 2.1: The language levels: a toolkit for analysis\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to analyse one feature at three different levels in the café text."
+   },
+   "use": [
+    "al2-levels"
+   ],
+   "home": "Find an advert and label three features at different levels.",
+   "vocab": "lexis, semantics, grammar, phonology, pragmatics, discourse, graphology, register",
+   "understand": "Why is naming a feature not enough?",
+   "lookFor": "Says the marks are for linking it to meaning and context, not just labelling it."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-grammar",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.2: Grammar for analysis: word classes, clauses and modality (Language)",
+   "intention": "We are learning to name grammatical features precisely and say what they do.",
+   "criteria": [
+    "I can identify word classes, clause types and sentence functions.",
+    "I can explain modality and voice.",
+    "I can link grammar to effect."
+   ],
+   "steps": {
+    "start": "Write: “Mistakes were made.” Who made them?",
+    "teach": "Teach the toolkit: word classes, phrases, clauses, sentence functions, modality, voice and pronouns. Then practise on the accents column: name the feature, quote it, say its effect.",
+    "practise": "The \"A level English practice 2.2: Grammar for analysis: word classes, clauses and modality\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to find a modal verb, an imperative and a pronoun shift in a short text and explain each."
+   },
+   "use": [
+    "al2-grammar"
+   ],
+   "home": "Analyse the grammar of one headline a day.",
+   "vocab": "noun phrase, modal verb, passive voice, imperative, subordinate clause, pronoun",
+   "understand": "Why does precise grammar terminology matter at A level?",
+   "lookFor": "Says it lets you describe exactly how a text works, which the marking rewards."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-context",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.3: Mode, audience, purpose and genre (Language)",
+   "intention": "We are learning to explain how mode, audience, purpose and genre shape language, including spoken transcripts.",
+   "criteria": [
+    "I can describe features of spontaneous speech.",
+    "I can read transcription conventions.",
+    "I can analyse talk without treating it as faulty writing."
+   ],
+   "steps": {
+    "start": "Read the transcript aloud in pairs. What sounds natural that would look odd written down?",
+    "teach": "Speech has its own features: fillers, pauses, overlaps, back-channelling, adjacency pairs. Analyse them neutrally and link them to the relationship and purpose. Electronic texts blend modes.",
+    "practise": "The \"A level English practice 2.3: Mode, audience, purpose and genre\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to find and explain three features of spontaneous speech in a new transcript."
+   },
+   "use": [
+    "al2-context"
+   ],
+   "home": "Record (with permission) and transcribe one minute of family talk.",
+   "vocab": "mode, spontaneous speech, adjacency pair, overlap, back-channelling, face",
+   "understand": "Why shouldn't you call fillers mistakes?",
+   "lookFor": "Says they are normal features of unplanned speech that do pragmatic work, like softening or holding a turn."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-change",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.4: Language change (Language)",
+   "intention": "We are learning to explain how and why English has changed, using older texts as evidence.",
+   "criteria": [
+    "I can identify older features in lexis, grammar and punctuation.",
+    "I can explain types of semantic change.",
+    "I can link change to causes and attitudes."
+   ],
+   "steps": {
+    "start": "Read the Jerome extract. Which words would you not use today?",
+    "teach": "Look at lexis (archaism, semantic change), syntax, spelling and punctuation. Say what we'd write now and why it changed: technology, contact, informalisation. Know prescriptive and descriptive attitudes.",
+    "practise": "The \"A level English practice 2.4: Language change\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to rewrite one Jerome sentence in modern English and explain three changes."
+   },
+   "use": [
+    "al2-change"
+   ],
+   "home": "Look up the history of three words you use every day.",
+   "vocab": "pejoration, amelioration, archaism, informalisation, prescriptivism, descriptivism",
+   "understand": "Why do linguists describe change rather than judge it?",
+   "lookFor": "Says change is natural and constant; descriptivists study how language is used rather than say it is decline."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-cla",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.5: Child language acquisition (Language)",
+   "intention": "We are learning to analyse young children's talk using stages, features and theories.",
+   "criteria": [
+    "I can identify a child's stage from their talk.",
+    "I can explain virtuous errors.",
+    "I can use theories to explain data."
+   ],
+   "steps": {
+    "start": "Read Maisie's transcript. What does “goed” tell you she has learned?",
+    "teach": "Stages: babbling, holophrastic, two-word, telegraphic, post-telegraphic. Features: overgeneralisation, virtuous errors. Theories: Skinner, Chomsky, Piaget, Bruner, Vygotsky. Always start from the data, then theory.",
+    "practise": "The \"A level English practice 2.5: Child language acquisition\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to explain two features of Maisie's talk with a theory each."
+   },
+   "use": [
+    "al2-cla"
+   ],
+   "home": "Listen to a young child talk (with permission) and note one virtuous error.",
+   "vocab": "telegraphic, holophrastic, overgeneralisation, virtuous error, child-directed speech, scaffolding",
+   "understand": "Why does “goed” support Chomsky more than Skinner?",
+   "lookFor": "Says no adult says “goed”, so the child can't be imitating; she is applying a rule she has worked out."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-diversity",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb 2.6: Language diversity: accent, dialect, gender and identity (Language)",
+   "intention": "We are learning how language varies with region, group, gender and age, and how speakers express identity.",
+   "criteria": [
+    "I can explain accent, dialect and prestige.",
+    "I can use accommodation theory and code-switching.",
+    "I can evaluate attitudes to varieties."
+   ],
+   "steps": {
+    "start": "Do you speak differently with friends, family and teachers? How?",
+    "teach": "Accent is pronunciation; dialect includes words and grammar. Prestige can be overt (RP) or covert. Speakers converge and diverge. Read the accents column as both data and an argument to evaluate.",
+    "practise": "The \"A level English practice 2.6: Language diversity: accent, dialect, gender and identity\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to give a reasoned view on whether people should change their accent at work."
+   },
+   "use": [
+    "al2-diversity"
+   ],
+   "home": "Note three dialect words used in your area and who uses them.",
+   "vocab": "accent, dialect, RP, covert prestige, convergence, code-switching",
+   "understand": "Why might someone keep a strong local accent on purpose?",
+   "lookFor": "Says it signals belonging and identity: covert prestige within their group."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-discourses",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb 2.7: Writing about language: opinion articles and debates (Language)",
+   "intention": "We are learning to write an informed, accessible opinion piece on a language debate.",
+   "criteria": [
+    "I can write for a general audience.",
+    "I can explain research in plain words.",
+    "I can argue a view fairly."
+   ],
+   "steps": {
+    "start": "Read a headline: “Young people's slang is destroying English.” Agree or disagree?",
+    "teach": "Write like a good columnist: a hook, a clear view, one or two pieces of research explained simply, a fair counter-argument, a strong ending. Gloss any technical term.",
+    "practise": "The \"A level English practice 2.7: Writing about language: opinion articles and debates\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to write an opening paragraph for a language opinion piece in ten minutes."
+   },
+   "use": [
+    "al2-discourses"
+   ],
+   "home": "Read one opinion column a week and note its hook and ending.",
+   "vocab": "opinion article, general audience, counter-argument, gloss, stance",
+   "understand": "Why explain technical terms in a newspaper article?",
+   "lookFor": "Says the readers aren't linguists, so ideas must be accessible to persuade."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-original",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb 2.8: Coursework: investigation, original writing and commentary (Language)",
+   "intention": "We are learning to plan a language investigation and a piece of original writing with a commentary.",
+   "criteria": [
+    "I can frame a focused investigation question.",
+    "I can plan data collection ethically.",
+    "I can explain my own language choices in a commentary."
+   ],
+   "steps": {
+    "start": "Which question could real data answer: “Is football language good?” or “How do commentators differ on radio and TV?”",
+    "teach": "An investigation needs a focused question, real data, a clear method, features across levels, ethics (consent, anonymity) and honest limits. Original writing needs a style model and a commentary linking choices to audience and purpose.",
+    "practise": "The \"A level English practice 2.8: Coursework: investigation, original writing and commentary\" sheet (quick questions, then an exam-style question marked with the bands), then the online practice.",
+    "check": "Ask them to write an investigation proposal in fifteen minutes."
+   },
+   "use": [
+    "al2-original"
+   ],
+   "home": "Start collecting language data you find interesting: signs, messages, recordings with permission.",
+   "vocab": "investigation, data, methodology, ethics, style model, commentary",
+   "understand": "Why describe your methodology?",
+   "lookFor": "Says it lets a reader judge how reliable the findings are."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-writing",
+   "strand": "Writing: creating texts",
+   "title": "A level English climb, Language: original writing with commentary",
+   "intention": "We are learning to plan, draft, check and improve a original writing with commentary, aiming at grade A or B.",
+   "criteria": [
+    "I can plan before drafting.",
+    "I can check my draft against the list and correct it.",
+    "I can act on one round of feedback."
+   ],
+   "steps": {
+    "start": "What makes the difference between a C and an A in this kind of writing? List three things.",
+    "teach": "Model the plan on the task sheet. Draft in one sitting. Then check against the list, compare with the model on the answers page, and agree one change that would lift it a band.",
+    "practise": "The \"A level English writing task: original writing with commentary (A level English Language)\" sheet, or the writing task on the My next step page.",
+    "check": "Mark with the bands on the answers page. Agree one target for the redraft."
+   },
+   "use": [],
+   "home": "Write for 20 minutes once a week and check it against the list.",
+   "vocab": "plan, draft, redraft, band, style model",
+   "understand": "Why aim to change one thing in a redraft, not ten?",
+   "lookFor": "Says one clear target is achievable and lifts the work a band; ten at once gets nothing done well."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English Language",
+   "id": "lesson-alevel-english-al2-mini-papers",
+   "strand": "Reading: understanding stories",
+   "title": "A level English climb, Language: mini papers",
+   "intention": "We are practising under exam conditions: timed answers marked with the bands, then using the marks to plan.",
+   "criteria": [
+    "I can plan and write a sustained answer in the time.",
+    "I can mark my answer honestly with the bands.",
+    "I know which topics to go back to."
+   ],
+   "steps": {
+    "start": "Look at the mini paper's times. How long will you spend reading and planning?",
+    "teach": "Sit a mini paper, timed. Then mark it with the answers page and the bands, and note on the tracker what to work on.",
+    "practise": "The stage's mini paper sheets (\"Mini paper: textual analysis (A level Language)\" and \"Mini paper: child language (A level Language)\"), or the mini paper on the My next step page.",
+    "check": "About 60% or more means the stage is going well. Otherwise, go back to the topics that lost marks."
+   },
+   "use": [
+    "al2-mixed"
+   ],
+   "home": "Rewrite the weakest paragraph of the mini paper answer.",
+   "vocab": "timing, bands, argument, sustained",
+   "understand": "Why spend ten minutes planning a one-hour answer?",
+   "lookFor": "Says the argument decides what to analyse; without a plan the answer becomes a list."
+  },
+  {
+   "level": "Senior",
+   "subject": "Literacy",
+   "strand": "Reading: understanding stories",
+   "codes": [],
+   "england": true,
+   "alevel": "A level English (Years 12 and 13)",
+   "id": "lesson-alevel-english-my-next-step",
+   "title": "A level English climb: my next step (working on your own, Years 12 and 13)",
+   "intention": "We are learning to work through the A level English climb on our own: one step a session, marking our own answers honestly.",
+   "criteria": [
+    "I can find my next step on the climb page and do it.",
+    "I can mark a written answer with the bands.",
+    "I know when to move on."
+   ],
+   "steps": {
+    "start": "Open popspell.com/english-climb.html?course=alevel together and press My next step.",
+    "teach": "Show how the page works: the check, topics in order, a writing task with a checklist, then a mini paper. Show how to mark an answer with the bands: find the best fit, then go up or down.",
+    "practise": "The \"A level English climb: my route through Years 12 and 13\" sheet to keep, then the first step on the page.",
+    "check": "Ask them to explain what secure means and what they'll do next session."
+   },
+   "use": [
+    "al1-check",
+    "al2-check"
+   ],
+   "home": "Read every day, and do a climb session three or four times a week.",
+   "vocab": "self-assessment, bands, model answer, secure",
+   "understand": "Why mark your own answer with the bands, not just read the model?",
+   "lookFor": "Says the bands show exactly what is missing for the next level, so you know what to change."
+  }
+ ]
+}
