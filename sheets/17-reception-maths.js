@@ -1,5 +1,7 @@
   // England's Reception maths (the Early Learning Goals): one sheet for each lesson in
   // content/lessons/20-england-reception-maths.json. Big, simple pictures; the adult reads the instructions.
+  // Pictures at a set printed size (young sheets otherwise stretch them to the page width)
+  const sized = (mm, html) => `<span style="display:inline-block;width:${mm}mm;vertical-align:middle">${html}</span>`;
   const DICE = { 1: [[50, 50]], 2: [[28, 28], [72, 72]], 3: [[25, 25], [50, 50], [75, 75]], 4: [[28, 28], [72, 28], [28, 72], [72, 72]], 5: [[26, 26], [74, 26], [50, 50], [26, 74], [74, 74]] };
   const dotsBox = (pts, w = 100) => svg(w, w, `<rect x="2" y="2" width="${w - 4}" height="${w - 4}" rx="14" class="pp-frame"/>${pts.map(([x, y]) => `<circle cx="${x * w / 100}" cy="${y * w / 100}" r="${w / 11}" class="pp-dot"/>`).join("")}`);
   const scatter = (n, w = 100) => {
@@ -33,7 +35,7 @@
     return {
       pupil: `${h.sheetHead("What's inside the number?", who)}
         <p>Count the full circles, then the empty circles. Write the two parts, then how many altogether.</p>
-        ${rows.map(([a, b], i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${tenFrame(a, b)}<p>${blank(2)} and ${blank(2)} make ${blank(2)}</p></div>`).join("")}`,
+        <div class="pp-grid3">${rows.map(([a, b], i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${sized(52, tenFrame(a, b))}<p>${blank(2)} and ${blank(2)} make ${blank(2)}</p></div>`).join("")}</div>`,
       answers: answersPage(h, "What's inside the number?", rows.map(([a, b]) => `${a} and ${b} make ${a + b}`),
         "Ask: can you make the same number a different way? (For 5: 4 and 1, 3 and 2, 5 and 0.)")
     };
@@ -48,7 +50,7 @@
         <p><b>Make 5.</b> How many more dots make 5? Draw them, then write the number.</p>
         <div class="pp-grid3">${parts.map((p, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${dotsBox(DICE[p] || [], 100)}<p>${p} and ${blank(2)} make 5</p></div>`).join("")}</div>
         <p><b>Take away.</b> Some have been eaten (crossed out). How many are left?</p>
-        ${takes.map(([n, g], i) => `<div class="pp-cell"><p><b>${i + 5}.</b> ${apples(n, g)} ${n} take away ${g} leaves ${blank(2)}</p></div>`).join("")}`,
+        ${takes.map(([n, g], i) => `<div class="pp-cell"><p><b>${i + 5}.</b> ${sized(55, apples(n, g))} &nbsp; ${n} take away ${g} leaves ${blank(2)}</p></div>`).join("")}`,
       answers: answersPage(h, "Pairs that make 5", parts.map(p => `${p} and ${5 - p} make 5`).concat(takes.map(([n, g]) => `${n} take away ${g} leaves ${n - g}`)),
         "The pairs to know by heart: 0 and 5, 1 and 4, 2 and 3 (and the other way round).")
     };
@@ -60,9 +62,9 @@
     return {
       pupil: `${h.sheetHead("Ten frames and doubles", who)}
         <p><b>Make 10.</b> How many empty squares? Write the pair that makes 10.</p>
-        ${tens.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${tenFrame(n)}<p>${n} and ${blank(2)} make 10</p></div>`).join("")}
+        <div class="pp-grid3">${tens.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${sized(52, tenFrame(n))}<p>${n} and ${blank(2)} make 10</p></div>`).join("")}</div>
         <p><b>Doubles.</b> Both dice are the same. How many altogether?</p>
-        <div class="pp-grid3">${dbl.map((n, i) => `<div class="pp-cell"><p><b>${i + 5}.</b></p>${dotsBox(DICE[n], 70)} ${dotsBox(DICE[n], 70)}<p>double ${n} is ${blank(2)}</p></div>`).join("")}</div>`,
+        <div class="pp-grid3">${dbl.map((n, i) => `<div class="pp-cell"><p><b>${i + 5}.</b></p>${sized(22, dotsBox(DICE[n], 70))} ${sized(22, dotsBox(DICE[n], 70))}<p>double ${n} is ${blank(2)}</p></div>`).join("")}</div>`,
       answers: answersPage(h, "Ten frames and doubles", tens.map(n => `${n} and ${10 - n} make 10`).concat(dbl.map(n => `double ${n} is ${2 * n}`)),
         "Count the empty squares, or see them: a full row is 5.")
     };
@@ -74,7 +76,7 @@
     return {
       pupil: `${h.sheetHead("More, fewer or the same", who)}
         <p>Circle the box with <b>more</b> dots. If they are the same, tick ☐ the same.</p>
-        ${pairs.map(([a, b], i) => `<div class="pp-cell"><p><b>${i + 1}.</b> ${dotsBox(scatter(a), 90)} ${dotsBox(scatter(b), 90)} &nbsp; ☐ the same</p></div>`).join("")}
+        ${pairs.map(([a, b], i) => `<div class="pp-cell"><p><b>${i + 1}.</b> ${sized(32, dotsBox(scatter(a), 90))} &nbsp; ${sized(32, dotsBox(scatter(b), 90))} &nbsp; ☐ the same</p></div>`).join("")}
         <p>Circle the number that is <b>more</b>.</p>
         ${nums.map(([a, b], i) => `<p><b>${i + 5}.</b> <span style="font: 700 22pt Arial, sans-serif">${a}</span> &nbsp; or &nbsp; <span style="font: 700 22pt Arial, sans-serif">${b}</span></p>`).join("")}`,
       answers: answersPage(h, "More, fewer or the same", pairs.map(([a, b]) => (a === b ? `The same (${a} and ${b})` : `The ${a > b ? "first" : "second"} box (${Math.max(a, b)} is more than ${Math.min(a, b)})`))
@@ -90,7 +92,7 @@
         <p>Ring the dots in pairs. Is there one left over? Tick <b>odd</b> (one left over) or <b>even</b> (all in pairs).</p>
         <div class="pp-grid3">${ns.map((n, i) => `<div class="pp-cell"><p><b>${i + 1}.</b></p>${dotsBox(scatter(n))}<p>☐ odd ☐ even</p></div>`).join("")}</div>
         ${share.map((n, i) => `<p><b>${i + 5}.</b> Share ${n} sweets fairly between the two plates. Draw them. Each plate gets ${blank(2)}</p>
-          ${svg(300, 90, `<ellipse cx="75" cy="45" rx="68" ry="38" class="pp-frame"/><ellipse cx="225" cy="45" rx="68" ry="38" class="pp-frame"/>`)}`).join("")}`,
+          ${sized(115, svg(300, 90, `<ellipse cx="75" cy="45" rx="68" ry="38" class="pp-frame"/><ellipse cx="225" cy="45" rx="68" ry="38" class="pp-frame"/>`))}`).join("")}`,
       answers: answersPage(h, "Pairs and sharing", ns.map(n => `${n}: ${n % 2 ? "odd (one left over)" : "even (all in pairs)"}`).concat(share.map(n => `${n} shared between 2: ${n / 2} each`)),
         "Even numbers share fairly between two; odd numbers leave one over.")
     };
