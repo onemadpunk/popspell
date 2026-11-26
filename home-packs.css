@@ -1,0 +1,13 @@
+/* Home-school packs (#/home, home-packs.js): the page to choose and make a pack. The printed pages use
+   the sheet styles in style.css and the course styles in course.css. */
+.hm-panel h1 { margin-bottom: 4px; }
+.hm-form { display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 12px 0; }
+.hm-form label, .hm-do label { display: flex; flex-direction: column; gap: 4px; font-weight: 700; }
+.hm-form input, .hm-form select, .hm-do select { font: inherit; padding: 6px 8px; border: 1.5px solid #b6c0cc; border-radius: 8px; min-width: 12em; }
+.hm-copy { border: 1.5px solid #b6c0cc; border-radius: 8px; margin: 10px 0; }
+.hm-copy label { display: block; margin: 4px 0; }
+.hm-do { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-end; }
+.hm-sessions { columns: 2 22em; font-size: .95em; }
+.hm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16em, 1fr)); gap: 4px 24px; }
+.hm-grid ul { padding-left: 1.1em; }
+.hm-grid li { margin: 4px 0; }

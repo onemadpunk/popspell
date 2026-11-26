@@ -1095,6 +1095,7 @@
     else if (parts[0] === "assess") showQuest();
     else if (parts[0] === "phonics") showPhonicsLive();
     else if (parts[0] === "teacher") showTeacherArea(decodeURIComponent(parts[1] || ""));
+    else if (parts[0] === "home") showHomePacks(decodeURIComponent(parts[1] || ""));
     else if (parts[0] === "make" && teacherUnlocked()) showMake();
     else if (parts[0] === "make") { history.replaceState(null, "", "#/"); showHome(); } // locked: back to the lists
     else if (parts[0] === "sounds") showSounds();
@@ -1260,6 +1261,14 @@
       document.body.append(el);
     })), Promise.resolve()).catch(e => { teacherLoading = null; throw e; });
     return teacherLoading;
+  }
+  // Home-school packs (home-packs.js): print-only courses for parents, made from the teacher area's lessons and sheets
+  function showHomePacks(id) {
+    const go = () => { if (location.hash.startsWith("#/home")) window.PopHome.show(app, id); };
+    if (window.PopHome) return go();
+    app.innerHTML = `<section class="panel"><p class="hint" role="status">Opening the home-school packs…</p></section>`;
+    loadTeacher().then(go).catch(() => { app.innerHTML = `<section class="panel"><p>The packs couldn't load. Check the connection and <button class="btn small" type="button" id="homeRetry">try again</button>.</p></section>`;
+      $("#homeRetry").onclick = () => showHomePacks(id); });
   }
   function showTeacherArea(tab) {
     if (window.PopTeacher) return window.PopTeacher.show(app, tab);

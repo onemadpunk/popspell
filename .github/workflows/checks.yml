@@ -38,6 +38,9 @@ jobs:
           npm install --no-save --no-audit --no-fund playwright@1.63.0
           npx playwright install --with-deps chromium
           npm run sheet-check
+          npm run course-pdf
+          npm run course-pdf -- --edition parent
+          npm run course-pdf -- --edition paper
 
       - uses: actions/setup-java@v4
         with:
