@@ -49,6 +49,10 @@ test("a made course: full teaching sessions, 80-mark mock papers with no repeats
         assert.equal(p.items.reduce((t, it) => t + it.marks, 0), 80, `${set}${p.n}`);
         assert.ok(p.items.length >= 28 && p.items.length <= 50, `${set}${p.n}: ${p.items.length} questions`);
         if (!p.calc) assert.ok(p.items.every(it => !it.calc), "paper 1 is non-calculator");
+        // About a quarter of the marks are multi-step problems, as on a real paper, mostly in the second half
+        const ps = p.items.filter(it => it.ps), psMarks = ps.reduce((t, it) => t + it.marks, 0);
+        assert.ok(psMarks >= 12 && psMarks <= 24, `${set}${p.n}: ${psMarks} problem-solving marks`);
+        assert.ok(ps.filter(it => p.items.indexOf(it) >= p.items.length / 2).length >= ps.length / 2, `${set}${p.n}: problems mostly late`);
       }
       const labels = papers.flatMap(p => p.items.map(it => it.label));
       assert.equal(new Set(labels).size, labels.length, `set ${set} repeats a question`);
