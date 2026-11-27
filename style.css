@@ -1806,6 +1806,8 @@ tr.ws-new td { background: #f2f5fa; font-size: 10pt; }
 .ex-wlevels .ex-levels th { width: auto; }
 .ex-wlevels .ex-levels { font-size: 8.5pt; }
 .ex-model p { margin: 2px 0 4px !important; }
+.ex-marked { background: #fbfaf6; }
+.ex-marked .ex-why { font-size: 9pt; color: #334155; }
 .ex-sub { font-weight: 700; color: #0b2e6b; margin: 6px 0 2px !important; font-size: 10pt; }
 .ex-look { margin: 0 0 4px; padding-left: 1.2em; font-size: 10pt; }
 .ex-ans-part { margin-top: 6px; break-inside: avoid; }

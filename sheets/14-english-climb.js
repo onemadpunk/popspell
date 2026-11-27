@@ -32,10 +32,11 @@
   const exUsable = (it, on) => !it.t || on.includes(it.t) || it.x;
   const exQuick = (it, i, on) => {
     const quote = it.t && !on.includes(it.t) ? `<p class="ex-quote">From “${exEsc(EXB.text(it.t).title)}”: “${exEsc(it.x)}”</p>` : "";
-    return `<div class="pp-q ex-q"><p><b>${i}.</b> ${exEsc(it.q)}</p>${quote}
-      <p class="ex-opts">${shuffle([it.a].concat(it.o)).map(o => `<span>☐ ${exEsc(o)}</span>`).join("")}</p></div>`;
+    return `<div class="pp-q ex-q"><p><b>${i}.</b> ${exEsc(it.q)}${it.also ? " <i>More than one reading can be supported: tick each one the text backs up.</i>" : ""}</p>${quote}
+      <p class="ex-opts">${shuffle([it.a].concat(it.also || [], it.o)).map(o => `<span>☐ ${exEsc(o)}</span>`).join("")}</p></div>`;
   };
-  const exQuickAns = it => `<b>${exEsc(it.a)}</b><br><span class="gx-how">${exEsc(it.why)}</span>`;
+  const exQuickAns = it => it.also ? `<b>${exEsc(it.a)}</b> and <b>${exEsc(it.also[0])}</b> (either or both)<br><span class="gx-how">${exEsc(it.why)} ${exEsc(it.alsoWhy)}</span>`
+    : `<b>${exEsc(it.a)}</b><br><span class="gx-how">${exEsc(it.why)}</span>`;
   // Quick questions for a sheet: the ones about its own texts first, then the rest, in the bank's order
   const exPick = (t, on, n) => {
     const ok = shuffle(t.items.filter(it => exUsable(it, on)));
@@ -43,6 +44,25 @@
   };
   const exLevels = levels => levels && levels.length ? `<table class="ex-levels">${levels.map(([m, d]) => `<tr><th>${exEsc(m)}</th><td>${exEsc(d)}</td></tr>`).join("")}</table>` : "";
   const exModel = (label, s) => s ? `<div class="pp-box ex-model"><b>${label}</b>${exParas(s)}</div>` : "";
+  // Weaker answers with the mark they'd get and what would lift them, so the levels can be seen, not just read
+  const exMarked = arr => arr && arr.length ? `<p class="ex-sub">Weaker answers, marked</p>${arr.map(m => `<div class="pp-box ex-model ex-marked"><b>${exEsc(m.mark)}</b>${exParas(m.text)}<p class="ex-why"><i>Why:</i> ${exEsc(m.why)}</p></div>`).join("")}` : "";
+  // "Rank the answers": the task, its marking levels and three answers to it (two weaker ones and the model),
+  // in a new order each print. The pupil puts them in order, gives each a mark and says what would lift the
+  // weakest; the answers page gives each one's mark and why. A pupil learns the levels by using them.
+  const exRank = (add, id, lesson, title, task, levels, model, top, marked, h0 = "") => add(id, lesson, `Rank the answers: ${title}`,
+    "Three answers to one exam task, from weak to strong, in a new order each time. Put them in order and mark them with the levels; the answers page gives each one's mark and why.", (who, h) => {
+      const all = shuffle([{ mark: top, text: model, why: "The strongest of the three: it does everything the top level asks." }].concat(marked)), ABC = "ABC";
+      return {
+        pupil: `${h.sheetHead(`Rank the answers: ${title}`, who)}${h0}
+          <p class="ex-h"><b>The task:</b> ${exEsc(task)}</p>${levels}
+          ${all.map((m, i) => `<div class="pp-box ex-model ex-marked"><b>Answer ${ABC[i]}</b>${exParas(m.text)}</div>`).join("")}
+          <p class="ex-h"><b>1.</b> Put the answers in order, weakest first: ____ ____ ____ &nbsp; <b>2.</b> Give each a mark or level from the table. &nbsp; <b>3.</b> Write one thing that would lift the weakest answer.</p>${lines(2)}`,
+        answers: `${h.brandHead(`Rank the answers: ${title}`, "For the adult, or to check your own.")}
+          ${all.map((m, i) => `<div class="pp-box ex-model ex-marked"><b>Answer ${ABC[i]}: ${exEsc(m.mark)}</b><p class="ex-why">${exEsc(m.why)}</p></div>`).join("")}
+          <p class="ex-sub">Weakest to strongest</p><p>${all.map((m, i) => [m, ABC[i]]).sort((a, b) => (a[0].mark === top) - (b[0].mark === top) || marked.indexOf(a[0]) - marked.indexOf(b[0])).map(x => x[1]).join(", ")}</p>
+          <p class="gx-note">Talk about what moves an answer up a level: usually explaining what a quotation suggests, not finding more quotations.</p>`
+      };
+    });
   const exList = (items, cls = "ex-look") => `<ul class="${cls}">${items.map(s => `<li>${exEsc(s)}</li>`).join("")}</ul>`;
   const exTicks = items => `<ul class="ex-ticks">${items.map(s => `<li>☐ ${exEsc(s)}</li>`).join("")}</ul>`;
   const exLinesFor = marks => marks >= 8 ? 8 : marks >= 4 ? 5 : 7; // the page's spare room is added as more lines
@@ -96,6 +116,8 @@
             answers: answersPage(h, `Exam practice: ${t.title}`, quick.map(exQuickAns), "Quick questions: the answer, and why.", exWrittenAns(w, quick.length + 1))
           };
         });
+      if (w.marked) exRank(add, `paper-ex-rank-${t.id}`, EX_LESSON(t.id), t.title, w.q, exLevels(w.levels), w.model, w.levels[0][0], w.marked,
+        on.length === 1 ? `<p class="ex-tip">The answers are about “${exEsc((EX.text(on[0]) || {}).title || "")}”: you don't need the text to rank them.</p>` : "");
     }));
 
     // ---------- Each stage: the check, the tracker, what the exam expects, the writing tasks and the mini papers ----------
@@ -155,6 +177,7 @@
 
       writing.forEach(w => {
         const check = EC.CHECK[st.key];
+        if (w.marked) exRank(add, `paper-ex-rank-${w.id}`, L("writing"), `${w.kind.toLowerCase()} (${tag})`, w.q, exLevels((EC.GRADES || []).map(([g, d]) => [g, d.replace(/^.*Writing: /, "")])), w.model, `about ${w.grade}`, w.marked);
         add(`paper-ex-write-${w.id}`, L("writing"), `English writing task: ${w.kind.toLowerCase()} (${tag})`,
           `${w.paper}, ${w.minutes} minutes: plan, write, then check against the stage's list. The answers page has a model answer with notes and the two marking scales.`, (who, h) => ({
             pupil: `${h.sheetHead(`Writing task: ${w.kind.toLowerCase()}`, who)}${exStrip(`${st.title}, aiming at ${w.grade}`, `${w.paper} · ${w.minutes} minutes`, 40)}

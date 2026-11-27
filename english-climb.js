@@ -132,13 +132,13 @@
     const got = [];
     let i = 0;
     const show = () => {
-      const it = items[i], opts = X.shuffle([it.a].concat(it.o)), text = textHTML(it);
+      const it = items[i], ok = [it.a].concat(it.also || []), opts = X.shuffle(ok.concat(it.o)), text = textHTML(it);
       app.innerHTML = `${top(title, `<button class="cl-btn small" id="stop">Stop and go back</button>`)}
         <main class="cl-run ec-run${text ? " with-text" : ""}">
           ${text}
           <div class="ec-side">
             <div class="cl-meta"><span>Question ${i + 1} of ${items.length}</span><span class="cl-chip">${esc(it.topic.short)}</span></div>
-            <p class="cl-q">${esc(it.q)}</p>
+            <p class="cl-q">${esc(it.q)}</p>${it.also ? `<p class="ec-also-hint">More than one of these readings can be supported by the text. Choose one you could back up with evidence.</p>` : ""}
             <div class="cl-opts ec-opts">${opts.map((o, k) => `<button class="cl-opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>
             <div id="fb"></div>
           </div>
@@ -147,11 +147,13 @@
           <button class="cl-btn primary" id="next" disabled>${i + 1 < items.length ? "Next question" : "See my result"}</button></footer>`;
       $("stop").onclick = home;
       app.querySelectorAll(".cl-opt").forEach(b => b.onclick = () => {
-        const right = opts[Number(b.dataset.k)] === it.a;
-        app.querySelectorAll(".cl-opt").forEach(x => { x.disabled = true; if (opts[Number(x.dataset.k)] === it.a) x.classList.add("good"); });
+        const pick = opts[Number(b.dataset.k)], right = ok.includes(pick);
+        app.querySelectorAll(".cl-opt").forEach(x => { x.disabled = true; if (ok.includes(opts[Number(x.dataset.k)])) x.classList.add("good"); });
         if (!right) b.classList.add("oops");
         got[i] = right ? 1 : 0;
-        $("fb").innerHTML = `<div class="cl-mark ${right ? "good" : "oops"}"><p><b>${right ? "Right." : "Not this time."}</b> ${esc(it.why)}</p></div>`;
+        // With more than one valid reading, the reason for the one chosen comes first, then the other
+        const why = !it.also ? esc(it.why) : pick === it.a || !right ? `${esc(it.why)} <i>Also valid: “${esc(it.also[0])}”.</i> ${esc(it.alsoWhy)}` : `${esc(it.alsoWhy)} <i>Also valid: “${esc(it.a)}”.</i> ${esc(it.why)}`;
+        $("fb").innerHTML = `<div class="cl-mark ${right ? "good" : "oops"}"><p><b>${right ? (it.also ? "Right: the text supports that reading." : "Right.") : "Not this time."}</b> ${why}</p></div>`;
         $("next").disabled = false; $("next").focus();
       });
       $("next").onclick = () => { if (++i < items.length) show(); else done(items.map((it2, k) => ({ it: it2, got: got[k] || 0 }))); };
