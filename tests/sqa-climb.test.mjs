@@ -142,3 +142,11 @@ test("the senior phase is a level of Scotland's library, and S5 and S6 can be ch
   assert.match(climb, /course=sqa/);
   assert.match(climb, /popspell-climb-sqa/);
 });
+
+test("every National 4, National 5 and Higher topic has at least one multi-step problem", () => {
+  for (const t of S.ALL.filter(x => /^(n4|n5|nh)-/.test(x.id))) {
+    let ps = 0;
+    for (const make of t.makers) for (let run = 0; run < 30; run++) { const it = make(); if (it.q && it.ps) ps++; }
+    assert.ok(ps, `${t.id} has no multi-step problem`);
+  }
+});
