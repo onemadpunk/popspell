@@ -43,3 +43,34 @@ test("paper only: no web address or online practice is left", () => {
   const html = H.offline(`<p>Practise at <a href="x">popspell.com/climb.html</a>. Then the online practice for topic 3.</p><th>Online<br>best %</th> Check the board's website for this year's dates.`);
   assert.doesNotMatch(html, /popspell\.com|online|website/i);
 });
+
+test("every lesson in a pack has a mistake to watch for, and what to ask", () => {
+  for (const p of D.PACKS) for (const l of H.lessonsFor(p)) {
+    const s = D.slipFor(l);
+    assert.ok(s, `${p.id}: no mistake note for ${l.id}`);
+    assert.match(s.slip, /\.$/, l.id);
+    assert.match(s.ask, /[.?]$/, l.id);
+  }
+});
+
+test("a parent's page speaks to one adult and one child, not a class", () => {
+  assert.equal(H.homeVoice({ who: "Ava" }, "Model the method. The pupil explains it to a partner. Pupils re-read the phoneme story with a partner for fluency."),
+    "Show the method. Ava explains it to you. Ava reads the phoneme story to you again, until it sounds smooth.");
+  for (const p of D.PACKS) for (const l of H.lessonsFor(p)) for (const k of ["start", "teach", "practise", "check"]) {
+    assert.doesNotMatch(H.homeVoice({ who: "" }, l.steps[k]), /\b(pupils?|the board|partner)\b/i, `${l.id} ${k}`);
+  }
+});
+
+test("maths lessons show two worked examples, one to do together and a check question, all with answers", () => {
+  const seen = new Map();
+  for (const p of D.PACKS.filter(x => x.subject === "Maths")) for (const l of H.lessonsFor(p)) seen.set(l.id, l);
+  let full = 0;
+  for (const l of seen.values()) {
+    const e = H.examplesOf(l);
+    if (!e) continue;
+    for (const q of [...e.worked, e.together, e.check].filter(Boolean)) assert.ok(String(q.answer).length, `${l.id}: a question with no answer`);
+    for (const q of e.worked) assert.ok(q.explain && q.explain.length > 12, `${l.id}: a worked example with no steps`);
+    if (e.worked.length === 2 && e.together && e.check) full++;
+  }
+  assert.ok(full >= seen.size * 0.9, `only ${full} of ${seen.size} maths lessons have the full set`);
+});

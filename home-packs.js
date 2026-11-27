@@ -69,7 +69,7 @@ window.PopHome = (() => {
     const kept = sentences(t).filter(s => !ONLINE.test(s)).join("").trim();
     return kept || instead;
   };
-  const textFor = (made, t, instead = "") => (made.paper ? paperText(t, instead) : String(t || ""));
+  const textFor = (made, t, instead = "") => homeVoice(made, made.paper ? paperText(t, instead) : String(t || ""));
 
   // ---------- Questions for reviews (from the lessons' own online practice, printed) ----------
   const printable = q => q && (q.kind === "choice" || q.kind === "type") && q.prompt && q.answer !== undefined && q.answer !== ""
@@ -86,19 +86,40 @@ window.PopHome = (() => {
     }
     return out;
   }
-  // A worked example to show first: a practice question that comes with an explanation
-  // Practice at the lesson's own level comes first, and the example is from the middle of the set (the
-  // questions run easy to hard), so it shows the lesson's method rather than a warm-up fact
-  function exampleOf(l) {
+  // Worked examples for "Show and explain": two the parent works through out loud (one easier, one like the
+  // middle of the sheet), one to do together, and one for the check, each with its answer. They come from
+  // practice at the lesson's own level first; the questions run easy to hard, so the picks spread along the set
+  function examplesOf(l) {
     const acts = (l.use || []).map(id => A() && A().get(id)).filter(act => act && !act.game && act.area !== "listening" && !act.passage);
     acts.sort((a, b) => (b.level === l.level) - (a.level === l.level));
     for (const act of acts) {
       let qs = [];
       try { qs = act.make() || []; } catch { qs = []; }
-      const ok = qs.filter(printable).filter(x => x.explain && x.explain.length > 12);
-      if (ok.length) return ok[Math.floor(ok.length * 0.6)];
+      const all = qs.filter(printable), ok = all.filter(x => x.explain && x.explain.length > 12);
+      if (!ok.length) continue;
+      const at = f => ok[Math.min(ok.length - 1, Math.floor(ok.length * f))];
+      const worked = [at(0.3), at(0.6)].filter((q, i, arr) => arr.findIndex(x => x.prompt === q.prompt) === i);
+      const rest = all.filter(q => !worked.some(w => w.prompt === q.prompt));
+      return { worked, together: rest[Math.floor(rest.length * 0.5)] || null, check: rest[rest.length - 1] || null };
     }
     return null;
+  }
+  // Lesson steps are written for a teacher with a class. On a parent's page they speak to one adult and one child
+  function homeVoice(made, t) {
+    const who = made.who || "your child", Who = made.who || "Your child";
+    return String(t || "")
+      .replace(/Then pupils take turns as teacher with magnetic letters and boards: one says a word from the list, the other builds it, and they check it together\./g,
+        "Then take turns being the teacher, with magnetic letters or letters written on scraps of paper: one of you says a word from the list, the other builds it, and you check it together.")
+      .replace(/Read the wall: pupils say the sounds they know from the sound cards/g, "Go over the sounds learned so far: " + who + " says each one and a word for it")
+      .replace(/Pupils re-read the phoneme story with a partner for fluency\./g, Who + " reads the phoneme story to you again, until it sounds smooth.")
+      .replace(/the words from the story and the board/g, "the words from the story")
+      .replace(/\(the tutor and pupil, or with family\)/g, "(the two of you, or with the family)")
+      .replace(/\bwrite some up\b/g, "write some down")
+      .replace(/\bEach pupil\b/g, Who).replace(/\bFor older pupils\b/g, "For an older child")
+      .replace(/\bThe pupil's\b/g, made.who ? `${made.who}'s` : "Your child's").replace(/\bthe pupil's\b/g, made.who ? `${made.who}'s` : "your child's")
+      .replace(/\bThe pupil\b/g, Who).replace(/\bthe pupil\b/g, who).replace(/\bPupils\b/g, "They").replace(/\bpupils\b/g, "they")
+      .replace(/\b(with|to) a partner\b/g, "$1 you").replace(/\bwith the class\b/g, "together").replace(/\bon the board\b/g, "on paper")
+      .replace(/(^|[.:;!?]\s+)Model\b/g, "$1Show").replace(/\bElkonin boxes\b/g, "sound boxes");
   }
 
   // ---------- Making a pack ----------
@@ -133,7 +154,8 @@ window.PopHome = (() => {
     const made = { pack, who, code: c, perWeek, start, paper, sessions };
     sessions.forEach(m => {
       if (m.kind === "lesson") {
-        m.example = pack.subject === "Maths" || /grammar|punctuat|spell|sentence|word/i.test(m.l.title) ? exampleOf(m.l) : null;
+        m.examples = pack.subject === "Maths" || /grammar|punctuat|spell|sentence|word/i.test(m.l.title) ? examplesOf(m.l) : null;
+        m.slip = D.slipFor ? D.slipFor(m.l) : null;
         m.lp = T().lessonPages(m.l, who, cur(pack));
         m.number = sessions.filter(x => x.kind === "lesson" && x.n <= m.n).length;
       } else {
@@ -188,9 +210,27 @@ window.PopHome = (() => {
     blocks.push(step(1, "Warm up", mins[0], `<p>${esc(textFor(made, l.steps.start, "Ask what they remember from last time, and do one question from it together."))}</p>`));
     blocks.push(step(2, "Show and explain", mins[1], `<p>${esc(textFor(made, l.steps.teach, "Explain the idea using the first part of the sheet, one step at a time."))}</p>
       <p>Say it in your own words. Stop after each part and ask: <i>“Can you tell me that back?”</i> It's fine to read from this page.</p>`));
-    if (m.example) blocks.push(block(box("Do this one together first", `<p>${esc(m.example.prompt)}${m.example.options ? ` <i>(${m.example.options.map(esc).join(" / ")})</i>` : ""}</p>
-      <p>Answer: <b>${esc(m.example.answer)}</b>. How to explain it: ${esc(m.example.explain)}</p>`)));
-    const practise = textFor(made, l.steps.practise, "");
+    // Short choices are shown (Yes / No, a few numbers); long ones would only clutter a worked example
+    const ask = q => `${esc(q.prompt)}${q.options && q.options.every(o => String(o).length <= 14 && !/\//.test(o)) ? ` <i>(${q.options.map(esc).join(" or ")})</i>` : ""}`;
+    const steps = q => {
+      const t = String(q.explain).trim(), said = /[.!?)]$/.test(t) ? t : `${t}.`;
+      return /^Mark scheme:\s*/.test(said) ? `Say each step as you write it (the marks in brackets are what an examiner looks for): ${esc(said.replace(/^Mark scheme:\s*/, ""))}` : `Say each step as you write it: ${esc(said)}`;
+    };
+    const answerOf = q => {
+      let a = String(q.answer);
+      if (/^-?\d{5,}(\.\d+)?$/.test(a)) a = a.replace(/\B(?=(\d{3})+(?!\d))(?=\d*(\.|$))/g, " ");
+      const unit = (String(q.prompt).match(/\((£|p|mm|cm|m|km|g|kg|ml|l|cm²|cm³|m²|m³|°|%|mph|km\/h|minutes|hours|seconds)\)\s*$/) || [])[1];
+      return !unit || q.options ? a : unit === "£" ? `£${a}` : /^[°%]$/.test(unit) ? `${a}${unit}` : `${a} ${unit}`;
+    };
+    const ex = m.examples;
+    if (ex && ex.worked.length) blocks.push(block(box(ex.worked.length > 1 ? "Two worked examples: you do these, out loud" : "A worked example: you do this, out loud",
+      ex.worked.map((q, i) => `<p><b>${ex.worked.length > 1 ? `Example ${i + 1}` : "Example"}:</b> ${ask(q)}<br>${steps(q)} The answer is <b>${esc(answerOf(q))}</b>.</p>`).join("")
+      + (ex.together ? `<p><b>Now one together:</b> ${ask(ex.together)} ${Child(made)} says each step and you write it, or the other way round. (Answer: <b>${esc(answerOf(ex.together))}</b>.)</p>` : ""))));
+    if (m.slip) blocks.push(block(box("The mistake to watch for", `<p>${esc(m.slip.slip)}</p><p>${/\?$/.test(m.slip.ask) ? `If you see it, ask: <i>“${esc(m.slip.ask)}”</i> and let ${child(made)} find the slip.` : `What to say: <i>“${esc(m.slip.ask)}”</i>`}</p>`)));
+    // A practise line that only names the online practice says nothing the online line below doesn't
+    const titles = (l.use || []).map(id => A() && A().get(id)).filter(Boolean).map(act => act.title);
+    const onlyTitles = t => !titles.reduce((x, tt) => x.split(tt).join(""), t).replace(/\b(and|then|also)\b|[,.;:\s]/gi, "");
+    const practise = onlyTitles(String(l.steps.practise || "")) ? "" : textFor(made, l.steps.practise, "");
     blocks.push(step(3, "Practise", mins[2], `${sheets.length ? `<p>${Child(made)} works through ${sheets.length > 1 ? "the sheets" : "the sheet"} (${sheets.join("; ")}). Sit alongside and mark each answer as soon as it's done, with the answer page.</p>` : `<p>There's no sheet for this one: it's done by talking, listening or doing, together.</p>`}
       ${practise ? `<p>${sheets.length ? "Also: " : ""}${esc(practise)}</p>` : ""}
       ${!made.paper && onlineOf(l).length ? `<p>Online, free and with no login: ${onlineOf(l).join("; ")}.</p>` : ""}
@@ -198,6 +238,7 @@ window.PopHome = (() => {
         pack.exam ? `<b>Exam questions:</b> give a mark for each right step of working, even if the final answer is wrong. The answer page says where each mark comes from.` : `<b>Lots wrong in a row?</b> Stop the sheet, go back to step 2 with one question, then let them try the next one alone.`])}`));
     blocks.push(block(`${heading("If they're stuck, try saying")}${sayList(stuckFor(pack, l))}<p>Still stuck? Do that question together, then let them do the next one alone. Leaving one and coming back is fine, and so is a short break.</p>`));
     blocks.push(step(4, "Check", mins[3], `<p>${esc(textFor(made, l.steps.check, "Ask a question like the ones on the sheet, without help."))}</p>
+      ${ex && ex.check ? `<p><b>And this one, with no help:</b> ${ask(ex.check)} (Answer: <b>${esc(answerOf(ex.check))}</b>.)</p>` : ""}
       ${l.understand ? `<p><b>Then ask:</b> <i>“${esc(l.understand)}”</i><br><b>Listen for:</b> ${esc(l.lookFor)}</p>` : ""}`));
     blocks.push(block(`<p><b>Move on or repeat?</b> Managed the check on their own, and most of the sheet right (about three-quarters): tick <b>secure</b> on the tracker and move on. Nearly: tick <b>nearly</b>, move on, and do the check again at the start of the next session. Not yet: do this session again in a day or two${made.paper ? ", with the answers covered" : " (make the pack again for fresh questions)"}. A review comes every ${REVIEW_EVERY} lessons and catches anything that slipped.</p>
       ${textFor(made, l.home, "") ? `<p><b>During the week:</b> ${esc(textFor(made, l.home, ""))}</p>` : ""}
@@ -254,7 +295,7 @@ window.PopHome = (() => {
       block(box(`You don't need to be a teacher${maths ? ", or good at maths" : ""}`, `<p>Everything is written out for you. Each session has a <b>parent's page</b> that says what to do, step by step, and what to say. The <b>answer pages</b> have every answer. Your job is to keep it calm and short, mark with the answer pages, and ask your child to explain their thinking. Learning alongside them is fine: say so.</p>`)),
       block(box("The pack", `<p>${n} sessions of about ${minutes(pack)} minutes: ${lessons} lessons, a review after every ${REVIEW_EVERY}, and a final check. At ${made.perWeek} a week that's about ${weeks} weeks, or about ${Math.max(1, Math.round(n * minutes(pack) / 60))} hours in all. That covers the main ideas, not everything a school would teach in a year, so use it alongside daily reading and other practice. ${made.paper ? "Everything is on paper: no internet needed." : "Each lesson also names free online practice on popspell.com that marks itself (no login)."}</p>`)),
       block(box("Before each session (5 minutes)", `<p>Read that session's parent's page. Put out the pupil's sheets, the answer pages (on your side of the table), a pencil and anything in “You need”. Phones away, TV off.</p>`)),
-      block(box("Every lesson has four steps", `<ol class="cs-list"><li><b>Warm up</b> (${STEP_MINUTES(pack)[0]} minutes): something quick to get going.</li><li><b>Show and explain</b> (${STEP_MINUTES(pack)[1]} minutes): read the explanation out or say it your way, then do one together.</li>
+      block(box("Every lesson has four steps", `<ol class="cs-list"><li><b>Warm up</b> (${STEP_MINUTES(pack)[0]} minutes): something quick to get going.</li><li><b>Show and explain</b> (${STEP_MINUTES(pack)[1]} minutes): read the explanation out or say it your way. Most maths lessons then give two worked examples to do out loud, with every step and the answer, and one to do together. Every lesson names the mistake children most often make, and what to ask when you see it.</li>
         <li><b>Practise</b> (${STEP_MINUTES(pack)[2]} minutes): the sheet, marked as you go.</li><li><b>Check</b> (${STEP_MINUTES(pack)[3]} minutes): one or two questions on their own, and a question to see if they understand why. This tells you whether to move on.</li></ol>`)),
       block(box("When they get it wrong", `<p>Don't say “wrong”. Say <i>“Nearly. Talk me through it.”</i> Most mistakes are one slip, and explaining finds it. Each parent's page has lines to say if they're stuck. If they're tired or upset, stop: two short sessions beat one long one.${pack.age === "young" ? " At this age, 20 to 30 minutes is plenty; use real objects, and play." : ""}</p>`)),
       block(box("Move on or repeat?", `<p>Use the check at the end of each lesson. Secure: move on. Nearly: move on, and do the check again as the next warm-up. Not yet: do the session again a day or two later${made.paper ? ", with the answers covered" : ", or make the pack again for fresh questions"}. Tick it on the tracker each time. The reviews catch anything that slipped.</p>`)),
@@ -440,5 +481,5 @@ window.PopHome = (() => {
       <p class="hint">Scotland follows the Curriculum for Excellence levels and the SQA courses; England follows the 2014 national curriculum and GCSE. Years 12 and 13 (A level) aren't covered yet.</p></section>`;
   }
 
-  return { show, make, plan, lessonsFor, pagesOf, prepare, use: m => { made = m; return made; }, offline, paperText };
+  return { show, make, plan, lessonsFor, pagesOf, prepare, use: m => { made = m; return made; }, offline, paperText, homeVoice, examplesOf };
 })();
