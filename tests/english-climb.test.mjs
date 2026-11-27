@@ -56,7 +56,9 @@ test("writing tasks and mini papers point at things that exist, and every sheet 
     if (p.tf) assert.equal(p.statements.filter(s => s[1]).length, 4, `${m.id}: four true statements`);
   }
   const ex = Object.values(P.sheets).filter(s => s.id.startsWith("paper-ex-") && s.lesson.startsWith("lesson-england-"));
-  assert.equal(ex.length, 28 + 3 * 3 + 6 + 6 + 2);
+  // ... plus a "rank the answers" sheet for each task with marked weaker answers
+  const ranks = C.STAGES.concat(C.LIT ? [C.LIT] : []).flatMap(st => st.topics).filter(t => t.written.marked).length + C.WRITING.filter(w => w.marked).length;
+  assert.equal(ex.length, 28 + 3 * 3 + 6 + 6 + 2 + ranks);
   for (const s of ex) for (let i = 0; i < 3; i++) {
     const b = s.build("Pupil", kit);
     assert.ok(b.pupil && b.answers && !/undefined|NaN/.test(b.pupil + b.answers), s.id);
@@ -117,10 +119,55 @@ test("SQA: folio tasks, mini papers and every sheet build", () => {
     else assert.ok(p.q && p.marks > 0 && p.look, `${m.id}: ${p.q}`);
   }
   const ex = Object.values(P.sheets).filter(s => s.lesson.startsWith("lesson-sqa-english-climb-"));
-  assert.equal(ex.length, 32 + 4 * 3 + 8 + 8 + 2);
+  // ... plus a "rank the answers" sheet for each task with marked weaker answers
+  const ranks = S.STAGES.flatMap(st => st.topics).filter(t => t.written.marked).length + S.WRITING.filter(w => w.marked).length;
+  assert.equal(ex.length, 32 + 4 * 3 + 8 + 8 + 2 + ranks);
   for (const s of ex) for (let i = 0; i < 3; i++) {
     const b = s.build("Pupil", kit);
     assert.ok(b.pupil && b.answers && !/undefined|NaN/.test(b.pupil + b.answers), s.id);
   }
   for (const st of S.STAGES) assert.equal(X.check(st.key).length, st.topics.length * (st.n === 1 ? 2 : 1));
+});
+
+test("marked weaker answers: each has a mark, the answer and why, weakest first, and none copies the model", () => {
+  const withMarked = C.STAGES.concat([C.LIT]).flatMap(st => st.topics).map(t => t.written).concat(C.WRITING).filter(w => w.marked);
+  // every marked longer question and every writing task has them
+  assert.ok(withMarked.length >= 20);
+  for (const w of C.WRITING) assert.ok(w.marked, `${w.id}: marked answers`);
+  for (const w of withMarked) {
+    assert.ok(w.marked.length >= 1 && w.marked.length <= 2, w.q);
+    for (const m of w.marked) {
+      assert.ok(m.mark && m.text.length > 40 && m.why.length > 40, `${w.q}: ${m.mark}`);
+      assert.notEqual(m.text, w.model);
+      assert.match(m.why, /lift/, `${m.mark}: say what would lift it`);
+    }
+    if (w.marked.length === 2) assert.ok(w.marked[0].text.length <= w.marked[1].text.length * 1.5, "weakest first");
+  }
+});
+
+test("SQA: marked weaker answers for the longer questions and every folio task, each with a rank sheet", () => {
+  const withMarked = S.STAGES.flatMap(st => st.topics).map(t => t.written).concat(S.WRITING).filter(w => w.marked);
+  assert.ok(withMarked.length >= 20);
+  for (const w of S.WRITING) assert.ok(w.marked, `${w.id}: marked answers`);
+  for (const w of withMarked) for (const m of w.marked) {
+    assert.ok(m.mark && m.text.length > 40 && m.why.length > 40 && /lift/.test(m.why), `${w.q}: ${m.mark}`);
+    assert.notEqual(m.text, w.model);
+  }
+  const ids = new Set(Object.keys(P.sheets));
+  for (const t of S.STAGES.flatMap(st => st.topics)) if (t.written.marked) assert.ok(ids.has(`paper-ex-rank-${t.id}`), t.id);
+  for (const w of S.WRITING) assert.ok(ids.has(`paper-ex-rank-${w.id}`), w.id);
+});
+
+
+test("questions with more than one valid reading: each reading is different, supported and not a wrong option", () => {
+  for (const course of [C, S]) {
+    const items = course.STAGES.concat(course.LIT ? [course.LIT] : []).flatMap(st => st.topics).flatMap(t => t.items).filter(it => it.also);
+    assert.ok(items.length >= 12, `${course.key}: ${items.length}`);
+    for (const it of items) {
+      assert.equal(it.also.length, 1, it.q);
+      assert.ok(it.also[0] !== it.a && !it.o.includes(it.also[0]), it.q);
+      assert.ok(it.alsoWhy && it.alsoWhy.length > 30, it.q);
+      assert.ok(it.t, `${it.q}: a reading needs a text`);
+    }
+  }
 });

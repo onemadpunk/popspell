@@ -45,6 +45,8 @@
               exWrittenAns(w, quick.length + 1) + (w.kind === "write" ? seWriteLevels(t) : ""))
           };
         });
+      if (w.marked) exRank(add, `paper-ex-rank-${t.id}`, SE_LESSON(t.id), t.title, w.q, exLevels(w.levels), w.model, `${w.marks} marks out of ${w.marks}`, w.marked,
+        on.length === 1 ? `<p class="ex-tip">The answers are about “${exEsc((EX.text(on[0]) || {}).title || "")}”: you don't need the text to rank them.</p>` : "");
     }));
 
     // ---------- Each stage: the check, the tracker, what the exam expects, the folio tasks and the mini papers ----------
@@ -110,6 +112,7 @@
 
       writing.forEach(w => {
         const check = SC.CHECK[st.key];
+        if (w.marked) exRank(add, `paper-ex-rank-${w.id}`, L("writing"), `${w.kind.toLowerCase()} (${tag})`, w.q, exLevels(SE_FOLIO), w.model, `about ${w.grade}`, w.marked);
         add(`paper-ex-write-${w.id}`, L("writing"), `SQA English folio task: ${w.kind.toLowerCase()} (${tag})`,
           `${w.paper}: plan, draft in about ${w.minutes} minutes, then check against the stage's list. The answers page has a model with notes and the 15-mark folio bands.`, (who, h) => ({
             pupil: `${h.sheetHead(`Folio task: ${w.kind.toLowerCase()}`, who)}${seStrip(`${st.title}, aiming at ${w.grade}`, `${w.paper} · first draft ${w.minutes} minutes`, w.marks)}

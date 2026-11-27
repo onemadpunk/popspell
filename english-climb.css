@@ -8,6 +8,7 @@
 .ec-run { max-width: 1280px; display: grid; grid-template-columns: 1fr; gap: 14px 22px; align-content: start; }
 .ec-run.with-text { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
 .ec-side { display: flex; flex-direction: column; gap: 10px; }
+.ec-also-hint { margin: -4px 0 0; font-size: 0.92rem; color: var(--muted, #555); font-style: italic; }
 .ec-run .cl-q { font-size: 1.12rem; }
 .ec-opts { grid-template-columns: 1fr; gap: 6px; }
 .ec-opts .cl-opt { font-size: .98rem; padding: 7px 12px; }
