@@ -154,7 +154,7 @@
   };
   [["noncalc", "Mini paper: non-calculator", "Seven questions from across the topics, like paper 1: no calculator. About 20 minutes.", it => !it.calc && it.marks >= 2 && !it.pic, "No calculator"],
     ["calc", "Mini paper: calculator", "Seven questions from across the topics, like papers 2 and 3, with a calculator. About 20 minutes.", it => it.marks >= 2 && !it.pic, "Calculator allowed"],
-    ["problems", "Mini paper: problem solving", "Five longer problems in context (3 marks each), where the marks are for planning the steps and showing them. About 20 minutes.", it => it.ps && !it.pic, "Calculator allowed"]]
+    ["problems", "Mini paper: problem solving", "Five longer problems in context (3 or 4 marks each), where the marks are for planning the steps and showing them. About 20 minutes.", it => it.ps && !it.pic, "Calculator allowed"]]
     .forEach(([slug, title, detail, keep, calc]) => add(`paper-gx-mini-${slug}`, GX_LESSON("mini-papers"), title, detail, (who, h) => {
       const items = slug === "problems"
         ? shuffle(GX().TOPICS).map(t => GX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, 5).sort((a, b) => a.marks - b.marks)
@@ -246,7 +246,7 @@
 
     [["noncalc", "Mini paper: non-calculator", "Six questions from across the topics, like paper 1: no calculator. About 20 minutes.", it => !it.calc && it.marks >= 2 && !it.pic, "No calculator"],
       ["calc", "Mini paper: calculator", "Six questions from across the topics, like papers 2 and 3, with a calculator. About 20 minutes.", it => it.marks >= 2 && !it.pic, "Calculator allowed"],
-      ["problems", "Mini paper: problem solving", "Five longer problems (3 marks each), where the marks are for planning the steps and showing them. About 20 minutes.", it => it.ps && !it.pic, "Calculator allowed"]]
+      ["problems", "Mini paper: problem solving", "Five longer problems (3 or 4 marks each), where the marks are for planning the steps and showing them. About 20 minutes.", it => it.ps && !it.pic, "Calculator allowed"]]
       .forEach(([slug, title, detail, keep, calc]) => add(`paper-gx-${st.key}-mini-${slug}`, L("mini-papers"), `${title} (${st.tag})`, detail, (who, h) => {
         const pickFrom = shuffle(T());
         const items = (slug === "problems" ? pickFrom.map(t => GX().items(t.id, 1, keep)[0]).filter(Boolean).slice(0, 5)

@@ -3640,7 +3640,7 @@ window.PopActivities = (() => {
       () => { const m1 = gfR(30, 50), m2 = m1 + gfR(3, 10) * (rand(2) ? 1 : -1), i1 = gfR(6, 15), i2 = i1 + gfR(2, 8) * (rand(2) ? 1 : -1); if (i2 <= 0 || i1 === i2) return { label: "skip" };
         const hi = m2 > m1 ? "Year 11" : "Year 10", con = i2 < i1 ? "Year 11" : "Year 10", ans = `${hi} did better on average (higher median), and ${con} were more consistent (smaller interquartile range)`;
         return gfQ(`Test scores. Year 10: median ${m1}, IQR ${i1}. Year 11: median ${m2}, IQR ${i2}. Which comparison is right?`, ans, 2, `Higher median: ${hi} (1 mark). Smaller IQR is more consistent: ${con} (1 mark).`, { options: [`${hi === "Year 10" ? "Year 11" : "Year 10"} did better on average (higher median), and ${con} were more consistent (smaller interquartile range)`, `${hi} did better on average (higher median), and ${con === "Year 10" ? "Year 11" : "Year 10"} were more consistent (larger interquartile range)`], label: `cmpbox ${m1},${m2},${i1},${i2}`, skill: "comparing box plots" }); },
-      () => { const N = gfR(20, 80) * 10, M = gfR(3, 8) * 10, n = gfR(4, 10) * 10, m = M * n / N; if (!Number.isInteger(m) || m < 2) return { label: "skip" };
+      () => { let N, M, n, m; do { N = gfR(20, 80) * 10; M = gfR(3, 8) * 10; n = gfR(4, 10) * 10; m = M * n / N; } while (!Number.isInteger(m) || m < 2);
         return gfQ(`${M} fish in a lake are caught, tagged and released. Later, ${n} fish are caught and ${m} of them are tagged. Estimate the number of fish in the lake.`, N, 2, `The fraction tagged in the sample, ${m}/${n}, matches ${M}/N (1 mark). N = ${M} × ${n} ÷ ${m} = ${N} (1 mark).`, { ps: true, label: `cr ${M},${n},${m}`, skill: "capture-recapture" }); }
     ] },
     { id: "gh-proof", n: 14, short: "Proof", title: "Proof, recurring decimals and quadratic inequalities", strand: "Patterns and missing numbers",
@@ -3672,6 +3672,73 @@ window.PopActivities = (() => {
   ];
   EXAM_STAGES.forEach(st => st.topics.forEach(t => { t.stage = st; }));
   const GX_ALL = EXAM_STAGES.flatMap(st => st.topics);
+  // ----- Multi-step problems for the topics that had none (content QC, Nov 2026) -----
+  // Each needs two or more steps the question doesn't spell out, as the exam's problem-solving questions do.
+  // The mark scheme says which marks are for method and which for accuracy, as an examiner's does: a method
+  // mark is earned by a right step even if the arithmetic later slips
+  const gfClock = mins => { const h = Math.floor(mins / 60) % 24, m = mins % 60; return `${h}:${String(m).padStart(2, "0")}`; };
+  const gfClockAlso = t => [t.replace(":", "."), `${t} am`, `${t.replace(":", ".")} am`, t.length === 4 ? `0${t}` : t].filter(x => x !== t);
+  const GF_PROBLEMS = {
+    "gf-factors": [() => { let a, b, l; do { a = gfR(6, 15); b = gfR(8, 20); l = a * b / gcd(a, b); } while (a === b || l > 120 || l === a || l === b);
+      const t = gfClock(540 + l);
+      return gfQ(`A number 4 bus leaves the bus station every ${a} minutes. A number 9 bus leaves every ${b} minutes. Both leave together at 9:00 am. When is the next time they leave together?`, t, 3,
+        `List multiples of ${a} and of ${b}, or use prime factors (1 mark, method). The lowest common multiple is ${l} minutes (1 mark, accuracy). 9:00 am + ${l} minutes = ${t} am (1 mark, accuracy).`, { accept: gfClockAlso(t), ps: true, label: `buses ${a},${b}`, skill: "lowest common multiple in context" }); }],
+    "gf-fractions": [() => { const b = pick([3, 4, 5]), a = gfR(1, b - 1), d = pick([2, 3, 4]), c = gfR(1, d - 1), N = b * d * gfR(4, 12);
+      const walk = N * a / b, rest = N - walk, bus = rest * c / d, car = rest - bus;
+      return gfQ(`A school has ${N} pupils. ${gfF(a, b)} of them walk to school. ${gfF(c, d)} of the rest come by bus. The others come by car. How many pupils come by car?`, car, 4,
+        `Walk: ${N} ÷ ${b} × ${a} = ${walk} (1 mark, method). The rest: ${N} − ${walk} = ${rest} (1 mark, method). Bus: ${gfF(c, d)} of ${rest} = ${bus} (1 mark, method). Car: ${rest} − ${bus} = ${car} (1 mark, accuracy). Taking ${gfF(c, d)} of all ${N} loses the last two marks.`, { ps: true, label: `school ${N} ${a}/${b} ${c}/${d}`, skill: "fractions of amounts, in steps" }); }],
+    "gf-algebra": [() => { const a = gfR(2, 5), b = pick([120, 150, 180, 200, 250]); let X; do X = gfR(15, 40); while (((X - a) * 100) % b === 0);
+      const m = Math.floor((X - a) * 100 / b);
+      return gfQ(`A taxi charges £${a} plus £${gfP(b / 100)} for each mile. Write a formula for the cost, £C, of a journey of m miles. Jo has £${X}. What is the greatest whole number of miles she can travel?`, m, 3,
+        `C = ${a} + ${gfP(b / 100)}m (1 mark, method). ${X} − ${a} = ${X - a}, then ÷ ${gfP(b / 100)} = ${gfD((X - a) * 100 / b)} (1 mark, method). Round down, because she can't pay for part of a mile she can't afford: ${m} miles (1 mark, accuracy).`, { calc: true, ps: true, label: `taxi ${a} ${b} ${X}`, skill: "forming and using a formula" }); }],
+    "gf-equations": [() => { const x = gfR(22, 28), s = 180 - 6 * x, p = s + gfR(3, 15), q = p - s, A = [x, 2 * x + p, 3 * x - q], big = Math.max(...A);
+      return gfQ(`The angles of a triangle are x°, (2x + ${p})° and (3x − ${q})°. Work out the size of the largest angle. (°)`, big, 4,
+        `The angles add to 180°: x + 2x + ${p} + 3x − ${q} = 180 (1 mark, method). 6x + ${s} = 180, so 6x = ${6 * x} (1 mark, method). x = ${x} (1 mark, accuracy). The angles are ${A.join("°, ")}°, so the largest is ${big}° (1 mark, accuracy).`, { unit: "°", ps: true, label: `tri ${x} ${p} ${q}`, skill: "forming and solving an equation" }); }],
+    "gf-graphs": [() => { const h = gfR(2, 6), d = gfR(10, 25), a = h * d, b = gfR(20, 40), c = b + d;
+      return gfQ(`Plumber A charges a £${a} call-out fee plus £${b} an hour. Plumber B charges no call-out fee but £${c} an hour. For how many hours of work would they charge the same? (hours)`, h, 3,
+        `Write both costs: ${a} + ${b}h and ${c}h, or draw both lines on a graph (1 mark, method). ${a} + ${b}h = ${c}h, so ${a} = ${d}h (1 mark, method). h = ${h} hours (1 mark, accuracy). Check: both cost £${c * h}.`, { unit: "hours", ps: true, label: `plumbers ${a} ${b} ${c}`, skill: "comparing two linear costs" }); }],
+    "gf-measures": [() => { const dep = gfR(540, 700), t = gfR(35, 95), w = gfR(8, 25); let meet = dep + t + w + gfR(3, 25); meet = Math.ceil(meet / 5) * 5; const spare = meet - dep - t - w;
+      return gfQ(`Sam's train leaves at ${gfClock(dep)} and the journey takes ${t} minutes. Then Sam walks for ${w} minutes to a meeting that starts at ${gfClock(meet)}. How many minutes early is Sam? (minutes)`, spare, 3,
+        `The train arrives at ${gfClock(dep + t)} (1 mark, method). After the walk it's ${gfClock(dep + t + w)} (1 mark, method). From ${gfClock(dep + t + w)} to ${gfClock(meet)} is ${spare} minutes (1 mark, accuracy).`, { unit: "minutes", ps: true, label: `train ${dep} ${t} ${w}`, skill: "time intervals in steps" }); }],
+    "gf-probability": [() => { let r, b; do { r = 5 * gfR(2, 9); b = 5 * gfR(2, 9); } while ((100 - r - b) % 10 || 100 - r - b < 10); const N = 20 * gfR(3, 15), each = (100 - r - b) / 200, exp = N * (100 - r - b) / 200;
+      return gfQ(`A spinner can land on red, blue, green or yellow. P(red) = ${gfD(r / 100)} and P(blue) = ${gfD(b / 100)}. Green and yellow are equally likely. The spinner is spun ${N} times. How many times would you expect it to land on yellow?`, exp, 3,
+        `Green and yellow together: 1 − ${gfD(r / 100)} − ${gfD(b / 100)} = ${gfD((100 - r - b) / 100)} (1 mark, method). Yellow: ${gfD((100 - r - b) / 100)} ÷ 2 = ${gfD(each)} (1 mark, method). ${gfD(each)} × ${N} = ${exp} (1 mark, accuracy).`, { ps: true, label: `spinner ${r} ${b} ${N}`, skill: "expected frequency in steps" }); }],
+    "g5-indices": [() => { const B = pick([2, 2.5, 4, 5]), q = gfR(6, 7), C = pick([2, 3, 4, 5, 6, 8]), r = gfR(4, 6), prod = B * C, A = prod >= 10 ? prod / 10 : prod, p = q + r + (prod >= 10 ? 1 : 0), ans = gxSF(C, r);
+      return gfQ(`A hard drive holds ${gxSF(A, p)} bytes. Each photo uses ${gxSF(B, q)} bytes. How many photos will fit on the drive? Give your answer in standard form.`, ans, 3,
+        `Divide: (${gxSF(A, p)}) ÷ (${gxSF(B, q)}) (1 mark, method). ${gfD(A * (prod >= 10 ? 10 : 1))} ÷ ${gfD(B)} = ${C}, and 10${sup(p - (prod >= 10 ? 1 : 0))} ÷ 10${sup(q)} = 10${sup(r)} (1 mark, method). ${ans} (1 mark, accuracy).`, { accept: [gfBig(C * 10 ** r), String(C * 10 ** r), String(C * 10 ** r).replace(/\B(?=(\d{3})+(?!\d))/g, ",")], ps: true, label: `drive ${A} ${p} ${B} ${q}`, skill: "dividing in standard form" }); }],
+    "g5-brackets": [() => { let a, b, c, k, x; do { a = gfR(1, 12); b = gfR(1, 12); c = gfR(1, 12); k = a + b - 2 * c; x = k ? (c * c - a * b) / k : 0; } while (!k || !Number.isInteger(x) || x < 2 || x > 15 || a === b);
+      return gfQ(`A rectangle measures (x + ${a}) cm by (x + ${b}) cm. A square has sides of (x + ${c}) cm. The rectangle and the square have the same area. Find x.`, x, 4,
+        `Rectangle: x² + ${a + b}x + ${a * b} (1 mark, method). Square: x² + ${2 * c}x + ${c * c} (1 mark, method). The x² terms cancel: ${a + b}x + ${a * b} = ${2 * c}x + ${c * c} (1 mark, method). x = ${x} (1 mark, accuracy).`, { ps: true, label: `rectsq ${a} ${b} ${c}`, skill: "expanding to form an equation" }); }],
+    "g5-sequences": [() => { const d = gfR(3, 7), c = gfR(1, 6); let T; do T = gfR(60, 250); while ((T - c) % d === 0); const n = Math.floor((T - c) / d);
+      return gfQ(`A pattern is made of tiles. Pattern 1 uses ${d + c} tiles, pattern 2 uses ${2 * d + c} and pattern 3 uses ${3 * d + c}. Ali has ${T} tiles. What is the biggest pattern number Ali can make?`, n, 3,
+        `The nth term is ${d}n + ${c} (1 mark, method). ${d}n + ${c} ≤ ${T}, so n ≤ (${T} − ${c}) ÷ ${d} = ${gfD((T - c) / d)} (1 mark, method). Round down: pattern ${n} (1 mark, accuracy).`, { ps: true, label: `tiles ${d} ${c} ${T}`, skill: "using the nth term" }); }],
+    "g5-lines": [() => { let m; do m = gfR(-4, 4); while (!m); const r = gfR(-6, 6), c = -m * r, x1 = r + gfR(1, 3), x2 = x1 + gfR(1, 3), y1 = m * x1 + c, y2 = m * x2 + c, ans = `(${gfM(r)}, 0)`;
+      return gfQ(`A straight line goes through (${gfM(x1)}, ${gfM(y1)}) and (${gfM(x2)}, ${gfM(y2)}). Where does it cross the x-axis?`, ans, 4,
+        `Gradient: (${gfM(y2)} − ${y1 < 0 ? `(${gfM(y1)})` : y1}) ÷ (${gfM(x2)} − ${x1 < 0 ? `(${gfM(x1)})` : x1}) = ${gfM(m)} (1 mark, method). Put in a point to find c: c = ${gfM(c)} (1 mark, method). y = ${gxE([[m, "x"], [c, ""]])}, and y = 0 on the x-axis (1 mark, method). x = ${gfM(r)}, so ${ans} (1 mark, accuracy).`, { accept: [`(${gfM(r)},0)`, gfM(r), `x = ${gfM(r)}`, `x=${gfM(r)}`], ps: true, label: `xcross ${x1} ${x2} ${m} ${r}`, skill: "the equation of a line from two points" }); }],
+    "g5-trig": [() => { let L, th, hgt, H; do { L = gfR(4, 9); th = gfR(55, 78); hgt = roundDp(L * Math.sin(th * Math.PI / 180), 1); H = roundDp(hgt + (rand(2) ? 1 : -1) * gfR(2, 6) / 10, 1); } while (H <= 0);
+      const ok = hgt >= H;
+      return gfQ(`A ${L} m ladder leans against a wall. It makes an angle of ${th}° with the ground. A window sill is ${gfD(H)} m up the wall. How high up the wall does the ladder reach, to 1 decimal place, and does it reach the sill? (m)`, gfD(hgt), 4,
+        `The height is opposite the angle and the ladder is the hypotenuse, so use sin (1 mark, method). Height = ${L} × sin ${th}° (1 mark, method). = ${gfD(hgt)} m (1 mark, accuracy). ${gfD(hgt)} m is ${ok ? "more" : "less"} than ${gfD(H)} m, so it ${ok ? "does" : "does not"} reach (1 mark, communication: this mark needs the comparison).`, { unit: "m", calc: true, ps: true, label: `ladder ${L} ${th} ${H}`, skill: "trigonometry in context" }); }],
+    "g5-polygons": [() => { const n = pick([5, 6, 8, 9, 10, 12, 15, 18, 20]), ext = 360 / n, I = 180 - ext, sum = (n - 2) * 180;
+      return gfQ(`Each interior angle of a regular polygon is ${I}°. Work out the sum of its interior angles. (°)`, sum, 3,
+        `Each exterior angle is 180° − ${I}° = ${ext}° (1 mark, method). Number of sides: 360 ÷ ${ext} = ${n} (1 mark, method). Sum: (${n} − 2) × 180° = ${sum}° (1 mark, accuracy).`, { unit: "°", ps: true, label: `poly ${n}`, skill: "angles of polygons in steps" }); }],
+    "gh-surds": [() => { let a, b; do { a = gfR(3, 9); b = gfR(2, 30); } while (Number.isInteger(Math.sqrt(b)) || a * a <= b);
+      return gfQ(`A rectangle has length (${a} + √${b}) cm and width (${a} − √${b}) cm. Show that its area is a whole number of cm², and find it. (cm²)`, a * a - b, 3,
+        `Area = (${a} + √${b})(${a} − √${b}) (1 mark, method). = ${a * a} − ${a}√${b} + ${a}√${b} − ${b}: the surd terms cancel (1 mark, method). = ${a * a - b} cm² (1 mark, accuracy).`, { unit: "cm²", ps: true, label: `surdrect ${a} ${b}`, skill: "multiplying surds in context" }); }],
+    "gh-functions": [() => { const r = gfR(2, 7), a = pick([2, 3, 4, 5].filter(v => v !== r)), b = gfR(-9, 9), k = a * r * r + b, ans = `x = ${r} or x = −${r}`;
+      return gfQ(`f(x) = ${gxE([[a, "x"], [b, ""]])} and g(x) = x². Solve fg(x) = ${gfM(k)}.`, ans, 4,
+        `fg(x) = f(x²) = ${gxE([[a, "x²"], [b, ""]])}: g first (1 mark, method). ${gxE([[a, "x²"], [b, ""]])} = ${gfM(k)}, so ${a}x² = ${a * r * r} (1 mark, method). x² = ${r * r} (1 mark, accuracy). x = ${r} or x = −${r} (1 mark, accuracy: both are needed).`, { options: [`x = ${r} only`, `x = ${r * r} or x = −${r * r}`, `x = ${a * r} or x = −${a * r}`], ps: true, label: `fg ${a} ${b} ${r}`, skill: "composite functions" }); }],
+    "gh-graphs": [() => { const p = 2 * gfR(3, 8), q = gfR(1, 3), top = p * p / 4 + q;
+      return gfQ(`A ball is thrown. Its height after t seconds is h = ${q} + ${p}t − t² metres. By completing the square, find the greatest height the ball reaches. (m)`, top, 3,
+        `h = −(t² − ${p}t) + ${q} = −(t − ${p / 2})² + ${p * p / 4} + ${q} (1 mark, method). The greatest value is when (t − ${p / 2})² = 0, at t = ${p / 2} (1 mark, method). Greatest height ${top} m (1 mark, accuracy).`, { unit: "m", ps: true, label: `ball ${p} ${q}`, skill: "turning points in context" }); }],
+    "gh-vectors": [() => { let m, n; do { m = gfR(1, 4); n = gfR(1, 4); } while (gcd(m, n) !== 1); const s = m + n, ax = gfR(-5, 5), ay = gfR(-5, 5), dx = s * gfR(-3, 3), dy = s * gfR(1, 3), px = ax + dx * m / s, py = ay + dy * m / s, ans = `(${gfM(px)}, ${gfM(py)})`;
+      return gfQ(`A is (${gfM(ax)}, ${gfM(ay)}) and B is (${gfM(ax + dx)}, ${gfM(ay + dy)}). P is on AB with AP : PB = ${m} : ${n}. Find the coordinates of P.`, ans, 3,
+        `The vector AB is (${gfM(dx)}, ${gfM(dy)}) (1 mark, method). AP is ${m}/${s} of it: (${gfM(dx * m / s)}, ${gfM(dy * m / s)}) (1 mark, method). P = A + AP = ${ans} (1 mark, accuracy).`, { accept: [`(${gfM(px)},${gfM(py)})`], ps: true, label: `ratio ${ax} ${ay} ${dx} ${dy} ${m} ${n}`, skill: "vectors and ratio" }); }],
+    "gh-proof": [() => { const a = gfR(2, 6), ans = `${4 * a}n`;
+      return gfQ(`n is a whole number. Expand and simplify (n + ${a})² − (n − ${a})², and so say what it is always a multiple of.`, ans, 3,
+        `(n + ${a})² = n² + ${2 * a}n + ${a * a} (1 mark, method). (n − ${a})² = n² − ${2 * a}n + ${a * a} (1 mark, method). The difference is ${4 * a}n = ${4 * a} × n, which is always a multiple of ${4 * a} (1 mark, communication: say why).`, { options: [`${2 * a}n`, `${4 * a}n + ${2 * a * a}`, `${2 * a * a}`], ps: true, label: `proof ${a}`, skill: "algebraic proof" }); }]
+  };
+  for (const [id, makers] of Object.entries(GF_PROBLEMS)) GX_ALL.find(t => t.id === id).makers.push(...makers);
 
   // A bank question as an online one: the marks and calculator note shown, the mark scheme as the explanation
   const gfOnline = (it, prefix = "") => {
@@ -4606,6 +4673,85 @@ window.PopActivities = (() => {
   ];
   SQA_STAGES.forEach(st => st.topics.forEach(t => { t.stage = st; }));
   const SQ_ALL = SQA_STAGES.flatMap(st => st.topics);
+  // ----- Multi-step problems for the National 5 and Higher topics that had none (content QC, Nov 2026) -----
+  // In SQA style: one marking bullet a mark, and the steps are for the pupil to plan, not given in parts
+  const sq1 = x => fixDp(x, 1);
+  const SQ_PROBLEMS = {
+    "n5-brackets": [() => { const x = gfR(2, 9), a = gfR(1, 4), P = 2 * a * x + a * a;
+      return gfQ(`A square pond has sides of x metres. It sits in a square garden with sides of (x + ${a}) metres. The rest of the garden, ${P} m², is grass. Find x.`, x, 3,
+        `•1 grass = (x + ${a})² − x² (1 mark). •2 expand and simplify: ${2 * a}x + ${a * a} (1 mark). •3 ${2 * a}x + ${a * a} = ${P}, so x = ${x} (1 mark).`, { unit: "m", ps: true, label: `pond ${x} ${a}`, skill: "expanding brackets in context" }); }],
+    "n5-fractions": [() => { const d = gfR(2, 9) * 5, k = gfR(2, 6), ans = `${d}(2x + ${k}) / (x(x + ${k}))`;
+      return gfQ(`Kim cycles ${d} km at x km/h, then another ${d} km at (x + ${k}) km/h. Write the total time, in hours, as a single fraction.`, ans, 3,
+        `•1 time = distance ÷ speed: ${d}/x + ${d}/(x + ${k}) (1 mark). •2 common denominator x(x + ${k}): (${d}(x + ${k}) + ${d}x) / (x(x + ${k})) (1 mark). •3 ${ans} (1 mark; ${2 * d}x + ${d * k} on top is fine too).`,
+        { options: [`${2 * d} / (2x + ${k})`, `${d}(x + ${k}) / (x(x + ${k}))`, `${2 * d} / (x(x + ${k}))`], ps: true, label: `cycle ${d} ${k}`, skill: "adding algebraic fractions in context" }); }],
+    "n5-lines": [() => { const p = pick([150, 200, 250, 300]), c = pick([200, 250, 300, 350, 400]), n = gfR(12, 30);
+      return gfQ(`A taxi fare, £C, is a straight-line function of the distance, d miles. A 2-mile journey costs £${gfP((c + 2 * p) / 100)} and an 8-mile journey costs £${gfP((c + 8 * p) / 100)}. How much does a ${n}-mile journey cost? (£)`, gfP((c + n * p) / 100), 3,
+        `•1 gradient = (${gfP((c + 8 * p) / 100)} − ${gfP((c + 2 * p) / 100)}) ÷ (8 − 2) = ${gfP(p / 100)} (1 mark). •2 C = ${gfP(p / 100)}d + ${gfP(c / 100)} (1 mark). •3 when d = ${n}, C = £${gfP((c + n * p) / 100)} (1 mark).`, { unit: "£", calc: true, ps: true, label: `taxi ${p} ${c} ${n}`, skill: "the equation of a line in context" }); }],
+    "n5-quadratics": [() => { let p, A, x; do { p = gfR(2, 9); A = gfR(20, 90); x = (-p + Math.sqrt(p * p + 4 * A)) / 2; } while (Number.isInteger(Math.sqrt(p * p + 4 * A)) || !sqSafe(x, 1));
+      return gfQ(`A rectangle is x cm wide and (x + ${p}) cm long. Its area is ${A} cm². Find x, to 1 decimal place. (cm)`, sq1(x), 4,
+        `•1 x(x + ${p}) = ${A} (1 mark). •2 x² + ${p}x − ${A} = 0 (1 mark). •3 the quadratic formula: x = (−${p} ± √${p * p + 4 * A}) / 2 (1 mark). •4 x = ${sq1(x)}, rejecting the negative answer, as a length can't be negative (1 mark).`, { unit: "cm", calc: true, ps: true, label: `rectq ${p} ${A}`, skill: "the quadratic formula in context" }); }],
+    "n5-solids": [() => { let R, H, r, h, n, ratio; do { R = gfR(10, 30); H = gfR(20, 60); r = gfR(4, 9); h = gfR(8, 15); ratio = (R * R * H) / (r * r * h / 3); n = Math.ceil(ratio); } while (Number.isInteger(ratio) || n > 400 || ratio - Math.floor(ratio) < 0.05);
+      return gfQ(`A cylindrical tank has radius ${R} cm and height ${H} cm. It is filled using a cone-shaped jug with radius ${r} cm and height ${h} cm. How many full jugs are needed to fill the tank?`, n, 4,
+        `•1 tank: π × ${R}² × ${H} = ${gfBig(Math.round(Math.PI * R * R * H))} cm³ (1 mark). •2 jug: ⅓ × π × ${r}² × ${h} = ${gfD(Math.round(Math.PI * r * r * h / 3 * 10) / 10)} cm³ (1 mark). •3 divide: ${gfD(Math.round(ratio * 100) / 100)} (1 mark). •4 round up: ${n} jugs (1 mark).`, { calc: true, ps: true, label: `tank ${R} ${H} ${r} ${h}`, skill: "volumes in context" }); }],
+    "n5-trig": [() => { let a, b, al, be, ang, d; do { a = gfR(5, 20); b = gfR(5, 20); al = gfR(10, 170); be = al + gfR(40, 150); ang = be - al; d = Math.sqrt(a * a + b * b - 2 * a * b * Math.cos(ang * Math.PI / 180)); } while (be >= 360 || !sqSafe(d, 1));
+      const B3 = v => String(v).padStart(3, "0");
+      return gfQ(`Two boats leave a harbour. One sails ${a} km on a bearing of ${B3(al)}°. The other sails ${b} km on a bearing of ${B3(be)}°. How far apart are they, to 1 decimal place? (km)`, sq1(d), 4,
+        `•1 the angle between their paths at the harbour: ${B3(be)}° − ${B3(al)}° = ${ang}° (1 mark). •2 the cosine rule: d² = ${a}² + ${b}² − 2 × ${a} × ${b} × cos ${ang}° (1 mark). •3 d² = ${gfD(Math.round(d * d * 100) / 100)} (1 mark). •4 d = ${sq1(d)} km (1 mark).`, { unit: "km", calc: true, ps: true, label: `boats ${a} ${b} ${al} ${be}`, skill: "bearings and the cosine rule" }); }],
+    "n5-trigeq": [() => { let c, r, h0, v, A; do { r = gfR(10, 25); c = r + gfR(2, 5); h0 = gfR(c - r + 1, c + r - 1); v = (c - h0) / r; A = Math.acos(v) * 180 / Math.PI; } while (!sqSafe(A, 1) || Math.abs(v) < 0.05);
+      const x1 = sq1(A), x2 = sq1(360 - A), ans = `x = ${x1} and x = ${x2}`;
+      return gfQ(`A seat on a big wheel is h = ${c} − ${r} cos x° metres above the ground, where x° is the angle the wheel has turned. Find both values of x, from 0 to 360, when the seat is ${h0} m up.`, ans, 3,
+        `•1 ${c} − ${r} cos x° = ${h0}, so cos x° = ${sqFr(c - h0, r)} (1 mark). •2 x = ${x1} (1 mark). •3 cos is ${v > 0 ? "positive in the 1st and 4th quadrants" : "negative in the 2nd and 3rd quadrants"}: x = 360 − ${x1} = ${x2} (1 mark).`,
+        { options: [`x = ${x1} and x = ${sq1(180 - A)}`, `x = ${sq1(180 + A)} and x = ${x2}`, `x = ${x1} only`].filter(o => o !== ans), calc: true, ps: true, label: `wheel ${c} ${r} ${h0}`, skill: "trig equations in context" }); }],
+    "n5-vectors": [() => { const [p, q, s] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15]]), k = pick([10, 20]), P = p * k, Q = q * k, wx = gfR(-40, 40), wy = gfR(-40, 40), u = [P - wx, Q - wy];
+      return gfQ(`A plane's velocity in still air is the vector (${gfM(u[0])}, ${gfM(u[1])}) km/h. The wind's velocity is (${gfM(wx)}, ${gfM(wy)}) km/h. Find the plane's actual speed. (km/h)`, s * k, 3,
+        `•1 add the vectors: (${gfM(P)}, ${gfM(Q)}) (1 mark). •2 magnitude: √(${P}² + ${Q}²) (1 mark). •3 ${s * k} km/h (1 mark).`, { unit: "km/h", ps: true, label: `plane ${u} ${wx} ${wy}`, skill: "adding vectors and magnitude" }); }],
+    "n5-statistics": [() => { let xs, sd, mean; do { xs = Array.from({ length: 6 }, () => gfR(10, 30)); mean = xs.reduce((a, b) => a + b, 0) / 6; sd = Math.sqrt(xs.reduce((t, x) => t + (x - mean) ** 2, 0) / 5); } while (!Number.isInteger(mean * 2) || !sqSafe(sd, 1));
+      const other = roundDp(sd + (rand(2) ? 1 : -1) * gfR(15, 40) / 10, 1), more = sd > other;
+      return gfQ(`A café served these numbers of lunches on six days: ${xs.join(", ")}. A second café has a standard deviation of ${gfD(other)} lunches. Find the first café's standard deviation, to 1 decimal place, and say which café is more consistent.`, sq1(sd), 4,
+        `•1 mean = ${xs.reduce((a, b) => a + b, 0)} ÷ 6 = ${gfD(mean)} (1 mark). •2 Σ(x − mean)² = ${gfD(roundDp(xs.reduce((t, x) => t + (x - mean) ** 2, 0), 2))} (1 mark). •3 √(that ÷ 5) = ${sq1(sd)} (1 mark). •4 ${more ? "the second café is more consistent: its standard deviation is smaller" : "the first café is more consistent: its standard deviation is smaller"} (1 mark: a comparison in context).`,
+        { calc: true, ps: true, label: `cafe ${xs}`, skill: "standard deviation and comparing" }); }],
+    "nh-lines": [() => { const [p, q] = pick([[1, 1], [1, 2], [2, 1], [1, 3], [3, 1], [2, 3], [3, 2]]), sg = pick([1, -1]), M = [gfR(-4, 4), gfR(-4, 4)], A = [M[0] - q, M[1] - sg * p], B = [M[0] + q, M[1] + sg * p], t = gfR(1, 3) * pick([1, -1]), k = M[1] + q * t, x = M[0] - sg * p * t, ans = sqP(x, k);
+      return gfQ(`A is ${sqP(...A)} and B is ${sqP(...B)}. The perpendicular bisector of AB meets the line y = ${gfM(k)} at P. Find the coordinates of P.`, ans, 4,
+        `•1 midpoint of AB = ${sqP(...M)} (1 mark). •2 gradient of AB = ${sqFr(sg * p, q)} (1 mark). •3 perpendicular bisector: ${sqLine(-sg * q, p, M[0], M[1])} (1 mark). •4 put y = ${gfM(k)}: ${ans} (1 mark).`, { accept: [ans.replace(/ /g, "")], ps: true, label: `pbis ${A} ${B} ${k}`, skill: "perpendicular bisectors" }); }],
+    "nh-functions": [() => { const b = gfR(2, 5), a = (b - 1) * gfR(1, 4) * pick([1, -1]), x = a / (b - 1);
+      return gfQ(`f(x) = (x ${a < 0 ? "−" : "+"} ${Math.abs(a)}) / ${b}. Find the inverse function f⁻¹(x), and so solve f(x) = f⁻¹(x).`, gfM(x), 4,
+        `•1 y = (x ${a < 0 ? "−" : "+"} ${Math.abs(a)}) / ${b}, so x = ${b}y ${a < 0 ? "+" : "−"} ${Math.abs(a)} (1 mark). •2 f⁻¹(x) = ${b}x ${a < 0 ? "+" : "−"} ${Math.abs(a)} (1 mark). •3 (x ${a < 0 ? "−" : "+"} ${Math.abs(a)}) / ${b} = ${b}x ${a < 0 ? "+" : "−"} ${Math.abs(a)}, so x ${a < 0 ? "−" : "+"} ${Math.abs(a)} = ${b * b}x ${a < 0 ? "+" : "−"} ${Math.abs(a * b)} (1 mark). •4 x = ${gfM(x)} (1 mark).`, { accept: [`x = ${gfM(x)}`], ps: true, label: `inv ${a} ${b}`, skill: "inverse functions" }); }],
+    "nh-graphs": [() => { const p = gfR(-4, 4), q = gfR(-5, 5), h = gfR(1, 4) * pick([1, -1]), a = pick([2, 3, -1, -2]), k = gfR(-4, 4) || 2, ans = sqP(p + h, a * q + k);
+      return gfQ(`The graph of y = f(x) has a turning point at ${sqP(p, q)}. Find the turning point of y = ${a === -1 ? "−" : a}f(x ${h > 0 ? "−" : "+"} ${Math.abs(h)}) ${k > 0 ? "+" : "−"} ${Math.abs(k)}.`, ans, 3,
+        `•1 f(x ${h > 0 ? "−" : "+"} ${Math.abs(h)}) moves it ${Math.abs(h)} to the ${h > 0 ? "right" : "left"}: x = ${gfM(p + h)} (1 mark). •2 × ${gfM(a)} stretches${a < 0 ? " and reflects" : ""} it: y = ${gfM(a * q)} (1 mark). •3 then ${k > 0 ? "up" : "down"} ${Math.abs(k)}: ${ans} (1 mark).`,
+        { options: sqUniq(ans, [sqP(p - h, a * q + k), sqP(p + h, a * (q + k)), sqP(p + h, q + k)]), ps: true, label: `tp ${p} ${q} ${h} ${a} ${k}`, skill: "combined transformations" }); }],
+    "nh-polynomials": [() => { const rs = shuffle(range(-4, 4).filter(Boolean)).slice(0, 3).sort((a, b) => a - b), [r1, r2, r3] = rs, b = -(r1 + r2 + r3), c = r1 * r2 + r1 * r3 + r2 * r3, d = -r1 * r2 * r3, f = gxE([[1, "x³"], [b, "x²"], [c, "x"], [d, ""]]), ans = `x = ${gfM(r1)}, x = ${gfM(r2)} or x = ${gfM(r3)}`;
+      return gfQ(`Show that (${sqMinus("x", r2)}) is a factor of f(x) = ${f}, and so solve f(x) = 0.`, ans, 4,
+        `•1 f(${gfM(r2)}) = 0, by synthetic division or substitution, so it is a factor (1 mark). •2 the quadratic factor: ${gxE([[1, "x²"], [-(r1 + r3), "x"], [r1 * r3, ""]])} (1 mark). •3 factorise fully: (${sqMinus("x", r1)})(${sqMinus("x", r2)})(${sqMinus("x", r3)}) (1 mark). •4 ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`x = ${gfM(-r1)}, x = ${gfM(-r2)} or x = ${gfM(-r3)}`, `x = ${gfM(r2)} only`, `x = ${gfM(r1)} or x = ${gfM(r3)}`]), ps: true, label: `cubic ${rs}`, skill: "the factor theorem" }); }],
+    "nh-quadratics": [() => { const bq = gfR(1, 6) * pick([1, -1]), s = gfR(1, 4), cc = gfR(-6, 6), dq = cc + s * s, k1 = bq - 2 * s, k2 = bq + 2 * s, ans = `k = ${gfM(k1)} or k = ${gfM(k2)}`;
+      return gfQ(`Find the values of k for which the line y = kx ${cc < 0 ? "−" : "+"} ${Math.abs(cc)} is a tangent to the curve y = ${gxE([[1, "x²"], [bq, "x"], [dq, ""]])}.`, ans, 4,
+        `•1 equate: ${gxE([[1, "x²"], [bq, "x"], [dq, ""]])} = kx ${cc < 0 ? "−" : "+"} ${Math.abs(cc)} (1 mark). •2 x² + (${gfM(bq)} − k)x + ${gfM(dq - cc)} = 0 (1 mark). •3 a tangent touches once: b² − 4ac = 0, so (${gfM(bq)} − k)² = ${4 * s * s} (1 mark). •4 ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`k = ${gfM(bq - s)} or k = ${gfM(bq + s)}`, `k = ${gfM(k2)} only`, `k = ${gfM(bq - 4 * s)} or k = ${gfM(bq + 4 * s)}`]), ps: true, label: `tan ${bq} ${s} ${cc}`, skill: "the discriminant and tangents" }); }],
+    "nh-differentiation": [() => { const L = 6 * gfR(2, 6), x = L / 6, V = x * (L - 2 * x) ** 2;
+      return gfQ(`Squares of side x cm are cut from the corners of a ${L} cm square of card, which is folded into an open box with volume V = x(${L} − 2x)² cm³. Find the value of x that gives the greatest volume, and that volume. (cm³)`, V, 4,
+        `•1 V = ${4}x³ − ${4 * L}x² + ${L * L}x (1 mark). •2 dV/dx = ${12}x² − ${8 * L}x + ${L * L} (1 mark). •3 dV/dx = 0: (${2}x − ${L})(${6}x − ${L}) = 0, so x = ${x} (x = ${L / 2} gives no box) (1 mark). •4 a nature table or the second derivative shows a maximum; V = ${V} cm³ (1 mark).`, { unit: "cm³", ps: true, label: `box ${L}`, skill: "optimisation" }); }],
+    "nh-integration": [() => { const k = gfR(2, 6), ans = gfF(k ** 3, 6);
+      return gfQ(`Find the area enclosed by the curve y = x² and the line y = ${k}x.`, ans, 4,
+        `•1 they meet where x² = ${k}x: x = 0 and x = ${k} (1 mark). •2 area = ∫ from 0 to ${k} of (${k}x − x²) dx: the line is above the curve (1 mark). •3 [${k % 2 ? `(${k}/2)` : k === 2 ? "" : k / 2}x² − ⅓x³] (1 mark). •4 ${gfF(k ** 3, 2)} − ${gfF(k ** 3, 3)} = ${ans} square units (1 mark).`, { accept: gxFr(k ** 3, 6).concat(Number.isInteger(k ** 3 / 6) ? [] : [gfD(roundDp(k ** 3 / 6, 2))]), ps: true, label: `area ${k}`, skill: "the area between a line and a curve" }); }],
+    "nh-trig": [() => { const [p, q, s] = pick([[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]]), sw = rand(2), a = sw ? p : q, b = sw ? q : p, al = Math.atan2(b, a) * 180 / Math.PI, x = 90 - al;
+      if (!sqSafe(al, 1)) return {};
+      return gfQ(`Write ${a} sin x° + ${b} cos x° in the form k sin(x + α)°, with k > 0 and 0 ≤ α < 360. So find the maximum value and the value of x, from 0 to 360, where it happens. Give x to 1 decimal place.`, sq1(x), 4,
+        `•1 k sin x cos α + k cos x sin α: k cos α = ${a}, k sin α = ${b} (1 mark). •2 k = √(${a}² + ${b}²) = ${s} (1 mark). •3 tan α = ${b}/${a}, both positive so 1st quadrant: α = ${sq1(al)} (1 mark). •4 the maximum is ${s}, when x + ${sq1(al)} = 90: x = ${sq1(x)} (1 mark).`, { calc: true, ps: true, label: `wave ${a} ${b}`, skill: "the wave function" }); }],
+    "nh-formulae": [() => { const T = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]], [a1, b1, c1] = pick(T), [a2, b2, c2] = pick(T.filter(t => t[2] !== c1));
+      const n = a1 * a2 + b1 * b2, d = c1 * c2, ans = gfF(n, d);
+      return gfQ(`A and B are acute angles with sin A = ${a1}/${c1} and cos B = ${b2}/${c2}. Find the exact value of sin(A + B).`, ans, 4,
+        `•1 sin(A + B) = sin A cos B + cos A sin B (1 mark). •2 from right-angled triangles: cos A = ${b1}/${c1} and sin B = ${a2}/${c2} (1 mark). •3 (${a1}/${c1})(${b2}/${c2}) + (${b1}/${c1})(${a2}/${c2}) (1 mark). •4 = ${ans} (1 mark).`, { accept: gxFr(n, d), ps: true, label: `addf ${c1} ${c2}`, skill: "the addition formulae" }); }],
+    "nh-circles": [() => { const [p, q, s] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13]]), C = [gfR(-4, 4), gfR(-4, 4)], sx = pick([1, -1]), sy = pick([1, -1]), sw = rand(2), dx = sx * (sw ? p : q), dy = sy * (sw ? q : p), P = [C[0] + dx, C[1] + dy];
+      const g = -C[0], f = -C[1], k = C[0] ** 2 + C[1] ** 2 - s * s, circ = `x² + y² ${g < 0 ? "−" : "+"} ${Math.abs(2 * g)}x ${f < 0 ? "−" : "+"} ${Math.abs(2 * f)}y ${k < 0 ? "−" : "+"} ${Math.abs(k)} = 0`.replace(/ [+−] 0x| [+−] 0y/g, "").replace(/ \+ 0 = 0| − 0 = 0/, " = 0");
+      const ans = sqLine(-dx, dy, P[0], P[1]);
+      return gfQ(`The point P ${sqP(...P)} lies on the circle ${circ}. Find the equation of the tangent to the circle at P.`, ans, 4,
+        `•1 the centre is ${sqP(...C)} (1 mark). •2 gradient of the radius to P = ${sqFr(dy, dx)} (1 mark). •3 the tangent is perpendicular to the radius: gradient ${sqFr(-dx, dy)} (1 mark). •4 ${ans} (1 mark).`, { ps: true, label: `tang ${C} ${P}`, skill: "the tangent to a circle" }); }],
+    "nh-vectors": [() => { let a, b, c, ang; do { a = gfR(2, 9); b = gfR(2, 9); c = gfR(2, 9); ang = Math.acos((b * b + c * c - a * a) / (a * a + b * b + c * c)) * 180 / Math.PI; } while (!sqSafe(ang, 1) || a === b);
+      return gfQ(`A cuboid has O at the origin and edges OA, OC and OD along the axes, with A (${a}, 0, 0), C (0, ${b}, 0) and D (0, 0, ${c}). Find the acute angle between the space diagonals OF, where F is (${a}, ${b}, ${c}), and AG, where G is (0, ${b}, ${c}). (°)`, sq1(ang > 90 ? 180 - ang : ang), 4,
+        `•1 OF = (${a}, ${b}, ${c}) and AG = (${gfM(-a)}, ${b}, ${c}) (1 mark). •2 OF.AG = ${gfM(b * b + c * c - a * a)} (1 mark). •3 |OF| = |AG| = √${a * a + b * b + c * c} (1 mark). •4 cos θ = ${gfM(b * b + c * c - a * a)}/${a * a + b * b + c * c}, θ = ${sq1(ang)}°${ang > 90 ? `, so the acute angle is ${sq1(180 - ang)}°` : ""} (1 mark).`, { unit: "°", calc: true, ps: true, label: `cub ${a} ${b} ${c}`, skill: "the angle between vectors" }); }]
+  };
+  for (const [id, makers] of Object.entries(SQ_PROBLEMS)) SQ_ALL.find(t => t.id === id).makers.push(...makers);
   const sqTopic = id => SQ_ALL.find(t => t.id === id);
   const sqStage = key => SQA_STAGES.find(st => st.key === key || st.id === key || st.n === key);
   // A stage's check: one short question from each topic, in climb order

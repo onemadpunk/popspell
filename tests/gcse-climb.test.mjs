@@ -52,7 +52,8 @@ test("every bank question has marks, a mark scheme that adds up, and a fair answ
   for (const t of X.ALL) for (const make of t.makers) for (let run = 0; run < 60; run++) {
     const it = make();
     if (!it.q) continue;
-    assert.ok([1, 2, 3].includes(it.marks), `${t.id}: ${it.q}`);
+    // multi-step problems can be worth 4, as the exam's are
+    assert.ok([1, 2, 3].includes(it.marks) || (it.ps && it.marks === 4), `${t.id}: ${it.q}`);
     const marks = (it.scheme.match(/\(1 mark/g) || []).length;
     assert.equal(marks, it.marks, `${t.id}: the scheme gives ${marks} of ${it.marks} marks: ${it.scheme}`);
     assert.ok(it.answer !== "" && it.skill && it.label, `${t.id}: ${it.q}`);
@@ -146,5 +147,13 @@ test("the climb sits with key stage 4 in England's library", () => {
     const w = E.forWork(id);
     assert.ok(w && w.statements.length, id);
     assert.equal(E.bandOf(w), "Key stage 4", id);
+  }
+});
+
+test("every topic has at least one multi-step problem, marked for method and accuracy", () => {
+  for (const t of X.ALL) {
+    const ps = [];
+    for (const make of t.makers) for (let run = 0; run < 30; run++) { const it = make(); if (it.q && it.ps) ps.push(it); }
+    assert.ok(ps.length, `${t.id} has no multi-step problem`);
   }
 });
