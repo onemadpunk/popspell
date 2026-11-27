@@ -4752,6 +4752,67 @@ window.PopActivities = (() => {
         `•1 OF = (${a}, ${b}, ${c}) and AG = (${gfM(-a)}, ${b}, ${c}) (1 mark). •2 OF.AG = ${gfM(b * b + c * c - a * a)} (1 mark). •3 |OF| = |AG| = √${a * a + b * b + c * c} (1 mark). •4 cos θ = ${gfM(b * b + c * c - a * a)}/${a * a + b * b + c * c}, θ = ${sq1(ang)}°${ang > 90 ? `, so the acute angle is ${sq1(180 - ang)}°` : ""} (1 mark).`, { unit: "°", calc: true, ps: true, label: `cub ${a} ${b} ${c}`, skill: "the angle between vectors" }); }]
   };
   for (const [id, makers] of Object.entries(SQ_PROBLEMS)) SQ_ALL.find(t => t.id === id).makers.push(...makers);
+  // Advanced Higher: a multi-step problem for each topic that had none
+  const sqCx = (a, b) => `${a ? gfM(a) : ""}${b ? `${a ? (b > 0 ? " + " : " − ") : b < 0 ? "−" : ""}${Math.abs(b) === 1 ? "" : Math.abs(b)}i` : a ? "" : "0"}`;
+  const sqExp = (c, k) => `${c === 1 ? "" : c === -1 ? "−" : gfM(c)}e${k === 1 ? "ˣ" : k === -1 ? "^(−x)" : `^(${gfM(k)}x)`}`;
+  const AH_PROBLEMS = {
+    "ah-algebra": [() => { const d = gfR(1, 3), n = gfR(5, 8), x = d / 100, v = (1 + x) ** n; if (!sqSafe(v, 4)) return {};
+      const t = [1, n * x, n * (n - 1) / 2 * x * x, n * (n - 1) * (n - 2) / 6 * x ** 3], dx = v => v.toFixed(8).replace(/0+$/, "");
+      return gfQ(`Use the binomial theorem to find the value of ${gfD(1 + x)}${sup(n)} correct to 4 decimal places. Show your working.`, fixDp(v, 4), 3,
+        `•1 write ${gfD(1 + x)}${sup(n)} as (1 + ${gfD(x)})${sup(n)} and expand: 1 + ${n}(${gfD(x)}) + ${n * (n - 1) / 2}(${gfD(x)})² + ${n * (n - 1) * (n - 2) / 6}(${gfD(x)})³ + … (1 mark). •2 = 1 + ${dx(t[1])} + ${dx(t[2])} + ${(e => `${roundDp(t[3] / 10 ** e, 4)} × 10${sup(e)}`)(Math.floor(Math.log10(t[3]) + 1e-9))} + … (1 mark). •3 ${fixDp(v, 4)}: later terms are too small to change the 4th decimal place (1 mark).`, { calc: true, ps: true, label: `binapprox ${d} ${n}`, skill: "the binomial theorem for approximations" }); }],
+    "ah-differentiation": [() => { const k = pick([20, 30, 40, 50, 60, 80, 100]), R = gfR(3, 12), v = k / (4 * Math.PI * R * R); if (!sqSafe(v, 3)) return {};
+      return gfQ(`A spherical balloon is blown up at a rate of ${k} cm³ per second. How fast is its radius increasing when the radius is ${R} cm? Give your answer to 3 decimal places. (cm/s)`, fixDp(v, 3), 4,
+        `•1 V = ⁴⁄₃πr³ (1 mark). •2 dV/dr = 4πr² (1 mark). •3 chain rule: dr/dt = dV/dt ÷ dV/dr = ${k} ÷ (4π × ${R}²) (1 mark). •4 ${fixDp(v, 3)} cm/s (1 mark).`, { unit: "cm/s", calc: true, ps: true, label: `balloon ${k} ${R}`, skill: "related rates of change" }); }],
+    "ah-integration": [() => { const a = gfR(1, 5), b = gfR(1, 5), N = b * b + a, g = gcd(N, a), fr = a / g === 1 ? `${N / g}` : `${N / g}/${a / g}`, ans = `½ ln(${fr})`;
+      return gfQ(`Use the substitution u = x² + ${a} to find the exact area under the curve y = x / (x² + ${a}) between x = 0 and x = ${b}.`, ans, 4,
+        `•1 du = 2x dx, so x dx = ½ du (1 mark). •2 limits: u = ${a} to u = ${N} (1 mark). •3 ½ ∫ (1/u) du = ½ ln u (1 mark). •4 ½(ln ${N} − ln ${a}) = ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`ln(${fr})`, `2 ln(${fr})`, `½ ln(${N})`, `ln(${N})`]), ps: true, label: `subarea ${a} ${b}`, skill: "integration by substitution" }); }],
+    "ah-parts": [() => { const a = gfR(2, 4), ce = a - 1 === 1 ? "" : a - 1, ans = `${ce}e${sup(a)} + 1`;
+      return gfQ(`Find the exact area enclosed by the curve y = xeˣ, the x-axis and the line x = ${a}.`, ans, 4,
+        `•1 by parts with u = x, dv/dx = eˣ (1 mark). •2 xeˣ − ∫ eˣ dx = xeˣ − eˣ (1 mark). •3 [(x − 1)eˣ] from 0 to ${a} (1 mark). •4 ${ce}e${sup(a)} − (−1) = ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`${a}e${sup(a)} − 1`, `${ce}e${sup(a)} − 1`, `${a + 1}e${sup(a)} + 1`]), ps: true, label: `parts ${a}`, skill: "integration by parts" }); }],
+    "ah-de2": [() => { let p, q; do { p = gfR(-3, 4); q = gfR(-3, 4); } while (p === q || !p || !q); let C, D; do { C = gfR(-3, 4); D = gfR(-3, 4); } while (!C || !D);
+      const A = C + D, B = p * C + q * D, ans = `y = ${sqExp(C, p)} ${D < 0 ? "−" : "+"} ${sqExp(Math.abs(D), q)}`;
+      return gfQ(`Solve ${gxE([[1, "d²y/dx²"], [-(p + q), "dy/dx"], [p * q, "y"]])} = 0, given that y = ${gfM(A)} and dy/dx = ${gfM(B)} when x = 0.`, ans, 4,
+        `•1 auxiliary equation ${gxE([[1, "m²"], [-(p + q), "m"], [p * q, ""]])} = 0 gives m = ${gfM(p)}, ${gfM(q)} (1 mark). •2 y = A${sqExp(1, p)} + B${sqExp(1, q)} (1 mark). •3 A + B = ${gfM(A)} and ${gxE([[p, "A"], [q, "B"]])} = ${gfM(B)} (1 mark). •4 A = ${gfM(C)}, B = ${gfM(D)}: ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`y = ${sqExp(D, p)} ${C < 0 ? "−" : "+"} ${sqExp(Math.abs(C), q)}`, `y = ${sqExp(C, -p)} ${D < 0 ? "−" : "+"} ${sqExp(Math.abs(D), -q)}`]), ps: true, label: `de2p ${p} ${q} ${C} ${D}`, skill: "second-order DEs with conditions" }); }],
+    "ah-functions": [() => { const a = gfR(1, 5), c = gfR(-4, 4) || 2, b = gfR(-6, 6); if (b === -a * c) return {}; const ans = `x = ${gfM(c)} and y = ${a}`;
+      return gfQ(`The graph of f(x) = (${gxE([[a, "x"], [b, ""]])}) / (${gxE([[1, "x"], [-c, ""]])}) has two asymptotes. Find them.`, ans, 3,
+        `•1 vertical: the bottom is zero at x = ${gfM(c)}, and the top isn't (1 mark). •2 divide: f(x) = ${a} ${b + a * c < 0 ? "−" : "+"} ${Math.abs(b + a * c)}/(${gxE([[1, "x"], [-c, ""]])}) (1 mark). •3 as x → ±∞ the fraction → 0, so y = ${a} (1 mark).`,
+        { options: sqUniq(ans, [`x = ${gfM(-c)} and y = ${a}`, `x = ${gfM(c)} and y = ${gfM(b)}`, `x = ${a} and y = ${gfM(c)}`]), ps: true, label: `asym ${a} ${b} ${c}`, skill: "asymptotes of rational functions" }); }],
+    "ah-proof": [() => { const [sum, S, Sk, add, Snext] = pick([
+        ["1 + 2 + … + n", "½n(n + 1)", "½k(k + 1)", "(k + 1)", "½(k + 1)(k + 2)"],
+        ["1 + 3 + 5 + … + (2n − 1)", "n²", "k²", "(2k + 1)", "(k + 1)²"],
+        ["1 + 2 + 4 + … + 2ⁿ⁻¹", "2ⁿ − 1", "(2ᵏ − 1)", "2ᵏ", "2ᵏ⁺¹ − 1"],
+        ["1² + 2² + … + n²", "⅙n(n + 1)(2n + 1)", "⅙k(k + 1)(2k + 1)", "(k + 1)²", "⅙(k + 1)(k + 2)(2k + 3)"]]), ans = `${Sk} + ${add}`;
+      return gfQ(`To prove by induction that ${sum} = ${S} for all positive integers n, you assume it is true for n = k. Which expression must you then show equals ${Snext}?`, ans, 3,
+        `•1 base case: true for n = 1 (1 mark). •2 assume true for n = k, then the sum to k + 1 is ${ans} (1 mark). •3 simplify it to ${Snext}, so true for n = k + 1, and so for all n by induction (1 mark; the conclusion is needed).`,
+        { options: sqUniq(ans, [`${Snext} + ${add}`, `${Sk} + k`, `${Sk} × ${add}`]), ps: true, label: `induct ${sum}`, skill: "proof by induction" }); }],
+    "ah-matrices": [() => { const T = [["a rotation of 90° anticlockwise about the origin", [[0, -1], [1, 0]]], ["a rotation of 180° about the origin", [[-1, 0], [0, -1]]], ["a reflection in the x-axis", [[1, 0], [0, -1]]], ["a reflection in the y-axis", [[-1, 0], [0, 1]]], ["a reflection in the line y = x", [[0, 1], [1, 0]]]];
+      const [f, g] = shuffle(T).slice(0, 2), [P, Q] = [f[1], g[1]], M = [[Q[0][0] * P[0][0] + Q[0][1] * P[1][0], Q[0][0] * P[0][1] + Q[0][1] * P[1][1]], [Q[1][0] * P[0][0] + Q[1][1] * P[1][0], Q[1][0] * P[0][1] + Q[1][1] * P[1][1]]];
+      let x, y; do { x = gfR(-5, 6); y = gfR(-5, 6); } while (!x || !y || x === y || x === -y);
+      const img = [M[0][0] * x + M[0][1] * y, M[1][0] * x + M[1][1] * y], ans = sqP(...img), m = A => `(${A[0].map(gfM).join(" ")} / ${A[1].map(gfM).join(" ")})`;
+      return gfQ(`The point (${gfM(x)}, ${gfM(y)}) is transformed by ${f[0]}, followed by ${g[0]}. Find its image.`, ans, 4,
+        `•1 first matrix ${m(P)}, rows separated by / (1 mark). •2 second matrix ${m(Q)} (1 mark). •3 the second goes on the left: ${m(Q)} × ${m(P)} = ${m(M)} (1 mark). •4 image ${ans} (1 mark).`,
+        { accept: [ans.replace(/ /g, "")], ps: true, label: `mat ${f[0]} ${g[0]} ${x} ${y}`, skill: "combining transformations with matrices" }); }],
+    "ah-systems": [() => { const [x, y, z] = shuffle([1, 2, 3, 4, 5, 6, 7, 8]).slice(0, 3), R = [[gfR(1, 3), gfR(1, 3), gfR(1, 3)], [gfR(1, 3), gfR(0, 3), gfR(1, 3)], [gfR(0, 3), gfR(1, 3), gfR(1, 3)]];
+      const det = R[0][0] * (R[1][1] * R[2][2] - R[1][2] * R[2][1]) - R[0][1] * (R[1][0] * R[2][2] - R[1][2] * R[2][0]) + R[0][2] * (R[1][0] * R[2][1] - R[1][1] * R[2][0]); if (!det) return {};
+      const tot = R.map(r => r[0] * x + r[1] * y + r[2] * z), it = r => [["pen", r[0]], ["pad", r[1]], ["folder", r[2]]].filter(p => p[1]).map(([n, c]) => `${c} ${n}${c > 1 ? "s" : ""}`).join(", ").replace(/, ([^,]*)$/, " and $1");
+      const ans = `pen £${x}, pad £${y}, folder £${z}`;
+      return gfQ(`A shop sells pens, pads and folders. Ali buys ${it(R[0])} for £${tot[0]}. Bea buys ${it(R[1])} for £${tot[1]}. Cal buys ${it(R[2])} for £${tot[2]}. Use Gaussian elimination to find the price of each.`, ans, 4,
+        `•1 the augmented matrix (${R.map((r, i) => `${r.join(" ")} | ${tot[i]}`).join(" / ")}) (1 mark). •2 row operations to upper triangular form (1 mark). •3 back-substitution (1 mark). •4 ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`pen £${y}, pad £${x}, folder £${z}`, `pen £${x}, pad £${z}, folder £${y}`, `pen £${z}, pad £${y}, folder £${x}`]), ps: true, label: `gauss ${R} ${x}${y}${z}`, skill: "Gaussian elimination in context" }); }],
+    "ah-vectors": [() => { const n = pick([[1, 2, 2], [2, 1, 2], [2, 2, 1], [1, -2, 2], [2, -1, -2]]), F = [gfR(-3, 3), gfR(-3, 3), gfR(-3, 3)], t = gfR(1, 3) * pick([1, -1]), Pt = F.map((v, i) => v + t * n[i]), k = n[0] * F[0] + n[1] * F[1] + n[2] * F[2];
+      const pl = `${gxE([[n[0], "x"], [n[1], "y"], [n[2], "z"]])} = ${gfM(k)}`;
+      return gfQ(`Find the shortest distance from the point P ${sqP(...Pt)} to the plane ${pl}.`, 3 * Math.abs(t), 4,
+        `•1 the line through P perpendicular to the plane: r = ${sqP(...Pt)} + λ${sqP(...n)} (1 mark). •2 substitute into the plane: λ = ${gfM(-t)} (1 mark). •3 the foot of the perpendicular is ${sqP(...F)} (1 mark). •4 distance = ${Math.abs(t)} × |${sqP(...n)}| = ${Math.abs(t)} × 3 = ${3 * Math.abs(t)} (1 mark).`, { ps: true, label: `dplane ${Pt} ${n}`, skill: "the distance from a point to a plane" }); }],
+    "ah-complex": [() => { const a = gfR(-3, 3), b = gfR(1, 3), r = gfR(-4, 4) || 2, B = -(2 * a + r), C = a * a + b * b + 2 * a * r, Dd = -r * (a * a + b * b), poly = gxE([[1, "z³"], [B, "z²"], [C, "z"], [Dd, ""]]);
+      const ans = `z = ${sqCx(a, -b)} and z = ${gfM(r)}`;
+      return gfQ(`z = ${sqCx(a, b)} is a root of ${poly} = 0. Find the other two roots.`, ans, 4,
+        `•1 the coefficients are real, so the conjugate ${sqCx(a, -b)} is also a root (1 mark). •2 quadratic factor: ${gxE([[1, "z²"], [-2 * a, "z"], [a * a + b * b, ""]])} (1 mark). •3 divide: the other factor is ${gxE([[1, "z"], [-r, ""]])} (1 mark). •4 ${ans} (1 mark).`,
+        { options: sqUniq(ans, [`z = ${sqCx(-a, b)} and z = ${gfM(r)}`, `z = ${sqCx(a, -b)} and z = ${gfM(-r)}`, `z = ${sqCx(-a, -b)} and z = ${gfM(-r)}`]), ps: true, label: `croot ${a} ${b} ${r}`, skill: "conjugate roots of polynomials" }); }]
+  };
+  for (const [id, makers] of Object.entries(AH_PROBLEMS)) SQ_ALL.find(t => t.id === id).makers.push(...makers);
   const sqTopic = id => SQ_ALL.find(t => t.id === id);
   const sqStage = key => SQA_STAGES.find(st => st.key === key || st.id === key || st.n === key);
   // A stage's check: one short question from each topic, in climb order
