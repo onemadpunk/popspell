@@ -94,14 +94,23 @@ window.PopCourse = (() => {
     "gf-graphs": 4, "gf-measures": 4, "gf-angles": 5, "gf-area": 5, "gf-probability": 3, "gf-statistics": 3 };
   const PAPERS = { 1: { name: "Paper 1", calc: false, note: "Non-calculator" }, 2: { name: "Paper 2", calc: true, note: "Calculator" }, 3: { name: "Paper 3", calc: true, note: "Calculator" } };
 
+  // A real Foundation paper is about a quarter problem solving (AO3): multi-step questions in context,
+  // mostly in the second half. The rest is a mix of 1, 2 and 3-mark questions, so the pace (about a
+  // minute a mark) is the real one: not lots of quick one-step questions, and not all long problems.
+  const MOCK_PS = [16, 24];
   function mockPaper(set, n, seen) {
     const p = PAPERS[n], keep = it => (p.calc || !it.calc), items = [];
+    let ps = 0;
     for (const [id, want] of Object.entries(MOCK_MARKS)) {
       let got = 0;
-      // Longer questions first, as the real papers have few one-mark questions; calculator questions first on papers 2 and 3
-      const pool = draw([[id, null]], 20, keep, new Set(seen)).map(it => [it.marks + (p.calc && it.calc ? 1.5 : 0) + Math.random() * 1.5, it]).sort((x, y) => y[0] - x[0]).map(([, it]) => it);
+      const drawn = draw([[id, null]], 24, keep, new Set(seen));
+      // At most one problem-solving question a topic, while the paper has room for one
+      const prob = drawn.filter(it => it.ps && it.marks < want && ps + it.marks <= MOCK_PS[1]).sort((a, b) => (p.calc ? b.calc - a.calc : 0) || Math.random() - 0.5)[0];
+      if (prob) { items.push(prob); seen.add(prob.label); got += prob.marks; ps += prob.marks; }
+      // Then the topic's other questions: 2 and 3 marks, some 1; calculator questions first on papers 2 and 3
+      const pool = drawn.filter(it => !it.ps).map(it => [Math.abs(it.marks - 2.5) - (p.calc && it.calc ? 1 : 0) + Math.random() * 1.4, it]).sort((x, y) => x[0] - y[0]).map(([, it]) => it);
       for (const it of pool) {
-        if (got + it.marks > want) continue;
+        if (got + it.marks > want || seen.has(it.label)) continue;
         items.push(it); seen.add(it.label); got += it.marks;
         if (got === want) break;
       }
@@ -109,10 +118,12 @@ window.PopCourse = (() => {
     // Make it exactly 80 with one-mark questions
     const ids = Object.keys(MOCK_MARKS);
     for (let k = 0; total(items) < 80 && k < 200; k++) items.push(...draw([[ids[rand(ids.length)], null]], 1, it => it.marks === 1 && keep(it), seen));
-    // Easier first, as in the real papers: one-mark questions lead, three-mark problems come later
-    const order = items.map(it => [it.marks + Math.random() * 1.6, it]).sort((a, b) => a[0] - b[0]).map(([, it]) => it);
+    // Easier first, as in the real papers: one-mark questions lead, most problems come in the second half
+    const order = items.map(it => [it.marks + (it.ps ? 0.5 : 0) + Math.random() * 2.5, it]).sort((a, b) => a[0] - b[0]).map(([, it]) => it);
     return { set, n, name: p.name, calc: p.calc, note: p.note, items: order };
   }
+  // Where a pupil should be by halfway through the time (the question that takes the paper past 40 marks)
+  const halfway = items => { let t = 0; return items.findIndex(it => (t += it.marks) >= 40) + 1; };
 
   // ---------- Paper only (no internet) ----------
   // The parent edition for a family working with no internet: no web addresses anywhere, a printed
@@ -301,8 +312,11 @@ window.PopCourse = (() => {
     const head = `${K.sheetHead(title, made.who)}${stamp(made, sLabel(made, m))}${strip("Mock exam", `Foundation tier · ${p.note}`, "Total ___ / 80")}`;
     const front = block(box("Instructions", `<p><b>Time: 1 hour 30 minutes.</b> Answer all the questions. Write your answers in the spaces given, and show your working: marks are given for correct working even when the answer is wrong.
       ${p.calc ? "You may use a calculator." : "<b>You must not use a calculator.</b>"} Diagrams are not drawn accurately unless it says so. You need: a black pen, pencil, ruler, protractor and compasses${p.calc ? ", and a scientific calculator" : ""}.</p>
-      <p>The marks for each question are shown in brackets. There are 80 marks. This mock uses grade 1 to 3 questions only, from PopSpell's bank: the real paper also has harder questions near the end.</p>`));
-    const blocks = [front, ...p.items.map((it, i) => block(question(it, i + 1, { calcPaper: p.calc, min: 1.2, roomy: 2 })))];
+      <p>The marks for each question are shown in brackets. There are 80 marks. The questions get harder as you go: most of the longer problems, where you choose the method, come in the second half.</p>
+      <p><b>Pace:</b> about a minute a mark. By 45 minutes, aim to have finished question ${halfway(p.items)}. Leave 10 minutes at the end to check. If a question stops you for more than 3 minutes, move on and come back.</p>
+      <p class="gx-note">PopSpell's own grade 1 to 3 questions, not a past paper: the real paper's last few questions are harder than these.</p>`));
+    const h = halfway(p.items);
+    const blocks = [front, ...p.items.flatMap((it, i) => [block(question(it, i + 1, { calcPaper: p.calc, min: 1.2, roomy: 2 }))].concat(i + 1 === h && h < p.items.length ? [block(`<p class="gx-note cs-pace">⏱ <b>Time check:</b> about 45 minutes gone. Behind? Move on to question ${h + 1} now, and come back if there's time.</p>`)] : []))];
     const pupil = [doc(head, `${K.brandHead(`${title} (continued)`)}${stamp(made)}`, blocks)];
     // The mark scheme, then where the marks are by topic (for the mock record)
     const byTopic = X().TOPICS.map(t => [t, p.items.filter(it => it.topicId === t.id)]).filter(([, its]) => its.length);
